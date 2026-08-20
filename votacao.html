@@ -67,7 +67,7 @@
         🍻 Parada 10.95 Bar
     </div>
 
-    <!-- TELA 1: MENU PRINCIPAL (OS DOIS BOTÕES) -->
+    <!-- TELA 1: MENU PRINCIPAL -->
     <div id="menu-principal">
         <h2 style="color: #fff; margin-bottom: 30px; font-size: 20px;">O que você quer fazer?</h2>
         
@@ -88,7 +88,6 @@
         
         <h2 style="color: #ffeb3b;">📩 Escolha sua Música</h2>
         
-        <!-- BOTÃO NOVO DO CATÁLOGO -->
         <button class="btn-catalogo" onclick="mostrarAba('catalogo')">🗂️ Explorar Catálogo de Músicas</button>
         
         <p style="font-size: 14px; color: #ccc; margin-bottom: 15px;">Ou digite o nome livremente abaixo:</p>
@@ -132,7 +131,6 @@
             <button class="btn-voto v-ruim" onclick="prepararVoto('ruim', '😖 Ruim')">😖 Ruim</button>
         </div>
 
-        <!-- Tela de Confirmação do voto -->
         <div id="confirmacao-voto">
             <p style="margin-top: 0; font-size: 18px; color: #fff;">Confirmar voto:<br><strong id="texto-voto-escolhido" style="font-size: 26px; display: block; margin-top: 10px;"></strong></p>
             <div style="display: flex; justify-content: space-between; margin-top: 20px;">
@@ -166,7 +164,7 @@
         let votoPendente = null;
         let musicasCatalogo = [];
 
-        // FUNÇÃO DE NAVEGAÇÃO DE TELAS
+        // FUNÇÃO DE NAVEGAÇÃO
         function mostrarAba(aba) {
             document.getElementById('menu-principal').style.display = 'none';
             document.getElementById('aba-pedir').style.display = 'none';
@@ -179,7 +177,7 @@
             if (aba === 'catalogo') document.getElementById('aba-catalogo').style.display = 'block';
         }
 
-        // CARREGAR CATÁLOGO CSV
+        // CARREGAR E ORDENAR O CATÁLOGO
         async function carregarCatalogo() {
             try {
                 const response = await fetch('catalogo.csv?v=' + new Date().getTime());
@@ -212,6 +210,10 @@
                         }
                     }
                 }
+                
+                // ORDENAÇÃO ALFABÉTICA PELO NOME DO CANTOR
+                musicasCatalogo.sort((a, b) => a.cantor.localeCompare(b.cantor, 'pt-BR'));
+
                 renderizarCatalogo(musicasCatalogo.slice(0, 150)); 
             } catch(e) {
                 document.getElementById('lista-catalogo').innerHTML = '<p style="color:#e52d27; text-align:center;">Catálogo offline. Peça digitando na busca principal.</p>';
