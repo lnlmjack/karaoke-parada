@@ -164,7 +164,6 @@
         let votoPendente = null;
         let musicasCatalogo = [];
 
-        // FUNÇÃO DE NAVEGAÇÃO
         function mostrarAba(aba) {
             document.getElementById('menu-principal').style.display = 'none';
             document.getElementById('aba-pedir').style.display = 'none';
@@ -177,7 +176,6 @@
             if (aba === 'catalogo') document.getElementById('aba-catalogo').style.display = 'block';
         }
 
-        // CARREGAR E ORDENAR O CATÁLOGO
         async function carregarCatalogo() {
             try {
                 const response = await fetch('catalogo.csv?v=' + new Date().getTime());
@@ -185,6 +183,25 @@
                 
                 const delimitador = text.split('\n')[0].includes(';') ? ';' : ',';
                 let linhas = text.split('\n');
+
+                // LER OS CABEÇALHOS PARA NÃO ERRAR AS COLUNAS
+                let headers = [];
+                let celulaH = ''; let aspasH = false;
+                let linhaH = linhas[0].trim();
+                for(let j = 0; j < linhaH.length; j++) {
+                    let char = linhaH[j];
+                    if(char === '"') aspasH = !aspasH;
+                    else if (char === delimitador && !aspasH) { headers.push(celulaH.trim().toUpperCase()); celulaH = ''; }
+                    else celulaH += char;
+                }
+                headers.push(celulaH.trim().toUpperCase());
+
+                let idxCantor = 0, idxTitulo = 2, idxInicio = 3;
+                headers.forEach((h, i) => {
+                    if (h.includes('CANTOR')) idxCantor = i;
+                    if (h.includes('TÍTULO') || h.includes('TITULO') || h === 'MUSICA' || h === 'MÚSICA') idxTitulo = i;
+                    if (h.includes('INÍCIO') || h.includes('INICIO') || h.includes('LETRA')) idxInicio = i;
+                });
                 
                 for (let i = 1; i < linhas.length; i++) {
                     let linha = linhas[i].trim();
@@ -202,18 +219,23 @@
                     }
                     colunas.push(celula.trim());
 
-                    if (colunas.length >= 3) {
-                        let cantor = colunas[0].replace(/^"|"$/g, '').trim();
-                        let titulo = colunas[2].replace(/^"|"$/g, '').trim();
+                    if (colunas.length > Math.max(idxCantor, idxTitulo)) {
+                        let cantor = colunas[idxCantor] ? colunas[idxCantor].replace(/^"|"$/g, '').trim() : '';
+                        let titulo = colunas[idxTitulo] ? colunas[idxTitulo].replace(/^"|"$/g, '').trim() : '';
+                        let inicio = colunas[idxInicio] ? colunas[idxInicio].replace(/^"|"$/g, '').trim() : '';
+                        
                         if(cantor && titulo) {
-                            musicasCatalogo.push({ cantor: cantor, titulo: titulo, filtro: (cantor + " " + titulo).toLowerCase() });
+                            musicasCatalogo.push({ 
+                                cantor: cantor, 
+                                titulo: titulo, 
+                                inicio: inicio,
+                                filtro: (cantor + " " + titulo + " " + inicio).toLowerCase() 
+                            });
                         }
                     }
                 }
                 
-                // ORDENAÇÃO ALFABÉTICA PELO NOME DO CANTOR
                 musicasCatalogo.sort((a, b) => a.cantor.localeCompare(b.cantor, 'pt-BR'));
-
                 renderizarCatalogo(musicasCatalogo.slice(0, 150)); 
             } catch(e) {
                 document.getElementById('lista-catalogo').innerHTML = '<p style="color:#e52d27; text-align:center;">Catálogo offline. Peça digitando na busca principal.</p>';
@@ -229,11 +251,11 @@
             }
             let html = '';
             lista.forEach(m => {
-                // AQUI OCORREU A INVERSÃO: Cantor em negrito primeiro, e música embaixo.
                 html += `
                 <div class="item-resultado" onclick="selecionarDoCatalogo('${m.titulo}', '${m.cantor}')">
                     <strong style="font-size: 16px;">🎤 ${m.cantor}</strong><br>
-                    <span style="font-size: 13px; color: #ccc;">🎵 ${m.titulo}</span>
+                    <span style="font-size: 14px; color: #fff;">🎵 ${m.titulo}</span><br>
+                    <span style="font-size: 12px; color: #aaa;">📝 ${m.inicio}</span>
                 </div>`;
             });
             div.innerHTML = html;
@@ -257,7 +279,6 @@
 
         window.onload = () => { carregarCatalogo(); };
 
-        // OUVINTE DA TV PARA VOTAÇÃO
         database.ref('statusAtual').on('value', (snapshot) => {
             const status = snapshot.val();
             if (status && status.id !== "avaliando") {
