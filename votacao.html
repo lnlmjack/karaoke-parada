@@ -32,6 +32,13 @@
         .btn-catalogo { background: #00d2ff; color: #000; width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         .btn-catalogo:active { transform: scale(0.95); }
 
+        /* CARROSSEL DO ALFABETO */
+        .alfabeto-container { display: flex; overflow-x: auto; gap: 8px; margin-bottom: 15px; padding-bottom: 10px; }
+        .alfabeto-container::-webkit-scrollbar { height: 6px; }
+        .alfabeto-container::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
+        .btn-letra { flex: 0 0 auto; background: #333; color: #fff; border: 1px solid #555; border-radius: 8px; padding: 10px 15px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-letra.ativo { background: #00d2ff; color: #000; border-color: #00d2ff; }
+
         /* Area de Votação */
         #cantor-atual { color: #ffeb3b; font-size: 24px; font-weight: bold; margin: 10px 0; }
         #status-musica { color: #aaa; font-size: 14px; font-style: italic; margin-bottom: 20px; }
@@ -90,10 +97,10 @@
         
         <button class="btn-catalogo" onclick="mostrarAba('catalogo')">🗂️ Explorar Catálogo de Músicas</button>
         
-        <p style="font-size: 14px; color: #ccc; margin-bottom: 15px;">Ou digite o nome livremente abaixo:</p>
+        <p style="font-size: 14px; color: #ccc; margin-bottom: 15px;">Ou pesquise livremente no YouTube:</p>
         
         <input type="text" id="campoBusca" placeholder="Ex: Evidências Chitãozinho...">
-        <button class="btn-busca" onclick="buscarMusica()">🔍 Buscar Música</button>
+        <button class="btn-busca" onclick="buscarMusica()">🔍 Buscar no YouTube</button>
         
         <div id="resultados"></div>
     </div>
@@ -103,9 +110,14 @@
         <button class="btn-voltar" onclick="mostrarAba('pedir')">⬅️ Voltar para a Busca</button>
         
         <h2 style="color: #00d2ff;">🗂️ Catálogo Completo</h2>
-        <p style="font-size: 14px; color: #ccc; margin-bottom: 15px;">Toque na música para pesquisar automaticamente.</p>
+        <p style="font-size: 14px; color: #ccc; margin-bottom: 15px;">Toque na letra inicial do artista ou digite na barra abaixo:</p>
         
-        <input type="text" id="buscaCatalogo" placeholder="Pesquise por cantor ou música..." onkeyup="filtrarCatalogo()">
+        <!-- ALFABETO DE BUSCA RÁPIDA -->
+        <div id="filtro-alfabeto" class="alfabeto-container">
+            <!-- Botões gerados no Javascript -->
+        </div>
+
+        <input type="text" id="buscaCatalogo" placeholder="🔎 Digite aqui o cantor ou a música..." onkeyup="filtrarCatalogo()">
         
         <div id="lista-catalogo" style="height: 400px; overflow-y: auto; text-align: left; padding-right: 5px;">
             <p style="text-align: center; color: #aaa;">Carregando músicas...</p>
@@ -164,7 +176,6 @@
         let votoPendente = null;
         let musicasCatalogo = [];
 
-        // FUNÇÃO DE NAVEGAÇÃO
         function mostrarAba(aba) {
             document.getElementById('menu-principal').style.display = 'none';
             document.getElementById('aba-pedir').style.display = 'none';
@@ -177,16 +188,60 @@
             if (aba === 'catalogo') document.getElementById('aba-catalogo').style.display = 'block';
         }
 
-        // CARREGAR E ORDENAR O CATÁLOGO
+        // GERA OS BOTÕES DE A a Z
+        function gerarBotoesAlfabeto() {
+            const div = document.getElementById('filtro-alfabeto');
+            const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+            let html = `<button class="btn-letra ativo" id="btn-letra-TODOS" onclick="filtrarPorLetra('TODOS')">TUDO</button>`;
+            
+            alfabeto.forEach(letra => {
+                html += `<button class="btn-letra" id="btn-letra-${letra}" onclick="filtrarPorLetra('${letra}')">${letra}</button>`;
+            });
+            div.innerHTML = html;
+        }
+
+        function filtrarPorLetra(letra) {
+            document.querySelectorAll('.btn-letra').forEach(b => b.classList.remove('ativo'));
+            document.getElementById('btn-letra-' + letra).classList.add('ativo');
+            document.getElementById('buscaCatalogo').value = ''; // Limpa a barra de pesquisa
+
+            if (letra === 'TODOS') {
+                renderizarCatalogo(musicasCatalogo.slice(0, 150));
+                return;
+            }
+
+            const filtrados = musicasCatalogo.filter(m => m.cantor.toUpperCase().startsWith(letra)).slice(0, 150);
+            renderizarCatalogo(filtrados);
+        }
+
         async function carregarCatalogo() {
+            gerarBotoesAlfabeto(); // Desenha os botões na tela
             try {
                 const response = await fetch('catalogo.csv?v=' + new Date().getTime());
                 const text = await response.text();
                 
                 const delimitador = text.split('\n')[0].includes(';') ? ';' : ',';
                 let linhas = text.split('\n');
+
+                let headers = [];
+                let celulaH = ''; let aspasH = false;
+                let linhaH = linhas[0].trim();
+                for(let j = 0; j < linhaH.length; j++) {
+                    let char = linhaH[j];
+                    if(char === '"') aspasH = !aspasH;
+                    else if (char === delimitador && !aspasH) { headers.push(celulaH.trim().toUpperCase()); celulaH = ''; }
+                    else celulaH += char;
+                }
+                headers.push(celulaH.trim().toUpperCase());
+
+                let idxCantor = 0, idxTitulo = 2, idxInicio = 3;
+                headers.forEach((h, i) => {
+                    if (h.includes('CANTOR')) idxCantor = i;
+                    if (h.includes('TÍTULO') || h.includes('TITULO') || h === 'MUSICA' || h === 'MÚSICA') idxTitulo = i;
+                    if (h.includes('INÍCIO') || h.includes('INICIO') || h.includes('LETRA')) idxInicio = i;
+                });
                 
-                for (let i = 0; i < linhas.length; i++) {
+                for (let i = 1; i < linhas.length; i++) {
                     let linha = linhas[i].trim();
                     if (!linha) continue;
                     
@@ -202,29 +257,10 @@
                     }
                     colunas.push(celula.trim());
 
-                    // Limpa as aspas das colunas
-                    colunas = colunas.map(c => c.replace(/^"|"$/g, '').trim());
-
-                    // Ignora a linha de cabeçalho
-                    if (colunas[0].toUpperCase().includes('CANTOR') || colunas[0].toUpperCase().includes('ARTISTA')) {
-                        continue;
-                    }
-
-                    if (colunas.length >= 2) {
-                        let cantor = colunas[0];
-                        let titulo = '';
-                        let inicio = '';
-                        
-                        // Detecção inteligente: se a coluna 1 tiver números (Código), a música está na coluna 2.
-                        let temCodigo = /^\\d+$/.test(colunas[1]);
-                        
-                        if (temCodigo) {
-                            titulo = colunas[2] || '';
-                            inicio = colunas[3] || '';
-                        } else {
-                            titulo = colunas[1] || '';
-                            inicio = colunas[2] || '';
-                        }
+                    if (colunas.length > Math.max(idxCantor, idxTitulo)) {
+                        let cantor = colunas[idxCantor] ? colunas[idxCantor].replace(/^"|"$/g, '').trim() : '';
+                        let titulo = colunas[idxTitulo] ? colunas[idxTitulo].replace(/^"|"$/g, '').trim() : '';
+                        let inicio = colunas[idxInicio] ? colunas[idxInicio].replace(/^"|"$/g, '').trim() : '';
                         
                         if(cantor && titulo) {
                             musicasCatalogo.push({ 
@@ -237,9 +273,7 @@
                     }
                 }
                 
-                // ORDENAÇÃO ALFABÉTICA PELO NOME DO CANTOR
                 musicasCatalogo.sort((a, b) => a.cantor.localeCompare(b.cantor, 'pt-BR'));
-
                 renderizarCatalogo(musicasCatalogo.slice(0, 150)); 
             } catch(e) {
                 document.getElementById('lista-catalogo').innerHTML = '<p style="color:#e52d27; text-align:center;">Catálogo offline. Peça digitando na busca principal.</p>';
@@ -255,7 +289,6 @@
             }
             let html = '';
             lista.forEach(m => {
-                // Tratamento especial para nomes com aspas não quebrarem o código
                 let tituloEscapado = m.titulo.replace(/'/g, "\\'").replace(/"/g, "&quot;");
                 let cantorEscapado = m.cantor.replace(/'/g, "\\'").replace(/"/g, "&quot;");
                 
@@ -270,8 +303,11 @@
         }
 
         function filtrarCatalogo() {
+            document.querySelectorAll('.btn-letra').forEach(b => b.classList.remove('ativo'));
+            
             const termo = document.getElementById('buscaCatalogo').value.toLowerCase();
             if (!termo) {
+                document.getElementById('btn-letra-TODOS').classList.add('ativo');
                 renderizarCatalogo(musicasCatalogo.slice(0, 150));
                 return;
             }
