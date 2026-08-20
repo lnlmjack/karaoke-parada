@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Interativo - PARADA 10.95 BAR</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    
+    <style>
+        * { box-sizing: border-box; } 
+        body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; text-align: center; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; }
+        h1 { color: #ffeb3b; text-shadow: 2px 2px 10px #000; font-size: 24px; margin-bottom: 20px; margin-top: 10px;}
+        
+        /* Sistema de Abas - INVERTIDO */
+        .tabs { display: flex; width: 100%; max-width: 500px; margin-bottom: 20px; border-radius: 12px; overflow: hidden; border: 2px solid #333; }
+        .tab-btn { flex: 1; padding: 12px; background: #222; color: #fff; font-weight: bold; border: none; cursor: pointer; transition: 0.2s; font-size: 14px;}
+        .tab-btn.active { background: #e52d27; }
+
+        /* Aba Votar */
+        .painel-cantor { background: linear-gradient(135deg, #2a0800, #e52d27); border: 2px solid #ffeb3b; border-radius: 15px; padding: 20px 10px; width: 100%; max-width: 500px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(229,45,39,0.4); }
+        .texto-agora { font-size: 12px; color: #ffeb3b; text-transform: uppercase; font-weight: bold; letter-spacing: 2px; margin-bottom: 5px; display: block; }
+        .nome-atual { font-size: 22px; font-weight: 900; margin: 0 0 5px 0; color: #fff; text-shadow: 1px 1px 3px #000; }
+        .musica-atual { font-size: 14px; margin: 0; color: #ddd; font-style: italic; }
+
+        .lista-emojis { display: flex; flex-direction: column; gap: 10px; max-width: 500px; width: 100%; }
+        .btn-emoji { display: flex; align-items: center; justify-content: flex-start; gap: 15px; background: #222; border: 2px solid #333; border-radius: 12px; padding: 12px 15px; font-size: 18px; color: #fff; font-weight: bold; cursor: pointer; transition: 0.1s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .btn-emoji:active { transform: scale(0.95); }
+        .emoji-icon { font-size: 30px; }
+
+        .btn-excelente:active { border-color: #00d2ff; background: #003a4d; }
+        .btn-muitobom:active { border-color: #28a745; background: #0b3d17; }
+        .btn-bom:active { border-color: #ffeb3b; background: #4d4600; }
+        .btn-regular:active { border-color: #fd7e14; background: #522703; }
+        .btn-ruim:active { border-color: #e52d27; background: #4d0a08; }
+        
+        /* Aba Pedir Música */
+        .area-busca { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 500px; margin-bottom: 20px; }
+        .area-busca input { width: 100%; padding: 15px; border-radius: 8px; border: none; font-size: 16px; background: #333; color: white;}
+        .area-busca button { width: 100%; padding: 15px 20px; background: #28a745; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer;}
+        
+        .resultados-mobile { width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 10px; text-align: left; }
+        .item-res-mobile { background: #222; padding: 15px; border-radius: 8px; border-left: 5px solid #00d2ff; cursor: pointer; font-size: 14px; font-weight: bold; line-height: 1.4;}
+        .item-res-mobile:active { background: #333; }
+
+        #aviso { margin-top: 20px; font-weight: bold; font-size: 14px; line-height: 1.4; opacity: 0; transition: 0.3s; padding: 12px; border-radius: 8px; width: 100%; max-width: 500px; }
+
+        /* A NOSSA CAIXINHA PERSONALIZADA (MODAL) */
+        #modal-customizado { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 999; justify-content: center; align-items: center; padding: 20px; }
+        .caixa-modal { background: #222; border: 2px solid #e52d27; border-radius: 12px; padding: 25px; width: 100%; max-width: 350px; text-align: left; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+        .caixa-modal h3 { margin-top: 0; color: #ffeb3b; font-size: 18px; margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 10px; }
+        .caixa-modal p { font-size: 15px; margin-bottom: 15px; line-height: 1.4; }
+        .caixa-modal input { width: 100%; padding: 12px; border-radius: 8px; border: none; font-size: 16px; margin-bottom: 20px; background: #111; color: #fff; border: 1px solid #555; }
+        .botoes-modal { display: flex; gap: 10px; justify-content: flex-end; }
+        .botoes-modal button { padding: 12px 20px; border: none; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer; }
+        .btn-cancelar { background: #555; color: #fff; }
+        .btn-confirmar { background: #28a745; color: #fff; }
+    </style>
+</head>
+<body>
+
+    <!-- A CAIXINHA INVISÍVEL QUE SUBSTITUI O PROMPT -->
+    <div id="modal-customizado">
+        <div class="caixa-modal">
+            <h3>Parada 10.95 Bar diz:</h3>
+            <p>🎤 Excelente escolha! Quais os nomes de quem vai cantar?</p>
+            <input type="text" id="input-cantor" placeholder="Digite os nomes aqui...">
+            <div class="botoes-modal">
+                <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+                <button class="btn-confirmar" onclick="confirmarPedido()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <h1>🍻 PARADA 10.95 BAR</h1>
+
+    <!-- Menu de Navegação - AGORA PEDIR MÚSICA VEM PRIMEIRO -->
+    <div class="tabs">
+        <button class="tab-btn active" id="btn-tab-pedir" onclick="mudarAba('pedir')">🎤 PEDIR MÚSICA</button>
+        <button class="tab-btn" id="btn-tab-votar" onclick="mudarAba('votar')">⭐ VOTAR</button>
+    </div>
+    
+    <!-- CONTEÚDO 1: ABA DE PEDIR MÚSICA (Aparece primeiro) -->
+    <div id="view-pedir" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+        <p style="color:#aaa; font-size:14px; margin-bottom:15px; margin-top:0;">Pesquise a música e envie para o DJ!</p>
+        
+        <div class="area-busca">
+            <input type="text" id="campoBuscaMobile" placeholder="Nome da música + cantor...">
+            <button onclick="buscarNoYouTubeMobile()">Buscar</button>
+        </div>
+
+        <div id="resultadosMobile" class="resultados-mobile"></div>
+    </div>
+
+    <!-- CONTEÚDO 2: ABA DE VOTAÇÃO (Escondida no início) -->
+    <div id="view-votar" style="width: 100%; display: none; flex-direction: column; align-items: center;">
+        <div class="painel-cantor">
+            <span class="texto-agora">No Palco Agora</span>
+            <p class="nome-atual" id="tela-cantor">Aguardando...</p>
+            <p class="musica-atual" id="tela-musica">O show já vai começar!</p>
+        </div>
+
+        <div class="lista-emojis">
+            <button class="btn-emoji btn-excelente" onclick="enviarVoto('excelente')"><span class="emoji-icon">🤯</span> Excelente</button>
+            <button class="btn-emoji btn-muitobom" onclick="enviarVoto('muitobom')"><span class="emoji-icon">🤩</span> Muito Bom</button>
+            <button class="btn-emoji btn-bom" onclick="enviarVoto('bom')"><span class="emoji-icon">🙂</span> Bom</button>
+            <button class="btn-emoji btn-regular" onclick="enviarVoto('regular')"><span class="emoji-icon">😕</span> Regular</button>
+            <button class="btn-emoji btn-ruim" onclick="enviarVoto('ruim')"><span class="emoji-icon">😖</span> Ruim</button>
+        </div>
+    </div>
+
+    <div id="aviso">Aviso do sistema</div>
+
+    <script>
+        const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4'; 
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBMLhTZc7qQLjE65L3BuW9e2ijvxObTxp8",
+            authDomain: "karaoke-parada.firebaseapp.com",
+            databaseURL: "https://karaoke-parada-default-rtdb.firebaseio.com",
+            projectId: "karaoke-parada",
+            storageBucket: "karaoke-parada.firebasestorage.app",
+            messagingSenderId: "379214932685",
+            appId: "1:379214932685:web:873e8b5b7d882a4f751784"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let idMusicaAtual = null;
+        let pedidoPendente = null; // Guarda a música enquanto a pessoa digita o nome
+
+        function mudarAba(aba) {
+            document.getElementById('btn-tab-pedir').classList.remove('active');
+            document.getElementById('btn-tab-votar').classList.remove('active');
+            document.getElementById('view-pedir').style.display = 'none';
+            document.getElementById('view-votar').style.display = 'none';
+
+            document.getElementById('btn-tab-' + aba).classList.add('active');
+            document.getElementById('view-' + aba).style.display = 'flex';
+        }
+
+        async function buscarNoYouTubeMobile() {
+            const termo = document.getElementById('campoBuscaMobile').value; if (!termo) return;
+            const div = document.getElementById('resultadosMobile'); div.innerHTML = '<p style="text-align:center; color:#ffeb3b;">Buscando música... 🔍</p>'; 
+            
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${encodeURIComponent(termo + " karaoke")}&type=video&key=${API_KEY}`;
+            try {
+                const res = await fetch(url); const dados = await res.json();
+                div.innerHTML = '';
+                dados.items.forEach(v => {
+                    const d = document.createElement('div'); 
+                    d.className = 'item-res-mobile'; 
+                    d.innerHTML = v.snippet.title; 
+                    // Em vez de chamar o prompt direto, chama o nosso modal
+                    d.onclick = () => abrirModalPedido(v.id.videoId, v.snippet.title);
+                    div.appendChild(d);
+                });
+            } catch (err) {
+                div.innerHTML = "<p style='color:#e52d27'>Erro na busca. Tente de novo!</p>";
+            }
+        }
+
+        // LÓGICA DO NOVO MODAL DE PEDIDO
+        function abrirModalPedido(videoId, titulo) {
+            pedidoPendente = { videoId: videoId, titulo: titulo };
+            document.getElementById('input-cantor').value = ''; // Limpa o campo
+            document.getElementById('modal-customizado').style.display = 'flex';
+            document.getElementById('input-cantor').focus();
+        }
+
+        function fecharModal() {
+            document.getElementById('modal-customizado').style.display = 'none';
+            pedidoPendente = null;
+        }
+
+        function confirmarPedido() {
+            const cantor = document.getElementById('input-cantor').value;
+            if (cantor && cantor.trim() !== "") {
+                database.ref('pedidos').push({ 
+                    videoId: pedidoPendente.videoId, 
+                    titulo: pedidoPendente.titulo, 
+                    cantor: cantor, 
+                    timestamp: Date.now() 
+                });
+                
+                mostrarMensagem("✅ Pedido enviado para a mesa do DJ!", "#007bff", "#fff");
+                document.getElementById('campoBuscaMobile').value = '';
+                document.getElementById('resultadosMobile').innerHTML = '';
+                
+                fecharModal();
+                mudarAba('votar'); // Manda o cliente direto pra aba de votação!
+            } else {
+                alert("Por favor, digite os nomes de quem vai cantar!");
+            }
+        }
+
+        // VOTAÇÃO EXISTENTE MANTIDA
+        database.ref('statusAtual').on('value', (snapshot) => {
+            const dados = snapshot.val();
+            if (dados) {
+                document.getElementById('tela-cantor').innerText = "🎤 " + dados.cantor;
+                document.getElementById('tela-musica').innerText = "🎵 " + dados.titulo;
+                idMusicaAtual = dados.id || dados.cantor; 
+            } else {
+                document.getElementById('tela-cantor').innerText = "Aguardando...";
+                document.getElementById('tela-musica').innerText = "O show já vai começar!";
+                idMusicaAtual = null;
+            }
+        });
+
+        function mostrarMensagem(texto, corFundo, corTexto) {
+            const aviso = document.getElementById('aviso');
+            aviso.innerText = texto;
+            aviso.style.backgroundColor = corFundo;
+            aviso.style.color = corTexto;
+            aviso.style.opacity = 1;
+            setTimeout(() => { aviso.style.opacity = 0; }, 4000);
+        }
+
+        function enviarVoto(tipo) {
+            if (!idMusicaAtual || idMusicaAtual === "avaliando") {
+                mostrarMensagem("Aguarde a música começar! ⏳", "#333", "#ffeb3b");
+                return;
+            }
+            if (localStorage.getItem('votou_' + idMusicaAtual)) {
+                mostrarMensagem("Você já votou nesse cantor safadinho! 😂 Agora só poderá votar na próxima música.", "#4d0a08", "#ffeb3b");
+                if (navigator.vibrate) navigator.vibrate([50, 50, 50]); 
+                return;
+            }
+
+            database.ref('votosAtual').push({ tipo: tipo, timestamp: Date.now() });
+            localStorage.setItem('votou_' + idMusicaAtual, 'sim');
+            mostrarMensagem("Voto registrado com sucesso! 🚀", "#0b3d17", "#28a745");
+            if (navigator.vibrate) navigator.vibrate(50);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel do DJ - Karaokê</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; padding: 20px; margin: 0; }
+        .container { max-width: 1600px; margin: 0 auto; position: relative; }
+        
+        .area-botoes-topo { display: flex; gap: 15px; margin-bottom: 25px; }
+        .btn-topo { flex: 1; padding: 15px; font-size: 16px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s;}
+        .btn-tv { background: #007bff; } .btn-tv:hover { background: #0056b3; } .btn-tv.conectado { background: #17a2b8; pointer-events: none; }
+        .btn-mic { background: #e52d27; text-align: center; display: flex; align-items: center; justify-content: center; } 
+        .btn-mic:hover { filter: brightness(1.2); }
+        
+        .btn-tocar { background: #28a745; width: 100%; padding: 15px; font-size: 16px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 20px;}
+
+        .area-busca { display: flex; gap: 10px; margin-bottom: 15px; }
+        input { flex: 1; padding: 12px; border-radius: 5px; border: none; font-size: 16px; }
+        .btn-buscar { padding: 12px 25px; background: #e52d27; color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer;}
+        
+        .paineis { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+        .painel { background: #1e1e1e; padding: 15px; border-radius: 8px; height: 450px; overflow-y: auto; position: relative;}
+        
+        .item-resultado, .item-fila, .item-historico, .item-ranking { margin: 10px 0; padding: 12px; background: #333; border-radius: 5px; }
+        .item-resultado { cursor: pointer; transition: 0.2s; } .item-resultado:hover { background: #e52d27; }
+        
+        .item-fila { border-left: 5px solid #e52d27; display: flex; justify-content: space-between; align-items: center; }
+        .titulo-musica { flex: 1; font-size: 14px; } .nome-cantor { color: #aaa; font-size: 12px; display: block; font-style: italic; }
+        .botoes-acao { display: flex; gap: 3px; } .btn-acao { background: transparent; border: none; cursor: pointer; font-size: 16px; padding: 5px; transition: 0.2s;} .btn-acao:hover { transform: scale(1.2); }
+        
+        .item-historico { border-left: 5px solid #28a745; color: #888; font-size: 14px; background: #222; }
+        .item-ranking { border-left: 5px solid #ffeb3b; background: #222; font-size: 14px; display: flex; flex-direction: column; align-items: stretch; transition: 0.2s; }
+        .item-ranking:hover { background: #2a2a2a; }
+        .info-ranking { flex: 1; } .pontuacao { font-size: 26px; color: #ffeb3b; font-weight: 900; margin-left: 10px; }
+
+        #contador-votos { position: absolute; top: 15px; right: 15px; background: #e52d27; padding: 8px 12px; border-radius: 20px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        #contador-votos:hover { transform: scale(1.05); background: #c21a15; }
+
+        #modal-votos { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 200; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #e52d27; width: 300px; }
+        #modal-votos h2 { margin-top: 0; color: #fff; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .linha-voto { display: flex; justify-content: space-between; font-size: 20px; margin: 12px 0; border-bottom: 1px dashed #333; padding-bottom: 5px; }
+        #fundo-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 199; }
+
+        /* ESTILOS DO BOTÃO E DA JANELA DO MANUAL */
+        #btn-manual { position: absolute; top: 20px; right: 20px; background: #333; color: #fff; border: 1px solid #555; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
+        #btn-manual:hover { background: #444; border-color: #00d2ff; transform: scale(1.05); }
+
+        #modal-manual-conteudo { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 300; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #00d2ff; width: 90%; max-width: 800px; max-height: 85vh; overflow-y: auto; color: #ddd; }
+        #modal-manual-conteudo h2 { color: #00d2ff; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; font-size: 24px; text-align: center;}
+        #modal-manual-conteudo h3 { color: #ffeb3b; margin-top: 25px; margin-bottom: 10px; font-size: 18px; border-left: 4px solid #e52d27; padding-left: 10px; }
+        #modal-manual-conteudo p, #modal-manual-conteudo li { line-height: 1.6; font-size: 15px; }
+        #modal-manual-conteudo ul { margin-top: 5px; margin-bottom: 15px; }
+        #modal-manual-conteudo .destaque { font-weight: bold; color: #fff; }
+        #modal-manual-conteudo .segredo { background: #222; border-left: 4px solid #28a745; padding: 15px; margin-top: 20px; border-radius: 5px; font-style: italic; }
+        #fundo-modal-manual { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 299; }
+    </style>
+</head>
+<body>
+
+    <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
+
+    <!-- JANELA DO MANUAL -->
+    <div id="fundo-modal-manual" onclick="fecharManual()"></div>
+    <div id="modal-manual-conteudo">
+        <h2>📖 Manual do Operador - Parada 10.95 Bar</h2>
+        
+        <h3>1. Iniciando o Sistema</h3>
+        <p>Sempre que abrir o painel, siga a ordem dos botões no topo:</p>
+        <ul>
+            <li>Clique em <span class="destaque">🚀 1. INICIAR SISTEMA E TV</span>. O navegador abrirá a tela do telão. Arraste ela para a TV do bar e aperte <span class="destaque">F11</span> para tela cheia.</li>
+            <li>Clique em <span class="destaque">🎙️ 2. AVALIADOR</span> e permita o uso do microfone no navegador. Ele vai captar a energia da plateia para gerar a nota final!</li>
+        </ul>
+
+        <h3>2. Gerenciando as Músicas</h3>
+        <p>Você pode adicionar músicas de duas formas:</p>
+        <ul>
+            <li><span class="destaque">Na Busca do DJ:</span> Digite o nome da música ou cole o link direto do YouTube. Clique no resultado, escreva o nome do cantor e a música irá para a <strong>Fila</strong>.</li>
+            <li><span class="destaque">No Celular dos Clientes:</span> O cliente escaneia o QR Code da TV, busca a música e o pedido chega na caixa de <strong>📩 Pedidos</strong>.</li>
+            <li>Você pode clicar no <strong>✅</strong> para aprovar o pedido manual ou simplesmente marcar a caixa <span class="destaque">Auto-Aprovar</span> para que tudo caia na fila automaticamente.</li>
+        </ul>
+
+        <h3>3. Sistema de Notas e Votação ao Vivo</h3>
+        <p>A nota que aparece na TV não é aleatória! Ela é a soma de duas coisas:</p>
+        <ul>
+            <li>O barulho/palmas captado pelo <strong>Microfone do DJ</strong>.</li>
+            <li>Os votos dos clientes (Excelente, Bom, Ruim) enviados pelos celulares durante a música.</li>
+        </ul>
+
+        <div class="segredo">
+            <strong>⚙️ TRUQUE SECRETO DO DJ:</strong><br>
+            Quer ajudar o dono do bar ou o aniversariante a tirar um notão? Durante a música (antes do vídeo acabar e a tela escurecer), clique em qualquer lugar vazio do seu painel e aperte os seguintes números no teclado:<br><br>
+            Aperte o <strong>8</strong> = Força uma nota entre 86 e 92.<br>
+            Aperte o <strong>9</strong> = Força uma nota entre 93 e 98.<br>
+            Aperte o <strong>0</strong> = Força uma nota 99 ou 100!
+        </div>
+
+        <button onclick="fecharManual()" style="width: 100%; margin-top: 30px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
+    </div>
+
+    <!-- JANELA DE DETALHES DE VOTOS -->
+    <div id="fundo-modal" onclick="fecharDetalhesVotos()"></div>
+    <div id="modal-votos">
+        <h2>📊 Votos Desta Música</h2>
+        <div id="detalhes-votos"></div>
+        <button onclick="fecharDetalhesVotos()" style="width: 100%; margin-top: 20px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar</button>
+    </div>
+
+    <!-- BOTÃO DO MANUAL NO CANTO SUPERIOR DIREITO -->
+    <button id="btn-manual" onclick="abrirManual()">📖 Manual do Sistema</button>
+
+    <div class="container">
+        <h1 style="margin-top: 0; padding-top: 10px;">🎛️ Painel de Controle - Karaokê</h1>
+        
+        <div class="area-botoes-topo">
+            <button id="botaoTV" class="btn-topo btn-tv" onclick="iniciarSistema()">🚀 1. INICIAR SISTEMA E TV</button>
+            <button id="botaoMic" class="btn-topo btn-mic" onclick="toggleMicrofone()">🎙️ 2. AVALIADOR (INICIANDO...)</button>
+        </div>
+
+        <div class="area-busca">
+            <input type="text" id="campoBusca" placeholder="Cole o link do YouTube ou busque o nome...">
+            <button class="btn-buscar" onclick="buscarNoYouTube()">Buscar Música (DJ)</button>
+        </div>
+
+        <button class="btn-tocar" onclick="tocarProxima()">▶️ Tocar Próxima da Fila</button>
+
+        <div class="paineis">
+            <div class="painel"><h3 style="margin-top: 0; color: #e52d27;">Busca do DJ:</h3><div id="resultados"></div></div>
+            
+            <div class="painel" style="border: 1px solid #00d2ff;">
+                <h3 style="margin-top: 0; color: #00d2ff; display: flex; justify-content: space-between; align-items: center;">
+                    📩 Pedidos
+                    <label style="font-size:12px; color:#fff; font-weight: normal; cursor: pointer; background: #333; padding: 4px 8px; border-radius: 4px;">
+                        <input type="checkbox" id="chkAutoAprovar" onchange="toggleAutoAprovar()"> Auto-Aprovar
+                    </label>
+                </h3>
+                <div id="pedidos-lista"></div>
+            </div>
+
+            <div class="painel"><h3 style="margin-top: 0; color: #fff;">Fila:</h3><div id="fila"></div></div>
+            
+            <div class="painel">
+                <h3 style="margin-top: 0; color: #ffeb3b;">🏆 Ranking:</h3>
+                <div id="contador-votos" onclick="abrirDetalhesVotos()">📊 0 votos ao vivo</div>
+                <div id="ranking"></div>
+            </div>
+            
+            <div class="painel"><h3 style="margin-top: 0; color: #28a745;">Histórico:</h3><div id="historico"></div></div>
+        </div>
+    </div>
+
+    <script>
+        let streamMic = null;
+        let micAtivo = false;
+        let intervaloMic = null;
+
+        // Funções do novo manual
+        function abrirManual() { document.getElementById('fundo-modal-manual').style.display = 'block'; document.getElementById('modal-manual-conteudo').style.display = 'block'; }
+        function fecharManual() { document.getElementById('fundo-modal-manual').style.display = 'none'; document.getElementById('modal-manual-conteudo').style.display = 'none'; }
+
+        window.addEventListener('load', () => { if (!micAtivo) toggleMicrofone(); });
+
+        document.body.addEventListener('click', function() {
+            const som = document.getElementById('audio-tambores');
+            som.play().then(() => { som.pause(); som.currentTime = 0; }).catch(e => console.log("Áudio aguardando liberação..."));
+            if (audioCtx && audioCtx.state === 'suspended') { audioCtx.resume(); }
+        }, { once: true });
+
+        function iniciarSistema() {
+            abrirTV();
+            if (!micAtivo) toggleMicrofone();
+        }
+
+        async function toggleMicrofone() {
+            const btn = document.getElementById('botaoMic');
+            
+            if (micAtivo) {
+                if (streamMic) streamMic.getTracks().forEach(track => track.stop());
+                if (audioCtx && audioCtx.state !== 'closed') await audioCtx.close();
+                audioCtx = null; analyser = null; micAtivo = false;
+                if (intervaloMic) clearInterval(intervaloMic);
+                
+                btn.innerHTML = "🎙️ 2. AVALIADOR (DESLIGADO)"; btn.style.background = "#e52d27"; 
+            } else {
+                try {
+                    streamMic = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+                    
+                    analyser = audioCtx.createAnalyser();
+                    audioCtx.createMediaStreamSource(streamMic).connect(analyser);
+                    analyser.fftSize = 256; dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+                    micAtivo = true;
+                    btn.innerHTML = "🎙️ 2. AVALIADOR (LIGADO)"; btn.style.background = "#17a2b8"; 
+
+                    if (intervaloMic) clearInterval(intervaloMic);
+                    intervaloMic = setInterval(() => {
+                        if (captando && analyser && micAtivo) {
+                            analyser.getByteFrequencyData(dataArray);
+                            let soma = 0; for(let i = 0; i < dataArray.length; i++) soma += dataArray[i];
+                            somaEnergia += (soma / dataArray.length); qtdLeituras++;
+                        }
+                    }, 200);
+                } catch (err) { 
+                    btn.innerHTML = "⚠️ MICROFONE BLOQUEADO"; btn.style.background = "#e52d27";
+                }
+            }
+        }
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBMLhTZc7qQLjE65L3BuW9e2ijvxObTxp8",
+            authDomain: "karaoke-parada.firebaseapp.com",
+            databaseURL: "https://karaoke-parada-default-rtdb.firebaseio.com",
+            projectId: "karaoke-parada",
+            storageBucket: "karaoke-parada.firebasestorage.app",
+            messagingSenderId: "379214932685",
+            appId: "1:379214932685:web:873e8b5b7d882a4f751784"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4'; 
+        let filaDeReproducao = []; let historicoDeReproducao = []; let ranking = [];
+        let player; let telaTV; let monitorTV; let musicaAtual = null; let timerNota;
+        let audioCtx; let analyser; let dataArray; let captando = false; 
+        let somaEnergia = 0; let qtdLeituras = 0;
+        let notaForcadaPeloDJ = null; 
+        let totalVotosPublico = 0;
+        let contagemVotos = { ruim: 0, regular: 0, bom: 0, muitobom: 0, excelente: 0 };
+
+        database.ref('statusAtual').set(null);
+        database.ref('votosAtual').remove();
+
+        let pedidosPendentes = [];
+        let autoAprovar = false;
+
+        function toggleAutoAprovar() {
+            autoAprovar = document.getElementById('chkAutoAprovar').checked;
+            if (autoAprovar && pedidosPendentes.length > 0) {
+                pedidosPendentes.forEach(p => {
+                    filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
+                    database.ref('pedidos').child(p.key).remove();
+                });
+                atualizarTelaFila();
+            }
+        }
+
+        database.ref('pedidos').on('value', (snapshot) => {
+            pedidosPendentes = [];
+            snapshot.forEach(child => {
+                pedidosPendentes.push({ key: child.key, ...child.val() });
+            });
+            
+            if (autoAprovar && pedidosPendentes.length > 0) {
+                pedidosPendentes.forEach(p => {
+                    filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
+                    database.ref('pedidos').child(p.key).remove();
+                });
+                atualizarTelaFila();
+            } else {
+                renderizarPedidos();
+            }
+        });
+
+        function renderizarPedidos() {
+            const divPedidos = document.getElementById('pedidos-lista');
+            if(pedidosPendentes.length === 0) {
+                divPedidos.innerHTML = "<p style='color:#aaa; font-size:13px; text-align:center;'>Nenhum pedido no momento.</p>";
+                return;
+            }
+            divPedidos.innerHTML = pedidosPendentes.map((p, index) => `
+                <div class="item-fila" style="border-left: 5px solid #00d2ff; margin-bottom: 8px;">
+                    <span class="titulo-musica">🎵 ${p.titulo} <br> <span class="nome-cantor">🎤 Voz: ${p.cantor}</span></span>
+                    <div class="botoes-acao">
+                        <button class="btn-acao" onclick="aprovarPedido(${index})" title="Aceitar e enviar pra Fila">✅</button>
+                        <button class="btn-acao" onclick="rejeitarPedido('${p.key}')" title="Apagar pedido">❌</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function aprovarPedido(index) {
+            const p = pedidosPendentes[index];
+            filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
+            atualizarTelaFila();
+            database.ref('pedidos').child(p.key).remove(); 
+        }
+
+        function rejeitarPedido(key) {
+            if (confirm("Quer mesmo RECUSAR essa música e excluir o pedido?")) {
+                database.ref('pedidos').child(key).remove();
+            }
+        }
+
+        database.ref('votosAtual').on('value', (snapshot) => {
+            const votos = snapshot.val();
+            totalVotosPublico = 0; contagemVotos = { ruim: 0, regular: 0, bom: 0, muitobom: 0, excelente: 0 };
+            if (votos) {
+                Object.values(votos).forEach(voto => {
+                    if (contagemVotos[voto.tipo] !== undefined) { contagemVotos[voto.tipo]++; totalVotosPublico++; }
+                });
+            }
+            document.getElementById('contador-votos').innerText = `📊 ${totalVotosPublico} votos ao vivo`;
+            if(document.getElementById('modal-votos').style.display === 'block') renderizarDetalhesVotos();
+        });
+
+        function abrirDetalhesVotos() { renderizarDetalhesVotos(); document.getElementById('fundo-modal').style.display = 'block'; document.getElementById('modal-votos').style.display = 'block'; }
+        function fecharDetalhesVotos() { document.getElementById('fundo-modal').style.display = 'none'; document.getElementById('modal-votos').style.display = 'none'; }
+        function renderizarDetalhesVotos() {
+            document.getElementById('detalhes-votos').innerHTML = `
+                <div class="linha-voto"><span style="color:#00d2ff">🤯 Excelente:</span> <strong>${contagemVotos.excelente}</strong></div>
+                <div class="linha-voto"><span style="color:#28a745">🤩 Muito Bom:</span> <strong>${contagemVotos.muitobom}</strong></div>
+                <div class="linha-voto"><span style="color:#ffeb3b">🙂 Bom:</span> <strong>${contagemVotos.bom}</strong></div>
+                <div class="linha-voto"><span style="color:#fd7e14">😕 Regular:</span> <strong>${contagemVotos.regular}</strong></div>
+                <div class="linha-voto"><span style="color:#e52d27">😖 Ruim:</span> <strong>${contagemVotos.ruim}</strong></div>
+            `;
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === '8') { notaForcadaPeloDJ = Math.floor(Math.random() * 7) + 86; }
+            if (event.key === '9') { notaForcadaPeloDJ = Math.floor(Math.random() * 6) + 93; }
+            if (event.key === '0') { notaForcadaPeloDJ = Math.floor(Math.random() * 2) + 99; }
+        });
+
+        document.getElementById('campoBusca').addEventListener('keypress', e => { if(e.key === 'Enter') buscarNoYouTube(); });
+
+        function abrirTV() {
+            telaTV = window.open("", "TelaTV", "width=800,height=600");
+            telaTV.document.write(`
+                <!DOCTYPE html><html><head>
+                <base href="\${window.location.href}">
+                <title>TV</title>
+                <style>
+                    body { margin: 0; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; font-family: Arial;}
+                    #player { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1;}
+                    
+                    /* BOLA GIGANTE (320px) CRAVADA NO ZERO ABSOLUTO DA QUINA (TOP 0px, LEFT 0px) */
+                    #logo-bar { position: absolute !important; top: 0px !important; left: 0px !important; z-index: 25; pointer-events: none; margin: 0 !important; padding: 0 !important; display: flex; align-items: flex-start; }
+                    #logo-bar img { height: 320px !important; width: auto !important; display: block; margin: 0 !important; padding: 0 !important; } 
+                    
+                    /* TEXTO ALINHADO PELO TOPO, DO LADO DA BOLA */
+                    #logo-bar span { font-size: 34px; font-weight: 900; color: #fff; text-shadow: 3px 3px 10px #000; display: block; margin-top: 25px; margin-left: 15px; white-space: nowrap; }
+                    
+                    /* QR CODE NA QUINA DIREITA (TOP 20px, RIGHT 20px) */
+                    #qr-code { position: absolute !important; top: 20px !important; right: 20px !important; z-index: 25; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
+                    #qr-code img { width: 110px; height: 110px; background: white; padding: 5px; border-radius: 8px; display: block; margin: 0 auto; }
+                    #qr-code p { margin: 8px 0 0 0; color: #fff; font-size: 12px; font-weight: bold; text-transform: uppercase;}
+                    #qr-code span { color: #ffeb3b; font-size: 11px; }
+
+                    /* NOME DO CANTOR REBAIXADO */
+                    #cantor-overlay { position: absolute; top: 250px; right: -600px; background: linear-gradient(90deg, rgba(20,20,20,0.95), rgba(229,45,39,0.85)); padding: 20px 40px; border-radius: 50px 0 0 50px; z-index: 30; transition: right 0.8s; box-shadow: -5px 5px 20px rgba(0,0,0,0.6);}
+                    #cantor-overlay .aviso { font-size: 16px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
+                    #cantor-overlay .nome { font-size: 34px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; }
+                    
+                    #tela-nota { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #121212, #3a0000); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
+                    @keyframes piscar { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
+                    #btn-liberar { z-index: 20; padding: 25px 40px; font-size: 24px; font-weight: bold; background: #28a745; color: white; border: none; border-radius: 10px; cursor: pointer; }
+                </style></head>
+                <body>
+                    <!-- CAIXA DA LOGO -->
+                    <div id="logo-bar">
+                        <img src="logop.png" alt="Logo">
+                        <span>PARADA 10.95 BAR</span>
+                    </div>
+                    
+                    <div id="qr-code">
+                        <img src="qrcode.png" alt="Escaneie para Pedir e Votar">
+                        <p>APONTE O CELULAR</p>
+                        <span>Peça e Vote!</span>
+                    </div>
+
+                    <div id="cantor-overlay"></div>
+                    <div id="tela-nota">
+                        <h1 style="font-size: 50px; color: #ffeb3b; margin-bottom: 10px;">🍻 PARADA 10.95 BAR</h1>
+                        <h2 style="font-size: 40px; margin-bottom: 50px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
+                        <div id="nota-loading" style="font-size: 35px; animation: piscar 1s infinite;">Calculando energia e votos do público... 🥁</div>
+                        <div id="nota-resultado" style="display:none; flex-direction:column; align-items:center;">
+                            <div style="font-size: 30px;">Pontuação Final:</div>
+                            <div id="nota-valor" style="font-size: 180px; font-weight: 900;">100</div>
+                        </div>
+                    </div>
+                    <button id="btn-liberar" onclick="this.style.display='none';">👆 CLIQUE AQUI PARA LIBERAR O SOM (Aperte F11)</button>
+                    <div id="player"></div>
+                    <script> function onYouTubeIframeAPIReady() { if(window.opener) window.opener.iniciarPlayer(YT); } <\/script>
+                    <script src="https://www.youtube.com/iframe_api"><\/script>
+                </body></html>
+            `);
+
+            monitorTV = setInterval(() => {
+                if (telaTV && telaTV.closed) {
+                    clearInterval(monitorTV);
+                    document.getElementById('botaoTV').innerHTML = "📺 TELA FECHADA! REABRIR";
+                    document.getElementById('botaoTV').style.background = "#e52d27"; 
+                }
+            }, 1000);
+        }
+
+        function iniciarPlayer(YT_API) {
+            player = new YT_API.Player(telaTV.document.getElementById('player'), {
+                videoId: '', playerVars: { 'autoplay': 1, 'controls': 1, 'fs': 0 }, 
+                events: { 'onStateChange': e => { if (e.data === 0) (musicaAtual && musicaAtual.cantor !== "Convidados") ? gerarNotaFinal() : tocarProxima(true); }, 'onError': e => tocarProxima(true) }
+            });
+            document.getElementById('botaoTV').innerHTML = "✅ TELA CONECTADA!";
+            document.getElementById('botaoTV').style.background = "#17a2b8";
+        }
+
+        function gerarNotaFinal() {
+            captando = false; 
+            let notaFinal;
+            const votosCongelados = { ...contagemVotos };
+            
+            database.ref('statusAtual').set({ cantor: "Avaliando...", titulo: "Olhe para a tela da TV!", id: "avaliando" });
+
+            if (notaForcadaPeloDJ !== null) {
+                notaFinal = notaForcadaPeloDJ; notaForcadaPeloDJ = null; 
+            } else {
+                let notaBase;
+                if (qtdLeituras > 0 && micAtivo) {
+                    let energiaMedia = somaEnergia / qtdLeituras;
+                    notaBase = Math.floor(55 + (energiaMedia * 1.2)); 
+                } else {
+                    notaBase = Math.floor(Math.random() * 21) + 65; 
+                }
+                
+                if (notaBase > 85) notaBase = 85;
+                
+                let bonusPublico = 0;
+                if(totalVotosPublico > 0) {
+                    bonusPublico = (votosCongelados.excelente * 4) + (votosCongelados.muitobom * 2) + (votosCongelados.bom * 1) - (votosCongelados.regular * 1) - (votosCongelados.ruim * 3);
+                    if (bonusPublico > 15) bonusPublico = 15; 
+                    if (bonusPublico < -15) bonusPublico = -15; 
+                }
+                
+                notaFinal = notaBase + bonusPublico;
+                if (notaFinal > 100) notaFinal = 100; 
+                if (notaFinal < 50) notaFinal = 50; 
+            }
+
+            ranking.push({ nome: musicaAtual.cantor, nota: notaFinal, titulo: musicaAtual.titulo, votos: votosCongelados });
+            atualizarTelaRanking();
+
+            if (telaTV && !telaTV.closed) {
+                telaTV.document.getElementById('nota-cantor-nome').innerText = musicaAtual.cantor;
+                telaTV.document.getElementById('nota-loading').style.display = 'block';
+                telaTV.document.getElementById('nota-resultado').style.display = 'none';
+                telaTV.document.getElementById('tela-nota').style.display = 'flex';
+                telaTV.document.getElementById('cantor-overlay').style.right = '-600px';
+
+                const som = document.getElementById('audio-tambores');
+                som.currentTime = 0;
+                som.play().catch(e => console.log("O áudio foi bloqueado", e));
+
+                setTimeout(() => {
+                    telaTV.document.getElementById('nota-loading').style.display = 'none';
+                    let valorEl = telaTV.document.getElementById('nota-valor');
+                    valorEl.innerText = notaFinal;
+                    valorEl.style.color = notaFinal >= 90 ? '#28a745' : notaFinal >= 75 ? '#ffeb3b' : '#e52d27';
+                    telaTV.document.getElementById('nota-resultado').style.display = 'flex';
+                }, 4000); 
+            }
+
+            clearTimeout(timerNota);
+            timerNota = setTimeout(() => {
+                if (telaTV && !telaTV.closed) telaTV.document.getElementById('tela-nota').style.display = 'none';
+                musicaAtual = null; tocarProxima(true); 
+            }, 12000);
+        }
+
+        function extrairVideoId(url) {
+            const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+            const match = url.match(regex);
+            return match ? match[1] : null;
+        }
+
+        async function buscarNoYouTube() {
+            const termo = document.getElementById('campoBusca').value; if (!termo) return;
+            const div = document.getElementById('resultados'); div.innerHTML = ''; 
+
+            const videoId = extrairVideoId(termo);
+            if (videoId) {
+                const c = prompt("🎤 Link reconhecido! Qual a voz dessa música?"); if(c === null) return;
+                filaDeReproducao.push({ videoId: videoId, titulo: "Música via Link", cantor: c.trim() === "" ? "Convidados" : c });
+                atualizarTelaFila(); document.getElementById('campoBusca').value = ""; return;
+            }
+
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(termo + " karaoke -oficial -clipe -live")}&type=video&key=${API_KEY}`;
+            try {
+                const res = await fetch(url); const dados = await res.json();
+                dados.items.forEach(v => {
+                    const d = document.createElement('div'); d.className = 'item-resultado'; d.innerHTML = v.snippet.title; 
+                    d.onclick = () => {
+                        const c = prompt("🎤 Qual a voz dessa música?"); if(c === null) return;
+                        filaDeReproducao.push({ videoId: v.id.videoId, titulo: v.snippet.title, cantor: c.trim() === "" ? "Convidados" : c });
+                        atualizarTelaFila();
+                    };
+                    div.appendChild(d);
+                });
+            } catch (err) { div.innerHTML = "<p style='color:#e52d27'>Limite de busca atingido. Cole o link direto!</p>"; }
+        }
+
+        function removerMusica(i) { filaDeReproducao.splice(i, 1); atualizarTelaFila(); }
+        function moverMusica(i, d) { const t = filaDeReproducao[i]; filaDeReproducao[i] = filaDeReproducao[i+d]; filaDeReproducao[i+d] = t; atualizarTelaFila(); }
+
+        function iniciarMusica(m) {
+            clearTimeout(timerNota);
+            if (telaTV && !telaTV.closed) telaTV.document.getElementById('tela-nota').style.display = 'none';
+            
+            database.ref('votosAtual').remove();
+            database.ref('statusAtual').set({ cantor: m.cantor, titulo: m.titulo, id: Date.now() });
+
+            musicaAtual = m; historicoDeReproducao.push(m);
+            atualizarTelaFila(); atualizarTelaHistorico();
+            
+            if (telaTV && !telaTV.closed && m.cantor !== "Convidados") {
+                telaTV.document.getElementById('cantor-overlay').innerHTML = `<div style="display:inline-block; vertical-align:middle;"><span class="aviso">Com a Voz</span><p class="nome">${m.cantor}</p></div>`;
+                telaTV.document.getElementById('cantor-overlay').style.right = '-600px'; setTimeout(() => telaTV.document.getElementById('cantor-overlay').style.right = '0px', 100);
+            }
+            captando = true; somaEnergia = 0; qtdLeituras = 0; notaForcadaPeloDJ = null;
+            player.loadVideoById(m.videoId); player.playVideo(); 
+        }
+
+        function tocarMusicaEspecifica(i) { if(!telaTV) return alert("Abra a Tela da TV primeiro!"); iniciarMusica(filaDeReproducao.splice(i, 1)[0]); }
+        
+        function tocarProxima(auto = false) {
+            if(!telaTV) return alert("Abra a Tela da TV primeiro!");
+            if(filaDeReproducao.length > 0) {
+                iniciarMusica(filaDeReproducao.shift()); 
+            } else {
+                if(telaTV && !telaTV.closed) telaTV.document.getElementById('cantor-overlay').style.right = '-600px';
+                database.ref('statusAtual').set(null);
+            }
+        }
+
+        function atualizarTelaFila() {
+            document.getElementById('fila').innerHTML = filaDeReproducao.map((item, i) => `
+                <div class="item-fila">
+                    <span class="titulo-musica"><strong>${i+1}º</strong> - ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span></span>
+                    <div class="botoes-acao">
+                        <button class="btn-acao" onclick="tocarMusicaEspecifica(${i})">▶️</button>
+                        ${i > 0 ? `<button class="btn-acao" onclick="moverMusica(${i}, -1)">⬆️</button>` : ''}
+                        ${i < filaDeReproducao.length - 1 ? `<button class="btn-acao" onclick="moverMusica(${i}, 1)">⬇️</button>` : ''}
+                        <button class="btn-acao" onclick="removerMusica(${i})">❌</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function atualizarTelaHistorico() { document.getElementById('historico').innerHTML = historicoDeReproducao.slice().reverse().map(item => `<div class="item-historico">✔️ ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span></div>`).join(''); }
+        
+        function atualizarTelaRanking() {
+            document.getElementById('ranking').innerHTML = [...ranking].sort((a,b) => b.nota - a.nota).map((item, i) => `
+                <div class="item-ranking" onclick="document.getElementById('votos-rank-${i}').style.display = document.getElementById('votos-rank-${i}').style.display === 'none' ? 'block' : 'none'" style="cursor:pointer;" title="Clique para ver os votos!">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="info-ranking">
+                            ${i === 0 ? '👑' : '⭐'} <strong>${i+1}º Lugar</strong> <br> 
+                            🎤 ${item.nome} <br> 
+                            <span style="font-size:11px;">🎵 ${item.titulo}</span><br>
+                            <span style="font-size:10px; color:#aaa; font-style:italic;">(Clique para ver votos)</span>
+                        </div>
+                        <div class="pontuacao">${item.nota}</div>
+                    </div>
+                    
+                    <div id="votos-rank-${i}" style="display:none; margin-top: 15px; background: #111; padding: 10px; border-radius: 5px; font-size: 13px; text-align: center;">
+                        <strong>Registro da Plateia:</strong><br><br>
+                        <span style="color:#00d2ff">🤯 ${item.votos.excelente}</span> &nbsp;|&nbsp; 
+                        <span style="color:#28a745">🤩 ${item.votos.muitobom}</span> &nbsp;|&nbsp; 
+                        <span style="color:#ffeb3b">🙂 ${item.votos.bom}</span> &nbsp;|&nbsp; 
+                        <span style="color:#fd7e14">😕 ${item.votos.regular}</span> &nbsp;|&nbsp; 
+                        <span style="color:#e52d27">😖 ${item.votos.ruim}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
