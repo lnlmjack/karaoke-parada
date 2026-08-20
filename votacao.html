@@ -229,9 +229,11 @@
             }
             let html = '';
             lista.forEach(m => {
+                // AQUI OCORREU A INVERSÃO: Cantor em negrito primeiro, e música embaixo.
                 html += `
                 <div class="item-resultado" onclick="selecionarDoCatalogo('${m.titulo}', '${m.cantor}')">
-                    <strong>${m.titulo}</strong><br><span style="font-size:12px; color:#ccc;">🎤 ${m.cantor}</span>
+                    <strong style="font-size: 16px;">🎤 ${m.cantor}</strong><br>
+                    <span style="font-size: 13px; color: #ccc;">🎵 ${m.titulo}</span>
                 </div>`;
             });
             div.innerHTML = html;
