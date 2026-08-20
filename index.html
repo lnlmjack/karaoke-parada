@@ -523,10 +523,16 @@
             player.loadVideoById(m.videoId); player.playVideo(); 
         }
 
-        function tocarMusicaEspecifica(i) { if(!telaTV) return alert("Abra a Tela da TV primeiro!"); iniciarMusica(filaDeReproducao.splice(i, 1)[0]); }
+        function tocarMusicaEspecifica(i) { 
+            if(!telaTV || telaTV.closed) return alert("⚠️ A Tela da TV está fechada! Clique no botão azul '1. INICIAR SISTEMA E TV' antes de tocar a música."); 
+            iniciarMusica(filaDeReproducao.splice(i, 1)[0]); 
+        }
         
         function tocarProxima(auto = false) {
-            if(!telaTV) return alert("Abra a Tela da TV primeiro!");
+            if(!telaTV || telaTV.closed) {
+                if (!auto) alert("⚠️ A Tela da TV está fechada! Clique no botão azul '1. INICIAR SISTEMA E TV' antes de tocar a música.");
+                return;
+            }
             if(filaDeReproducao.length > 0) {
                 iniciarMusica(filaDeReproducao.shift()); 
             } else {
