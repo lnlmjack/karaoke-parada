@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Painel do DJ - Karaokê</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
@@ -323,14 +324,14 @@
                     #logo-bar img { height: 140px !important; width: auto !important; display: block; margin: 0 !important; padding: 0 !important; } 
                     #logo-bar span { font-size: 34px; font-weight: 900; color: #fff; text-shadow: 3px 3px 10px #000; display: block; margin-top: 15px; margin-left: 15px; white-space: nowrap; }
                     
-                    /* QR CODE NA QUINA DIREITA */
+                    /* QR CODE NA QUINA DIREITA (top 20px) */
                     #qr-code { position: absolute !important; top: 20px !important; right: 20px !important; z-index: 25; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
                     #qr-code img { width: 110px; height: 110px; background: white; padding: 5px; border-radius: 8px; display: block; margin: 0 auto; }
                     #qr-code p { margin: 8px 0 0 0; color: #fff; font-size: 12px; font-weight: bold; text-transform: uppercase;}
                     #qr-code span { color: #ffeb3b; font-size: 11px; }
 
-                    /* CAIXA DE NOME COLADA NO TOPO AO LADO DO QR CODE */
-                    #cantor-overlay { position: absolute; top: 20px; right: -600px; background: linear-gradient(90deg, rgba(20,20,20,0.95), rgba(229,45,39,0.85)); padding: 10px 20px; border-radius: 15px; z-index: 24; transition: right 0.8s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: -3px 5px 15px rgba(0,0,0,0.5); max-width: 350px; text-align: right; border: 2px solid #e52d27;}
+                    /* CAIXA DO NOME - Fica escondida pra cima (-200px) e desce até o (20px) ao lado do QR Code (right 170px) */
+                    #cantor-overlay { position: absolute; top: -200px; right: 170px; background: linear-gradient(90deg, rgba(20,20,20,0.95), rgba(229,45,39,0.85)); padding: 10px 20px; border-radius: 15px; z-index: 24; transition: top 0.8s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: -3px 5px 15px rgba(0,0,0,0.5); max-width: 350px; text-align: right; border: 2px solid #e52d27;}
                     #cantor-overlay .aviso { font-size: 12px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
                     #cantor-overlay .nome { font-size: 22px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; line-height: 1.1; word-wrap: break-word;}
                     
@@ -350,7 +351,9 @@
                         <span>Peça e Vote!</span>
                     </div>
 
+                    <!-- Caixa do nome flutuante -->
                     <div id="cantor-overlay"></div>
+                    
                     <div id="tela-nota">
                         <h1 style="font-size: 50px; color: #ffeb3b; margin-bottom: 10px;">🍻 PARADA 10.95 BAR</h1>
                         <h2 style="font-size: 40px; margin-bottom: 50px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
@@ -402,7 +405,6 @@
                 } else {
                     notaBase = Math.floor(Math.random() * 21) + 65; 
                 }
-                
                 if (notaBase > 85) notaBase = 85;
                 
                 let bonusPublico = 0;
@@ -425,7 +427,9 @@
                 telaTV.document.getElementById('nota-loading').style.display = 'block';
                 telaTV.document.getElementById('nota-resultado').style.display = 'none';
                 telaTV.document.getElementById('tela-nota').style.display = 'flex';
-                telaTV.document.getElementById('cantor-overlay').style.right = '-600px';
+                
+                // ESCONDE O NOME DO CANTOR (Sobe para o teto)
+                telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
 
                 const som = document.getElementById('audio-tambores');
                 som.currentTime = 0;
@@ -494,9 +498,10 @@
             
             if (telaTV && !telaTV.closed && m.cantor !== "Convidados") {
                 telaTV.document.getElementById('cantor-overlay').innerHTML = `<div style="display:inline-block; vertical-align:middle;"><span class="aviso">Com a Voz</span><p class="nome">${m.cantor}</p></div>`;
-                telaTV.document.getElementById('cantor-overlay').style.right = '-600px'; 
-                // A posição '180px' alinha perfeitamente à esquerda do QR Code no topo.
-                setTimeout(() => telaTV.document.getElementById('cantor-overlay').style.right = '180px', 100);
+                
+                // MÁGICA AQUI: A caixa inicia no teto e desce animada para os 20px no topo (ao lado do QR code)
+                telaTV.document.getElementById('cantor-overlay').style.top = '-200px'; 
+                setTimeout(() => telaTV.document.getElementById('cantor-overlay').style.top = '20px', 100);
             }
             captando = true; somaEnergia = 0; qtdLeituras = 0; notaForcadaPeloDJ = null;
             player.loadVideoById(m.videoId); player.playVideo(); 
@@ -515,7 +520,7 @@
             if(filaDeReproducao.length > 0) {
                 iniciarMusica(filaDeReproducao.shift()); 
             } else {
-                if(telaTV && !telaTV.closed) telaTV.document.getElementById('cantor-overlay').style.right = '-600px';
+                if(telaTV && !telaTV.closed) telaTV.document.getElementById('cantor-overlay').style.top = '-200px'; // Esconde pro teto
                 database.ref('statusAtual').set(null);
             }
         }
