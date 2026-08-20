@@ -148,15 +148,17 @@
         function abrirManual() { document.getElementById('fundo-modal-manual').style.display = 'block'; document.getElementById('modal-manual-conteudo').style.display = 'block'; }
         function fecharManual() { document.getElementById('fundo-modal-manual').style.display = 'none'; document.getElementById('modal-manual-conteudo').style.display = 'none'; }
 
-        window.addEventListener('load', () => { if (!micAtivo) toggleMicrofone(); });
-
-        document.body.addEventListener('click', function() {
-            const som = document.getElementById('audio-tambores');
-            som.play().then(() => { som.pause(); som.currentTime = 0; }).catch(e => console.log("Áudio aguardando liberação..."));
-            if (audioCtx && audioCtx.state === 'suspended') { audioCtx.resume(); }
-        }, { once: true });
-
         function iniciarSistema() {
+            // MÁGICA DE DESTRAVAR O ÁUDIO AQUI: Toca no mudo por 1 milissegundo.
+            // O navegador agora sabe que você interagiu com a página e libera os tambores.
+            const som = document.getElementById('audio-tambores');
+            som.muted = true;
+            som.play().then(() => {
+                som.pause();
+                som.currentTime = 0;
+                som.muted = false;
+            }).catch(e => console.log("Áudio bloqueado aguardando clique."));
+
             abrirTV();
             if (!micAtivo) toggleMicrofone();
         }
