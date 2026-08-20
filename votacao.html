@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Bloqueio rigoroso de cache -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    
     <title>Menu - Karaokê Parada 10.95</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
@@ -24,6 +29,9 @@
         
         .btn-voltar { background: #333; color: #fff; border: 1px solid #555; padding: 10px 15px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; display: inline-block; margin-bottom: 10px; width: 100%;}
         
+        .btn-catalogo { background: #00d2ff; color: #000; width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .btn-catalogo:active { transform: scale(0.95); }
+
         /* Area de Votação */
         #cantor-atual { color: #ffeb3b; font-size: 24px; font-weight: bold; margin: 10px 0; }
         #status-musica { color: #aaa; font-size: 14px; font-style: italic; margin-bottom: 20px; }
@@ -79,7 +87,11 @@
         <button class="btn-voltar" onclick="mostrarAba('menu')">⬅️ Voltar ao Menu</button>
         
         <h2 style="color: #ffeb3b;">📩 Escolha sua Música</h2>
-        <p style="font-size: 14px; color: #ccc; margin-bottom: 15px;">Digite o nome da música e do cantor.</p>
+        
+        <!-- BOTÃO NOVO DO CATÁLOGO -->
+        <button class="btn-catalogo" onclick="mostrarAba('catalogo')">🗂️ Explorar Catálogo de Músicas</button>
+        
+        <p style="font-size: 14px; color: #ccc; margin-bottom: 15px;">Ou digite o nome livremente abaixo:</p>
         
         <input type="text" id="campoBusca" placeholder="Ex: Evidências Chitãozinho...">
         <button class="btn-busca" onclick="buscarMusica()">🔍 Buscar Música</button>
@@ -87,7 +99,21 @@
         <div id="resultados"></div>
     </div>
 
-    <!-- TELA 3: QUEM ESTÁ CANTANDO E VOTAÇÃO -->
+    <!-- TELA 3: CATÁLOGO DE MÚSICAS -->
+    <div class="card" id="aba-catalogo" style="display: none;">
+        <button class="btn-voltar" onclick="mostrarAba('pedir')">⬅️ Voltar para a Busca</button>
+        
+        <h2 style="color: #00d2ff;">🗂️ Catálogo Completo</h2>
+        <p style="font-size: 14px; color: #ccc; margin-bottom: 15px;">Toque na música para pesquisar automaticamente.</p>
+        
+        <input type="text" id="buscaCatalogo" placeholder="Pesquise por cantor ou música..." onkeyup="filtrarCatalogo()">
+        
+        <div id="lista-catalogo" style="height: 400px; overflow-y: auto; text-align: left; padding-right: 5px;">
+            <p style="text-align: center; color: #aaa;">Carregando músicas...</p>
+        </div>
+    </div>
+
+    <!-- TELA 4: QUEM ESTÁ CANTANDO E VOTAÇÃO -->
     <div class="card" id="aba-votar" style="display: none;">
         <button class="btn-voltar" onclick="mostrarAba('menu')">⬅️ Voltar ao Menu</button>
         
@@ -138,19 +164,96 @@
         
         let idCantorAtual = null;
         let votoPendente = null;
+        let musicasCatalogo = [];
 
         // FUNÇÃO DE NAVEGAÇÃO DE TELAS
         function mostrarAba(aba) {
             document.getElementById('menu-principal').style.display = 'none';
             document.getElementById('aba-pedir').style.display = 'none';
             document.getElementById('aba-votar').style.display = 'none';
+            document.getElementById('aba-catalogo').style.display = 'none';
 
             if (aba === 'menu') document.getElementById('menu-principal').style.display = 'block';
             if (aba === 'pedir') document.getElementById('aba-pedir').style.display = 'block';
             if (aba === 'votar') document.getElementById('aba-votar').style.display = 'block';
+            if (aba === 'catalogo') document.getElementById('aba-catalogo').style.display = 'block';
         }
 
-        // OUVINTE DA TV
+        // CARREGAR CATÁLOGO CSV
+        async function carregarCatalogo() {
+            try {
+                const response = await fetch('catalogo.csv?v=' + new Date().getTime());
+                const text = await response.text();
+                
+                const delimitador = text.split('\n')[0].includes(';') ? ';' : ',';
+                let linhas = text.split('\n');
+                
+                for (let i = 1; i < linhas.length; i++) {
+                    let linha = linhas[i].trim();
+                    if (!linha) continue;
+                    
+                    let colunas = [];
+                    let celula = '';
+                    let aspas = false;
+                    for(let j = 0; j < linha.length; j++) {
+                        let char = linha[j];
+                        if(char === '"') aspas = !aspas;
+                        else if (char === delimitador && !aspas) {
+                            colunas.push(celula.trim()); celula = '';
+                        } else celula += char;
+                    }
+                    colunas.push(celula.trim());
+
+                    if (colunas.length >= 3) {
+                        let cantor = colunas[0].replace(/^"|"$/g, '').trim();
+                        let titulo = colunas[2].replace(/^"|"$/g, '').trim();
+                        if(cantor && titulo) {
+                            musicasCatalogo.push({ cantor: cantor, titulo: titulo, filtro: (cantor + " " + titulo).toLowerCase() });
+                        }
+                    }
+                }
+                renderizarCatalogo(musicasCatalogo.slice(0, 150)); 
+            } catch(e) {
+                document.getElementById('lista-catalogo').innerHTML = '<p style="color:#e52d27; text-align:center;">Catálogo offline. Peça digitando na busca principal.</p>';
+            }
+        }
+
+        function renderizarCatalogo(lista) {
+            const div = document.getElementById('lista-catalogo');
+            div.innerHTML = '';
+            if(lista.length === 0) {
+                div.innerHTML = '<p style="text-align:center; color:#aaa;">Nenhuma música encontrada.</p>';
+                return;
+            }
+            let html = '';
+            lista.forEach(m => {
+                html += `
+                <div class="item-resultado" onclick="selecionarDoCatalogo('${m.titulo}', '${m.cantor}')">
+                    <strong>${m.titulo}</strong><br><span style="font-size:12px; color:#ccc;">🎤 ${m.cantor}</span>
+                </div>`;
+            });
+            div.innerHTML = html;
+        }
+
+        function filtrarCatalogo() {
+            const termo = document.getElementById('buscaCatalogo').value.toLowerCase();
+            if (!termo) {
+                renderizarCatalogo(musicasCatalogo.slice(0, 150));
+                return;
+            }
+            const filtrados = musicasCatalogo.filter(m => m.filtro.includes(termo)).slice(0, 150);
+            renderizarCatalogo(filtrados);
+        }
+
+        function selecionarDoCatalogo(titulo, cantor) {
+            mostrarAba('pedir');
+            document.getElementById('campoBusca').value = titulo + " " + cantor;
+            buscarMusica(); 
+        }
+
+        window.onload = () => { carregarCatalogo(); };
+
+        // OUVINTE DA TV PARA VOTAÇÃO
         database.ref('statusAtual').on('value', (snapshot) => {
             const status = snapshot.val();
             if (status && status.id !== "avaliando") {
@@ -265,7 +368,7 @@
                     document.getElementById('campoBusca').value = "";
                     document.getElementById('resultados').innerHTML = "";
                     
-                    mostrarAba('menu'); // Volta pro menu ao finalizar pedido
+                    mostrarAba('menu'); 
                     const notif = document.getElementById('notificacao');
                     notif.style.display = 'block';
                     setTimeout(() => notif.style.display = 'none', 4000);
