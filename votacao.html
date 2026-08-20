@@ -164,6 +164,7 @@
         let votoPendente = null;
         let musicasCatalogo = [];
 
+        // FUNÇÃO DE NAVEGAÇÃO
         function mostrarAba(aba) {
             document.getElementById('menu-principal').style.display = 'none';
             document.getElementById('aba-pedir').style.display = 'none';
@@ -176,6 +177,7 @@
             if (aba === 'catalogo') document.getElementById('aba-catalogo').style.display = 'block';
         }
 
+        // CARREGAR E ORDENAR O CATÁLOGO
         async function carregarCatalogo() {
             try {
                 const response = await fetch('catalogo.csv?v=' + new Date().getTime());
@@ -183,27 +185,8 @@
                 
                 const delimitador = text.split('\n')[0].includes(';') ? ';' : ',';
                 let linhas = text.split('\n');
-
-                // LER OS CABEÇALHOS PARA NÃO ERRAR AS COLUNAS
-                let headers = [];
-                let celulaH = ''; let aspasH = false;
-                let linhaH = linhas[0].trim();
-                for(let j = 0; j < linhaH.length; j++) {
-                    let char = linhaH[j];
-                    if(char === '"') aspasH = !aspasH;
-                    else if (char === delimitador && !aspasH) { headers.push(celulaH.trim().toUpperCase()); celulaH = ''; }
-                    else celulaH += char;
-                }
-                headers.push(celulaH.trim().toUpperCase());
-
-                let idxCantor = 0, idxTitulo = 2, idxInicio = 3;
-                headers.forEach((h, i) => {
-                    if (h.includes('CANTOR')) idxCantor = i;
-                    if (h.includes('TÍTULO') || h.includes('TITULO') || h === 'MUSICA' || h === 'MÚSICA') idxTitulo = i;
-                    if (h.includes('INÍCIO') || h.includes('INICIO') || h.includes('LETRA')) idxInicio = i;
-                });
                 
-                for (let i = 1; i < linhas.length; i++) {
+                for (let i = 0; i < linhas.length; i++) {
                     let linha = linhas[i].trim();
                     if (!linha) continue;
                     
@@ -219,10 +202,29 @@
                     }
                     colunas.push(celula.trim());
 
-                    if (colunas.length > Math.max(idxCantor, idxTitulo)) {
-                        let cantor = colunas[idxCantor] ? colunas[idxCantor].replace(/^"|"$/g, '').trim() : '';
-                        let titulo = colunas[idxTitulo] ? colunas[idxTitulo].replace(/^"|"$/g, '').trim() : '';
-                        let inicio = colunas[idxInicio] ? colunas[idxInicio].replace(/^"|"$/g, '').trim() : '';
+                    // Limpa as aspas das colunas
+                    colunas = colunas.map(c => c.replace(/^"|"$/g, '').trim());
+
+                    // Ignora a linha de cabeçalho
+                    if (colunas[0].toUpperCase().includes('CANTOR') || colunas[0].toUpperCase().includes('ARTISTA')) {
+                        continue;
+                    }
+
+                    if (colunas.length >= 2) {
+                        let cantor = colunas[0];
+                        let titulo = '';
+                        let inicio = '';
+                        
+                        // Detecção inteligente: se a coluna 1 tiver números (Código), a música está na coluna 2.
+                        let temCodigo = /^\\d+$/.test(colunas[1]);
+                        
+                        if (temCodigo) {
+                            titulo = colunas[2] || '';
+                            inicio = colunas[3] || '';
+                        } else {
+                            titulo = colunas[1] || '';
+                            inicio = colunas[2] || '';
+                        }
                         
                         if(cantor && titulo) {
                             musicasCatalogo.push({ 
@@ -235,7 +237,9 @@
                     }
                 }
                 
+                // ORDENAÇÃO ALFABÉTICA PELO NOME DO CANTOR
                 musicasCatalogo.sort((a, b) => a.cantor.localeCompare(b.cantor, 'pt-BR'));
+
                 renderizarCatalogo(musicasCatalogo.slice(0, 150)); 
             } catch(e) {
                 document.getElementById('lista-catalogo').innerHTML = '<p style="color:#e52d27; text-align:center;">Catálogo offline. Peça digitando na busca principal.</p>';
@@ -251,11 +255,15 @@
             }
             let html = '';
             lista.forEach(m => {
+                // Tratamento especial para nomes com aspas não quebrarem o código
+                let tituloEscapado = m.titulo.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                let cantorEscapado = m.cantor.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                
                 html += `
-                <div class="item-resultado" onclick="selecionarDoCatalogo('${m.titulo}', '${m.cantor}')">
-                    <strong style="font-size: 16px;">🎤 ${m.cantor}</strong><br>
-                    <span style="font-size: 14px; color: #fff;">🎵 ${m.titulo}</span><br>
-                    <span style="font-size: 12px; color: #aaa;">📝 ${m.inicio}</span>
+                <div class="item-resultado" onclick="selecionarDoCatalogo('${tituloEscapado}', '${cantorEscapado}')">
+                    <strong style="font-size: 18px; display: block; margin-bottom: 5px;">🎤 ${m.cantor}</strong>
+                    <span style="font-size: 16px; color: #fff; display: block; margin-bottom: 3px;">🎵 ${m.titulo}</span>
+                    ${m.inicio ? `<span style="font-size: 13px; color: #aaa; display: block; font-style: italic;">📝 ${m.inicio}</span>` : ''}
                 </div>`;
             });
             div.innerHTML = html;
