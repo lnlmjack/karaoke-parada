@@ -351,10 +351,10 @@
                     #qr-code p { margin: 8px 0 0 0; color: #fff; font-size: 12px; font-weight: bold; text-transform: uppercase;}
                     #qr-code span { color: #ffeb3b; font-size: 11px; }
 
-                    /* NOME DO CANTOR REBAIXADO */
-                    #cantor-overlay { position: absolute; top: 250px; right: -600px; background: linear-gradient(90deg, rgba(20,20,20,0.95), rgba(229,45,39,0.85)); padding: 20px 40px; border-radius: 50px 0 0 50px; z-index: 30; transition: right 0.8s; box-shadow: -5px 5px 20px rgba(0,0,0,0.6);}
-                    #cantor-overlay .aviso { font-size: 16px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
-                    #cantor-overlay .nome { font-size: 34px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; }
+                    /* NOME DO CANTOR REBAIXADO, MAS POSICIONADO LOGO ABAIXO DO QR CODE */
+                    #cantor-overlay { position: absolute; top: 190px; right: -600px; background: linear-gradient(90deg, rgba(20,20,20,0.95), rgba(229,45,39,0.85)); padding: 12px 25px; border-radius: 30px 0 0 30px; z-index: 30; transition: right 0.8s; box-shadow: -5px 5px 20px rgba(0,0,0,0.6); max-width: 350px;}
+                    #cantor-overlay .aviso { font-size: 13px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
+                    #cantor-overlay .nome { font-size: 22px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; line-height: 1.2; word-wrap: break-word; }
                     
                     #tela-nota { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #121212, #3a0000); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
                     @keyframes piscar { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
