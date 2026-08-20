@@ -45,7 +45,6 @@
         .linha-voto { display: flex; justify-content: space-between; font-size: 20px; margin: 12px 0; border-bottom: 1px dashed #333; padding-bottom: 5px; }
         #fundo-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 199; }
 
-        /* ESTILOS DO BOTÃO E DA JANELA DO MANUAL */
         #btn-manual { position: absolute; top: 20px; right: 20px; background: #333; color: #fff; border: 1px solid #555; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
         #btn-manual:hover { background: #444; border-color: #00d2ff; transform: scale(1.05); }
 
@@ -63,7 +62,6 @@
 
     <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
 
-    <!-- JANELA DO MANUAL -->
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
     <div id="modal-manual-conteudo">
         <h2>📖 Manual do Operador - Parada 10.95 Bar</h2>
@@ -71,37 +69,29 @@
         <h3>1. Iniciando o Sistema</h3>
         <p>Sempre que abrir o painel, siga a ordem dos botões no topo:</p>
         <ul>
-            <li>Clique em <span class="destaque">🚀 1. INICIAR SISTEMA E TV</span>. O navegador abrirá a tela do telão. Arraste ela para a TV do bar e aperte <span class="destaque">F11</span> para tela cheia.</li>
-            <li>Clique em <span class="destaque">🎙️ 2. AVALIADOR</span> e permita o uso do microfone no navegador. Ele vai captar a energia da plateia para gerar a nota final!</li>
+            <li>Clique em <span class="destaque">🚀 1. INICIAR SISTEMA E TV</span>. O navegador abrirá a tela do telão. Arraste para a TV do bar e aperte <span class="destaque">F11</span> para tela cheia.</li>
+            <li>Clique em <span class="destaque">🎙️ 2. AVALIADOR</span> e permita o uso do microfone no navegador.</li>
         </ul>
 
         <h3>2. Gerenciando as Músicas</h3>
-        <p>Você pode adicionar músicas de duas formas:</p>
         <ul>
-            <li><span class="destaque">Na Busca do DJ:</span> Digite o nome da música ou cole o link direto do YouTube. Clique no resultado, escreva o nome do cantor e a música irá para a <strong>Fila</strong>.</li>
+            <li><span class="destaque">Na Busca do DJ:</span> Digite o nome da música ou cole o link direto do YouTube.</li>
             <li><span class="destaque">No Celular dos Clientes:</span> O cliente escaneia o QR Code da TV, busca a música e o pedido chega na caixa de <strong>📩 Pedidos</strong>.</li>
-            <li>Você pode clicar no <strong>✅</strong> para aprovar o pedido manual ou simplesmente marcar a caixa <span class="destaque">Auto-Aprovar</span> para que tudo caia na fila automaticamente.</li>
         </ul>
 
         <h3>3. Sistema de Notas e Votação ao Vivo</h3>
-        <p>A nota que aparece na TV não é aleatória! Ela é a soma de duas coisas:</p>
-        <ul>
-            <li>O barulho/palmas captado pelo <strong>Microfone do DJ</strong>.</li>
-            <li>Os votos dos clientes (Excelente, Bom, Ruim) enviados pelos celulares durante a música.</li>
-        </ul>
+        <p>A nota que aparece na TV é a soma do barulho captado pelo microfone e dos votos enviados pelos celulares.</p>
 
         <div class="segredo">
             <strong>⚙️ TRUQUE SECRETO DO DJ:</strong><br>
-            Quer ajudar o dono do bar ou o aniversariante a tirar um notão? Durante a música (antes do vídeo acabar e a tela escurecer), clique em qualquer lugar vazio do seu painel e aperte os seguintes números no teclado:<br><br>
-            Aperte o <strong>8</strong> = Força uma nota entre 86 e 92.<br>
-            Aperte o <strong>9</strong> = Força uma nota entre 93 e 98.<br>
-            Aperte o <strong>0</strong> = Força uma nota 99 ou 100!
+            Aperte o <strong>8</strong> = Força nota entre 86 e 92.<br>
+            Aperte o <strong>9</strong> = Força nota entre 93 e 98.<br>
+            Aperte o <strong>0</strong> = Força nota 99 ou 100!
         </div>
 
         <button onclick="fecharManual()" style="width: 100%; margin-top: 30px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
     </div>
 
-    <!-- JANELA DE DETALHES DE VOTOS -->
     <div id="fundo-modal" onclick="fecharDetalhesVotos()"></div>
     <div id="modal-votos">
         <h2>📊 Votos Desta Música</h2>
@@ -109,7 +99,6 @@
         <button onclick="fecharDetalhesVotos()" style="width: 100%; margin-top: 20px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar</button>
     </div>
 
-    <!-- BOTÃO DO MANUAL NO CANTO SUPERIOR DIREITO -->
     <button id="btn-manual" onclick="abrirManual()">📖 Manual do Sistema</button>
 
     <div class="container">
@@ -153,11 +142,8 @@
     </div>
 
     <script>
-        let streamMic = null;
-        let micAtivo = false;
-        let intervaloMic = null;
+        let streamMic = null; let micAtivo = false; let intervaloMic = null;
 
-        // Funções do novo manual
         function abrirManual() { document.getElementById('fundo-modal-manual').style.display = 'block'; document.getElementById('modal-manual-conteudo').style.display = 'block'; }
         function fecharManual() { document.getElementById('fundo-modal-manual').style.display = 'none'; document.getElementById('modal-manual-conteudo').style.display = 'none'; }
 
@@ -176,13 +162,11 @@
 
         async function toggleMicrofone() {
             const btn = document.getElementById('botaoMic');
-            
             if (micAtivo) {
                 if (streamMic) streamMic.getTracks().forEach(track => track.stop());
                 if (audioCtx && audioCtx.state !== 'closed') await audioCtx.close();
                 audioCtx = null; analyser = null; micAtivo = false;
                 if (intervaloMic) clearInterval(intervaloMic);
-                
                 btn.innerHTML = "🎙️ 2. AVALIADOR (DESLIGADO)"; btn.style.background = "#e52d27"; 
             } else {
                 try {
@@ -251,10 +235,7 @@
 
         database.ref('pedidos').on('value', (snapshot) => {
             pedidosPendentes = [];
-            snapshot.forEach(child => {
-                pedidosPendentes.push({ key: child.key, ...child.val() });
-            });
-            
+            snapshot.forEach(child => { pedidosPendentes.push({ key: child.key, ...child.val() }); });
             if (autoAprovar && pedidosPendentes.length > 0) {
                 pedidosPendentes.forEach(p => {
                     filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
@@ -338,30 +319,26 @@
                     body { margin: 0; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; font-family: Arial;}
                     #player { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1;}
                     
-                    /* LOGO COM TAMANHO PROPORCIONAL AO QR CODE (140px) CRAVADA NO ZERO ABSOLUTO DA QUINA */
                     #logo-bar { position: absolute !important; top: 0px !important; left: 0px !important; z-index: 25; pointer-events: none; margin: 0 !important; padding: 0 !important; display: flex; align-items: flex-start; }
                     #logo-bar img { height: 140px !important; width: auto !important; display: block; margin: 0 !important; padding: 0 !important; } 
-                    
-                    /* TEXTO ALINHADO PELO TOPO, DO LADO DA BOLA */
                     #logo-bar span { font-size: 34px; font-weight: 900; color: #fff; text-shadow: 3px 3px 10px #000; display: block; margin-top: 15px; margin-left: 15px; white-space: nowrap; }
                     
-                    /* QR CODE NA QUINA DIREITA (TOP 20px, RIGHT 20px) */
+                    /* QR CODE NA QUINA DIREITA */
                     #qr-code { position: absolute !important; top: 20px !important; right: 20px !important; z-index: 25; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
                     #qr-code img { width: 110px; height: 110px; background: white; padding: 5px; border-radius: 8px; display: block; margin: 0 auto; }
                     #qr-code p { margin: 8px 0 0 0; color: #fff; font-size: 12px; font-weight: bold; text-transform: uppercase;}
                     #qr-code span { color: #ffeb3b; font-size: 11px; }
 
-                    /* NOME DO CANTOR EM FORMATO DE PÍLULA FLUTUANTE AO LADO ESQUERDO DO QR CODE */
-                    #cantor-overlay { position: absolute; top: 35px; right: -600px; background: linear-gradient(90deg, rgba(20,20,20,0.95), rgba(229,45,39,0.85)); padding: 10px 25px; border-radius: 30px; z-index: 30; transition: right 0.8s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: -3px 5px 15px rgba(0,0,0,0.5); max-width: 400px;}
+                    /* CAIXA DE NOME COLADA NO TOPO AO LADO DO QR CODE */
+                    #cantor-overlay { position: absolute; top: 20px; right: -600px; background: linear-gradient(90deg, rgba(20,20,20,0.95), rgba(229,45,39,0.85)); padding: 10px 20px; border-radius: 15px; z-index: 24; transition: right 0.8s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: -3px 5px 15px rgba(0,0,0,0.5); max-width: 350px; text-align: right; border: 2px solid #e52d27;}
                     #cantor-overlay .aviso { font-size: 12px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
-                    #cantor-overlay .nome { font-size: 20px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; line-height: 1.1; word-wrap: break-word;}
+                    #cantor-overlay .nome { font-size: 22px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; line-height: 1.1; word-wrap: break-word;}
                     
                     #tela-nota { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #121212, #3a0000); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
                     @keyframes piscar { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
                     #btn-liberar { z-index: 20; padding: 25px 40px; font-size: 24px; font-weight: bold; background: #28a745; color: white; border: none; border-radius: 10px; cursor: pointer; }
                 </style></head>
                 <body>
-                    <!-- CAIXA DA LOGO -->
                     <div id="logo-bar">
                         <img src="logop.png" alt="Logo">
                         <span>PARADA 10.95 BAR</span>
@@ -518,7 +495,7 @@
             if (telaTV && !telaTV.closed && m.cantor !== "Convidados") {
                 telaTV.document.getElementById('cantor-overlay').innerHTML = `<div style="display:inline-block; vertical-align:middle;"><span class="aviso">Com a Voz</span><p class="nome">${m.cantor}</p></div>`;
                 telaTV.document.getElementById('cantor-overlay').style.right = '-600px'; 
-                // O número '180px' aqui faz a caixa parar perfeitamente ao lado esquerdo do QR Code
+                // A posição '180px' alinha perfeitamente à esquerda do QR Code no topo.
                 setTimeout(() => telaTV.document.getElementById('cantor-overlay').style.right = '180px', 100);
             }
             captando = true; somaEnergia = 0; qtdLeituras = 0; notaForcadaPeloDJ = null;
