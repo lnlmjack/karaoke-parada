@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Essa linha abaixo força o celular a sempre baixar a versão mais nova do site e esquecer a antiga -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    
     <title>Pedir e Votar - Karaokê Parada 10.95</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
@@ -14,7 +19,6 @@
         .card { background: #1e1e1e; margin: 20px; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .card h2 { margin-top: 0; color: #00d2ff; font-size: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
         
-        /* Area de Votação */
         #cantor-atual { color: #ffeb3b; font-size: 24px; font-weight: bold; margin: 10px 0; }
         #status-musica { color: #aaa; font-size: 14px; font-style: italic; margin-bottom: 20px; }
         
@@ -25,9 +29,12 @@
         .v-bom { background: #ffeb3b; color: #000; }
         .v-reg { background: #fd7e14; color: #fff; }
         .v-ruim { background: #e52d27; color: #fff; }
-        .v-desativado { background: #444 !important; color: #777 !important; pointer-events: none; }
 
-        /* Area de Busca */
+        /* Estilo da caixa de confirmação de voto */
+        #confirmacao-voto { display: none; background: #222; padding: 20px; border-radius: 8px; border: 2px solid #ffeb3b; margin-top: 10px; }
+        .btn-confirmar { width: 48%; padding: 15px; background: #28a745; border: none; border-radius: 8px; color: white; font-weight: bold; font-size: 16px; cursor: pointer;}
+        .btn-cancelar { width: 48%; padding: 15px; background: #e52d27; border: none; border-radius: 8px; color: white; font-weight: bold; font-size: 16px; cursor: pointer;}
+
         input { width: 100%; box-sizing: border-box; padding: 15px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-size: 16px; margin-bottom: 15px; }
         .btn-busca { background: #e52d27; color: #fff; width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
         .btn-busca:active { background: #c21a15; }
@@ -36,7 +43,6 @@
         .item-resultado { background: #2a2a2a; padding: 15px; margin-bottom: 10px; border-radius: 8px; border-left: 5px solid #00d2ff; font-size: 15px; line-height: 1.4; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
         .item-resultado:active { background: #333; }
         
-        /* Notificação Sucesso */
         #notificacao { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #28a745; color: white; padding: 15px 25px; border-radius: 30px; font-weight: bold; font-size: 16px; z-index: 1000; box-shadow: 0 5px 15px rgba(0,0,0,0.6); }
     </style>
 </head>
@@ -46,28 +52,7 @@
         🍻 Parada 10.95 Bar
     </div>
 
-    <!-- SESSÃO 1: QUEM ESTÁ CANTANDO E VOTAÇÃO -->
-    <div class="card" id="area-votacao">
-        <h2>🎤 No Palco Agora</h2>
-        <div id="status-palco">
-            <div id="cantor-atual">Aguardando...</div>
-            <div id="status-musica">Preste atenção na TV!</div>
-        </div>
-
-        <div id="botoes-voto" style="display: none;">
-            <p style="margin-bottom: 10px; font-size: 14px; color: #ccc;">O que você achou da apresentação?</p>
-            <button class="btn-voto v-exc" onclick="enviarVoto('excelente')">🤯 Excelente</button>
-            <button class="btn-voto v-mb" onclick="enviarVoto('muitobom')">🤩 Muito Bom</button>
-            <button class="btn-voto v-bom" onclick="enviarVoto('bom')">🙂 Bom</button>
-            <button class="btn-voto v-reg" onclick="enviarVoto('regular')">😕 Regular</button>
-            <button class="btn-voto v-ruim" onclick="enviarVoto('ruim')">😖 Ruim</button>
-        </div>
-        <div id="msg-agradecimento" style="display: none; color: #28a745; font-weight: bold; font-size: 18px; margin-top: 20px;">
-            ✅ Voto registrado!
-        </div>
-    </div>
-
-    <!-- SESSÃO 2: PEDIR MÚSICA -->
+    <!-- SESSÃO 1: PEDIR MÚSICA (AGORA É A PRIMEIRA) -->
     <div class="card">
         <h2 style="color: #ffeb3b;">📩 Pedir uma Música</h2>
         <p style="font-size: 14px; color: #ccc; margin-bottom: 15px;">Busque o nome da música e o cantor. Nós já filtramos as versões Karaokê para você!</p>
@@ -78,10 +63,41 @@
         <div id="resultados"></div>
     </div>
 
+    <!-- SESSÃO 2: QUEM ESTÁ CANTANDO E VOTAÇÃO (AGORA É A SEGUNDA) -->
+    <div class="card" id="area-votacao">
+        <h2>🎤 No Palco Agora</h2>
+        <div id="status-palco">
+            <div id="cantor-atual">Aguardando...</div>
+            <div id="status-musica">Preste atenção na TV!</div>
+        </div>
+
+        <!-- Botões principais de voto -->
+        <div id="lista-botoes" style="display: none;">
+            <p style="margin-bottom: 10px; font-size: 14px; color: #ccc;">O que você achou da apresentação?</p>
+            <button class="btn-voto v-exc" onclick="prepararVoto('excelente', '🤯 Excelente')">🤯 Excelente</button>
+            <button class="btn-voto v-mb" onclick="prepararVoto('muitobom', '🤩 Muito Bom')">🤩 Muito Bom</button>
+            <button class="btn-voto v-bom" onclick="prepararVoto('bom', '🙂 Bom')">🙂 Bom</button>
+            <button class="btn-voto v-reg" onclick="prepararVoto('regular', '😕 Regular')">😕 Regular</button>
+            <button class="btn-voto v-ruim" onclick="prepararVoto('ruim', '😖 Ruim')">😖 Ruim</button>
+        </div>
+
+        <!-- Tela de Confirmação do voto -->
+        <div id="confirmacao-voto">
+            <p style="margin-top: 0; font-size: 18px; color: #fff;">Confirmar voto:<br><strong id="texto-voto-escolhido" style="font-size: 26px; display: block; margin-top: 10px;"></strong></p>
+            <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                <button class="btn-cancelar" onclick="cancelarVoto()">❌ Cancelar</button>
+                <button class="btn-confirmar" onclick="confirmarVoto()">✅ Votar!</button>
+            </div>
+        </div>
+
+        <div id="msg-agradecimento" style="display: none; color: #28a745; font-weight: bold; font-size: 18px; margin-top: 20px;">
+            ✅ Voto registrado!
+        </div>
+    </div>
+
     <div id="notificacao">✅ Pedido enviado ao DJ!</div>
 
     <script>
-        // CONFIGURAÇÃO FIREBASE (A mesma do Painel do DJ)
         const firebaseConfig = {
             apiKey: "AIzaSyBMLhTZc7qQLjE65L3BuW9e2ijvxObTxp8",
             authDomain: "karaoke-parada.firebaseapp.com",
@@ -93,67 +109,80 @@
         };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-
         const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4'; 
+        
         let idCantorAtual = null;
+        let votoPendente = null;
 
-        // OUVINTE DA TV (Para saber quem está cantando e liberar votação)
+        // OUVINTE DA TV
         database.ref('statusAtual').on('value', (snapshot) => {
             const status = snapshot.val();
-            
             if (status && status.id !== "avaliando") {
-                // Alguém está cantando
                 document.getElementById('cantor-atual').innerText = "Voz: " + status.cantor;
                 document.getElementById('status-musica').innerText = "🎵 " + status.titulo;
                 idCantorAtual = status.id;
 
-                // Verifica se o cliente já votou neste cantor específico
                 if (localStorage.getItem('voto_' + idCantorAtual)) {
                     bloquearVoto();
                 } else {
                     liberarVoto();
                 }
             } else if (status && status.id === "avaliando") {
-                // Suspense / Nota final
                 document.getElementById('cantor-atual').innerText = "Calculando as Notas...";
                 document.getElementById('status-musica').innerText = "Olhe para a tela da TV!";
                 esconderVoto();
             } else {
-                // Palco Vazio
                 document.getElementById('cantor-atual').innerText = "Palco Livre!";
-                document.getElementById('status-musica').innerText = "Faça o seu pedido abaixo.";
+                document.getElementById('status-musica').innerText = "Faça o seu pedido acima.";
                 esconderVoto();
             }
         });
 
-        // FUNÇÕES DE VOTAÇÃO
         function liberarVoto() {
-            document.getElementById('botoes-voto').style.display = 'block';
+            document.getElementById('lista-botoes').style.display = 'block';
+            document.getElementById('confirmacao-voto').style.display = 'none';
             document.getElementById('msg-agradecimento').style.display = 'none';
+            votoPendente = null;
         }
 
         function esconderVoto() {
-            document.getElementById('botoes-voto').style.display = 'none';
+            document.getElementById('lista-botoes').style.display = 'none';
+            document.getElementById('confirmacao-voto').style.display = 'none';
             document.getElementById('msg-agradecimento').style.display = 'none';
+            votoPendente = null;
         }
 
         function bloquearVoto() {
-            document.getElementById('botoes-voto').style.display = 'none';
+            document.getElementById('lista-botoes').style.display = 'none';
+            document.getElementById('confirmacao-voto').style.display = 'none';
             document.getElementById('msg-agradecimento').style.display = 'block';
+            votoPendente = null;
         }
 
-        function enviarVoto(tipoVoto) {
-            if (!idCantorAtual) return;
+        // Função que esconde as opções e abre a confirmação
+        function prepararVoto(tipo, texto) {
+            votoPendente = tipo;
+            document.getElementById('texto-voto-escolhido').innerText = texto;
+            document.getElementById('lista-botoes').style.display = 'none';
+            document.getElementById('confirmacao-voto').style.display = 'block';
+        }
 
-            // Envia o voto pro banco de dados
-            database.ref('votosAtual').push({ tipo: tipoVoto });
+        // Função do botão vermelho de cancelar (Volta pros votos)
+        function cancelarVoto() {
+            votoPendente = null;
+            document.getElementById('confirmacao-voto').style.display = 'none';
+            document.getElementById('lista-botoes').style.display = 'block';
+        }
 
-            // Trava o voto no celular do cliente para ele não votar 50 vezes no mesmo amigo
+        // Função do botão verde de confirmar (Manda pro DJ)
+        function confirmarVoto() {
+            if (!votoPendente || !idCantorAtual) return;
+            
+            database.ref('votosAtual').push({ tipo: votoPendente });
             localStorage.setItem('voto_' + idCantorAtual, 'sim');
             bloquearVoto();
         }
 
-        // BUSCA DE MÚSICAS NO YOUTUBE
         document.getElementById('campoBusca').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') buscarMusica();
         });
@@ -165,7 +194,6 @@
             const div = document.getElementById('resultados');
             div.innerHTML = '<p style="text-align:center; color:#00d2ff;">Buscando no acervo...</p>'; 
 
-            // Filtro para buscar sempre versão Karaokê
             const query = encodeURIComponent(termo + " karaoke -oficial -clipe -live");
             const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${query}&type=video&key=${API_KEY}`;
             
@@ -192,7 +220,6 @@
             }
         }
 
-        // ENVIAR O PEDIDO PRO PAINEL DO DJ
         function fazerPedido(videoId, titulo) {
             const nomeCantor = prompt("Música selecionada! Qual o seu nome (Voz)?");
             
@@ -205,7 +232,6 @@
                     document.getElementById('campoBusca').value = "";
                     document.getElementById('resultados').innerHTML = "";
                     
-                    // Mostra aviso de sucesso
                     const notif = document.getElementById('notificacao');
                     notif.style.display = 'block';
                     setTimeout(() => notif.style.display = 'none', 4000);
