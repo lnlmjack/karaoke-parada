@@ -85,9 +85,11 @@
 
         <div class="segredo">
             <strong>⚙️ TRUQUE SECRETO DO DJ:</strong><br>
-            Aperte o <strong>8</strong> = Força nota entre 86 e 92.<br>
-            Aperte o <strong>9</strong> = Força nota entre 93 e 98.<br>
-            Aperte o <strong>0</strong> = Força nota 99 ou 100!
+            Aperte o <strong>6</strong> = Força nota entre 60 e 69.<br>
+            Aperte o <strong>7</strong> = Força nota entre 70 e 79.<br>
+            Aperte o <strong>8</strong> = Força nota entre 80 e 89.<br>
+            Aperte o <strong>9</strong> = Força nota entre 90 e 99.<br>
+            Aperte o <strong>0</strong> = Força nota 100!
         </div>
 
         <button onclick="fecharManual()" style="width: 100%; margin-top: 30px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
@@ -149,8 +151,6 @@
         function fecharManual() { document.getElementById('fundo-modal-manual').style.display = 'none'; document.getElementById('modal-manual-conteudo').style.display = 'none'; }
 
         function iniciarSistema() {
-            // MÁGICA DE DESTRAVAR O ÁUDIO AQUI: Toca no mudo por 1 milissegundo.
-            // O navegador agora sabe que você interagiu com a página e libera os tambores.
             const som = document.getElementById('audio-tambores');
             som.muted = true;
             som.play().then(() => {
@@ -304,10 +304,13 @@
             `;
         }
 
+        // NOVO CÓDIGO DAS NOTAS FORÇADAS DO DJ
         document.addEventListener('keydown', function(event) {
-            if (event.key === '8') { notaForcadaPeloDJ = Math.floor(Math.random() * 7) + 86; }
-            if (event.key === '9') { notaForcadaPeloDJ = Math.floor(Math.random() * 6) + 93; }
-            if (event.key === '0') { notaForcadaPeloDJ = Math.floor(Math.random() * 2) + 99; }
+            if (event.key === '6') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 60; } // Sorteia entre 60 e 69
+            if (event.key === '7') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 70; } // Sorteia entre 70 e 79
+            if (event.key === '8') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 80; } // Sorteia entre 80 e 89
+            if (event.key === '9') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 90; } // Sorteia entre 90 e 99
+            if (event.key === '0') { notaForcadaPeloDJ = 100; } // Crava 100
         });
 
         document.getElementById('campoBusca').addEventListener('keypress', e => { if(e.key === 'Enter') buscarNoYouTube(); });
