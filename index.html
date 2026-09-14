@@ -15,7 +15,7 @@
         
         /* TELA DE LOGIN */
         #tela-login { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #121212; z-index: 9999; display: flex; justify-content: center; align-items: center; }
-        .login-box { background: #1e1e1e; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); text-align: center; width: 90%; max-width: 400px; border: 2px solid #e52d27; }
+        .login-box { background: #1e1e1e; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); text-align: center; width: 90%; max-width: 400px; border: 2px solid #e52d27; position: relative;}
         .login-box h2 { color: #fff; margin-top: 0; margin-bottom: 20px; }
         .login-box input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-size: 16px; box-sizing: border-box;}
         .btn-entrar { background: #e52d27; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; }
@@ -69,11 +69,16 @@
         #modal-manual-conteudo .destaque { font-weight: bold; color: #fff; }
         #modal-manual-conteudo .segredo { background: #222; border-left: 4px solid #28a745; padding: 15px; margin-top: 20px; border-radius: 5px; font-style: italic; }
         #fundo-modal-manual { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 299; }
+        
+        /* Indicador de Versão */
+        .versao-app { position: fixed; bottom: 8px; right: 12px; font-size: 12px; color: #555; z-index: 10000; pointer-events: none; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
+
+    <div class="versao-app">v2.1</div>
 
     <!-- TELA DE LOGIN -->
     <div id="tela-login">
@@ -82,7 +87,7 @@
             <input type="email" id="emailLogin" placeholder="E-mail de Acesso">
             <input type="password" id="senhaLogin" placeholder="Senha">
             <button class="btn-entrar" onclick="fazerLogin()">Entrar no Sistema</button>
-            <p id="erroLogin" style="color: #ff5252; display: none; margin-top: 15px; font-weight: bold; font-size: 14px;"></p>
+            <p id="erroLogin" style="color: #ff5252; display: none; margin-top: 15px; font-weight: bold; font-size: 14px; word-break: break-word;"></p>
         </div>
     </div>
 
@@ -172,7 +177,7 @@
     </div>
 
     <script>
-        // CONFIGURAÇÃO DO FIREBASE COM A CHAVE CORRETA
+        // CONFIGURAÇÃO DO FIREBASE COM A CHAVE JÁ INSERIDA
         const firebaseConfig = {
             apiKey: "AIzaSyBMLhTZc7qQLjE65L3BuW9e2ijvxObTxp8",
             authDomain: "karaoke-parada.firebaseapp.com",
@@ -222,15 +227,15 @@
                 
                 let msg = "Erro: " + error.code;
                 
-                if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                if (error.code.includes('invalid-credential') || error.code.includes('user-not-found') || error.code.includes('wrong-password')) {
                     msg = "E-mail ou senha incorretos!";
-                } else if (error.code === 'auth/invalid-email') {
+                } else if (error.code.includes('invalid-email')) {
                     msg = "O formato do e-mail é inválido!";
-                } else if (error.code === 'auth/network-request-failed') {
+                } else if (error.code.includes('network-request-failed')) {
                     msg = "Erro de conexão ou Domínio não autorizado no Firebase!";
-                } else if (error.code === 'auth/api-key-not-valid') {
+                } else if (error.code.includes('api-key-not-valid')) {
                     msg = "A chave apiKey do código não é válida!";
-                } else if (error.code === 'auth/too-many-requests') {
+                } else if (error.code.includes('too-many-requests')) {
                     msg = "Muitas tentativas! O Firebase bloqueou temporariamente.";
                 }
 
@@ -243,12 +248,11 @@
         }
 
         // PERMITIR APERTAR ENTER PARA LOGAR
-        document.getElementById('senhaLogin').addEventListener('keypress', function(e) {
+        function checarEnter(e) {
             if (e.key === 'Enter') fazerLogin();
-        });
-        document.getElementById('emailLogin').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') fazerLogin();
-        });
+        }
+        document.getElementById('senhaLogin').addEventListener('keypress', checarEnter);
+        document.getElementById('emailLogin').addEventListener('keypress', checarEnter);
 
         // RESTO DO SISTEMA DO DJ
         let streamMic = null; let micAtivo = false; let intervaloMic = null;
