@@ -25,6 +25,8 @@
         .topo-acoes { display: flex; gap: 10px; align-items: center; }
         .btn-util { background: #333; color: #fff; border: 1px solid #555; padding: 9px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; transition: 0.2s; }
         .btn-util:hover { background: #444; }
+        .btn-admin { background: #d39e00; border-color: #b08500; color: #111; }
+        .btn-admin:hover { background: #e0a800; }
         .btn-sair { background: #7a1c1c; border-color: #a32a2a; }
         .btn-sair:hover { background: #962222; }
 
@@ -77,7 +79,7 @@
     <!-- TELA DE LOGIN -->
     <div id="tela-login">
         <div class="login-box">
-            <h2>🔒 Painel DJ <span class="versao-tag">v2.4</span></h2>
+            <h2>🔒 Painel DJ <span class="versao-tag">v2.5</span></h2>
             <input type="text" id="emailLogin" placeholder="Login (ex: leonard)">
             <input type="password" id="senhaLogin" placeholder="Senha">
             <button class="btn-entrar" onclick="fazerLogin()">Entrar</button>
@@ -98,20 +100,28 @@
         <button class="btn-util" style="width: 100%;" onclick="fecharManual()">Fechar</button>
     </div>
 
-    <!-- MODAL GERENCIAR USUÁRIOS -->
+    <!-- MODAL ADMINISTRADOR -->
     <div id="fundo-modal-usuarios" class="fundo-modal-escuro" onclick="fecharUsuarios()"></div>
     <div id="modal-usuarios" class="modal-janela">
-        <h3 style="margin-top: 0; color: #ffeb3b;">👥 Cadastro e Acesso de DJs</h3>
+        <h3 style="margin-top: 0; color: #ffeb3b;">👑 Painel do Administrador</h3>
         
-        <div style="margin-bottom: 20px; background: #111; padding: 12px; border-radius: 6px;">
-            <p style="margin: 0 0 8px 0; font-size: 12px; color: #aaa;">Cadastrar ou redefinir senha:</p>
-            <input type="text" id="novoUsuario" placeholder="Nome/Login do DJ" style="width: 100%; padding: 8px; margin-bottom: 8px; border-radius: 4px; border: 1px solid #333; background: #222; color: #fff;">
-            <input type="password" id="novaSenha" placeholder="Senha do DJ" style="width: 100%; padding: 8px; margin-bottom: 8px; border-radius: 4px; border: 1px solid #333; background: #222; color: #fff;">
-            <button class="btn-util" style="width: 100%; background: #28a745; border: none;" onclick="salvarDJ()">Salvar Acesso</button>
+        <!-- ALTERAÇÃO DE SENHA DO ADMIN -->
+        <div style="margin-bottom: 15px; background: #111; padding: 12px; border-radius: 6px; border-left: 4px solid #ffeb3b;">
+            <p style="margin: 0 0 6px 0; font-size: 12px; color: #ffeb3b; font-weight: bold;">Mudar Minha Senha de Administrador:</p>
+            <input type="password" id="novaSenhaAdmin" placeholder="Nova senha do admin" style="width: 100%; padding: 8px; margin-bottom: 6px; border-radius: 4px; border: 1px solid #333; background: #222; color: #fff;">
+            <button class="btn-util" style="width: 100%; background: #d39e00; border: none; color: #111;" onclick="alterarSenhaAdmin()">Atualizar Minha Senha</button>
         </div>
 
-        <h4 style="margin: 10px 0 5px 0; font-size: 13px; color: #aaa;">DJs com Acesso Ativo:</h4>
-        <div id="lista-usuarios-db" style="max-height: 180px; overflow-y: auto;">Carregando...</div>
+        <!-- GERENCIAMENTO DE OPERADORES COMUNS -->
+        <div style="margin-bottom: 15px; background: #111; padding: 12px; border-radius: 6px;">
+            <p style="margin: 0 0 6px 0; font-size: 12px; color: #aaa;">Cadastrar ou redefinir senha de DJ (sem acesso admin):</p>
+            <input type="text" id="novoUsuario" placeholder="Login do DJ (ex: paulo)" style="width: 100%; padding: 8px; margin-bottom: 6px; border-radius: 4px; border: 1px solid #333; background: #222; color: #fff;">
+            <input type="password" id="novaSenha" placeholder="Senha do DJ" style="width: 100%; padding: 8px; margin-bottom: 6px; border-radius: 4px; border: 1px solid #333; background: #222; color: #fff;">
+            <button class="btn-util" style="width: 100%; background: #28a745; border: none;" onclick="salvarDJ()">Salvar Acesso do DJ</button>
+        </div>
+
+        <h4 style="margin: 10px 0 5px 0; font-size: 13px; color: #aaa;">DJs Cadastrados:</h4>
+        <div id="lista-usuarios-db" style="max-height: 150px; overflow-y: auto;">Carregando...</div>
 
         <button class="btn-util" style="width: 100%; margin-top: 15px;" onclick="fecharUsuarios()">Fechar</button>
     </div>
@@ -119,9 +129,9 @@
     <!-- PAINEL PRINCIPAL -->
     <div class="container" id="painel-principal" style="display: none;">
         <div class="topo-barra">
-            <h2 style="margin: 0;">🎛️ Painel Karaokê <span class="versao-tag">v2.4</span></h2>
+            <h2 style="margin: 0;">🎛️ Painel Karaokê <span class="versao-tag">v2.5</span></h2>
             <div class="topo-acoes">
-                <button class="btn-util" onclick="abrirUsuarios()">👥 Gerenciar DJs</button>
+                <button id="btn-admin-gerenciar" class="btn-util btn-admin" style="display: none;" onclick="abrirUsuarios()">👥 Painel Admin</button>
                 <button class="btn-util" onclick="abrirManual()">📖 Manual</button>
                 <button class="btn-util btn-sair" onclick="fazerLogout()">🚪 Sair</button>
             </div>
@@ -177,13 +187,26 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // PERSISTÊNCIA DE SESSÃO
-        if (sessionStorage.getItem('dj_logado') === 'sim') {
+        // INICIALIZA SENHA DO ADMIN NO DATABASE CASO NÃO EXISTA
+        database.ref('admin_config/senha').once('value').then(snap => {
+            if (snap.val() === null) {
+                database.ref('admin_config/senha').set("123456");
+            }
+        });
+
+        // RESTAURAÇÃO DA SESSÃO COM VALIDAÇÃO DE PAPEL (ADMIN OU DJ)
+        const sessaoAtiva = sessionStorage.getItem('dj_logado');
+        const sessaoRole = sessionStorage.getItem('dj_role');
+
+        if (sessaoAtiva === 'sim') {
             document.getElementById('tela-login').style.display = 'none';
             document.getElementById('painel-principal').style.display = 'block';
+            if (sessaoRole === 'admin') {
+                document.getElementById('btn-admin-gerenciar').style.display = 'block';
+            }
         }
 
-        // LOGIN
+        // LOGIN DIFERENCIADO
         function fazerLogin() {
             const rawUser = document.getElementById('emailLogin').value.trim().toLowerCase();
             const usuarioLimpo = rawUser.replace(/[\.\#\$\[\]\/]/g, '_');
@@ -196,30 +219,60 @@
                 return;
             }
 
+            erroEl.style.display = 'none';
+
+            // 1. VERIFICA SE É O ADMINISTRADOR (leonard)
+            if (rawUser === 'leonard') {
+                database.ref('admin_config/senha').once('value').then(snapshot => {
+                    let senhaAdmin = snapshot.val() || "123456";
+                    if (String(senhaAdmin) === String(senha)) {
+                        liberarAcesso('admin');
+                    } else {
+                        erroEl.innerText = "Senha de administrador incorreta!";
+                        erroEl.style.display = 'block';
+                    }
+                }).catch(() => {
+                    // Fallback se a rede falhar
+                    if (senha === "123456") liberarAcesso('admin');
+                    else {
+                        erroEl.innerText = "Senha incorreta!";
+                        erroEl.style.display = 'block';
+                    }
+                });
+                return;
+            }
+
+            // 2. VERIFICA SE É UM DJ COMUM (DJS)
             database.ref('djs/' + usuarioLimpo).once('value').then(snapshot => {
-                const senhaCadastrada = snapshot.val();
-                if ((senhaCadastrada !== null && String(senhaCadastrada) === String(senha)) || (rawUser === "leonard" && senha === "123456")) {
-                    sessionStorage.setItem('dj_logado', 'sim');
-                    document.getElementById('tela-login').style.display = 'none';
-                    document.getElementById('painel-principal').style.display = 'block';
+                const senhaDJ = snapshot.val();
+                if (senhaDJ !== null && String(senhaDJ) === String(senha)) {
+                    liberarAcesso('dj');
                 } else {
                     erroEl.innerText = "Usuário ou senha incorretos!";
                     erroEl.style.display = 'block';
                 }
             }).catch(() => {
-                if (rawUser === "leonard" && senha === "123456") {
-                    sessionStorage.setItem('dj_logado', 'sim');
-                    document.getElementById('tela-login').style.display = 'none';
-                    document.getElementById('painel-principal').style.display = 'block';
-                } else {
-                    erroEl.innerText = "Erro ao validar login.";
-                    erroEl.style.display = 'block';
-                }
+                erroEl.innerText = "Erro ao validar login.";
+                erroEl.style.display = 'block';
             });
+        }
+
+        function liberarAcesso(role) {
+            sessionStorage.setItem('dj_logado', 'sim');
+            sessionStorage.setItem('dj_role', role);
+            document.getElementById('tela-login').style.display = 'none';
+            document.getElementById('painel-principal').style.display = 'block';
+
+            if (role === 'admin') {
+                document.getElementById('btn-admin-gerenciar').style.display = 'block';
+            } else {
+                document.getElementById('btn-admin-gerenciar').style.display = 'none';
+            }
         }
 
         function fazerLogout() {
             sessionStorage.removeItem('dj_logado');
+            sessionStorage.removeItem('dj_role');
             location.reload();
         }
 
@@ -227,8 +280,9 @@
         document.getElementById('senhaLogin').addEventListener('keypress', checarEnter);
         document.getElementById('emailLogin').addEventListener('keypress', checarEnter);
 
-        // GERENCIAMENTO VISUAL DE USUÁRIOS
+        // FUNÇÕES EXCLUSIVAS DO ADMINISTRADOR
         function abrirUsuarios() {
+            if (sessionStorage.getItem('dj_role') !== 'admin') return;
             document.getElementById('fundo-modal-usuarios').style.display = 'block';
             document.getElementById('modal-usuarios').style.display = 'block';
             carregarListaDJs();
@@ -236,6 +290,16 @@
         function fecharUsuarios() {
             document.getElementById('fundo-modal-usuarios').style.display = 'none';
             document.getElementById('modal-usuarios').style.display = 'none';
+        }
+
+        function alterarSenhaAdmin() {
+            const novaSenha = document.getElementById('novaSenhaAdmin').value.trim();
+            if (!novaSenha) return alert("Digite a nova senha de administrador.");
+
+            database.ref('admin_config/senha').set(novaSenha).then(() => {
+                document.getElementById('novaSenhaAdmin').value = '';
+                alert("Sua senha de administrador foi atualizada com sucesso!");
+            });
         }
 
         function carregarListaDJs() {
@@ -258,17 +322,18 @@
         function salvarDJ() {
             const nome = document.getElementById('novoUsuario').value.trim().toLowerCase().replace(/[\.\#\$\[\]\/]/g, '_');
             const senha = document.getElementById('novaSenha').value.trim();
-            if (!nome || !senha) return alert("Preencha o nome e a senha do DJ.");
+            if (!nome || !senha) return alert("Preencha o login e a senha do DJ.");
+            if (nome === 'leonard') return alert("O login 'leonard' é reservado ao Administrador.");
 
             database.ref('djs/' + nome).set(senha).then(() => {
                 document.getElementById('novoUsuario').value = '';
                 document.getElementById('novaSenha').value = '';
-                alert("Acesso do DJ salvo!");
+                alert(`Acesso para "${nome}" salvo com sucesso!`);
             });
         }
 
         function excluirDJ(nome) {
-            if (confirm(`Deseja remover o acesso de "${nome}"?`)) {
+            if (confirm(`Deseja remover completamente o acesso de "${nome}"?`)) {
                 database.ref('djs/' + nome).remove();
             }
         }
@@ -510,7 +575,7 @@
         }
 
         function extrairVideoId(url) {
-            const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
+            const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
             return match ? match[1] : null;
         }
 
