@@ -183,7 +183,7 @@
         };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-        const auth = firebase.auth(); 
+        const auth = firebase.auth(); // Inicializando Autenticação
 
         // CONTROLE DE LOGIN E SESSÃO
         auth.onAuthStateChanged(user => {
@@ -200,39 +200,55 @@
             }
         });
 
+        // FUNÇÃO DE LOGIN APRIMORADA PARA EXIBIR ERROS CLAROS
         function fazerLogin() {
-            const email = document.getElementById('emailLogin').value;
+            const email = document.getElementById('emailLogin').value.trim();
             const senha = document.getElementById('senhaLogin').value;
             const erroEl = document.getElementById('erroLogin');
             
             if(!email || !senha) {
                 erroEl.innerText = "Preencha o e-mail e a senha!";
                 erroEl.style.display = 'block';
+                erroEl.style.color = '#ff5252';
                 return;
             }
 
-            erroEl.style.display = 'none'; 
+            erroEl.innerText = "Conectando...";
+            erroEl.style.display = 'block';
+            erroEl.style.color = '#ffeb3b'; // Mostra amarelo enquanto carrega
             
-            auth.signInWithEmailAndPassword(email, senha).catch(error => {
-                // AQUI O ERRO MOSTRARÁ O MOTIVO EXATO DO FIREBASE
-                let msg = "Erro (" + error.code + "): " + error.message;
+            auth.signInWithEmailAndPassword(email, senha).then(() => {
+                // Sucesso, o onAuthStateChanged vai esconder a tela
+                erroEl.style.display = 'none';
+            }).catch(error => {
+                erroEl.style.color = '#ff5252'; // Volta pra vermelho
                 
-                if(error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                // MENSAGEM PADRÃO COM CÓDIGO DO FIREBASE (Para sabermos o que houve)
+                let msg = "Erro: " + error.code;
+                
+                // TRADUÇÃO DOS ERROS MAIS COMUNS
+                if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
                     msg = "E-mail ou senha incorretos!";
-                } else if(error.code === 'auth/invalid-email') {
+                } else if (error.code === 'auth/invalid-email') {
                     msg = "O formato do e-mail é inválido!";
-                } else if(error.code === 'auth/network-request-failed') {
-                    msg = "Erro de conexão ou domínio não autorizado!";
+                } else if (error.code === 'auth/network-request-failed') {
+                    msg = "Erro de conexão ou Domínio não autorizado no Firebase!";
+                } else if (error.code === 'auth/too-many-requests') {
+                    msg = "Muitas tentativas! O Firebase bloqueou temporariamente.";
                 }
 
                 erroEl.innerText = msg;
-                erroEl.style.display = 'block';
             });
         }
 
         function fazerLogout() {
             auth.signOut();
         }
+
+        // PERMITIR APERTAR ENTER PARA LOGAR
+        document.getElementById('senhaLogin').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') fazerLogin();
+        });
 
         // RESTO DO SISTEMA DO DJ
         let streamMic = null; let micAtivo = false; let intervaloMic = null;
@@ -242,7 +258,7 @@
 
         function iniciarSistema() {
             const som = document.getElementById('audio-tambores');
-            som.volume = 0.5; // VOLUME REDUZIDO PELA METADE
+            som.volume = 0.5; // VOLUME DOS TAMBORES PELA METADE
             som.muted = true;
             som.play().then(() => {
                 som.pause();
@@ -382,14 +398,6 @@
                 <div class="linha-voto"><span style="color:#e52d27">😖 Ruim:</span> <strong>${contagemVotos.ruim}</strong></div>
             `;
         }
-
-        document.addEventListener('keydown', function(event) {
-            if (event.key === '6') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 60; }
-            if (event.key === '7') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 70; }
-            if (event.key === '8') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 80; }
-            if (event.key === '9') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 90; }
-            if (event.key === '0') { notaForcadaPeloDJ = 100; }
-        });
 
         document.getElementById('campoBusca').addEventListener('keypress', e => { if(e.key === 'Enter') buscarNoYouTube(); });
 
