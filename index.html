@@ -79,7 +79,7 @@
     <!-- TELA DE LOGIN -->
     <div id="tela-login">
         <div class="login-box">
-            <h2>🔒 Painel DJ <span class="versao-tag">v2.7</span></h2>
+            <h2>🔒 Painel DJ <span class="versao-tag">v2.8</span></h2>
             <input type="text" id="emailLogin" placeholder="Login (ex: leonard)">
             <input type="password" id="senhaLogin" placeholder="Senha">
             <button class="btn-entrar" onclick="fazerLogin()">Entrar</button>
@@ -105,22 +105,14 @@
     <div id="modal-usuarios" class="modal-janela">
         <h3 style="margin-top: 0; color: #ffeb3b;">👑 Painel do Administrador</h3>
         
-        <!-- ALTERAÇÃO DE SENHA DO ADMIN -->
-        <div style="margin-bottom: 15px; background: #111; padding: 12px; border-radius: 6px; border-left: 4px solid #ffeb3b;">
-            <p style="margin: 0 0 6px 0; font-size: 12px; color: #ffeb3b; font-weight: bold;">Mudar Minha Senha de Administrador:</p>
-            <input type="password" id="novaSenhaAdmin" placeholder="Nova senha do admin" style="width: 100%; padding: 8px; margin-bottom: 6px; border-radius: 4px; border: 1px solid #333; background: #222; color: #fff;">
-            <button class="btn-util" style="width: 100%; background: #d39e00; border: none; color: #111;" onclick="alterarSenhaAdmin()">Atualizar Minha Senha</button>
-        </div>
-
-        <!-- GERENCIAMENTO DE OPERADORES COMUNS -->
         <div style="margin-bottom: 15px; background: #111; padding: 12px; border-radius: 6px;">
-            <p style="margin: 0 0 6px 0; font-size: 12px; color: #aaa;">Cadastrar ou redefinir senha de DJ:</p>
-            <input type="text" id="novoUsuario" placeholder="Login do DJ (ex: paulo)" style="width: 100%; padding: 8px; margin-bottom: 6px; border-radius: 4px; border: 1px solid #333; background: #222; color: #fff;">
-            <input type="password" id="novaSenha" placeholder="Senha do DJ" style="width: 100%; padding: 8px; margin-bottom: 6px; border-radius: 4px; border: 1px solid #333; background: #222; color: #fff;">
-            <button class="btn-util" style="width: 100%; background: #28a745; border: none;" onclick="salvarDJ()">Salvar Acesso do DJ</button>
+            <p style="margin: 0 0 6px 0; font-size: 12px; color: #aaa;">Cadastrar ou redefinir senha de operador:</p>
+            <input type="text" id="novoUsuario" placeholder="Login do operador (ex: paulo)" style="width: 100%; padding: 8px; margin-bottom: 6px; border-radius: 4px; border: 1px solid #333; background: #222; color: #fff;">
+            <input type="password" id="novaSenha" placeholder="Senha" style="width: 100%; padding: 8px; margin-bottom: 6px; border-radius: 4px; border: 1px solid #333; background: #222; color: #fff;">
+            <button class="btn-util" style="width: 100%; background: #28a745; border: none;" onclick="salvarDJ()">Salvar Acesso</button>
         </div>
 
-        <h4 style="margin: 10px 0 5px 0; font-size: 13px; color: #aaa;">DJs Cadastrados:</h4>
+        <h4 style="margin: 10px 0 5px 0; font-size: 13px; color: #aaa;">Operadores Cadastrados:</h4>
         <div id="lista-usuarios-db" style="max-height: 150px; overflow-y: auto;">Carregando...</div>
 
         <button class="btn-util" style="width: 100%; margin-top: 15px;" onclick="fecharUsuarios()">Fechar</button>
@@ -129,7 +121,7 @@
     <!-- PAINEL PRINCIPAL -->
     <div class="container" id="painel-principal" style="display: none;">
         <div class="topo-barra">
-            <h2 style="margin: 0;">🎛️ Painel Karaokê <span class="versao-tag">v2.7</span></h2>
+            <h2 style="margin: 0;">🎛️ Painel Karaokê <span class="versao-tag">v2.8</span></h2>
             <div class="topo-acoes">
                 <button id="btn-admin-gerenciar" class="btn-util btn-admin" style="display: none;" onclick="abrirUsuarios()">👥 Painel Admin</button>
                 <button class="btn-util" onclick="abrirManual()">📖 Manual</button>
@@ -187,18 +179,7 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // SENHA MESTRA DO ADMINISTRADOR (Padrão: 123456)
-        // Você pode alterá-la diretamente aqui se preferir, ou pelo Painel Admin no navegador.
-        let SENHA_ADMIN = "123456";
-
-        // Tenta sincronizar a senha do admin com o banco em segundo plano de forma segura
-        database.ref('admin_config/senha').on('value', snap => {
-            if (snap.val()) {
-                SENHA_ADMIN = String(snap.val());
-            }
-        });
-
-        // RESTAURAÇÃO DA SESSÃO AO RECARREGAR A PÁGINA
+        // RESTAURAÇÃO DA SESSÃO AO RECARREGAR
         const sessaoAtiva = sessionStorage.getItem('dj_logado');
         const sessaoRole = sessionStorage.getItem('dj_role');
 
@@ -210,10 +191,9 @@
             }
         }
 
-        // SISTEMA DE LOGIN INSTANTÂNEO
+        // LOGIN BLINDADO
         function fazerLogin() {
             const rawUser = document.getElementById('emailLogin').value.trim().toLowerCase();
-            const usuarioLimpo = rawUser.replace(/[\.\#\$\[\]\/]/g, '_');
             const senha = document.getElementById('senhaLogin').value;
             const erroEl = document.getElementById('erroLogin');
 
@@ -225,10 +205,14 @@
 
             erroEl.style.display = 'none';
 
-            // 1. SE FOR O ADMINISTRADOR (leonard) - Validação instantânea local
+            // 1. Administrador principal (leonard) - Senha fixa padrão 123456
             if (rawUser === 'leonard') {
-                if (String(senha) === String(SENHA_ADMIN)) {
-                    liberarAcesso('admin');
+                if (senha === '123456') {
+                    sessionStorage.setItem('dj_logado', 'sim');
+                    sessionStorage.setItem('dj_role', 'admin');
+                    document.getElementById('tela-login').style.display = 'none';
+                    document.getElementById('painel-principal').style.display = 'block';
+                    document.getElementById('btn-admin-gerenciar').style.display = 'block';
                 } else {
                     erroEl.innerText = "Senha de administrador incorreta!";
                     erroEl.style.display = 'block';
@@ -236,32 +220,24 @@
                 return;
             }
 
-            // 2. SE FOR OPERADOR COMUM (busca na árvore 'djs' do banco)
+            // 2. Operadores comuns salvos na árvore 'djs' do banco
+            const usuarioLimpo = rawUser.replace(/[\.\#\$\[\]\/]/g, '_');
             database.ref('djs/' + usuarioLimpo).once('value').then(snapshot => {
-                const senhaDJ = snapshot.val();
-                if (senhaDJ !== null && String(senhaDJ) === String(senha)) {
-                    liberarAcesso('dj');
+                const senhaSalva = snapshot.val();
+                if (senhaSalva !== null && String(senhaSalva) === String(senha)) {
+                    sessionStorage.setItem('dj_logado', 'sim');
+                    sessionStorage.setItem('dj_role', 'dj');
+                    document.getElementById('tela-login').style.display = 'none';
+                    document.getElementById('painel-principal').style.display = 'block';
+                    document.getElementById('btn-admin-gerenciar').style.display = 'none';
                 } else {
                     erroEl.innerText = "Usuário ou senha incorretos!";
                     erroEl.style.display = 'block';
                 }
-            }).catch(() => {
-                erroEl.innerText = "Erro ao validar usuário no banco de dados.";
+            }).catch(err => {
+                erroEl.innerText = "Erro ao conectar com o banco de dados!";
                 erroEl.style.display = 'block';
             });
-        }
-
-        function liberarAcesso(role) {
-            sessionStorage.setItem('dj_logado', 'sim');
-            sessionStorage.setItem('dj_role', role);
-            document.getElementById('tela-login').style.display = 'none';
-            document.getElementById('painel-principal').style.display = 'block';
-
-            if (role === 'admin') {
-                document.getElementById('btn-admin-gerenciar').style.display = 'block';
-            } else {
-                document.getElementById('btn-admin-gerenciar').style.display = 'none';
-            }
         }
 
         function fazerLogout() {
@@ -286,25 +262,12 @@
             document.getElementById('modal-usuarios').style.display = 'none';
         }
 
-        function alterarSenhaAdmin() {
-            const novaSenha = document.getElementById('novaSenhaAdmin').value.trim();
-            if (!novaSenha) return alert("Digite a nova senha de administrador.");
-
-            database.ref('admin_config/senha').set(novaSenha).then(() => {
-                SENHA_ADMIN = novaSenha;
-                document.getElementById('novaSenhaAdmin').value = '';
-                alert("Sua senha de administrador foi atualizada com sucesso!");
-            }).catch(err => {
-                alert("Erro ao salvar senha no banco. Verifique as regras do Firebase.");
-            });
-        }
-
         function carregarListaDJs() {
             const container = document.getElementById('lista-usuarios-db');
             database.ref('djs').on('value', snapshot => {
                 const djs = snapshot.val();
                 if (!djs) {
-                    container.innerHTML = "<p style='color:#777; font-size:12px;'>Nenhum DJ adicional cadastrado.</p>";
+                    container.innerHTML = "<p style='color:#777; font-size:12px;'>Nenhum operador adicional cadastrado.</p>";
                     return;
                 }
                 container.innerHTML = Object.keys(djs).map(nome => `
@@ -319,8 +282,8 @@
         function salvarDJ() {
             const nome = document.getElementById('novoUsuario').value.trim().toLowerCase().replace(/[\.\#\$\[\]\/]/g, '_');
             const senha = document.getElementById('novaSenha').value.trim();
-            if (!nome || !senha) return alert("Preencha o login e a senha do DJ.");
-            if (nome === 'leonard') return alert("O login 'leonard' é reservado ao Administrador.");
+            if (!nome || !senha) return alert("Preencha o login e a senha.");
+            if (nome === 'leonard') return alert("O login 'leonard' é reservado.");
 
             database.ref('djs/' + nome).set(senha).then(() => {
                 document.getElementById('novoUsuario').value = '';
@@ -330,7 +293,7 @@
         }
 
         function excluirDJ(nome) {
-            if (confirm(`Deseja remover completamente o acesso de "${nome}"?`)) {
+            if (confirm(`Deseja remover o acesso de "${nome}"?`)) {
                 database.ref('djs/' + nome).remove();
             }
         }
