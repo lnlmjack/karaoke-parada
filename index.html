@@ -79,7 +79,7 @@
     <!-- TELA DE LOGIN -->
     <div id="tela-login">
         <div class="login-box">
-            <h2>🔒 Painel DJ <span class="versao-tag">v2.6</span></h2>
+            <h2>🔒 Painel DJ <span class="versao-tag">v2.7</span></h2>
             <input type="text" id="emailLogin" placeholder="Login (ex: leonard)">
             <input type="password" id="senhaLogin" placeholder="Senha">
             <button class="btn-entrar" onclick="fazerLogin()">Entrar</button>
@@ -114,7 +114,7 @@
 
         <!-- GERENCIAMENTO DE OPERADORES COMUNS -->
         <div style="margin-bottom: 15px; background: #111; padding: 12px; border-radius: 6px;">
-            <p style="margin: 0 0 6px 0; font-size: 12px; color: #aaa;">Cadastrar ou redefinir senha de DJ (sem acesso admin):</p>
+            <p style="margin: 0 0 6px 0; font-size: 12px; color: #aaa;">Cadastrar ou redefinir senha de DJ:</p>
             <input type="text" id="novoUsuario" placeholder="Login do DJ (ex: paulo)" style="width: 100%; padding: 8px; margin-bottom: 6px; border-radius: 4px; border: 1px solid #333; background: #222; color: #fff;">
             <input type="password" id="novaSenha" placeholder="Senha do DJ" style="width: 100%; padding: 8px; margin-bottom: 6px; border-radius: 4px; border: 1px solid #333; background: #222; color: #fff;">
             <button class="btn-util" style="width: 100%; background: #28a745; border: none;" onclick="salvarDJ()">Salvar Acesso do DJ</button>
@@ -129,7 +129,7 @@
     <!-- PAINEL PRINCIPAL -->
     <div class="container" id="painel-principal" style="display: none;">
         <div class="topo-barra">
-            <h2 style="margin: 0;">🎛️ Painel Karaokê <span class="versao-tag">v2.6</span></h2>
+            <h2 style="margin: 0;">🎛️ Painel Karaokê <span class="versao-tag">v2.7</span></h2>
             <div class="topo-acoes">
                 <button id="btn-admin-gerenciar" class="btn-util btn-admin" style="display: none;" onclick="abrirUsuarios()">👥 Painel Admin</button>
                 <button class="btn-util" onclick="abrirManual()">📖 Manual</button>
@@ -187,17 +187,18 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // SENHA MESTRA PADRÃO DO ADMIN (caso altere no painel admin, ela atualiza no banco também)
-        let SENHA_ADMIN_PADRAO = "123456";
+        // SENHA MESTRA DO ADMINISTRADOR (Padrão: 123456)
+        // Você pode alterá-la diretamente aqui se preferir, ou pelo Painel Admin no navegador.
+        let SENHA_ADMIN = "123456";
 
-        // Tenta buscar a senha personalizada salva no banco em segundo plano (sem travar o login)
+        // Tenta sincronizar a senha do admin com o banco em segundo plano de forma segura
         database.ref('admin_config/senha').on('value', snap => {
             if (snap.val()) {
-                SENHA_ADMIN_PADRAO = String(snap.val());
+                SENHA_ADMIN = String(snap.val());
             }
         });
 
-        // RESTAURAÇÃO DA SESSÃO
+        // RESTAURAÇÃO DA SESSÃO AO RECARREGAR A PÁGINA
         const sessaoAtiva = sessionStorage.getItem('dj_logado');
         const sessaoRole = sessionStorage.getItem('dj_role');
 
@@ -209,7 +210,7 @@
             }
         }
 
-        // LOGIN INSTANTÂNEO
+        // SISTEMA DE LOGIN INSTANTÂNEO
         function fazerLogin() {
             const rawUser = document.getElementById('emailLogin').value.trim().toLowerCase();
             const usuarioLimpo = rawUser.replace(/[\.\#\$\[\]\/]/g, '_');
@@ -224,9 +225,9 @@
 
             erroEl.style.display = 'none';
 
-            // 1. VERIFICA SE É O ADMINISTRADOR (leonard)
+            // 1. SE FOR O ADMINISTRADOR (leonard) - Validação instantânea local
             if (rawUser === 'leonard') {
-                if (String(senha) === String(SENHA_ADMIN_PADRAO)) {
+                if (String(senha) === String(SENHA_ADMIN)) {
                     liberarAcesso('admin');
                 } else {
                     erroEl.innerText = "Senha de administrador incorreta!";
@@ -235,7 +236,7 @@
                 return;
             }
 
-            // 2. VERIFICA SE É UM DJ COMUM (DJS)
+            // 2. SE FOR OPERADOR COMUM (busca na árvore 'djs' do banco)
             database.ref('djs/' + usuarioLimpo).once('value').then(snapshot => {
                 const senhaDJ = snapshot.val();
                 if (senhaDJ !== null && String(senhaDJ) === String(senha)) {
@@ -245,7 +246,7 @@
                     erroEl.style.display = 'block';
                 }
             }).catch(() => {
-                erroEl.innerText = "Erro ao validar login com o banco de dados.";
+                erroEl.innerText = "Erro ao validar usuário no banco de dados.";
                 erroEl.style.display = 'block';
             });
         }
@@ -290,9 +291,11 @@
             if (!novaSenha) return alert("Digite a nova senha de administrador.");
 
             database.ref('admin_config/senha').set(novaSenha).then(() => {
-                SENHA_ADMIN_PADRAO = novaSenha;
+                SENHA_ADMIN = novaSenha;
                 document.getElementById('novaSenhaAdmin').value = '';
                 alert("Sua senha de administrador foi atualizada com sucesso!");
+            }).catch(err => {
+                alert("Erro ao salvar senha no banco. Verifique as regras do Firebase.");
             });
         }
 
@@ -557,7 +560,7 @@
                     let valorEl = telaTV.document.getElementById('nota-valor');
                     valorEl.innerText = notaFinal;
                     valorEl.style.color = notaFinal >= 90 ? '#28a745' : notaFinal >= 75 ? '#ffeb3b' : '#e52d27';
-                    telaTV.document.getElementById('nota-resultado').style.display = 'flex';
+                    telaTV.document.getElementById('tela-resultado').style.display = 'flex';
                 }, 4000); 
             }
 
