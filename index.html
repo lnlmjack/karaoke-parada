@@ -79,7 +79,7 @@
     <!-- TELA DE LOGIN -->
     <div id="tela-login">
         <div class="login-box">
-            <h2>🔒 Painel DJ <span class="versao-tag">v2.5</span></h2>
+            <h2>🔒 Painel DJ <span class="versao-tag">v2.6</span></h2>
             <input type="text" id="emailLogin" placeholder="Login (ex: leonard)">
             <input type="password" id="senhaLogin" placeholder="Senha">
             <button class="btn-entrar" onclick="fazerLogin()">Entrar</button>
@@ -129,7 +129,7 @@
     <!-- PAINEL PRINCIPAL -->
     <div class="container" id="painel-principal" style="display: none;">
         <div class="topo-barra">
-            <h2 style="margin: 0;">🎛️ Painel Karaokê <span class="versao-tag">v2.5</span></h2>
+            <h2 style="margin: 0;">🎛️ Painel Karaokê <span class="versao-tag">v2.6</span></h2>
             <div class="topo-acoes">
                 <button id="btn-admin-gerenciar" class="btn-util btn-admin" style="display: none;" onclick="abrirUsuarios()">👥 Painel Admin</button>
                 <button class="btn-util" onclick="abrirManual()">📖 Manual</button>
@@ -187,14 +187,17 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // INICIALIZA SENHA DO ADMIN NO DATABASE CASO NÃO EXISTA
-        database.ref('admin_config/senha').once('value').then(snap => {
-            if (snap.val() === null) {
-                database.ref('admin_config/senha').set("123456");
+        // SENHA MESTRA PADRÃO DO ADMIN (caso altere no painel admin, ela atualiza no banco também)
+        let SENHA_ADMIN_PADRAO = "123456";
+
+        // Tenta buscar a senha personalizada salva no banco em segundo plano (sem travar o login)
+        database.ref('admin_config/senha').on('value', snap => {
+            if (snap.val()) {
+                SENHA_ADMIN_PADRAO = String(snap.val());
             }
         });
 
-        // RESTAURAÇÃO DA SESSÃO COM VALIDAÇÃO DE PAPEL (ADMIN OU DJ)
+        // RESTAURAÇÃO DA SESSÃO
         const sessaoAtiva = sessionStorage.getItem('dj_logado');
         const sessaoRole = sessionStorage.getItem('dj_role');
 
@@ -206,7 +209,7 @@
             }
         }
 
-        // LOGIN DIFERENCIADO
+        // LOGIN INSTANTÂNEO
         function fazerLogin() {
             const rawUser = document.getElementById('emailLogin').value.trim().toLowerCase();
             const usuarioLimpo = rawUser.replace(/[\.\#\$\[\]\/]/g, '_');
@@ -223,22 +226,12 @@
 
             // 1. VERIFICA SE É O ADMINISTRADOR (leonard)
             if (rawUser === 'leonard') {
-                database.ref('admin_config/senha').once('value').then(snapshot => {
-                    let senhaAdmin = snapshot.val() || "123456";
-                    if (String(senhaAdmin) === String(senha)) {
-                        liberarAcesso('admin');
-                    } else {
-                        erroEl.innerText = "Senha de administrador incorreta!";
-                        erroEl.style.display = 'block';
-                    }
-                }).catch(() => {
-                    // Fallback se a rede falhar
-                    if (senha === "123456") liberarAcesso('admin');
-                    else {
-                        erroEl.innerText = "Senha incorreta!";
-                        erroEl.style.display = 'block';
-                    }
-                });
+                if (String(senha) === String(SENHA_ADMIN_PADRAO)) {
+                    liberarAcesso('admin');
+                } else {
+                    erroEl.innerText = "Senha de administrador incorreta!";
+                    erroEl.style.display = 'block';
+                }
                 return;
             }
 
@@ -252,7 +245,7 @@
                     erroEl.style.display = 'block';
                 }
             }).catch(() => {
-                erroEl.innerText = "Erro ao validar login.";
+                erroEl.innerText = "Erro ao validar login com o banco de dados.";
                 erroEl.style.display = 'block';
             });
         }
@@ -280,7 +273,7 @@
         document.getElementById('senhaLogin').addEventListener('keypress', checarEnter);
         document.getElementById('emailLogin').addEventListener('keypress', checarEnter);
 
-        // FUNÇÕES EXCLUSIVAS DO ADMINISTRADOR
+        // PAINEL ADMINISTRATIVO
         function abrirUsuarios() {
             if (sessionStorage.getItem('dj_role') !== 'admin') return;
             document.getElementById('fundo-modal-usuarios').style.display = 'block';
@@ -297,6 +290,7 @@
             if (!novaSenha) return alert("Digite a nova senha de administrador.");
 
             database.ref('admin_config/senha').set(novaSenha).then(() => {
+                SENHA_ADMIN_PADRAO = novaSenha;
                 document.getElementById('novaSenhaAdmin').value = '';
                 alert("Sua senha de administrador foi atualizada com sucesso!");
             });
