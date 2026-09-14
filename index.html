@@ -12,7 +12,6 @@
         body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; padding: 20px; margin: 0; }
         .container { max-width: 1600px; margin: 0 auto; position: relative; }
         
-        /* TELA DE LOGIN */
         #tela-login { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #121212; z-index: 9999; display: flex; justify-content: center; align-items: center; }
         .login-box { background: #1e1e1e; padding: 35px 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); text-align: center; width: 90%; max-width: 380px; border: 2px solid #e52d27; }
         .login-box h2 { color: #fff; margin-top: 0; margin-bottom: 20px; font-size: 22px; }
@@ -20,7 +19,6 @@
         .btn-entrar { background: #e52d27; color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn-entrar:hover { background: #c21a15; }
 
-        /* TOPO DO PAINEL */
         .topo-barra { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
         .topo-acoes { display: flex; gap: 10px; align-items: center; }
         .btn-util { background: #333; color: #fff; border: 1px solid #555; padding: 9px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; transition: 0.2s; }
@@ -32,7 +30,7 @@
 
         .area-botoes-topo { display: flex; gap: 15px; margin-bottom: 20px; }
         .btn-topo { flex: 1; padding: 14px; font-size: 15px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s;}
-        .btn-tv { background: #007bff; } .btn-tv:hover { background: #0056b3; } .btn-tv.conectado { background: #17a2b8; pointer-events: none; }
+        .btn-tv { background: #007bff; } .btn-tv:hover { background: #0056b3; }
         .btn-mic { background: #e52d27; text-align: center; display: flex; align-items: center; justify-content: center; } 
         .btn-mic:hover { filter: brightness(1.2); }
         
@@ -60,11 +58,9 @@
 
         #contador-votos { position: absolute; top: 12px; right: 12px; background: #e52d27; padding: 6px 10px; border-radius: 15px; font-weight: bold; font-size: 11px; cursor: pointer; }
 
-        /* MODAIS */
         .fundo-modal-escuro { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 10000; }
         .modal-janela { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1e1e1e; padding: 25px; border-radius: 10px; z-index: 10001; max-width: 90%; max-height: 85vh; overflow-y: auto; }
         
-        /* GERENCIADOR DE USUARIOS */
         #modal-usuarios { width: 440px; border: 2px solid #ffeb3b; }
         .linha-usuario { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #333; font-size: 14px; }
         .btn-del-user { background: #c21a15; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
@@ -76,10 +72,9 @@
 
     <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
 
-    <!-- TELA DE LOGIN -->
     <div id="tela-login">
         <div class="login-box">
-            <h2>🔒 Painel DJ <span class="versao-tag">v3.1</span></h2>
+            <h2>🔒 Painel DJ <span class="versao-tag">v3.2</span></h2>
             <input type="text" id="emailLogin" placeholder="Login (ex: leonard)">
             <input type="password" id="senhaLogin" placeholder="Senha">
             <button class="btn-entrar" onclick="fazerLogin()">Entrar</button>
@@ -87,7 +82,6 @@
         </div>
     </div>
 
-    <!-- MODAL MANUAL -->
     <div id="fundo-modal-manual" class="fundo-modal-escuro" onclick="fecharManual()"></div>
     <div id="modal-manual-conteudo" class="modal-janela" style="width: 700px; border: 2px solid #00d2ff;">
         <h2 style="color: #00d2ff; margin-top: 0;">📖 Manual do Operador - Parada 10.95 Bar</h2>
@@ -100,28 +94,32 @@
         <button class="btn-util" style="width: 100%;" onclick="fecharManual()">Fechar</button>
     </div>
 
-    <!-- MODAL ADMINISTRADOR -->
     <div id="fundo-modal-usuarios" class="fundo-modal-escuro" onclick="fecharUsuarios()"></div>
     <div id="modal-usuarios" class="modal-janela">
         <h3 style="margin-top: 0; color: #ffeb3b;">👑 Painel do Administrador</h3>
         
-        <div style="margin-bottom: 15px; background: #111; padding: 12px; border-radius: 6px;">
-            <p style="margin: 0 0 6px 0; font-size: 12px; color: #aaa;">Cadastrar ou redefinir senha de operador:</p>
-            <input type="text" id="novoUsuario" placeholder="Login do operador (ex: paulo)" style="width: 100%; padding: 8px; margin-bottom: 6px; border-radius: 4px; border: 1px solid #333; background: #222; color: #fff;">
-            <input type="password" id="novaSenha" placeholder="Senha" style="width: 100%; padding: 8px; margin-bottom: 6px; border-radius: 4px; border: 1px solid #333; background: #222; color: #fff;">
-            <button class="btn-util" style="width: 100%; background: #28a745; border: none;" onclick="salvarDJ()">Salvar Acesso</button>
+        <div style="margin-bottom: 15px; background: #111; padding: 12px; border-radius: 6px; border-left: 4px solid #ffeb3b;">
+            <p style="margin: 0 0 6px 0; font-size: 12px; color: #ffeb3b; font-weight: bold;">Mudar Senha de Administrador:</p>
+            <input type="password" id="novaSenhaAdmin" placeholder="Nova senha do admin" style="width: 100%; padding: 8px; margin-bottom: 6px; border-radius: 4px; border: 1px solid #333; background: #222; color: #fff;">
+            <button class="btn-util" style="width: 100%; background: #d39e00; border: none; color: #111;" onclick="alterarSenhaAdmin()">Atualizar Senha Admin</button>
         </div>
 
-        <h4 style="margin: 10px 0 5px 0; font-size: 13px; color: #aaa;">Operadores Cadastrados:</h4>
+        <div style="margin-bottom: 15px; background: #111; padding: 12px; border-radius: 6px;">
+            <p style="margin: 0 0 6px 0; font-size: 12px; color: #aaa;">Cadastrar ou redefinir operador:</p>
+            <input type="text" id="novoUsuario" placeholder="Login do operador (ex: paulo)" style="width: 100%; padding: 8px; margin-bottom: 6px; border-radius: 4px; border: 1px solid #333; background: #222; color: #fff;">
+            <input type="password" id="novaSenha" placeholder="Senha" style="width: 100%; padding: 8px; margin-bottom: 6px; border-radius: 4px; border: 1px solid #333; background: #222; color: #fff;">
+            <button class="btn-util" style="width: 100%; background: #28a745; border: none;" onclick="salvarDJ()">Salvar Operador</button>
+        </div>
+
+        <h4 style="margin: 10px 0 5px 0; font-size: 13px; color: #aaa;">Operadores no Database:</h4>
         <div id="lista-usuarios-db" style="max-height: 150px; overflow-y: auto;">Carregando...</div>
 
         <button class="btn-util" style="width: 100%; margin-top: 15px;" onclick="fecharUsuarios()">Fechar</button>
     </div>
 
-    <!-- PAINEL PRINCIPAL -->
     <div class="container" id="painel-principal" style="display: none;">
         <div class="topo-barra">
-            <h2 style="margin: 0;">🎛️ Painel Karaokê <span class="versao-tag">v3.1</span></h2>
+            <h2 style="margin: 0;">🎛️ Painel Karaokê <span class="versao-tag">v3.2</span></h2>
             <div class="topo-acoes">
                 <button id="btn-admin-gerenciar" class="btn-util btn-admin" style="display: none;" onclick="abrirUsuarios()">👥 Painel Admin</button>
                 <button class="btn-util" onclick="abrirManual()">📖 Manual</button>
@@ -179,7 +177,6 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // RESTAURAÇÃO DA SESSÃO AO RECARREGAR
         const sessaoAtiva = sessionStorage.getItem('dj_logado');
         const sessaoRole = sessionStorage.getItem('dj_role');
 
@@ -191,7 +188,6 @@
             }
         }
 
-        // LOGIN INSTANTÂNEO E BLINDADO
         function fazerLogin() {
             const rawUser = document.getElementById('emailLogin').value.trim().toLowerCase();
             const senha = document.getElementById('senhaLogin').value;
@@ -204,34 +200,53 @@
             }
 
             erroEl.style.display = 'none';
+            erroEl.innerText = "Conectando ao database...";
+            erroEl.style.display = 'block';
+            erroEl.style.color = '#ffeb3b';
 
-            // 1. Administrador Principal (leonard) - Senha padrão 123456
             if (rawUser === 'leonard') {
-                if (senha === '123456') {
-                    sessionStorage.setItem('dj_logado', 'sim');
-                    sessionStorage.setItem('dj_role', 'admin');
-                    document.getElementById('tela-login').style.display = 'none';
-                    document.getElementById('painel-principal').style.display = 'block';
-                    document.getElementById('btn-admin-gerenciar').style.display = 'block';
-                } else {
-                    erroEl.innerText = "Senha de administrador incorreta!";
-                    erroEl.style.display = 'block';
-                }
-                return;
-            }
-
-            // 2. Operadores Comuns cadastrados via Painel Admin
-            let djsSalvos = JSON.parse(localStorage.getItem('karaoke_djs') || '{}');
-            
-            if (djsSalvos[rawUser] && String(djsSalvos[rawUser]) === String(senha)) {
-                sessionStorage.setItem('dj_logado', 'sim');
-                sessionStorage.setItem('dj_role', 'dj');
-                document.getElementById('tela-login').style.display = 'none';
-                document.getElementById('painel-principal').style.display = 'block';
-                document.getElementById('btn-admin-gerenciar').style.display = 'none';
+                database.ref('admin_senha').once('value').then(snapshot => {
+                    const senhaBanco = snapshot.val() || "123456";
+                    if (String(senhaBanco) === String(senha)) {
+                        concluirLogin('admin');
+                    } else {
+                        erroEl.style.color = '#ff5252';
+                        erroEl.innerText = "Senha de administrador incorreta!";
+                    }
+                }).catch(() => {
+                    if (senha === "123456") {
+                        concluirLogin('admin');
+                    } else {
+                        erroEl.style.color = '#ff5252';
+                        erroEl.innerText = "Erro ao acessar database e senha incorreta.";
+                    }
+                });
             } else {
-                erroEl.innerText = "Usuário ou senha incorretos!";
-                erroEl.style.display = 'block';
+                const usuarioLimpo = rawUser.replace(/[\.\#\$\[\]\/]/g, '_');
+                database.ref('djs/' + usuarioLimpo).once('value').then(snapshot => {
+                    const senhaBanco = snapshot.val();
+                    if (senhaBanco !== null && String(senhaBanco) === String(senha)) {
+                        concluirLogin('dj');
+                    } else {
+                        erroEl.style.color = '#ff5252';
+                        erroEl.innerText = "Usuário ou senha incorretos!";
+                    }
+                }).catch(() => {
+                    erroEl.style.color = '#ff5252';
+                    erroEl.innerText = "Erro ao conectar com o database.";
+                });
+            }
+        }
+
+        function concluirLogin(role) {
+            sessionStorage.setItem('dj_logado', 'sim');
+            sessionStorage.setItem('dj_role', role);
+            document.getElementById('tela-login').style.display = 'none';
+            document.getElementById('painel-principal').style.display = 'block';
+            if (role === 'admin') {
+                document.getElementById('btn-admin-gerenciar').style.display = 'block';
+            } else {
+                document.getElementById('btn-admin-gerenciar').style.display = 'none';
             }
         }
 
@@ -245,7 +260,6 @@
         document.getElementById('senhaLogin').addEventListener('keypress', checarEnter);
         document.getElementById('emailLogin').addEventListener('keypress', checarEnter);
 
-        // PAINEL ADMINISTRATIVO LOCAL
         function abrirUsuarios() {
             if (sessionStorage.getItem('dj_role') !== 'admin') return;
             document.getElementById('fundo-modal-usuarios').style.display = 'block';
@@ -257,57 +271,64 @@
             document.getElementById('modal-usuarios').style.display = 'none';
         }
 
+        function alterarSenhaAdmin() {
+            const novaSenha = document.getElementById('novaSenhaAdmin').value.trim();
+            if (!novaSenha) return alert("Digite a nova senha de administrador.");
+            database.ref('admin_senha').set(novaSenha).then(() => {
+                document.getElementById('novaSenhaAdmin').value = '';
+                alert("Senha de administrador atualizada no database!");
+            }).catch(() => alert("Erro ao salvar no database."));
+        }
+
         function carregarListaDJs() {
             const container = document.getElementById('lista-usuarios-db');
-            let djsSalvos = JSON.parse(localStorage.getItem('karaoke_djs') || '{}');
-            
-            const chaves = Object.keys(djsSalvos);
-            if (chaves.length === 0) {
-                container.innerHTML = "<p style='color:#777; font-size:12px;'>Nenhum operador adicional cadastrado.</p>";
-                return;
-            }
-            container.innerHTML = chaves.map(nome => `
-                <div class="linha-usuario">
-                    <span>👤 <strong>${nome}</strong></span>
-                    <button class="btn-del-user" onclick="excluirDJ('${nome}')">🗑️ Excluir</button>
-                </div>
-            `).join('');
+            database.ref('djs').once('value').then(snapshot => {
+                const djs = snapshot.val();
+                if (!djs) {
+                    container.innerHTML = "<p style='color:#777; font-size:12px;'>Nenhum operador cadastrado no database.</p>";
+                    return;
+                }
+                container.innerHTML = Object.keys(djs).map(nome => `
+                    <div class="linha-usuario">
+                        <span>👤 <strong>${nome}</strong></span>
+                        <button class="btn-del-user" onclick="excluirDJ('${nome}')">🗑️ Excluir</button>
+                    </div>
+                `).join('');
+            }).catch(() => {
+                container.innerHTML = "<p style='color:#ff5252; font-size:12px;'>Erro ao carregar do database.</p>";
+            });
         }
 
         function salvarDJ() {
-            const nome = document.getElementById('novoUsuario').value.trim().toLowerCase();
+            const nome = document.getElementById('novoUsuario').value.trim().toLowerCase().replace(/[\.\#\$\[\]\/]/g, '_');
             const senha = document.getElementById('novaSenha').value.trim();
             
             if (!nome || !senha) return alert("Preencha o login e a senha.");
             if (nome === 'leonard') return alert("O login 'leonard' é reservado ao Administrador.");
 
-            let djsSalvos = JSON.parse(localStorage.getItem('karaoke_djs') || '{}');
-            djsSalvos[nome] = senha;
-            localStorage.setItem('karaoke_djs', JSON.stringify(djsSalvos));
-
-            document.getElementById('novoUsuario').value = '';
-            document.getElementById('novaSenha').value = '';
-            carregarListaDJs();
-            alert(`Operador "${nome}" salvo com sucesso!`);
+            database.ref('djs/' + nome).set(senha).then(() => {
+                document.getElementById('novoUsuario').value = '';
+                document.getElementById('novaSenha').value = '';
+                carregarListaDJs();
+                alert(`Operador "${nome}" salvo no database!`);
+            }).catch(() => alert("Erro ao salvar no database."));
         }
 
         function excluirDJ(nome) {
-            if (confirm(`Deseja remover o acesso de "${nome}"?`)) {
-                let djsSalvos = JSON.parse(localStorage.getItem('karaoke_djs') || '{}');
-                delete djsSalvos[nome];
-                localStorage.setItem('karaoke_djs', JSON.stringify(djsSalvos));
-                carregarListaDJs();
+            if (confirm(`Deseja remover "${nome}" do database?`)) {
+                database.ref('djs/' + nome).remove().then(() => {
+                    carregarListaDJs();
+                }).catch(() => alert("Erro ao remover do database."));
             }
         }
 
         function abrirManual() { document.getElementById('fundo-modal-manual').style.display = 'block'; document.getElementById('modal-manual-conteudo').style.display = 'block'; }
         function fecharManual() { document.getElementById('fundo-modal-manual').style.display = 'none'; document.getElementById('modal-manual-conteudo').style.display = 'none'; }
 
-        // CONTROLES DE ÁUDIO E MICROFONE
         let streamMic = null; let micAtivo = false; let intervaloMic = null;
         function iniciarSistema() {
             const som = document.getElementById('audio-tambores');
-            som.volume = 0.5; // VOLUME 50%
+            som.volume = 0.5;
             som.muted = true;
             som.play().then(() => { som.pause(); som.currentTime = 0; som.muted = false; }).catch(() => {});
             abrirTV();
@@ -525,7 +546,7 @@
                     let valorEl = telaTV.document.getElementById('nota-valor');
                     valorEl.innerText = notaFinal;
                     valorEl.style.color = notaFinal >= 90 ? '#28a745' : notaFinal >= 75 ? '#ffeb3b' : '#e52d27';
-                    telaTV.document.getElementById('tela-resultado').style.display = 'flex';
+                    telaTV.document.getElementById('nota-resultado').style.display = 'flex';
                 }, 4000); 
             }
 
@@ -614,7 +635,9 @@
         }
 
         function atualizarTelaHistorico() { 
-            document.getElementById('historico').innerHTML = historicoDeReproducao.slice().reverse().map(item => `<div class="item-historico">✔️ ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span></div>`).join(''); 
+            document.getElementById('historico').innerHTML = historicoDeReproducao.slice().reverse().map(item => `
+                <div class="item-historico">✔️ ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span></div>
+            `).join(''); 
         }
         
         function atualizarTelaRanking() {
