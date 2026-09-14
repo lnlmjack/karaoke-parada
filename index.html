@@ -79,8 +79,8 @@
     <!-- TELA DE LOGIN -->
     <div id="tela-login">
         <div class="login-box">
-            <h2>🔒 Painel DJ <span class="versao-tag">v2.8</span></h2>
-            <input type="text" id="emailLogin" placeholder="Login (ex: leonard)">
+            <h2>🔒 Painel DJ <span class="versao-tag">v2.9</span></h2>
+            <input type="text" id="emailLogin" placeholder="Login (ex: leonard ou paulo)">
             <input type="password" id="senhaLogin" placeholder="Senha">
             <button class="btn-entrar" onclick="fazerLogin()">Entrar</button>
             <p id="erroLogin" style="color: #ff5252; display: none; margin-top: 12px; font-weight: bold; font-size: 13px;"></p>
@@ -121,7 +121,7 @@
     <!-- PAINEL PRINCIPAL -->
     <div class="container" id="painel-principal" style="display: none;">
         <div class="topo-barra">
-            <h2 style="margin: 0;">🎛️ Painel Karaokê <span class="versao-tag">v2.8</span></h2>
+            <h2 style="margin: 0;">🎛️ Painel Karaokê <span class="versao-tag">v2.9</span></h2>
             <div class="topo-acoes">
                 <button id="btn-admin-gerenciar" class="btn-util btn-admin" style="display: none;" onclick="abrirUsuarios()">👥 Painel Admin</button>
                 <button class="btn-util" onclick="abrirManual()">📖 Manual</button>
@@ -191,7 +191,7 @@
             }
         }
 
-        // LOGIN BLINDADO
+        // LOGIN SUPER SEGURO E INSTANTÂNEO
         function fazerLogin() {
             const rawUser = document.getElementById('emailLogin').value.trim().toLowerCase();
             const senha = document.getElementById('senhaLogin').value;
@@ -205,7 +205,7 @@
 
             erroEl.style.display = 'none';
 
-            // 1. Administrador principal (leonard) - Senha fixa padrão 123456
+            // 1. Administrador Principal (leonard) - Senha padrão 123456
             if (rawUser === 'leonard') {
                 if (senha === '123456') {
                     sessionStorage.setItem('dj_logado', 'sim');
@@ -220,24 +220,19 @@
                 return;
             }
 
-            // 2. Operadores comuns salvos na árvore 'djs' do banco
-            const usuarioLimpo = rawUser.replace(/[\.\#\$\[\]\/]/g, '_');
-            database.ref('djs/' + usuarioLimpo).once('value').then(snapshot => {
-                const senhaSalva = snapshot.val();
-                if (senhaSalva !== null && String(senhaSalva) === String(senha)) {
-                    sessionStorage.setItem('dj_logado', 'sim');
-                    sessionStorage.setItem('dj_role', 'dj');
-                    document.getElementById('tela-login').style.display = 'none';
-                    document.getElementById('painel-principal').style.display = 'block';
-                    document.getElementById('btn-admin-gerenciar').style.display = 'none';
-                } else {
-                    erroEl.innerText = "Usuário ou senha incorretos!";
-                    erroEl.style.display = 'block';
-                }
-            }).catch(err => {
-                erroEl.innerText = "Erro ao conectar com o banco de dados!";
+            // 2. Operadores Comuns cadastrados via Painel Admin
+            let djsSalvos = JSON.parse(localStorage.getItem('karaoke_djs') || '{}');
+            
+            if (djsSalvos[rawUser] && String(djsSalvos[rawUser]) === String(senha)) {
+                sessionStorage.setItem('dj_logado', 'sim');
+                sessionStorage.setItem('dj_role', 'dj');
+                document.getElementById('tela-login').style.display = 'none';
+                document.getElementById('painel-principal').style.display = 'block';
+                document.getElementById('btn-admin-gerenciar').style.display = 'none';
+            } else {
+                erroEl.innerText = "Usuário ou senha incorretos!";
                 erroEl.style.display = 'block';
-            });
+            }
         }
 
         function fazerLogout() {
@@ -250,7 +245,7 @@
         document.getElementById('senhaLogin').addEventListener('keypress', checarEnter);
         document.getElementById('emailLogin').addEventListener('keypress', checarEnter);
 
-        // PAINEL ADMINISTRATIVO
+        // PAINEL ADMINISTRATIVO LOCAL
         function abrirUsuarios() {
             if (sessionStorage.getItem('dj_role') !== 'admin') return;
             document.getElementById('fundo-modal-usuarios').style.display = 'block';
@@ -264,37 +259,44 @@
 
         function carregarListaDJs() {
             const container = document.getElementById('lista-usuarios-db');
-            database.ref('djs').on('value', snapshot => {
-                const djs = snapshot.val();
-                if (!djs) {
-                    container.innerHTML = "<p style='color:#777; font-size:12px;'>Nenhum operador adicional cadastrado.</p>";
-                    return;
-                }
-                container.innerHTML = Object.keys(djs).map(nome => `
-                    <div class="linha-usuario">
-                        <span>👤 <strong>${nome}</strong></span>
-                        <button class="btn-del-user" onclick="excluirDJ('${nome}')">🗑️ Excluir</button>
-                    </div>
-                `).join('');
-            });
+            let djsSalvos = JSON.parse(localStorage.getItem('karaoke_djs') || '{}');
+            
+            const chaves = Object.keys(djsSalvos);
+            if (chaves.length === 0) {
+                container.innerHTML = "<p style='color:#777; font-size:12px;'>Nenhum operador adicional cadastrado.</p>";
+                return;
+            }
+            container.innerHTML = chaves.map(nome => `
+                <div class="linha-usuario">
+                    <span>👤 <strong>${nome}</strong></span>
+                    <button class="btn-del-user" onclick="excluirDJ('${nome}')">🗑️ Excluir</button>
+                </div>
+            `).join('');
         }
 
         function salvarDJ() {
-            const nome = document.getElementById('novoUsuario').value.trim().toLowerCase().replace(/[\.\#\$\[\]\/]/g, '_');
+            const nome = document.getElementById('novoUsuario').value.trim().toLowerCase();
             const senha = document.getElementById('novaSenha').value.trim();
+            
             if (!nome || !senha) return alert("Preencha o login e a senha.");
-            if (nome === 'leonard') return alert("O login 'leonard' é reservado.");
+            if (nome === 'leonard') return alert("O login 'leonard' é reservado ao Administrador.");
 
-            database.ref('djs/' + nome).set(senha).then(() => {
-                document.getElementById('novoUsuario').value = '';
-                document.getElementById('novaSenha').value = '';
-                alert(`Acesso para "${nome}" salvo com sucesso!`);
-            });
+            let djsSalvos = JSON.parse(localStorage.getItem('karaoke_djs') || '{}');
+            djsSalvos[nome] = senha;
+            localStorage.setItem('karaoke_djs', JSON.stringify(djsSalvos));
+
+            document.getElementById('novoUsuario').value = '';
+            document.getElementById('novaSenha').value = '';
+            carregarListaDJs();
+            alert(`Operador "${nome}" salvo com sucesso!`);
         }
 
         function excluirDJ(nome) {
             if (confirm(`Deseja remover o acesso de "${nome}"?`)) {
-                database.ref('djs/' + nome).remove();
+                let djsSalvos = JSON.parse(localStorage.getItem('karaoke_djs') || '{}');
+                delete djsSalvos[nome];
+                localStorage.setItem('karaoke_djs', JSON.stringify(djsSalvos));
+                carregarListaDJs();
             }
         }
 
