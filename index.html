@@ -12,7 +12,6 @@
         body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; padding: 20px; margin: 0; }
         .container { max-width: 1600px; margin: 0 auto; position: relative; }
         
-        /* TOPO DO PAINEL */
         .topo-barra { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
         .topo-acoes { display: flex; gap: 10px; align-items: center; }
         .btn-util { background: #333; color: #fff; border: 1px solid #555; padding: 9px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; transition: 0.2s; }
@@ -58,23 +57,17 @@
 
     <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
 
-    <!-- MODAL MANUAL -->
     <div id="fundo-modal-manual" class="fundo-modal-escuro" onclick="fecharManual()"></div>
     <div id="modal-manual-conteudo" class="modal-janela" style="width: 700px; border: 2px solid #00d2ff;">
         <h2 style="color: #00d2ff; margin-top: 0;">📖 Manual do Operador - Parada 10.95 Bar</h2>
         <p>1. Clique em <strong>🚀 INICIAR SISTEMA E TV</strong>, posicione a janela na TV e tecle F11.</p>
         <p>2. Clique em <strong>🎙️ AVALIADOR</strong> para ativar a captação de áudio.</p>
-        <div style="background: #111; padding: 12px; border-radius: 6px; margin: 15px 0;">
-            <strong>⚙️ Atalhos Rápidos de Nota:</strong><br>
-            Aperte 6 = Nota 60 a 69 | Aperte 7 = 70 a 79 | Aperte 8 = 80 a 89 | Aperte 9 = 90 a 99 | Aperte 0 = 100
-        </div>
         <button class="btn-util" style="width: 100%;" onclick="fecharManual()">Fechar</button>
     </div>
 
-    <!-- PAINEL PRINCIPAL (ABERTO DIRETO) -->
     <div class="container" id="painel-principal">
         <div class="topo-barra">
-            <h2 style="margin: 0;">🎛️ Painel Karaokê <span class="versao-tag">v3.5 (Sem Senha)</span></h2>
+            <h2 style="margin: 0;">🎛️ Painel Karaokê <span class="versao-tag">v3.6</span></h2>
             <div class="topo-acoes">
                 <button class="btn-util" onclick="abrirManual()">📖 Manual</button>
             </div>
@@ -260,7 +253,8 @@
         document.getElementById('campoBusca').addEventListener('keypress', e => { if (e.key === 'Enter') buscarNoYouTube(); });
 
         function abrirTV() {
-            const htmlTV = `<!DOCTYPE html>
+            telaTV = window.open("", "TelaTV", "width=800,height=600");
+            telaTV.document.write(`<!DOCTYPE html>
             <html>
             <head>
                 <meta charset="UTF-8">
@@ -301,11 +295,8 @@
                 </script>
                 <script src="https://www.youtube.com/iframe_api"></script>
             </body>
-            </html>`;
-
-            const blob = new Blob([htmlTV], { type: 'text/html' });
-            const urlBlob = URL.createObjectURL(blob);
-            telaTV = window.open(urlBlob, "TelaTV", "width=800,height=600");
+            </html>`);
+            telaTV.document.close();
 
             monitorTV = setInterval(() => {
                 if (telaTV && telaTV.closed) {
