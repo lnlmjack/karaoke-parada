@@ -152,6 +152,7 @@
 
         function iniciarSistema() {
             const som = document.getElementById('audio-tambores');
+            som.volume = 0.5; // VOLUME DOS TAMBORES REDUZIDO PELA METADE
             som.muted = true;
             som.play().then(() => {
                 som.pause();
