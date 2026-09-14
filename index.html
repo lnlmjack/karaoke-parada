@@ -172,6 +172,7 @@
     </div>
 
     <script>
+        // CONFIGURAÇÃO DO FIREBASE COM A CHAVE CORRETA
         const firebaseConfig = {
             apiKey: "AIzaSyBMLhTZc7qQLjE65L3BuW9e2ijvxObTxp8",
             authDomain: "karaoke-parada.firebaseapp.com",
@@ -183,24 +184,21 @@
         };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-        const auth = firebase.auth(); // Inicializando Autenticação
+        const auth = firebase.auth(); 
 
         // CONTROLE DE LOGIN E SESSÃO
         auth.onAuthStateChanged(user => {
             if (user) {
-                // Logado
                 document.getElementById('tela-login').style.display = 'none';
                 document.getElementById('painel-principal').style.display = 'block';
                 document.getElementById('btn-manual').style.display = 'block';
             } else {
-                // Deslogado
                 document.getElementById('tela-login').style.display = 'flex';
                 document.getElementById('painel-principal').style.display = 'none';
                 document.getElementById('btn-manual').style.display = 'none';
             }
         });
 
-        // FUNÇÃO DE LOGIN APRIMORADA PARA EXIBIR ERROS CLAROS
         function fazerLogin() {
             const email = document.getElementById('emailLogin').value.trim();
             const senha = document.getElementById('senhaLogin').value;
@@ -215,24 +213,23 @@
 
             erroEl.innerText = "Conectando...";
             erroEl.style.display = 'block';
-            erroEl.style.color = '#ffeb3b'; // Mostra amarelo enquanto carrega
+            erroEl.style.color = '#ffeb3b'; 
             
             auth.signInWithEmailAndPassword(email, senha).then(() => {
-                // Sucesso, o onAuthStateChanged vai esconder a tela
                 erroEl.style.display = 'none';
             }).catch(error => {
-                erroEl.style.color = '#ff5252'; // Volta pra vermelho
+                erroEl.style.color = '#ff5252'; 
                 
-                // MENSAGEM PADRÃO COM CÓDIGO DO FIREBASE (Para sabermos o que houve)
                 let msg = "Erro: " + error.code;
                 
-                // TRADUÇÃO DOS ERROS MAIS COMUNS
                 if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
                     msg = "E-mail ou senha incorretos!";
                 } else if (error.code === 'auth/invalid-email') {
                     msg = "O formato do e-mail é inválido!";
                 } else if (error.code === 'auth/network-request-failed') {
                     msg = "Erro de conexão ou Domínio não autorizado no Firebase!";
+                } else if (error.code === 'auth/api-key-not-valid') {
+                    msg = "A chave apiKey do código não é válida!";
                 } else if (error.code === 'auth/too-many-requests') {
                     msg = "Muitas tentativas! O Firebase bloqueou temporariamente.";
                 }
@@ -247,6 +244,9 @@
 
         // PERMITIR APERTAR ENTER PARA LOGAR
         document.getElementById('senhaLogin').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') fazerLogin();
+        });
+        document.getElementById('emailLogin').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') fazerLogin();
         });
 
@@ -398,6 +398,14 @@
                 <div class="linha-voto"><span style="color:#e52d27">😖 Ruim:</span> <strong>${contagemVotos.ruim}</strong></div>
             `;
         }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === '6') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 60; }
+            if (event.key === '7') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 70; }
+            if (event.key === '8') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 80; }
+            if (event.key === '9') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 90; }
+            if (event.key === '0') { notaForcadaPeloDJ = 100; }
+        });
 
         document.getElementById('campoBusca').addEventListener('keypress', e => { if(e.key === 'Enter') buscarNoYouTube(); });
 
