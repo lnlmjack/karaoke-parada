@@ -12,21 +12,11 @@
         body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; padding: 20px; margin: 0; }
         .container { max-width: 1600px; margin: 0 auto; position: relative; }
         
-        #tela-login { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #121212; z-index: 9999; display: flex; justify-content: center; align-items: center; }
-        .login-box { background: #1e1e1e; padding: 35px 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); text-align: center; width: 90%; max-width: 380px; border: 2px solid #e52d27; }
-        .login-box h2 { color: #fff; margin-top: 0; margin-bottom: 20px; font-size: 22px; }
-        .login-box input { width: 100%; padding: 12px 15px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-size: 15px; }
-        .btn-entrar { background: #e52d27; color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-entrar:hover { background: #c21a15; }
-
+        /* TOPO DO PAINEL */
         .topo-barra { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
         .topo-acoes { display: flex; gap: 10px; align-items: center; }
         .btn-util { background: #333; color: #fff; border: 1px solid #555; padding: 9px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; transition: 0.2s; }
         .btn-util:hover { background: #444; }
-        .btn-admin { background: #d39e00; border-color: #b08500; color: #111; }
-        .btn-admin:hover { background: #e0a800; }
-        .btn-sair { background: #7a1c1c; border-color: #a32a2a; }
-        .btn-sair:hover { background: #962222; }
 
         .area-botoes-topo { display: flex; gap: 15px; margin-bottom: 20px; }
         .btn-topo { flex: 1; padding: 14px; font-size: 15px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s;}
@@ -61,10 +51,6 @@
         .fundo-modal-escuro { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 10000; }
         .modal-janela { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1e1e1e; padding: 25px; border-radius: 10px; z-index: 10001; max-width: 90%; max-height: 85vh; overflow-y: auto; }
         
-        #modal-usuarios { width: 440px; border: 2px solid #ffeb3b; }
-        .linha-usuario { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #333; font-size: 14px; }
-        .btn-del-user { background: #c21a15; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
-
         .versao-tag { font-size: 11px; color: #666; font-weight: bold; margin-left: 5px; }
     </style>
 </head>
@@ -72,54 +58,25 @@
 
     <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
 
-    <div id="tela-login">
-        <div class="login-box">
-            <h2>🔒 Painel DJ <span class="versao-tag">v3.4</span></h2>
-            <input type="text" id="emailLogin" placeholder="Login (ex: leonard)">
-            <input type="password" id="senhaLogin" placeholder="Senha">
-            <button id="btnEntrar" class="btn-entrar" onclick="fazerLogin()">Entrar</button>
-            <p id="erroLogin" style="color: #ff5252; display: none; margin-top: 12px; font-weight: bold; font-size: 13px;"></p>
-        </div>
-    </div>
-
+    <!-- MODAL MANUAL -->
     <div id="fundo-modal-manual" class="fundo-modal-escuro" onclick="fecharManual()"></div>
     <div id="modal-manual-conteudo" class="modal-janela" style="width: 700px; border: 2px solid #00d2ff;">
         <h2 style="color: #00d2ff; margin-top: 0;">📖 Manual do Operador - Parada 10.95 Bar</h2>
         <p>1. Clique em <strong>🚀 INICIAR SISTEMA E TV</strong>, posicione a janela na TV e tecle F11.</p>
         <p>2. Clique em <strong>🎙️ AVALIADOR</strong> para ativar a captação de áudio.</p>
+        <div style="background: #111; padding: 12px; border-radius: 6px; margin: 15px 0;">
+            <strong>⚙️ Atalhos Rápidos de Nota:</strong><br>
+            Aperte 6 = Nota 60 a 69 | Aperte 7 = 70 a 79 | Aperte 8 = 80 a 89 | Aperte 9 = 90 a 99 | Aperte 0 = 100
+        </div>
         <button class="btn-util" style="width: 100%;" onclick="fecharManual()">Fechar</button>
     </div>
 
-    <div id="fundo-modal-usuarios" class="fundo-modal-escuro" onclick="fecharUsuarios()"></div>
-    <div id="modal-usuarios" class="modal-janela">
-        <h3 style="margin-top: 0; color: #ffeb3b;">👑 Painel do Administrador</h3>
-        
-        <div style="margin-bottom: 15px; background: #111; padding: 12px; border-radius: 6px; border-left: 4px solid #ffeb3b;">
-            <p style="margin: 0 0 6px 0; font-size: 12px; color: #ffeb3b; font-weight: bold;">Mudar Senha de Administrador (Database):</p>
-            <input type="password" id="novaSenhaAdmin" placeholder="Nova senha do admin" style="width: 100%; padding: 8px; margin-bottom: 6px; border-radius: 4px; border: 1px solid #333; background: #222; color: #fff;">
-            <button class="btn-util" style="width: 100%; background: #d39e00; border: none; color: #111;" onclick="alterarSenhaAdmin()">Atualizar Senha Admin</button>
-        </div>
-
-        <div style="margin-bottom: 15px; background: #111; padding: 12px; border-radius: 6px;">
-            <p style="margin: 0 0 6px 0; font-size: 12px; color: #aaa;">Cadastrar ou redefinir operador (Database):</p>
-            <input type="text" id="novoUsuario" placeholder="Login do operador (ex: paulo)" style="width: 100%; padding: 8px; margin-bottom: 6px; border-radius: 4px; border: 1px solid #333; background: #222; color: #fff;">
-            <input type="password" id="novaSenha" placeholder="Senha" style="width: 100%; padding: 8px; margin-bottom: 6px; border-radius: 4px; border: 1px solid #333; background: #222; color: #fff;">
-            <button class="btn-util" style="width: 100%; background: #28a745; border: none;" onclick="salvarDJ()">Salvar Operador</button>
-        </div>
-
-        <h4 style="margin: 10px 0 5px 0; font-size: 13px; color: #aaa;">Operadores Cadastrados:</h4>
-        <div id="lista-usuarios-db" style="max-height: 150px; overflow-y: auto;">Carregando...</div>
-
-        <button class="btn-util" style="width: 100%; margin-top: 15px;" onclick="fecharUsuarios()">Fechar</button>
-    </div>
-
-    <div class="container" id="painel-principal" style="display: none;">
+    <!-- PAINEL PRINCIPAL (ABERTO DIRETO) -->
+    <div class="container" id="painel-principal">
         <div class="topo-barra">
-            <h2 style="margin: 0;">🎛️ Painel Karaokê <span class="versao-tag">v3.4</span></h2>
+            <h2 style="margin: 0;">🎛️ Painel Karaokê <span class="versao-tag">v3.5 (Sem Senha)</span></h2>
             <div class="topo-acoes">
-                <button id="btn-admin-gerenciar" class="btn-util btn-admin" style="display: none;" onclick="abrirUsuarios()">👥 Painel Admin</button>
                 <button class="btn-util" onclick="abrirManual()">📖 Manual</button>
-                <button class="btn-util btn-sair" onclick="fazerLogout()">🚪 Sair</button>
             </div>
         </div>
         
@@ -173,174 +130,9 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Verifica sessão ativa ao carregar
-        if (sessionStorage.getItem('dj_logado') === 'sim') {
-            document.getElementById('tela-login').style.display = 'none';
-            document.getElementById('painel-principal').style.display = 'block';
-            if (sessionStorage.getItem('dj_role') === 'admin') {
-                document.getElementById('btn-admin-gerenciar').style.display = 'block';
-            }
-        }
-
-        // LOGIN ASSÍNCRONO ROBUSTO COM DATABASE
-        async function fazerLogin() {
-            const userIn = document.getElementById('emailLogin').value.trim().toLowerCase();
-            const senhaIn = document.getElementById('senhaLogin').value;
-            const erroEl = document.getElementById('erroLogin');
-            const btnEl = document.getElementById('btnEntrar');
-
-            if (!userIn || !senhaIn) {
-                erroEl.style.color = '#ff5252';
-                erroEl.innerText = "Preencha o login e a senha!";
-                erroEl.style.display = 'block';
-                return;
-            }
-
-            erroEl.style.color = '#ffeb3b';
-            erroEl.innerText = "Conectando ao Database...";
-            erroEl.style.display = 'block';
-            btnEl.disabled = true;
-
-            try {
-                if (userIn === 'leonard') {
-                    // Busca senha do Admin no Database
-                    let snap = await database.ref('admin/senha').once('value');
-                    let senhaBanco = snap.val();
-
-                    if (!senhaBanco) {
-                        // Se não existir, define "123456" automaticamente no Database
-                        await database.ref('admin/senha').set("123456");
-                        senhaBanco = "123456";
-                    }
-
-                    if (String(senhaBanco) === String(senhaIn)) {
-                        entrarSistema('admin');
-                    } else {
-                        mostrarErro("Senha de administrador incorreta!");
-                    }
-                } else {
-                    // Busca operador no Database
-                    const userLimpo = userIn.replace(/[\.\#\$\[\]\/]/g, '_');
-                    let snap = await database.ref('operadores/' + userLimpo).once('value');
-                    let senhaBanco = snap.val();
-
-                    if (senhaBanco !== null && String(senhaBanco) === String(senhaIn)) {
-                        entrarSistema('dj');
-                    } else {
-                        mostrarErro("Usuário ou senha incorretos!");
-                    }
-                }
-            } catch (err) {
-                console.error("Erro no login:", err);
-                mostrarErro("Erro de conexão com o Database. Verifique sua rede.");
-            } finally {
-                btnEl.disabled = false;
-            }
-        }
-
-        function mostrarErro(msg) {
-            const erroEl = document.getElementById('erroLogin');
-            erroEl.style.color = '#ff5252';
-            erroEl.innerText = msg;
-            erroEl.style.display = 'block';
-        }
-
-        function entrarSistema(role) {
-            sessionStorage.setItem('dj_logado', 'sim');
-            sessionStorage.setItem('dj_role', role);
-            document.getElementById('tela-login').style.display = 'none';
-            document.getElementById('painel-principal').style.display = 'block';
-            if (role === 'admin') {
-                document.getElementById('btn-admin-gerenciar').style.display = 'block';
-            }
-        }
-
-        function fazerLogout() {
-            sessionStorage.clear();
-            location.reload();
-        }
-
-        function checarEnter(e) { if (e.key === 'Enter') fazerLogin(); }
-        document.getElementById('senhaLogin').addEventListener('keypress', checarEnter);
-        document.getElementById('emailLogin').addEventListener('keypress', checarEnter);
-
-        // GERENCIAMENTO ADMIN NO DATABASE
-        function abrirUsuarios() {
-            if (sessionStorage.getItem('dj_role') !== 'admin') return;
-            document.getElementById('fundo-modal-usuarios').style.display = 'block';
-            document.getElementById('modal-usuarios').style.display = 'block';
-            carregarListaOperadores();
-        }
-        function fecharUsuarios() {
-            document.getElementById('fundo-modal-usuarios').style.display = 'none';
-            document.getElementById('modal-usuarios').style.display = 'none';
-        }
-
-        async function alterarSenhaAdmin() {
-            const novaSenha = document.getElementById('novaSenhaAdmin').value.trim();
-            if (!novaSenha) return alert("Digite a nova senha de administrador.");
-            try {
-                await database.ref('admin/senha').set(novaSenha);
-                document.getElementById('novaSenhaAdmin').value = '';
-                alert("Senha de administrador atualizada no Database com sucesso!");
-            } catch (e) {
-                alert("Erro ao salvar no Database.");
-            }
-        }
-
-        async function carregarListaOperadores() {
-            const container = document.getElementById('lista-usuarios-db');
-            try {
-                let snap = await database.ref('operadores').once('value');
-                let ops = snap.val();
-                if (!ops) {
-                    container.innerHTML = "<p style='color:#777; font-size:12px;'>Nenhum operador cadastrado no Database.</p>";
-                    return;
-                }
-                container.innerHTML = Object.keys(ops).map(nome => `
-                    <div class="linha-usuario">
-                        <span>👤 <strong>${nome}</strong></span>
-                        <button class="btn-del-user" onclick="excluirOperador('${nome}')">🗑️ Excluir</button>
-                    </div>
-                `).join('');
-            } catch (e) {
-                container.innerHTML = "<p style='color:#ff5252; font-size:12px;'>Erro ao carregar do Database.</p>";
-            }
-        }
-
-        async function salvarDJ() {
-            const nome = document.getElementById('novoUsuario').value.trim().toLowerCase().replace(/[\.\#\$\[\]\/]/g, '_');
-            const senha = document.getElementById('novaSenha').value.trim();
-            
-            if (!nome || !senha) return alert("Preencha o login e a senha.");
-            if (nome === 'leonard') return alert("O login 'leonard' é reservado ao Administrador.");
-
-            try {
-                await database.ref('operadores/' + nome).set(senha);
-                document.getElementById('novoUsuario').value = '';
-                document.getElementById('novaSenha').value = '';
-                carregarListaOperadores();
-                alert(`Operador "${nome}" salvo no Database!`);
-            } catch (e) {
-                alert("Erro ao salvar no Database.");
-            }
-        }
-
-        async function excluirOperador(nome) {
-            if (confirm(`Deseja remover "${nome}" do Database?`)) {
-                try {
-                    await database.ref('operadores/' + nome).remove();
-                    carregarListaOperadores();
-                } catch (e) {
-                    alert("Erro ao remover do Database.");
-                }
-            }
-        }
-
         function abrirManual() { document.getElementById('fundo-modal-manual').style.display = 'block'; document.getElementById('modal-manual-conteudo').style.display = 'block'; }
         function fecharManual() { document.getElementById('fundo-modal-manual').style.display = 'none'; document.getElementById('modal-manual-conteudo').style.display = 'none'; }
 
-        // Restante do sistema (Áudio, TV, YouTube, Fila, Ranking)
         let streamMic = null; let micAtivo = false; let intervaloMic = null;
         function iniciarSistema() {
             const som = document.getElementById('audio-tambores');
