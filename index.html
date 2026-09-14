@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Painel do DJ - Karaokê</title>
-    <!-- Adicionando o Firebase Auth -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
     
     <style>
@@ -20,7 +18,7 @@
         .login-box input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-size: 16px; box-sizing: border-box;}
         .btn-entrar { background: #e52d27; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn-entrar:hover { background: #c21a15; }
-        .btn-sair { background: #333; color: #fff; border: 1px solid #555; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-sair { background: #333; color: #fff; border: 1px solid #555; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 14px; }
         .btn-sair:hover { background: #555; }
 
         .area-botoes-topo { display: flex; gap: 15px; margin-bottom: 25px; }
@@ -70,7 +68,6 @@
         #modal-manual-conteudo .segredo { background: #222; border-left: 4px solid #28a745; padding: 15px; margin-top: 20px; border-radius: 5px; font-style: italic; }
         #fundo-modal-manual { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 299; }
         
-        /* Indicador de Versão */
         .versao-app { position: fixed; bottom: 8px; right: 12px; font-size: 12px; color: #555; z-index: 10000; pointer-events: none; font-weight: bold; }
     </style>
 </head>
@@ -78,16 +75,16 @@
 
     <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
 
-    <div class="versao-app">v2.1</div>
+    <div class="versao-app">v2.2</div>
 
     <!-- TELA DE LOGIN -->
     <div id="tela-login">
         <div class="login-box">
             <h2>🔒 Acesso ao Painel DJ</h2>
-            <input type="email" id="emailLogin" placeholder="E-mail de Acesso">
+            <input type="text" id="emailLogin" placeholder="Usuário ou E-mail">
             <input type="password" id="senhaLogin" placeholder="Senha">
             <button class="btn-entrar" onclick="fazerLogin()">Entrar no Sistema</button>
-            <p id="erroLogin" style="color: #ff5252; display: none; margin-top: 15px; font-weight: bold; font-size: 14px; word-break: break-word;"></p>
+            <p id="erroLogin" style="color: #ff5252; display: none; margin-top: 15px; font-weight: bold; font-size: 14px;"></p>
         </div>
     </div>
 
@@ -132,7 +129,7 @@
 
     <button id="btn-manual" onclick="abrirManual()">📖 Manual do Sistema</button>
 
-    <!-- PAINEL PRINCIPAL (Oculto até o login) -->
+    <!-- PAINEL PRINCIPAL -->
     <div class="container" id="painel-principal" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
             <h1 style="margin: 0; padding-top: 10px;">🎛️ Painel de Controle - Karaokê</h1>
@@ -177,7 +174,7 @@
     </div>
 
     <script>
-        // CONFIGURAÇÃO DO FIREBASE COM A CHAVE JÁ INSERIDA
+        // CONFIGURAÇÃO DO BANCO DE DADOS
         const firebaseConfig = {
             apiKey: "AIzaSyBMLhTZc7qQLjE65L3BuW9e2ijvxObTxp8",
             authDomain: "karaoke-parada.firebaseapp.com",
@@ -185,76 +182,62 @@
             projectId: "karaoke-parada",
             storageBucket: "karaoke-parada.firebasestorage.app",
             messagingSenderId: "379214932685",
-            appId: "1:379214932685:web:873e8b5b7d882a4f751784"
+            appId: "1:379214932685:web:936382160fc3ec07751784"
         };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-        const auth = firebase.auth(); 
 
-        // CONTROLE DE LOGIN E SESSÃO
-        auth.onAuthStateChanged(user => {
-            if (user) {
+        // LISTA DE USUÁRIOS E SENHAS AUTORIZADOS
+        // Para adicionar mais usuários no futuro, basta acrescentar uma linha: "usuario": "senha",
+        const USUARIOS_AUTORIZADOS = {
+            "leonard@parada.com.br": "123456",
+            "leonard@karaokedoparada.com.br": "123456",
+            "dj@parada.com": "parada1095"
+        };
+
+        // VERIFICA SE JÁ ESTAVA LOGADO NESTE NAVEGADOR
+        if (sessionStorage.getItem('dj_logado') === 'sim') {
+            document.getElementById('tela-login').style.display = 'none';
+            document.getElementById('painel-principal').style.display = 'block';
+            document.getElementById('btn-manual').style.display = 'block';
+        }
+
+        function fazerLogin() {
+            const usuario = document.getElementById('emailLogin').value.trim().toLowerCase();
+            const senha = document.getElementById('senhaLogin').value;
+            const erroEl = document.getElementById('erroLogin');
+
+            if (!usuario || !senha) {
+                erroEl.innerText = "Preencha o usuário e a senha!";
+                erroEl.style.display = 'block';
+                return;
+            }
+
+            if (USUARIOS_AUTORIZADOS[usuario] && USUARIOS_AUTORIZADOS[usuario] === senha) {
+                erroEl.style.display = 'none';
+                sessionStorage.setItem('dj_logado', 'sim');
                 document.getElementById('tela-login').style.display = 'none';
                 document.getElementById('painel-principal').style.display = 'block';
                 document.getElementById('btn-manual').style.display = 'block';
             } else {
-                document.getElementById('tela-login').style.display = 'flex';
-                document.getElementById('painel-principal').style.display = 'none';
-                document.getElementById('btn-manual').style.display = 'none';
-            }
-        });
-
-        function fazerLogin() {
-            const email = document.getElementById('emailLogin').value.trim();
-            const senha = document.getElementById('senhaLogin').value;
-            const erroEl = document.getElementById('erroLogin');
-            
-            if(!email || !senha) {
-                erroEl.innerText = "Preencha o e-mail e a senha!";
+                erroEl.innerText = "Usuário ou senha incorretos!";
                 erroEl.style.display = 'block';
-                erroEl.style.color = '#ff5252';
-                return;
             }
-
-            erroEl.innerText = "Conectando...";
-            erroEl.style.display = 'block';
-            erroEl.style.color = '#ffeb3b'; 
-            
-            auth.signInWithEmailAndPassword(email, senha).then(() => {
-                erroEl.style.display = 'none';
-            }).catch(error => {
-                erroEl.style.color = '#ff5252'; 
-                
-                let msg = "Erro: " + error.code;
-                
-                if (error.code.includes('invalid-credential') || error.code.includes('user-not-found') || error.code.includes('wrong-password')) {
-                    msg = "E-mail ou senha incorretos!";
-                } else if (error.code.includes('invalid-email')) {
-                    msg = "O formato do e-mail é inválido!";
-                } else if (error.code.includes('network-request-failed')) {
-                    msg = "Erro de conexão ou Domínio não autorizado no Firebase!";
-                } else if (error.code.includes('api-key-not-valid')) {
-                    msg = "A chave apiKey do código não é válida!";
-                } else if (error.code.includes('too-many-requests')) {
-                    msg = "Muitas tentativas! O Firebase bloqueou temporariamente.";
-                }
-
-                erroEl.innerText = msg;
-            });
         }
 
         function fazerLogout() {
-            auth.signOut();
+            sessionStorage.removeItem('dj_logado');
+            location.reload();
         }
 
-        // PERMITIR APERTAR ENTER PARA LOGAR
+        // SUPORTE A TECLA ENTER
         function checarEnter(e) {
             if (e.key === 'Enter') fazerLogin();
         }
         document.getElementById('senhaLogin').addEventListener('keypress', checarEnter);
         document.getElementById('emailLogin').addEventListener('keypress', checarEnter);
 
-        // RESTO DO SISTEMA DO DJ
+        // CONTROLES DE ÁUDIO E MICROFONE
         let streamMic = null; let micAtivo = false; let intervaloMic = null;
 
         function abrirManual() { document.getElementById('fundo-modal-manual').style.display = 'block'; document.getElementById('modal-manual-conteudo').style.display = 'block'; }
