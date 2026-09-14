@@ -183,7 +183,7 @@
         };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-        const auth = firebase.auth(); // Inicializando Autenticação
+        const auth = firebase.auth(); 
 
         // CONTROLE DE LOGIN E SESSÃO
         auth.onAuthStateChanged(user => {
@@ -211,12 +211,20 @@
                 return;
             }
 
-            erroEl.style.display = 'none'; // limpa erro anterior
+            erroEl.style.display = 'none'; 
             
             auth.signInWithEmailAndPassword(email, senha).catch(error => {
-                let msg = "Erro ao fazer login.";
-                if(error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') msg = "E-mail ou senha incorretos!";
-                if(error.code === 'auth/invalid-email') msg = "E-mail inválido!";
+                // AQUI O ERRO MOSTRARÁ O MOTIVO EXATO DO FIREBASE
+                let msg = "Erro (" + error.code + "): " + error.message;
+                
+                if(error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    msg = "E-mail ou senha incorretos!";
+                } else if(error.code === 'auth/invalid-email') {
+                    msg = "O formato do e-mail é inválido!";
+                } else if(error.code === 'auth/network-request-failed') {
+                    msg = "Erro de conexão ou domínio não autorizado!";
+                }
+
                 erroEl.innerText = msg;
                 erroEl.style.display = 'block';
             });
