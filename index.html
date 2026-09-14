@@ -8,77 +8,104 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
     
     <style>
-        * { box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; padding: 20px; margin: 0; }
         .container { max-width: 1600px; margin: 0 auto; position: relative; }
         
-        /* TOPO DO PAINEL */
-        .topo-barra { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
-        .topo-acoes { display: flex; gap: 10px; align-items: center; }
-        .btn-util { background: #333; color: #fff; border: 1px solid #555; padding: 9px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; transition: 0.2s; }
-        .btn-util:hover { background: #444; }
-
-        .area-botoes-topo { display: flex; gap: 15px; margin-bottom: 20px; }
-        .btn-topo { flex: 1; padding: 14px; font-size: 15px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s;}
-        .btn-tv { background: #007bff; } .btn-tv:hover { background: #0056b3; }
+        .area-botoes-topo { display: flex; gap: 15px; margin-bottom: 25px; }
+        .btn-topo { flex: 1; padding: 15px; font-size: 16px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s;}
+        .btn-tv { background: #007bff; } .btn-tv:hover { background: #0056b3; } .btn-tv.conectado { background: #17a2b8; pointer-events: none; }
         .btn-mic { background: #e52d27; text-align: center; display: flex; align-items: center; justify-content: center; } 
         .btn-mic:hover { filter: brightness(1.2); }
         
-        .btn-tocar { background: #28a745; width: 100%; padding: 14px; font-size: 15px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 20px;}
+        .btn-tocar { background: #28a745; width: 100%; padding: 15px; font-size: 16px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 20px;}
 
         .area-busca { display: flex; gap: 10px; margin-bottom: 15px; }
-        .area-busca input { flex: 1; padding: 12px; border-radius: 6px; border: 1px solid #333; background: #1e1e1e; color: #fff; font-size: 15px; }
-        .btn-buscar { padding: 12px 22px; background: #e52d27; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer;}
+        input { flex: 1; padding: 12px; border-radius: 5px; border: none; font-size: 16px; }
+        .btn-buscar { padding: 12px 25px; background: #e52d27; color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer;}
         
         .paineis { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
-        .painel { background: #1e1e1e; padding: 15px; border-radius: 8px; height: 460px; overflow-y: auto; position: relative;}
+        .painel { background: #1e1e1e; padding: 15px; border-radius: 8px; height: 450px; overflow-y: auto; position: relative;}
         
-        .item-resultado, .item-fila, .item-historico, .item-ranking { margin: 8px 0; padding: 10px 12px; background: #2a2a2a; border-radius: 5px; }
+        .item-resultado, .item-fila, .item-historico, .item-ranking { margin: 10px 0; padding: 12px; background: #333; border-radius: 5px; }
         .item-resultado { cursor: pointer; transition: 0.2s; } .item-resultado:hover { background: #e52d27; }
         
-        .item-fila { border-left: 4px solid #e52d27; display: flex; justify-content: space-between; align-items: center; }
-        .titulo-musica { flex: 1; font-size: 13px; line-height: 1.3; } .nome-cantor { color: #aaa; font-size: 11px; display: block; font-style: italic; }
-        .botoes-acao { display: flex; gap: 4px; } 
-        .btn-acao { background: transparent; border: none; cursor: pointer; font-size: 15px; padding: 4px; } 
-        .btn-acao:hover { transform: scale(1.15); }
+        .item-fila { border-left: 5px solid #e52d27; display: flex; justify-content: space-between; align-items: center; }
+        .titulo-musica { flex: 1; font-size: 14px; } .nome-cantor { color: #aaa; font-size: 12px; display: block; font-style: italic; }
+        .botoes-acao { display: flex; gap: 3px; } .btn-acao { background: transparent; border: none; cursor: pointer; font-size: 16px; padding: 5px; transition: 0.2s;} .btn-acao:hover { transform: scale(1.2); }
         
-        .item-historico { border-left: 4px solid #28a745; color: #888; font-size: 13px; }
-        .item-ranking { border-left: 4px solid #ffeb3b; font-size: 13px; }
-        .pontuacao { font-size: 24px; color: #ffeb3b; font-weight: 900; }
+        .item-historico { border-left: 5px solid #28a745; color: #888; font-size: 14px; background: #222; }
+        .item-ranking { border-left: 5px solid #ffeb3b; background: #222; font-size: 14px; display: flex; flex-direction: column; align-items: stretch; transition: 0.2s; }
+        .item-ranking:hover { background: #2a2a2a; }
+        .info-ranking { flex: 1; } .pontuacao { font-size: 26px; color: #ffeb3b; font-weight: 900; margin-left: 10px; }
 
-        #contador-votos { position: absolute; top: 12px; right: 12px; background: #e52d27; padding: 6px 10px; border-radius: 15px; font-weight: bold; font-size: 11px; cursor: pointer; }
+        #contador-votos { position: absolute; top: 15px; right: 15px; background: #e52d27; padding: 8px 12px; border-radius: 20px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        #contador-votos:hover { transform: scale(1.05); background: #c21a15; }
 
-        .fundo-modal-escuro { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 10000; }
-        .modal-janela { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1e1e1e; padding: 25px; border-radius: 10px; z-index: 10001; max-width: 90%; max-height: 85vh; overflow-y: auto; }
-        
-        .versao-tag { font-size: 11px; color: #666; font-weight: bold; margin-left: 5px; }
+        #modal-votos { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 200; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #e52d27; width: 300px; }
+        #modal-votos h2 { margin-top: 0; color: #fff; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .linha-voto { display: flex; justify-content: space-between; font-size: 20px; margin: 12px 0; border-bottom: 1px dashed #333; padding-bottom: 5px; }
+        #fundo-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 199; }
+
+        #btn-manual { position: absolute; top: 20px; right: 20px; background: #333; color: #fff; border: 1px solid #555; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
+        #btn-manual:hover { background: #444; border-color: #00d2ff; transform: scale(1.05); }
+
+        #modal-manual-conteudo { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 300; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #00d2ff; width: 90%; max-width: 800px; max-height: 85vh; overflow-y: auto; color: #ddd; }
+        #modal-manual-conteudo h2 { color: #00d2ff; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; font-size: 24px; text-align: center;}
+        #modal-manual-conteudo h3 { color: #ffeb3b; margin-top: 25px; margin-bottom: 10px; font-size: 18px; border-left: 4px solid #e52d27; padding-left: 10px; }
+        #modal-manual-conteudo p, #modal-manual-conteudo li { line-height: 1.6; font-size: 15px; }
+        #modal-manual-conteudo ul { margin-top: 5px; margin-bottom: 15px; }
+        #modal-manual-conteudo .destaque { font-weight: bold; color: #fff; }
+        #modal-manual-conteudo .segredo { background: #222; border-left: 4px solid #28a745; padding: 15px; margin-top: 20px; border-radius: 5px; font-style: italic; }
+        #fundo-modal-manual { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 299; }
     </style>
 </head>
 <body>
 
     <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
 
-    <!-- MODAL MANUAL -->
-    <div id="fundo-modal-manual" class="fundo-modal-escuro" onclick="fecharManual()"></div>
-    <div id="modal-manual-conteudo" class="modal-janela" style="width: 700px; border: 2px solid #00d2ff;">
-        <h2 style="color: #00d2ff; margin-top: 0;">📖 Manual do Operador - Parada 10.95 Bar</h2>
-        <p>1. Clique em <strong>🚀 INICIAR SISTEMA E TV</strong>, posicione a janela na TV e tecle F11.</p>
-        <p>2. Clique em <strong>🎙️ AVALIADOR</strong> para ativar a captação de áudio.</p>
-        <div style="background: #111; padding: 12px; border-radius: 6px; margin: 15px 0;">
-            <strong>⚙️ Atalhos Rápidos de Nota:</strong><br>
-            Aperte 6 = Nota 60 a 69 | Aperte 7 = 70 a 79 | Aperte 8 = 80 a 89 | Aperte 9 = 90 a 99 | Aperte 0 = 100
+    <div id="fundo-modal-manual" onclick="fecharManual()"></div>
+    <div id="modal-manual-conteudo">
+        <h2>📖 Manual do Operador - Parada 10.95 Bar</h2>
+        
+        <h3>1. Iniciando o Sistema</h3>
+        <p>Sempre que abrir o painel, siga a ordem dos botões no topo:</p>
+        <ul>
+            <li>Clique em <span class="destaque">🚀 1. INICIAR SISTEMA E TV</span>. O navegador abrirá a tela do telão. Arraste para a TV do bar e aperte <span class="destaque">F11</span> para tela cheia.</li>
+            <li>Clique em <span class="destaque">🎙️ 2. AVALIADOR</span> e permita o uso do microfone no navegador.</li>
+        </ul>
+
+        <h3>2. Gerenciando as Músicas</h3>
+        <ul>
+            <li><span class="destaque">Na Busca do DJ:</span> Digite o nome da música ou cole o link direto do YouTube.</li>
+            <li><span class="destaque">No Celular dos Clientes:</span> O cliente escaneia o QR Code da TV, busca a música e o pedido chega na caixa de <strong>📩 Pedidos</strong>.</li>
+        </ul>
+
+        <h3>3. Sistema de Notas e Votação ao Vivo</h3>
+        <p>A nota que aparece na TV é a soma do barulho captado pelo microfone e dos votos enviados pelos celulares.</p>
+
+        <div class="segredo">
+            <strong>⚙️ TRUQUE SECRETO DO DJ:</strong><br>
+            Aperte o <strong>6</strong> = Força nota entre 60 e 69.<br>
+            Aperte o <strong>7</strong> = Força nota entre 70 e 79.<br>
+            Aperte o <strong>8</strong> = Força nota entre 80 e 89.<br>
+            Aperte o <strong>9</strong> = Força nota entre 90 e 99.<br>
+            Aperte o <strong>0</strong> = Força nota 100!
         </div>
-        <button class="btn-util" style="width: 100%;" onclick="fecharManual()">Fechar</button>
+
+        <button onclick="fecharManual()" style="width: 100%; margin-top: 30px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
     </div>
 
-    <!-- PAINEL PRINCIPAL -->
-    <div class="container" id="painel-principal">
-        <div class="topo-barra">
-            <h2 style="margin: 0;">🎛️ Painel Karaokê <span class="versao-tag">v3.7</span></h2>
-            <div class="topo-acoes">
-                <button class="btn-util" onclick="abrirManual()">📖 Manual</button>
-            </div>
-        </div>
+    <div id="fundo-modal" onclick="fecharDetalhesVotos()"></div>
+    <div id="modal-votos">
+        <h2>📊 Votos Desta Música</h2>
+        <div id="detalhes-votos"></div>
+        <button onclick="fecharDetalhesVotos()" style="width: 100%; margin-top: 20px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar</button>
+    </div>
+
+    <button id="btn-manual" onclick="abrirManual()">📖 Manual do Sistema</button>
+
+    <div class="container">
+        <h1 style="margin-top: 0; padding-top: 10px;">🎛️ Painel de Controle - Karaokê</h1>
         
         <div class="area-botoes-topo">
             <button id="botaoTV" class="btn-topo btn-tv" onclick="iniciarSistema()">🚀 1. INICIAR SISTEMA E TV</button>
@@ -86,7 +113,7 @@
         </div>
 
         <div class="area-busca">
-            <input type="text" id="campoBusca" placeholder="Cole o link do YouTube ou busque pelo nome...">
+            <input type="text" id="campoBusca" placeholder="Cole o link do YouTube ou busque o nome...">
             <button class="btn-buscar" onclick="buscarNoYouTube()">Buscar Música (DJ)</button>
         </div>
 
@@ -109,7 +136,7 @@
             
             <div class="painel">
                 <h3 style="margin-top: 0; color: #ffeb3b;">🏆 Ranking:</h3>
-                <div id="contador-votos">📊 0 votos</div>
+                <div id="contador-votos" onclick="abrirDetalhesVotos()">📊 0 votos ao vivo</div>
                 <div id="ranking"></div>
             </div>
             
@@ -118,27 +145,21 @@
     </div>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyBMLhTZc7qQLjE65L3BuW9e2ijvxObTxp8",
-            authDomain: "karaoke-parada.firebaseapp.com",
-            databaseURL: "https://karaoke-parada-default-rtdb.firebaseio.com",
-            projectId: "karaoke-parada",
-            storageBucket: "karaoke-parada.firebasestorage.app",
-            messagingSenderId: "379214932685",
-            appId: "1:379214932685:web:936382160fc3ec07751784"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        let streamMic = null; let micAtivo = false; let intervaloMic = null;
 
         function abrirManual() { document.getElementById('fundo-modal-manual').style.display = 'block'; document.getElementById('modal-manual-conteudo').style.display = 'block'; }
         function fecharManual() { document.getElementById('fundo-modal-manual').style.display = 'none'; document.getElementById('modal-manual-conteudo').style.display = 'none'; }
 
-        let streamMic = null; let micAtivo = false; let intervaloMic = null;
         function iniciarSistema() {
             const som = document.getElementById('audio-tambores');
-            som.volume = 0.5;
+            som.volume = 0.5; // VOLUME DOS TAMBORES REDUZIDO PELA METADE
             som.muted = true;
-            som.play().then(() => { som.pause(); som.currentTime = 0; som.muted = false; }).catch(() => {});
+            som.play().then(() => {
+                som.pause();
+                som.currentTime = 0;
+                som.muted = false;
+            }).catch(e => console.log("Áudio bloqueado aguardando clique."));
+
             abrirTV();
             if (!micAtivo) toggleMicrofone();
         }
@@ -146,7 +167,7 @@
         async function toggleMicrofone() {
             const btn = document.getElementById('botaoMic');
             if (micAtivo) {
-                if (streamMic) streamMic.getTracks().forEach(t => t.stop());
+                if (streamMic) streamMic.getTracks().forEach(track => track.stop());
                 if (audioCtx && audioCtx.state !== 'closed') await audioCtx.close();
                 audioCtx = null; analyser = null; micAtivo = false;
                 if (intervaloMic) clearInterval(intervaloMic);
@@ -156,11 +177,14 @@
                     streamMic = await navigator.mediaDevices.getUserMedia({ audio: true });
                     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                     if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+                    
                     analyser = audioCtx.createAnalyser();
                     audioCtx.createMediaStreamSource(streamMic).connect(analyser);
                     analyser.fftSize = 256; dataArray = new Uint8Array(analyser.frequencyBinCount);
+
                     micAtivo = true;
                     btn.innerHTML = "🎙️ 2. AVALIADOR (LIGADO)"; btn.style.background = "#17a2b8"; 
+
                     if (intervaloMic) clearInterval(intervaloMic);
                     intervaloMic = setInterval(() => {
                         if (captando && analyser && micAtivo) {
@@ -169,9 +193,23 @@
                             somaEnergia += (soma / dataArray.length); qtdLeituras++;
                         }
                     }, 200);
-                } catch (err) { btn.innerHTML = "⚠️ MICROFONE BLOQUEADO"; btn.style.background = "#e52d27"; }
+                } catch (err) { 
+                    btn.innerHTML = "⚠️ MICROFONE BLOQUEADO"; btn.style.background = "#e52d27";
+                }
             }
         }
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBMLhTZc7qQLjE65L3BuW9e2ijvxObTxp8",
+            authDomain: "karaoke-parada.firebaseapp.com",
+            databaseURL: "https://karaoke-parada-default-rtdb.firebaseio.com",
+            projectId: "karaoke-parada",
+            storageBucket: "karaoke-parada.firebasestorage.app",
+            messagingSenderId: "379214932685",
+            appId: "1:379214932685:web:873e8b5b7d882a4f751784"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
         const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4'; 
         let filaDeReproducao = []; let historicoDeReproducao = []; let ranking = [];
@@ -199,7 +237,7 @@
             }
         }
 
-        database.ref('pedidos').on('value', snapshot => {
+        database.ref('pedidos').on('value', (snapshot) => {
             pedidosPendentes = [];
             snapshot.forEach(child => { pedidosPendentes.push({ key: child.key, ...child.val() }); });
             if (autoAprovar && pedidosPendentes.length > 0) {
@@ -214,14 +252,17 @@
         });
 
         function renderizarPedidos() {
-            const div = document.getElementById('pedidos-lista');
-            if(pedidosPendentes.length === 0) { div.innerHTML = "<p style='color:#aaa; font-size:12px; text-align:center;'>Nenhum pedido no momento.</p>"; return; }
-            div.innerHTML = pedidosPendentes.map((p, index) => `
-                <div class="item-fila" style="border-left: 4px solid #00d2ff; margin-bottom: 6px;">
+            const divPedidos = document.getElementById('pedidos-lista');
+            if(pedidosPendentes.length === 0) {
+                divPedidos.innerHTML = "<p style='color:#aaa; font-size:13px; text-align:center;'>Nenhum pedido no momento.</p>";
+                return;
+            }
+            divPedidos.innerHTML = pedidosPendentes.map((p, index) => `
+                <div class="item-fila" style="border-left: 5px solid #00d2ff; margin-bottom: 8px;">
                     <span class="titulo-musica">🎵 ${p.titulo} <br> <span class="nome-cantor">🎤 Voz: ${p.cantor}</span></span>
                     <div class="botoes-acao">
-                        <button class="btn-acao" onclick="aprovarPedido(${index})" title="Aceitar">✅</button>
-                        <button class="btn-acao" onclick="rejeitarPedido('${p.key}')" title="Apagar">❌</button>
+                        <button class="btn-acao" onclick="aprovarPedido(${index})" title="Aceitar e enviar pra Fila">✅</button>
+                        <button class="btn-acao" onclick="rejeitarPedido('${p.key}')" title="Apagar pedido">❌</button>
                     </div>
                 </div>
             `).join('');
@@ -235,10 +276,12 @@
         }
 
         function rejeitarPedido(key) {
-            if (confirm("Recusar este pedido?")) database.ref('pedidos').child(key).remove();
+            if (confirm("Quer mesmo RECUSAR essa música e excluir o pedido?")) {
+                database.ref('pedidos').child(key).remove();
+            }
         }
 
-        database.ref('votosAtual').on('value', snapshot => {
+        database.ref('votosAtual').on('value', (snapshot) => {
             const votos = snapshot.val();
             totalVotosPublico = 0; contagemVotos = { ruim: 0, regular: 0, bom: 0, muitobom: 0, excelente: 0 };
             if (votos) {
@@ -246,66 +289,92 @@
                     if (contagemVotos[voto.tipo] !== undefined) { contagemVotos[voto.tipo]++; totalVotosPublico++; }
                 });
             }
-            document.getElementById('contador-votos').innerText = `📊 ${totalVotosPublico} votos`;
+            document.getElementById('contador-votos').innerText = `📊 ${totalVotosPublico} votos ao vivo`;
+            if(document.getElementById('modal-votos').style.display === 'block') renderizarDetalhesVotos();
         });
 
-        document.addEventListener('keydown', e => {
-            if (e.key === '6') notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 60;
-            if (e.key === '7') notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 70;
-            if (e.key === '8') notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 80;
-            if (e.key === '9') notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 90;
-            if (e.key === '0') notaForcadaPeloDJ = 100;
+        function abrirDetalhesVotos() { renderizarDetalhesVotos(); document.getElementById('fundo-modal').style.display = 'block'; document.getElementById('modal-votos').style.display = 'block'; }
+        function fecharDetalhesVotos() { document.getElementById('fundo-modal').style.display = 'none'; document.getElementById('modal-votos').style.display = 'none'; }
+        function renderizarDetalhesVotos() {
+            document.getElementById('detalhes-votos').innerHTML = `
+                <div class="linha-voto"><span style="color:#00d2ff">🤯 Excelente:</span> <strong>${contagemVotos.excelente}</strong></div>
+                <div class="linha-voto"><span style="color:#28a745">🤩 Muito Bom:</span> <strong>${contagemVotos.muitobom}</strong></div>
+                <div class="linha-voto"><span style="color:#ffeb3b">🙂 Bom:</span> <strong>${contagemVotos.bom}</strong></div>
+                <div class="linha-voto"><span style="color:#fd7e14">😕 Regular:</span> <strong>${contagemVotos.regular}</strong></div>
+                <div class="linha-voto"><span style="color:#e52d27">😖 Ruim:</span> <strong>${contagemVotos.ruim}</strong></div>
+            `;
+        }
+
+        // NOVO CÓDIGO DAS NOTAS FORÇADAS DO DJ
+        document.addEventListener('keydown', function(event) {
+            if (event.key === '6') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 60; } // Sorteia entre 60 e 69
+            if (event.key === '7') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 70; } // Sorteia entre 70 e 79
+            if (event.key === '8') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 80; } // Sorteia entre 80 e 89
+            if (event.key === '9') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 90; } // Sorteia entre 90 e 99
+            if (event.key === '0') { notaForcadaPeloDJ = 100; } // Crava 100
         });
 
-        document.getElementById('campoBusca').addEventListener('keypress', e => { if (e.key === 'Enter') buscarNoYouTube(); });
+        document.getElementById('campoBusca').addEventListener('keypress', e => { if(e.key === 'Enter') buscarNoYouTube(); });
 
         function abrirTV() {
-            const htmlTV = `<!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <title>TV - Karaokê</title>
+            telaTV = window.open("", "TelaTV", "width=800,height=600");
+            telaTV.document.write(`
+                <!DOCTYPE html><html><head>
+                <base href="\${window.location.href}">
+                <title>TV</title>
                 <style>
-                    body { margin: 0; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; font-family: Arial; }
-                    #player { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1; }
-                    #logo-bar { position: absolute; top: 0; left: 0; z-index: 25; display: flex; align-items: flex-start; pointer-events: none; }
-                    #logo-bar img { height: 130px; }
-                    #logo-bar span { font-size: 30px; font-weight: 900; margin-top: 15px; margin-left: 10px; text-shadow: 2px 2px 5px #000; }
-                    #qr-code { position: absolute; top: 20px; right: 20px; z-index: 25; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; }
-                    #qr-code img { width: 100px; height: 100px; background: white; padding: 4px; border-radius: 6px; display: block; margin: 0 auto; }
-                    #qr-code p { margin: 6px 0 0 0; font-size: 11px; font-weight: bold; }
-                    #cantor-overlay { position: absolute; top: -200px; right: 160px; background: linear-gradient(90deg, rgba(20,20,20,0.95), rgba(229,45,39,0.85)); padding: 10px 18px; border-radius: 12px; z-index: 24; transition: top 0.8s ease; border: 2px solid #e52d27; }
-                    #tela-nota { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #121212, #3a0000); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-                    #btn-liberar { z-index: 20; padding: 20px 30px; font-size: 20px; font-weight: bold; background: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; }
-                </style>
-            </head>
-            <body>
-                <div id="logo-bar"><img src="logop.png" alt="Logo"><span>PARADA 10.95 BAR</span></div>
-                <div id="qr-code"><img src="qrcode.png" alt="QR"><p>PEÇA E VOTE!</p></div>
-                <div id="cantor-overlay"></div>
-                <div id="tela-nota">
-                    <h1 style="font-size: 45px; color: #ffeb3b; margin-bottom: 5px;">🍻 PARADA 10.95 BAR</h1>
-                    <h2 style="font-size: 35px; margin-bottom: 30px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
-                    <div id="nota-loading" style="font-size: 30px;">Avaliando energia da plateia... 🥁</div>
-                    <div id="nota-resultado" style="display:none; flex-direction:column; align-items:center;">
-                        <div style="font-size: 26px;">Pontuação Final:</div>
-                        <div id="nota-valor" style="font-size: 160px; font-weight: 900;">100</div>
-                    </div>
-                </div>
-                <button id="btn-liberar" onclick="this.style.display='none';">👆 CLIQUE PARA LIBERAR O SOM (F11)</button>
-                <div id="player"></div>
-                <script>
-                    function onYouTubeIframeAPIReady() {
-                        if(window.opener) window.opener.iniciarPlayer(YT);
-                    }
-                </script>
-                <script src="https://www.youtube.com/iframe_api"></script>
-            </body>
-            </html>`;
+                    body { margin: 0; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; font-family: Arial;}
+                    #player { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1;}
+                    
+                    #logo-bar { position: absolute !important; top: 0px !important; left: 0px !important; z-index: 25; pointer-events: none; margin: 0 !important; padding: 0 !important; display: flex; align-items: flex-start; }
+                    #logo-bar img { height: 140px !important; width: auto !important; display: block; margin: 0 !important; padding: 0 !important; } 
+                    #logo-bar span { font-size: 34px; font-weight: 900; color: #fff; text-shadow: 3px 3px 10px #000; display: block; margin-top: 15px; margin-left: 15px; white-space: nowrap; }
+                    
+                    /* QR CODE NA QUINA DIREITA (top 20px) */
+                    #qr-code { position: absolute !important; top: 20px !important; right: 20px !important; z-index: 25; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
+                    #qr-code img { width: 110px; height: 110px; background: white; padding: 5px; border-radius: 8px; display: block; margin: 0 auto; }
+                    #qr-code p { margin: 8px 0 0 0; color: #fff; font-size: 12px; font-weight: bold; text-transform: uppercase;}
+                    #qr-code span { color: #ffeb3b; font-size: 11px; }
 
-            const blob = new Blob([htmlTV], { type: 'text/html' });
-            const urlBlob = URL.createObjectURL(blob);
-            telaTV = window.open(urlBlob, "TelaTV", "width=800,height=600");
+                    /* CAIXA DO NOME - Fica escondida pra cima (-200px) e desce até o (20px) ao lado do QR Code (right 170px) */
+                    #cantor-overlay { position: absolute; top: -200px; right: 170px; background: linear-gradient(90deg, rgba(20,20,20,0.95), rgba(229,45,39,0.85)); padding: 10px 20px; border-radius: 15px; z-index: 24; transition: top 0.8s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: -3px 5px 15px rgba(0,0,0,0.5); max-width: 350px; text-align: right; border: 2px solid #e52d27;}
+                    #cantor-overlay .aviso { font-size: 12px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
+                    #cantor-overlay .nome { font-size: 22px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; line-height: 1.1; word-wrap: break-word;}
+                    
+                    #tela-nota { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #121212, #3a0000); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
+                    @keyframes piscar { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
+                    #btn-liberar { z-index: 20; padding: 25px 40px; font-size: 24px; font-weight: bold; background: #28a745; color: white; border: none; border-radius: 10px; cursor: pointer; }
+                </style></head>
+                <body>
+                    <div id="logo-bar">
+                        <img src="logop.png" alt="Logo">
+                        <span>PARADA 10.95 BAR</span>
+                    </div>
+                    
+                    <div id="qr-code">
+                        <img src="qrcode.png" alt="Escaneie para Pedir e Votar">
+                        <p>APONTE O CELULAR</p>
+                        <span>Peça e Vote!</span>
+                    </div>
+
+                    <!-- Caixa do nome flutuante -->
+                    <div id="cantor-overlay"></div>
+                    
+                    <div id="tela-nota">
+                        <h1 style="font-size: 50px; color: #ffeb3b; margin-bottom: 10px;">🍻 PARADA 10.95 BAR</h1>
+                        <h2 style="font-size: 40px; margin-bottom: 50px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
+                        <div id="nota-loading" style="font-size: 35px; animation: piscar 1s infinite;">Calculando energia e votos do público... 🥁</div>
+                        <div id="nota-resultado" style="display:none; flex-direction:column; align-items:center;">
+                            <div style="font-size: 30px;">Pontuação Final:</div>
+                            <div id="nota-valor" style="font-size: 180px; font-weight: 900;">100</div>
+                        </div>
+                    </div>
+                    <button id="btn-liberar" onclick="this.style.display='none';">👆 CLIQUE AQUI PARA LIBERAR O SOM (Aperte F11)</button>
+                    <div id="player"></div>
+                    <script> function onYouTubeIframeAPIReady() { if(window.opener) window.opener.iniciarPlayer(YT); } <\/script>
+                    <script src="https://www.youtube.com/iframe_api"><\/script>
+                </body></html>
+            `);
 
             monitorTV = setInterval(() => {
                 if (telaTV && telaTV.closed) {
@@ -319,7 +388,7 @@
         function iniciarPlayer(YT_API) {
             player = new YT_API.Player(telaTV.document.getElementById('player'), {
                 videoId: '', playerVars: { 'autoplay': 1, 'controls': 1, 'fs': 0 }, 
-                events: { 'onStateChange': e => { if (e.data === 0) (musicaAtual && musicaAtual.cantor !== "Convidados") ? gerarNotaFinal() : tocarProxima(true); }, 'onError': () => tocarProxima(true) }
+                events: { 'onStateChange': e => { if (e.data === 0) (musicaAtual && musicaAtual.cantor !== "Convidados") ? gerarNotaFinal() : tocarProxima(true); }, 'onError': e => tocarProxima(true) }
             });
             document.getElementById('botaoTV').innerHTML = "✅ TELA CONECTADA!";
             document.getElementById('botaoTV').style.background = "#17a2b8";
@@ -329,22 +398,34 @@
             captando = false; 
             let notaFinal;
             const votosCongelados = { ...contagemVotos };
+            
             database.ref('statusAtual').set({ cantor: "Avaliando...", titulo: "Olhe para a tela da TV!", id: "avaliando" });
 
             if (notaForcadaPeloDJ !== null) {
                 notaFinal = notaForcadaPeloDJ; notaForcadaPeloDJ = null; 
             } else {
-                let notaBase = (qtdLeituras > 0 && micAtivo) ? Math.floor(55 + ((somaEnergia / qtdLeituras) * 1.2)) : Math.floor(Math.random() * 21) + 65;
-                if (notaBase > 85) notaBase = 85;
-                let bonus = 0;
-                if (totalVotosPublico > 0) {
-                    bonus = (votosCongelados.excelente * 4) + (votosCongelados.muitobom * 2) + (votosCongelados.bom * 1) - (votosCongelados.regular * 1) - (votosCongelados.ruim * 3);
-                    if (bonus > 15) bonus = 15; if (bonus < -15) bonus = -15;
+                let notaBase;
+                if (qtdLeituras > 0 && micAtivo) {
+                    let energiaMedia = somaEnergia / qtdLeituras;
+                    notaBase = Math.floor(55 + (energiaMedia * 1.2)); 
+                } else {
+                    notaBase = Math.floor(Math.random() * 21) + 65; 
                 }
-                notaFinal = Math.max(50, Math.min(100, notaBase + bonus));
+                if (notaBase > 85) notaBase = 85;
+                
+                let bonusPublico = 0;
+                if(totalVotosPublico > 0) {
+                    bonusPublico = (votosCongelados.excelente * 4) + (votosCongelados.muitobom * 2) + (votosCongelados.bom * 1) - (votosCongelados.regular * 1) - (votosCongelados.ruim * 3);
+                    if (bonusPublico > 15) bonusPublico = 15; 
+                    if (bonusPublico < -15) bonusPublico = -15; 
+                }
+                
+                notaFinal = notaBase + bonusPublico;
+                if (notaFinal > 100) notaFinal = 100; 
+                if (notaFinal < 50) notaFinal = 50; 
             }
 
-            ranking.push({ nome: musicaAtual.cantor, nota: notaFinal, titulo: musicaAtual.titulo });
+            ranking.push({ nome: musicaAtual.cantor, nota: notaFinal, titulo: musicaAtual.titulo, votos: votosCongelados });
             atualizarTelaRanking();
 
             if (telaTV && !telaTV.closed) {
@@ -352,18 +433,20 @@
                 telaTV.document.getElementById('nota-loading').style.display = 'block';
                 telaTV.document.getElementById('nota-resultado').style.display = 'none';
                 telaTV.document.getElementById('tela-nota').style.display = 'flex';
+                
+                // ESCONDE O NOME DO CANTOR (Sobe para o teto)
                 telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
 
                 const som = document.getElementById('audio-tambores');
                 som.currentTime = 0;
-                som.play().catch(() => {});
+                som.play().catch(e => console.log("O áudio foi bloqueado", e));
 
                 setTimeout(() => {
                     telaTV.document.getElementById('nota-loading').style.display = 'none';
                     let valorEl = telaTV.document.getElementById('nota-valor');
                     valorEl.innerText = notaFinal;
                     valorEl.style.color = notaFinal >= 90 ? '#28a745' : notaFinal >= 75 ? '#ffeb3b' : '#e52d27';
-                    telaTV.document.getElementById('tela-resultado').style.display = 'flex';
+                    telaTV.document.getElementById('nota-resultado').style.display = 'flex';
                 }, 4000); 
             }
 
@@ -375,7 +458,8 @@
         }
 
         function extrairVideoId(url) {
-            const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+            const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+            const match = url.match(regex);
             return match ? match[1] : null;
         }
 
@@ -386,23 +470,23 @@
             const videoId = extrairVideoId(termo);
             if (videoId) {
                 const c = prompt("🎤 Link reconhecido! Qual a voz dessa música?"); if(c === null) return;
-                filaDeReproducao.push({ videoId, titulo: "Música via Link", cantor: c.trim() || "Convidados" });
+                filaDeReproducao.push({ videoId: videoId, titulo: "Música via Link", cantor: c.trim() === "" ? "Convidados" : c });
                 atualizarTelaFila(); document.getElementById('campoBusca').value = ""; return;
             }
 
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(termo + " karaoke -oficial -clipe -live")}&type=video&key=${API_KEY}`;
             try {
-                const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(termo + " karaoke -oficial -clipe -live")}&type=video&key=${API_KEY}`);
-                const dados = await res.json();
+                const res = await fetch(url); const dados = await res.json();
                 dados.items.forEach(v => {
                     const d = document.createElement('div'); d.className = 'item-resultado'; d.innerHTML = v.snippet.title; 
                     d.onclick = () => {
                         const c = prompt("🎤 Qual a voz dessa música?"); if(c === null) return;
-                        filaDeReproducao.push({ videoId: v.id.videoId, titulo: v.snippet.title, cantor: c.trim() || "Convidados" });
+                        filaDeReproducao.push({ videoId: v.id.videoId, titulo: v.snippet.title, cantor: c.trim() === "" ? "Convidados" : c });
                         atualizarTelaFila();
                     };
                     div.appendChild(d);
                 });
-            } catch { div.innerHTML = "<p style='color:#e52d27; font-size:12px;'>Limite de busca atingido. Cole o link direto!</p>"; }
+            } catch (err) { div.innerHTML = "<p style='color:#e52d27'>Limite de busca atingido. Cole o link direto!</p>"; }
         }
 
         function removerMusica(i) { filaDeReproducao.splice(i, 1); atualizarTelaFila(); }
@@ -411,6 +495,7 @@
         function iniciarMusica(m) {
             clearTimeout(timerNota);
             if (telaTV && !telaTV.closed) telaTV.document.getElementById('tela-nota').style.display = 'none';
+            
             database.ref('votosAtual').remove();
             database.ref('statusAtual').set({ cantor: m.cantor, titulo: m.titulo, id: Date.now() });
 
@@ -418,7 +503,9 @@
             atualizarTelaFila(); atualizarTelaHistorico();
             
             if (telaTV && !telaTV.closed && m.cantor !== "Convidados") {
-                telaTV.document.getElementById('cantor-overlay').innerHTML = `<span>Com a Voz</span><p style="margin:0; font-size:20px; font-weight:900;">${m.cantor}</p>`;
+                telaTV.document.getElementById('cantor-overlay').innerHTML = `<div style="display:inline-block; vertical-align:middle;"><span class="aviso">Com a Voz</span><p class="nome">${m.cantor}</p></div>`;
+                
+                // MÁGICA AQUI: A caixa inicia no teto e desce animada para os 20px no topo (ao lado do QR code)
                 telaTV.document.getElementById('cantor-overlay').style.top = '-200px'; 
                 setTimeout(() => telaTV.document.getElementById('cantor-overlay').style.top = '20px', 100);
             }
@@ -427,14 +514,21 @@
         }
 
         function tocarMusicaEspecifica(i) { 
-            if(!telaTV || telaTV.closed) return alert("Abra a tela da TV primeiro!"); 
+            if(!telaTV || telaTV.closed) return alert("⚠️ A Tela da TV está fechada! Clique no botão azul '1. INICIAR SISTEMA E TV' antes de tocar a música."); 
             iniciarMusica(filaDeReproducao.splice(i, 1)[0]); 
         }
         
         function tocarProxima(auto = false) {
-            if(!telaTV || telaTV.closed) { if (!auto) alert("Abra a tela da TV primeiro!"); return; }
-            if(filaDeReproducao.length > 0) iniciarMusica(filaDeReproducao.shift()); 
-            else { if(telaTV && !telaTV.closed) telaTV.document.getElementById('cantor-overlay').style.top = '-200px'; database.ref('statusAtual').set(null); }
+            if(!telaTV || telaTV.closed) {
+                if (!auto) alert("⚠️ A Tela da TV está fechada! Clique no botão azul '1. INICIAR SISTEMA E TV' antes de tocar a música.");
+                return;
+            }
+            if(filaDeReproducao.length > 0) {
+                iniciarMusica(filaDeReproducao.shift()); 
+            } else {
+                if(telaTV && !telaTV.closed) telaTV.document.getElementById('cantor-overlay').style.top = '-200px'; // Esconde pro teto
+                database.ref('statusAtual').set(null);
+            }
         }
 
         function atualizarTelaFila() {
@@ -451,17 +545,29 @@
             `).join('');
         }
 
-        function atualizarTelaHistorico() { 
-            document.getElementById('historico').innerHTML = historicoDeReproducao.slice().reverse().map(item => `
-                <div class="item-historico">✔️ ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span></div>
-            `).join(''); 
-        }
+        function atualizarTelaHistorico() { document.getElementById('historico').innerHTML = historicoDeReproducao.slice().reverse().map(item => `<div class="item-historico">✔️ ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span></div>`).join(''); }
         
         function atualizarTelaRanking() {
             document.getElementById('ranking').innerHTML = [...ranking].sort((a,b) => b.nota - a.nota).map((item, i) => `
-                <div class="item-ranking" style="display:flex; justify-content:space-between; align-items:center;">
-                    <div>${i === 0 ? '👑' : '⭐'} <strong>${item.nome}</strong><br><span style="font-size:10px; color:#888;">${item.titulo}</span></div>
-                    <div class="pontuacao">${item.nota}</div>
+                <div class="item-ranking" onclick="document.getElementById('votos-rank-${i}').style.display = document.getElementById('votos-rank-${i}').style.display === 'none' ? 'block' : 'none'" style="cursor:pointer;" title="Clique para ver os votos!">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="info-ranking">
+                            ${i === 0 ? '👑' : '⭐'} <strong>${i+1}º Lugar</strong> <br> 
+                            🎤 ${item.nome} <br> 
+                            <span style="font-size:11px;">🎵 ${item.titulo}</span><br>
+                            <span style="font-size:10px; color:#aaa; font-style:italic;">(Clique para ver votos)</span>
+                        </div>
+                        <div class="pontuacao">${item.nota}</div>
+                    </div>
+                    
+                    <div id="votos-rank-${i}" style="display:none; margin-top: 15px; background: #111; padding: 10px; border-radius: 5px; font-size: 13px; text-align: center;">
+                        <strong>Registro da Plateia:</strong><br><br>
+                        <span style="color:#00d2ff">🤯 ${item.votos.excelente}</span> &nbsp;|&nbsp; 
+                        <span style="color:#28a745">🤩 ${item.votos.muitobom}</span> &nbsp;|&nbsp; 
+                        <span style="color:#ffeb3b">🙂 ${item.votos.bom}</span> &nbsp;|&nbsp; 
+                        <span style="color:#fd7e14">😕 ${item.votos.regular}</span> &nbsp;|&nbsp; 
+                        <span style="color:#e52d27">😖 ${item.votos.ruim}</span>
+                    </div>
                 </div>
             `).join('');
         }
