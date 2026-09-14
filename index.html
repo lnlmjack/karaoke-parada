@@ -4,13 +4,25 @@
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Painel do DJ - Karaokê</title>
+    <!-- Adicionando o Firebase Auth -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
     
     <style>
         body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; padding: 20px; margin: 0; }
         .container { max-width: 1600px; margin: 0 auto; position: relative; }
         
+        /* TELA DE LOGIN */
+        #tela-login { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #121212; z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        .login-box { background: #1e1e1e; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); text-align: center; width: 90%; max-width: 400px; border: 2px solid #e52d27; }
+        .login-box h2 { color: #fff; margin-top: 0; margin-bottom: 20px; }
+        .login-box input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-size: 16px; box-sizing: border-box;}
+        .btn-entrar { background: #e52d27; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-entrar:hover { background: #c21a15; }
+        .btn-sair { background: #333; color: #fff; border: 1px solid #555; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-sair:hover { background: #555; }
+
         .area-botoes-topo { display: flex; gap: 15px; margin-bottom: 25px; }
         .btn-topo { flex: 1; padding: 15px; font-size: 16px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s;}
         .btn-tv { background: #007bff; } .btn-tv:hover { background: #0056b3; } .btn-tv.conectado { background: #17a2b8; pointer-events: none; }
@@ -20,7 +32,7 @@
         .btn-tocar { background: #28a745; width: 100%; padding: 15px; font-size: 16px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 20px;}
 
         .area-busca { display: flex; gap: 10px; margin-bottom: 15px; }
-        input { flex: 1; padding: 12px; border-radius: 5px; border: none; font-size: 16px; }
+        .area-busca input { flex: 1; padding: 12px; border-radius: 5px; border: none; font-size: 16px; }
         .btn-buscar { padding: 12px 25px; background: #e52d27; color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer;}
         
         .paineis { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
@@ -46,7 +58,7 @@
         .linha-voto { display: flex; justify-content: space-between; font-size: 20px; margin: 12px 0; border-bottom: 1px dashed #333; padding-bottom: 5px; }
         #fundo-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 199; }
 
-        #btn-manual { position: absolute; top: 20px; right: 20px; background: #333; color: #fff; border: 1px solid #555; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
+        #btn-manual { display: none; position: absolute; top: 20px; right: 20px; background: #333; color: #fff; border: 1px solid #555; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
         #btn-manual:hover { background: #444; border-color: #00d2ff; transform: scale(1.05); }
 
         #modal-manual-conteudo { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 300; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #00d2ff; width: 90%; max-width: 800px; max-height: 85vh; overflow-y: auto; color: #ddd; }
@@ -62,6 +74,17 @@
 <body>
 
     <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
+
+    <!-- TELA DE LOGIN -->
+    <div id="tela-login">
+        <div class="login-box">
+            <h2>🔒 Acesso ao Painel DJ</h2>
+            <input type="email" id="emailLogin" placeholder="E-mail de Acesso">
+            <input type="password" id="senhaLogin" placeholder="Senha">
+            <button class="btn-entrar" onclick="fazerLogin()">Entrar no Sistema</button>
+            <p id="erroLogin" style="color: #ff5252; display: none; margin-top: 15px; font-weight: bold; font-size: 14px;"></p>
+        </div>
+    </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
     <div id="modal-manual-conteudo">
@@ -104,8 +127,12 @@
 
     <button id="btn-manual" onclick="abrirManual()">📖 Manual do Sistema</button>
 
-    <div class="container">
-        <h1 style="margin-top: 0; padding-top: 10px;">🎛️ Painel de Controle - Karaokê</h1>
+    <!-- PAINEL PRINCIPAL (Oculto até o login) -->
+    <div class="container" id="painel-principal" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <h1 style="margin: 0; padding-top: 10px;">🎛️ Painel de Controle - Karaokê</h1>
+            <button class="btn-sair" onclick="fazerLogout()">🚪 Sair do Sistema</button>
+        </div>
         
         <div class="area-botoes-topo">
             <button id="botaoTV" class="btn-topo btn-tv" onclick="iniciarSistema()">🚀 1. INICIAR SISTEMA E TV</button>
@@ -145,6 +172,61 @@
     </div>
 
     <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBMLhTZc7qQLjE65L3BuW9e2ijvxObTxp8",
+            authDomain: "karaoke-parada.firebaseapp.com",
+            databaseURL: "https://karaoke-parada-default-rtdb.firebaseio.com",
+            projectId: "karaoke-parada",
+            storageBucket: "karaoke-parada.firebasestorage.app",
+            messagingSenderId: "379214932685",
+            appId: "1:379214932685:web:873e8b5b7d882a4f751784"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth(); // Inicializando Autenticação
+
+        // CONTROLE DE LOGIN E SESSÃO
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // Logado
+                document.getElementById('tela-login').style.display = 'none';
+                document.getElementById('painel-principal').style.display = 'block';
+                document.getElementById('btn-manual').style.display = 'block';
+            } else {
+                // Deslogado
+                document.getElementById('tela-login').style.display = 'flex';
+                document.getElementById('painel-principal').style.display = 'none';
+                document.getElementById('btn-manual').style.display = 'none';
+            }
+        });
+
+        function fazerLogin() {
+            const email = document.getElementById('emailLogin').value;
+            const senha = document.getElementById('senhaLogin').value;
+            const erroEl = document.getElementById('erroLogin');
+            
+            if(!email || !senha) {
+                erroEl.innerText = "Preencha o e-mail e a senha!";
+                erroEl.style.display = 'block';
+                return;
+            }
+
+            erroEl.style.display = 'none'; // limpa erro anterior
+            
+            auth.signInWithEmailAndPassword(email, senha).catch(error => {
+                let msg = "Erro ao fazer login.";
+                if(error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') msg = "E-mail ou senha incorretos!";
+                if(error.code === 'auth/invalid-email') msg = "E-mail inválido!";
+                erroEl.innerText = msg;
+                erroEl.style.display = 'block';
+            });
+        }
+
+        function fazerLogout() {
+            auth.signOut();
+        }
+
+        // RESTO DO SISTEMA DO DJ
         let streamMic = null; let micAtivo = false; let intervaloMic = null;
 
         function abrirManual() { document.getElementById('fundo-modal-manual').style.display = 'block'; document.getElementById('modal-manual-conteudo').style.display = 'block'; }
@@ -152,7 +234,7 @@
 
         function iniciarSistema() {
             const som = document.getElementById('audio-tambores');
-            som.volume = 0.5; // VOLUME DOS TAMBORES REDUZIDO PELA METADE
+            som.volume = 0.5; // VOLUME REDUZIDO PELA METADE
             som.muted = true;
             som.play().then(() => {
                 som.pause();
@@ -198,18 +280,6 @@
                 }
             }
         }
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBMLhTZc7qQLjE65L3BuW9e2ijvxObTxp8",
-            authDomain: "karaoke-parada.firebaseapp.com",
-            databaseURL: "https://karaoke-parada-default-rtdb.firebaseio.com",
-            projectId: "karaoke-parada",
-            storageBucket: "karaoke-parada.firebasestorage.app",
-            messagingSenderId: "379214932685",
-            appId: "1:379214932685:web:873e8b5b7d882a4f751784"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
 
         const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4'; 
         let filaDeReproducao = []; let historicoDeReproducao = []; let ranking = [];
@@ -305,13 +375,12 @@
             `;
         }
 
-        // NOVO CÓDIGO DAS NOTAS FORÇADAS DO DJ
         document.addEventListener('keydown', function(event) {
-            if (event.key === '6') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 60; } // Sorteia entre 60 e 69
-            if (event.key === '7') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 70; } // Sorteia entre 70 e 79
-            if (event.key === '8') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 80; } // Sorteia entre 80 e 89
-            if (event.key === '9') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 90; } // Sorteia entre 90 e 99
-            if (event.key === '0') { notaForcadaPeloDJ = 100; } // Crava 100
+            if (event.key === '6') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 60; }
+            if (event.key === '7') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 70; }
+            if (event.key === '8') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 80; }
+            if (event.key === '9') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 90; }
+            if (event.key === '0') { notaForcadaPeloDJ = 100; }
         });
 
         document.getElementById('campoBusca').addEventListener('keypress', e => { if(e.key === 'Enter') buscarNoYouTube(); });
@@ -330,13 +399,11 @@
                     #logo-bar img { height: 140px !important; width: auto !important; display: block; margin: 0 !important; padding: 0 !important; } 
                     #logo-bar span { font-size: 34px; font-weight: 900; color: #fff; text-shadow: 3px 3px 10px #000; display: block; margin-top: 15px; margin-left: 15px; white-space: nowrap; }
                     
-                    /* QR CODE NA QUINA DIREITA (top 20px) */
                     #qr-code { position: absolute !important; top: 20px !important; right: 20px !important; z-index: 25; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
                     #qr-code img { width: 110px; height: 110px; background: white; padding: 5px; border-radius: 8px; display: block; margin: 0 auto; }
                     #qr-code p { margin: 8px 0 0 0; color: #fff; font-size: 12px; font-weight: bold; text-transform: uppercase;}
                     #qr-code span { color: #ffeb3b; font-size: 11px; }
 
-                    /* CAIXA DO NOME - Fica escondida pra cima (-200px) e desce até o (20px) ao lado do QR Code (right 170px) */
                     #cantor-overlay { position: absolute; top: -200px; right: 170px; background: linear-gradient(90deg, rgba(20,20,20,0.95), rgba(229,45,39,0.85)); padding: 10px 20px; border-radius: 15px; z-index: 24; transition: top 0.8s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: -3px 5px 15px rgba(0,0,0,0.5); max-width: 350px; text-align: right; border: 2px solid #e52d27;}
                     #cantor-overlay .aviso { font-size: 12px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
                     #cantor-overlay .nome { font-size: 22px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; line-height: 1.1; word-wrap: break-word;}
@@ -357,7 +424,6 @@
                         <span>Peça e Vote!</span>
                     </div>
 
-                    <!-- Caixa do nome flutuante -->
                     <div id="cantor-overlay"></div>
                     
                     <div id="tela-nota">
@@ -434,7 +500,6 @@
                 telaTV.document.getElementById('nota-resultado').style.display = 'none';
                 telaTV.document.getElementById('tela-nota').style.display = 'flex';
                 
-                // ESCONDE O NOME DO CANTOR (Sobe para o teto)
                 telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
 
                 const som = document.getElementById('audio-tambores');
@@ -505,7 +570,6 @@
             if (telaTV && !telaTV.closed && m.cantor !== "Convidados") {
                 telaTV.document.getElementById('cantor-overlay').innerHTML = `<div style="display:inline-block; vertical-align:middle;"><span class="aviso">Com a Voz</span><p class="nome">${m.cantor}</p></div>`;
                 
-                // MÁGICA AQUI: A caixa inicia no teto e desce animada para os 20px no topo (ao lado do QR code)
                 telaTV.document.getElementById('cantor-overlay').style.top = '-200px'; 
                 setTimeout(() => telaTV.document.getElementById('cantor-overlay').style.top = '20px', 100);
             }
@@ -526,7 +590,7 @@
             if(filaDeReproducao.length > 0) {
                 iniciarMusica(filaDeReproducao.shift()); 
             } else {
-                if(telaTV && !telaTV.closed) telaTV.document.getElementById('cantor-overlay').style.top = '-200px'; // Esconde pro teto
+                if(telaTV && !telaTV.closed) telaTV.document.getElementById('cantor-overlay').style.top = '-200px'; 
                 database.ref('statusAtual').set(null);
             }
         }
