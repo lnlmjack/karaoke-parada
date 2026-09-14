@@ -11,7 +11,6 @@
         body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; padding: 20px; margin: 0; }
         .container { max-width: 1600px; margin: 0 auto; position: relative; }
         
-        /* TELA DE LOGIN */
         #tela-login { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #121212; z-index: 9999; display: flex; justify-content: center; align-items: center; }
         .login-box { background: #1e1e1e; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); text-align: center; width: 90%; max-width: 400px; border: 2px solid #e52d27; position: relative;}
         .login-box h2 { color: #fff; margin-top: 0; margin-bottom: 20px; }
@@ -75,13 +74,13 @@
 
     <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
 
-    <div class="versao-app">v2.2</div>
+    <div class="versao-app">v2.3</div>
 
     <!-- TELA DE LOGIN -->
     <div id="tela-login">
         <div class="login-box">
             <h2>🔒 Acesso ao Painel DJ</h2>
-            <input type="text" id="emailLogin" placeholder="Usuário ou E-mail">
+            <input type="text" id="emailLogin" placeholder="Login (ex: leonard)">
             <input type="password" id="senhaLogin" placeholder="Senha">
             <button class="btn-entrar" onclick="fazerLogin()">Entrar no Sistema</button>
             <p id="erroLogin" style="color: #ff5252; display: none; margin-top: 15px; font-weight: bold; font-size: 14px;"></p>
@@ -174,7 +173,6 @@
     </div>
 
     <script>
-        // CONFIGURAÇÃO DO BANCO DE DADOS
         const firebaseConfig = {
             apiKey: "AIzaSyBMLhTZc7qQLjE65L3BuW9e2ijvxObTxp8",
             authDomain: "karaoke-parada.firebaseapp.com",
@@ -187,42 +185,54 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // LISTA DE USUÁRIOS E SENHAS AUTORIZADOS
-        // Para adicionar mais usuários no futuro, basta acrescentar uma linha: "usuario": "senha",
-        const USUARIOS_AUTORIZADOS = {
-            "leonard@parada.com.br": "123456",
-            "leonard@karaokedoparada.com.br": "123456",
-            "dj@parada.com": "parada1095"
-        };
-
-        // VERIFICA SE JÁ ESTAVA LOGADO NESTE NAVEGADOR
+        // PERSISTÊNCIA DA SESSÃO
         if (sessionStorage.getItem('dj_logado') === 'sim') {
             document.getElementById('tela-login').style.display = 'none';
             document.getElementById('painel-principal').style.display = 'block';
             document.getElementById('btn-manual').style.display = 'block';
         }
 
+        // LOGIN VALIDADO DIRETAMENTE NO REALTIME DATABASE
         function fazerLogin() {
-            const usuario = document.getElementById('emailLogin').value.trim().toLowerCase();
+            const rawUser = document.getElementById('emailLogin').value.trim().toLowerCase();
+            const usuarioFormatado = rawUser.replace(/[\.\#\$\[\]\/]/g, '_');
             const senha = document.getElementById('senhaLogin').value;
             const erroEl = document.getElementById('erroLogin');
 
-            if (!usuario || !senha) {
-                erroEl.innerText = "Preencha o usuário e a senha!";
+            if (!rawUser || !senha) {
+                erroEl.innerText = "Preencha o login e a senha!";
                 erroEl.style.display = 'block';
                 return;
             }
 
-            if (USUARIOS_AUTORIZADOS[usuario] && USUARIOS_AUTORIZADOS[usuario] === senha) {
-                erroEl.style.display = 'none';
-                sessionStorage.setItem('dj_logado', 'sim');
-                document.getElementById('tela-login').style.display = 'none';
-                document.getElementById('painel-principal').style.display = 'block';
-                document.getElementById('btn-manual').style.display = 'block';
-            } else {
-                erroEl.innerText = "Usuário ou senha incorretos!";
-                erroEl.style.display = 'block';
-            }
+            erroEl.style.display = 'none';
+
+            // Busca no Firebase se o usuário existe em 'djs'
+            database.ref('djs/' + usuarioFormatado).once('value').then(snapshot => {
+                const senhaCadastrada = snapshot.val();
+                
+                // Valida com o banco ou com a chave mestra de emergência
+                if ((senhaCadastrada !== null && String(senhaCadastrada) === String(senha)) || (rawUser === "leonard" && senha === "123456")) {
+                    sessionStorage.setItem('dj_logado', 'sim');
+                    document.getElementById('tela-login').style.display = 'none';
+                    document.getElementById('painel-principal').style.display = 'block';
+                    document.getElementById('btn-manual').style.display = 'block';
+                } else {
+                    erroEl.innerText = "Usuário ou senha incorretos!";
+                    erroEl.style.display = 'block';
+                }
+            }).catch(err => {
+                // Fallback de emergência caso haja instabilidade de rede
+                if (rawUser === "leonard" && senha === "123456") {
+                    sessionStorage.setItem('dj_logado', 'sim');
+                    document.getElementById('tela-login').style.display = 'none';
+                    document.getElementById('painel-principal').style.display = 'block';
+                    document.getElementById('btn-manual').style.display = 'block';
+                } else {
+                    erroEl.innerText = "Erro ao validar login. Verifique sua rede.";
+                    erroEl.style.display = 'block';
+                }
+            });
         }
 
         function fazerLogout() {
@@ -230,7 +240,6 @@
             location.reload();
         }
 
-        // SUPORTE A TECLA ENTER
         function checarEnter(e) {
             if (e.key === 'Enter') fazerLogin();
         }
@@ -245,7 +254,7 @@
 
         function iniciarSistema() {
             const som = document.getElementById('audio-tambores');
-            som.volume = 0.5; // VOLUME DOS TAMBORES PELA METADE
+            som.volume = 0.5; // VOLUME DOS TAMBORES EM 50%
             som.muted = true;
             som.play().then(() => {
                 som.pause();
