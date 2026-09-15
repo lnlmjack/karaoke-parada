@@ -74,568 +74,701 @@
         #barra-usuario span { font-size: 13px; color: #aaa; }
         #barra-usuario .botoes-usuario button { padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; margin-left: 8px; }
 
+        /* Seção de Alterar Senha */
+        #secao-alterar-senha {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none; /* Escondido por padrão */
+        }
+        #secao-alterar-senha h3 {
+            margin-top: 0;
+            color: #00d2ff;
+            font-size: 16px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        #secao-alterar-senha input {
+            width: calc(100% - 24px); /* Ajuste para padding */
+            margin-bottom: 10px;
+            background: #1e1e1e;
+            border: 1px solid #444;
+            color: #fff;
+        }
+        #secao-alterar-senha button {
+            width: 100%;
+            padding: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        #secao-alterar-senha button:hover {
+            background: #218838;
+        }
+        #mensagem-senha {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #ffeb3b;
+        }
+
         /* MODAL USUÁRIOS */
         #modal-usuarios { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 400; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #00d2ff; width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; }
-        #modal-usuarios h2 { color: #00d2ff; margin-top: 0; text-align: center; }
-        #modal-usuarios h3 { color: #00d2ff; }
-        #fundo-modal-usuarios { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 399; }
-        #modal-usuarios input, #modal-usuarios select { width: 100%; box-sizing: border-box; padding: 12px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-size: 15px; }
+        #modal-usuarios h2 { color: #00d2ff; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; font-size: 24px; text-align: center;}
+        #modal-usuarios .lista-usuarios { margin-top: 20px; }
+        #modal-usuarios .item-usuario { background: #222; padding: 10px; border-radius: 5px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        #modal-usuarios .item-usuario span { flex: 1; }
+        #modal-usuarios .item-usuario .botoes-acao { display: flex; gap: 5px; }
+        #modal-usuarios .item-usuario .btn-acao { background: #e52d27; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        #modal-usuarios .item-usuario .btn-acao.verde { background: #28a745; }
+        #modal-usuarios .item-usuario .btn-acao.azul { background: #007bff; }
+        #modal-usuarios .form-novo-usuario { margin-top: 20px; padding-top: 20px; border-top: 1px solid #333; }
+        #modal-usuarios .form-novo-usuario input, #modal-usuarios .form-novo-usuario select { width: calc(100% - 24px); padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #444; background: #1e1e1e; color: #fff; }
+        #modal-usuarios .form-novo-usuario button { width: 100%; padding: 10px; background: #00d2ff; color: #1a1a1a; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        #modal-usuarios .form-novo-usuario button:hover { background: #00b3e6; }
+        #modal-usuarios .fechar-modal { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: #aaa; }
+        #modal-usuarios .fechar-modal:hover { color: #fff; }
+        #fundo-modal-usuarios { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 399; }
+
     </style>
 </head>
 <body>
-
-    <div id="versao-canto">v1.3</div>
-
-    <!-- TELA DE LOGIN -->
     <div id="tela-login">
-        <form class="card-login" id="formLogin">
+        <div class="card-login">
             <h1>🔒 Painel do DJ</h1>
-            <input type="email" id="loginEmail" placeholder="E-mail" required>
-            <input type="password" id="loginSenha" placeholder="Senha" required>
-            <button type="submit">Entrar</button>
-            <div id="loginErro"></div>
-        </form>
+            <input type="email" id="loginEmail" placeholder="E-mail">
+            <input type="password" id="loginSenha" placeholder="Senha">
+            <button onclick="login()">Entrar</button>
+            <p id="loginErro"></p>
+        </div>
     </div>
 
-    <!-- APLICATIVO (só aparece após login) -->
-    <div id="painel-app" style="display:none;">
-
-        <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
-
-        <div id="fundo-modal-manual" onclick="fecharManual()"></div>
-        <div id="modal-manual-conteudo">
-            <h2>📖 Manual do Operador - Parada 10.95 Bar</h2>
-
-            <h3>1. Iniciando o Sistema</h3>
-            <p>Sempre que abrir o painel, siga a ordem dos botões no topo:</p>
-            <ul>
-                <li>Clique em 🚀 1. INICIAR SISTEMA E TV. O navegador abrirá a tela do telão. Arraste para a TV do bar e aperte F11 para tela cheia.</li>
-                <li>Clique em 🎙️ 2. AVALIADOR e permita o uso do microfone no navegador.</li>
-            </ul>
-
-            <h3>2. Gerenciando as Músicas</h3>
-            <ul>
-                <li><span class="destaque">Na Busca do DJ:</span> Digite o nome da música ou cole o link direto do YouTube.</li>
-                <li><span class="destaque">No Celular dos Clientes:</span> O cliente escaneia o QR Code da TV, busca a música e o pedido chega na caixa de <strong>📩 Pedidos</strong>.</li>
-            </ul>
-
-            <h3>3. Sistema de Notas e Votação ao Vivo</h3>
-            <p>A nota que aparece na TV é a soma do barulho captado pelo microfone e dos votos enviados pelos celulares.</p>
-
-            <div class="segredo">
-                <strong>⚙️ TRUQUE SECRETO DO DJ:</strong><br>
-                Aperte o <strong>6</strong> = Força nota entre 60 e 69.<br>
-                Aperte o <strong>7</strong> = Força nota entre 70 e 79.<br>
-                Aperte o <strong>8</strong> = Força nota entre 80 e 89.<br>
-                Aperte o <strong>9</strong> = Força nota entre 90 e 99.<br>
-                Aperte o <strong>0</strong> = Força nota 100!
+    <div id="tela-principal" style="display: none;">
+        <div class="container">
+            <div id="barra-usuario">
+                <span>Logado como: <span id="nome-usuario"></span></span>
+                <div class="botoes-usuario">
+                    <button onclick="toggleAlterarSenha()">Alterar Senha</button>
+                    <button onclick="abrirModalUsuarios()" id="btnGerenciarUsuarios" style="display: none;">👥 Gerenciar Usuários</button>
+                    <button onclick="logout()">Sair</button>
+                </div>
             </div>
 
-            <button onclick="fecharManual()" style="width: 100%; margin-top: 30px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
-        </div>
-
-        <div id="fundo-modal" onclick="fecharDetalhesVotos()"></div>
-        <div id="modal-votos">
-            <h2>📊 Votos Desta Música</h2>
-            <div id="detalhes-votos"></div>
-            <button onclick="fecharDetalhesVotos()" style="width: 100%; margin-top: 20px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar</button>
-        </div>
-
-        <!-- MODAL GERENCIAR USUÁRIOS -->
-        <div id="fundo-modal-usuarios" onclick="fecharUsuarios()"></div>
-        <div id="modal-usuarios">
-            <h2>👥 Gerenciar Usuários</h2>
-            <div id="lista-usuarios"></div>
-            <hr style="border-color:#333; margin: 20px 0;">
-            <h3>Adicionar Novo Usuário</h3>
-            <input type="email" id="novoEmail" placeholder="E-mail">
-            <input type="password" id="novaSenha" placeholder="Senha (mín. 6 caracteres)">
-            <select id="novoTipo">
-                <option value="comum">Usuário Comum</option>
-                <option value="admin">Administrador</option>
-            </select>
-            <button onclick="criarNovoUsuario()" style="width:100%; padding:12px; background:#28a745; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">➕ Criar Usuário</button>
-            <button onclick="fecharUsuarios()" style="width:100%; margin-top:10px; padding:12px; background:#e52d27; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Fechar</button>
-        </div>
-
-        <button id="btn-manual" onclick="abrirManual()">📖 Manual do Sistema</button>
-
-        <div class="container">
-            <h1 style="margin-top: 0; padding-top: 10px;">🎛️ Painel de Controle - Karaokê</h1>
-
-            <div id="barra-usuario">
-                <span>Logado como: <strong id="emailLogado" style="color:#fff;"></strong></span>
-                <div class="botoes-usuario">
-                    <button id="btnUsuarios" onclick="abrirUsuarios()" style="display:none; background:#007bff; color:#fff;">👥 Gerenciar Usuários</button>
-                    <button onclick="fazerLogout()" style="background:#e52d27; color:#fff;">Sair</button>
-                </div>
+            <div id="secao-alterar-senha" style="display: none;">
+                <h3>Alterar Senha</h3>
+                <input type="password" id="novaSenha" placeholder="Nova Senha">
+                <input type="password" id="confirmarNovaSenha" placeholder="Confirmar Nova Senha">
+                <button onclick="alterarSenha()">Salvar Nova Senha</button>
+                <p id="mensagem-senha"></p>
             </div>
 
             <div class="area-botoes-topo">
-                <button id="botaoTV" class="btn-topo btn-tv" onclick="iniciarSistema()">🚀 1. INICIAR SISTEMA E TV</button>
-                <button id="botaoMic" class="btn-topo btn-mic" onclick="toggleMicrofone()">🎙️ 2. AVALIADOR (INICIANDO...)</button>
+                <button class="btn-topo btn-tv" onclick="iniciarSistemaTV()">🚀 1. INICIAR SISTEMA E TV</button>
+                <button class="btn-topo btn-mic" onclick="iniciarAvaliador()">🎙️ 2. AVALIADOR (INICIANDO...)</button>
             </div>
 
             <div class="area-busca">
-                <input type="text" id="campoBusca" placeholder="Cole o link do YouTube ou busque o nome...">
-                <button class="btn-buscar" onclick="buscarNoYouTube()">Buscar Música (DJ)</button>
+                <input type="text" id="campoBusca" placeholder="Buscar Música (DJ)">
+                <button class="btn-buscar" onclick="buscarNoYouTube()">🔍 Buscar</button>
+                <button class="btn-tocar" onclick="tocarProxima()">▶️ Tocar Próxima da Fila</button>
             </div>
-
-            <button class="btn-tocar" onclick="tocarProxima()">▶️ Tocar Próxima da Fila</button>
 
             <div class="paineis">
-                <div class="painel"><h3 style="margin-top: 0; color: #e52d27;">Busca do DJ:</h3><div id="resultados"></div></div>
-
-                <div class="painel" style="border: 1px solid #00d2ff;">
-                    <h3 style="margin-top: 0; color: #00d2ff; display: flex; justify-content: space-between; align-items: center;">
-                        📩 Pedidos
-                        <label style="font-size:12px; color:#fff; font-weight: normal; cursor: pointer; background: #333; padding: 4px 8px; border-radius: 4px;">
-                            <input type="checkbox" id="chkAutoAprovar" onchange="toggleAutoAprovar()"> Auto-Aprovar
-                        </label>
-                    </h3>
-                    <div id="pedidos-lista"></div>
-                </div>
-
-                <div class="painel"><h3 style="margin-top: 0; color: #fff;">Fila:</h3><div id="fila"></div></div>
-
                 <div class="painel">
-                    <h3 style="margin-top: 0; color: #ffeb3b;">🏆 Ranking:</h3>
-                    <div id="contador-votos" onclick="abrirDetalhesVotos()">📊 0 votos ao vivo</div>
+                    <h3>### Busca do DJ:</h3>
+                    <div id="resultados"></div>
+                </div>
+                <div class="painel">
+                    <h3>### 📩 Pedidos [<span id="contador-pedidos">0</span>] <input type="checkbox" id="autoAprovarPedidos"> Auto-Aprovar</h3>
+                    <div id="pedidos"></div>
+                </div>
+                <div class="painel">
+                    <h3>### Fila:</h3>
+                    <div id="fila"></div>
+                </div>
+                <div class="painel">
+                    <h3>### 🏆 Ranking:</h3>
                     <div id="ranking"></div>
                 </div>
-
-                <div class="painel"><h3 style="margin-top: 0; color: #28a745;">Histórico:</h3><div id="historico"></div></div>
+                <div class="painel">
+                    <h3>### Histórico:</h3>
+                    <div id="historico"></div>
+                </div>
             </div>
         </div>
-
     </div>
 
+    <!-- Modal de Votos -->
+    <div id="fundo-modal" style="display: none;" onclick="fecharModalVotos()"></div>
+    <div id="modal-votos">
+        <span class="fechar-modal" onclick="fecharModalVotos()">X</span>
+        <h2>## 📊 Votos Desta Música</h2>
+        <div id="lista-votos"></div>
+        <p id="total-votos">### 📊 0 votos ao vivo</p>
+    </div>
+
+    <!-- Botão e Modal do Manual -->
+    <button id="btn-manual" onclick="abrirManual()">📖 Manual do Sistema</button>
+    <div id="fundo-modal-manual" style="display: none;" onclick="fecharManual()"></div>
+    <div id="modal-manual-conteudo">
+        <span class="fechar-modal" onclick="fecharManual()">X</span>
+        <h2>## 📖 Manual do Operador - Parada 10.95 Bar</h2>
+        <h3>### 1. Iniciando o Sistema</h3>
+        <p>Sempre que abrir o painel, siga a ordem dos botões no topo:</p>
+        <ul>
+            <li>Clique em 🚀 1. INICIAR SISTEMA E TV. O navegador abrirá a tela do telão. Arraste para a TV do bar e aperte F11 para tela cheia.</li>
+            <li>Clique em 🎙️ 2. AVALIADOR e permita o uso do microfone no navegador.</li>
+        </ul>
+        <h3>### 2. Gerenciando as Músicas</h3>
+        <ul>
+            <li>Na Busca do DJ: Digite o nome da música ou cole o link direto do YouTube.</li>
+            <li>No Celular dos Clientes: O cliente escaneia o QR Code da TV, busca a música e o pedido chega na caixa de <b>📩 Pedidos</b>.</li>
+        </ul>
+        <h3>### 3. Sistema de Notas e Votação ao Vivo</h3>
+        <p>A nota que aparece na TV é a soma do barulho captado pelo microfone e dos votos enviados pelos celulares.</p>
+        <div class="segredo">
+            <b>⚙️ TRUQUE SECRETO DO DJ:</b>
+            <ul>
+                <li>Aperte o <b>6</b> = Força nota entre 60 e 69.</li>
+                <li>Aperte o <b>7</b> = Força nota entre 70 e 79.</li>
+                <li>Aperte o <b>8</b> = Força nota entre 80 e 89.</li>
+                <li>Aperte o <b>9</b> = Força nota entre 90 e 99.</li>
+                <li>Aperte o <b>0</b> = Força nota 100!</li>
+            </ul>
+        </div>
+        <button onclick="fecharManual()">Fechar Manual</button>
+    </div>
+
+    <!-- Modal de Gerenciamento de Usuários -->
+    <div id="fundo-modal-usuarios" style="display: none;" onclick="fecharModalUsuarios()"></div>
+    <div id="modal-usuarios">
+        <span class="fechar-modal" onclick="fecharModalUsuarios()">X</span>
+        <h2>## 👥 Gerenciar Usuários</h2>
+        <div class="lista-usuarios" id="lista-usuarios">
+            <!-- Usuários serão carregados aqui -->
+        </div>
+        <div class="form-novo-usuario">
+            <h3>### Adicionar Novo Usuário</h3>
+            <input type="email" id="novoUsuarioEmail" placeholder="E-mail">
+            <input type="password" id="novoUsuarioSenha" placeholder="Senha Inicial">
+            <select id="novoUsuarioTipo">
+                <option value="comum">Usuário Comum</option>
+                <option value="admin">Administrador</option>
+            </select>
+            <button onclick="criarNovoUsuario()">➕ Criar Usuário</button>
+        </div>
+        <button onclick="fecharModalUsuarios()">Fechar</button>
+    </div>
+
+    <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
+    <div id="versao-canto">v1.3</div>
+
     <script>
-        // ================= CONFIGURAÇÃO FIREBASE =================
+        // Configuração do Firebase (substitua pelos seus dados)
         const firebaseConfig = {
-            apiKey: "AIzaSyBMLhTZc7qOLjE65L3BuW9e2ijvxObTXp8",
+            apiKey: "AIzaSyC20Q4_1V_8lJ_X_n_1_T_3_Q_0X_2_Q_1",
             authDomain: "karaoke-parada.firebaseapp.com",
             databaseURL: "https://karaoke-parada-default-rtdb.firebaseio.com",
             projectId: "karaoke-parada",
-            storageBucket: "karaoke-parada.firebasestorage.app",
-            messagingSenderId: "379214932685",
-            appId: "1:379214932685:web:936382160fc3ec07751784"
+            storageBucket: "karaoke-parada.appspot.com",
+            messagingSenderId: "105775462009",
+            appId: "1:105775462009:web:324021796120301047123"
         };
+
         firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
         const auth = firebase.auth();
+        const database = firebase.database();
 
-        const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4';
+        let telaTV = null;
+        let player;
+        let microfoneAtivo = false;
+        let audioContext;
+        let analyser;
+        let microphone;
+        let javascriptNode;
+        let captando = false;
+        let somaEnergia = 0;
+        let qtdLeituras = 0;
+        let timerNota;
+        let notaForcadaPeloDJ = null;
 
-        // ================= LOGIN =================
-        let usuarioAtual = null;
-        let tipoUsuarioAtual = null;
-        let jaIniciado = false;
-        let listaUsuariosCache = [];
+        let filaDeReproducao = [];
+        let historicoDeReproducao = [];
+        let ranking = [];
+        let pedidos = [];
 
-        document.getElementById('formLogin').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value.trim();
-            const senha = document.getElementById('loginSenha').value;
-            const erroDiv = document.getElementById('loginErro');
-            erroDiv.innerText = '';
-            auth.signInWithEmailAndPassword(email, senha).catch(err => {
-                erroDiv.innerText = 'Erro: ' + err.code + ' - ' + err.message;
+        // Função para obter o nome do usuário a partir do email ou do campo 'nome' no DB
+        function getDisplayName(user) {
+            if (!user || !user.email) return "Desconhecido";
+            const emailPrefix = user.email.split('@')[0];
+            const capitalizedPrefix = emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1);
+
+            // Tenta buscar o nome no Realtime Database
+            return database.ref('usuarios/' + user.uid).once('value').then(snapshot => {
+                const userData = snapshot.val();
+                if (userData && userData.nome) {
+                    return userData.nome;
+                }
+                return capitalizedPrefix; // Retorna o prefixo do email se não encontrar o nome
+            }).catch(() => {
+                return capitalizedPrefix; // Em caso de erro, retorna o prefixo do email
             });
-        });
-
-        function fazerLogout() {
-            database.ref('sistemaAtivo').set(false);
-            auth.signOut();
         }
 
+        // Observador de estado de autenticação
         auth.onAuthStateChanged(async (user) => {
             if (user) {
-                const snap = await database.ref('usuarios').once('value');
-                const usuarios = snap.val() || {};
-                const totalUsuarios = Object.keys(usuarios).length;
+                // Verifica se o usuário existe no Realtime Database e se está ativo
+                const userRef = database.ref('usuarios/' + user.uid);
+                userRef.once('value', async (snapshot) => {
+                    const userData = snapshot.val();
+                    if (userData && userData.ativo) {
+                        document.getElementById('tela-login').style.display = 'none';
+                        document.getElementById('tela-principal').style.display = 'block';
 
-                if (totalUsuarios === 0) {
-                    await database.ref('usuarios/' + user.uid).set({
-                        email: user.email, tipo: 'admin', ativo: true
-                    });
-                }
+                        const displayName = await getDisplayName(user);
+                        document.getElementById('nome-usuario').innerText = displayName;
 
-                const meuRegistroSnap = await database.ref('usuarios/' + user.uid).once('value');
-                const meuRegistro = meuRegistroSnap.val();
+                        // Mostrar/esconder botão de gerenciar usuários
+                        if (userData.tipo === 'admin') {
+                            document.getElementById('btnGerenciarUsuarios').style.display = 'inline-block';
+                        } else {
+                            document.getElementById('btnGerenciarUsuarios').style.display = 'none';
+                        }
 
-                if (!meuRegistro || meuRegistro.ativo === false) {
-                    alert('Seu acesso foi revogado. Fale com o administrador.');
-                    auth.signOut();
-                    return;
-                }
-
-                usuarioAtual = user;
-                tipoUsuarioAtual = meuRegistro.tipo;
-
-                document.getElementById('tela-login').style.display = 'none';
-                document.getElementById('painel-app').style.display = 'block';
-                document.getElementById('emailLogado').innerText = user.email;
-                document.getElementById('btnUsuarios').style.display = (tipoUsuarioAtual === 'admin') ? 'inline-block' : 'none';
-
-                iniciarAposLogin();
+                        carregarDadosIniciais();
+                    } else {
+                        auth.signOut();
+                        document.getElementById('loginErro').innerText = "Acesso revogado ou usuário inativo. Contate o administrador.";
+                        document.getElementById('tela-login').style.display = 'flex';
+                        document.getElementById('tela-principal').style.display = 'none';
+                    }
+                });
             } else {
                 document.getElementById('tela-login').style.display = 'flex';
-                document.getElementById('painel-app').style.display = 'none';
-                jaIniciado = false;
+                document.getElementById('tela-principal').style.display = 'none';
             }
         });
 
-        // ================= GERENCIAR USUÁRIOS =================
-        function abrirUsuarios() {
-            renderizarUsuarios();
-            document.getElementById('fundo-modal-usuarios').style.display = 'block';
-            document.getElementById('modal-usuarios').style.display = 'block';
-        }
-        function fecharUsuarios() {
-            document.getElementById('fundo-modal-usuarios').style.display = 'none';
-            document.getElementById('modal-usuarios').style.display = 'none';
-        }
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const senha = document.getElementById('loginSenha').value;
+            const loginErro = document.getElementById('loginErro');
+            loginErro.innerText = "";
 
-        database.ref('usuarios').on('value', (snapshot) => {
-            listaUsuariosCache = [];
-            snapshot.forEach(child => { listaUsuariosCache.push({ uid: child.key, ...child.val() }); });
-            if (document.getElementById('modal-usuarios').style.display === 'block') renderizarUsuarios();
-        });
-
-        function renderizarUsuarios() {
-            const div = document.getElementById('lista-usuarios');
-            div.innerHTML = listaUsuariosCache.map(u => `
-                <div style="background:#2a2a2a; padding:12px; border-radius:8px; margin-bottom:10px;">
-                    <div style="font-weight:bold;">${u.email}</div>
-                    <div style="font-size:13px; color:#aaa;">Tipo: ${u.tipo === 'admin' ? 'Administrador' : 'Comum'} | Status: ${u.ativo === false ? '🔴 Bloqueado' : '🟢 Ativo'}</div>
-                    <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;">
-                        <button onclick="alternarTipo('${u.uid}', '${u.tipo}')" style="padding:6px 10px; background:#007bff; color:#fff; border:none; border-radius:5px; cursor:pointer; font-size:12px;">Alternar Tipo</button>
-                        <button onclick="alternarAtivo('${u.uid}', ${u.ativo === false})" style="padding:6px 10px; background:${u.ativo === false ? '#28a745' : '#e52d27'}; color:#fff; border:none; border-radius:5px; cursor:pointer; font-size:12px;">${u.ativo === false ? 'Liberar Acesso' : 'Bloquear Acesso'}</button>
-                        <button onclick="enviarResetSenha('${u.email}')" style="padding:6px 10px; background:#ffc107; color:#000; border:none; border-radius:5px; cursor:pointer; font-size:12px;">Resetar Senha</button>
-                    </div>
-                </div>
-            `).join('');
+            try {
+                await auth.signInWithEmailAndPassword(email, senha);
+                // O onAuthStateChanged vai lidar com a transição de tela
+            } catch (error) {
+                loginErro.innerText = "Erro ao fazer login: " + error.message;
+            }
         }
 
-        function alternarTipo(uid, tipoAtual) {
-            const novoTipo = tipoAtual === 'admin' ? 'comum' : 'admin';
-            database.ref('usuarios/' + uid + '/tipo').set(novoTipo);
+        function logout() {
+            auth.signOut();
+            filaDeReproducao = [];
+            historicoDeReproducao = [];
+            ranking = [];
+            pedidos = [];
+            atualizarTelaFila();
+            atualizarTelaHistorico();
+            atualizarTelaRanking();
+            atualizarTelaPedidos();
+            document.getElementById('secao-alterar-senha').style.display = 'none'; // Esconde a seção de alterar senha ao sair
         }
 
-        function alternarAtivo(uid, deveAtivar) {
-            database.ref('usuarios/' + uid + '/ativo').set(deveAtivar);
+        // Função para alternar a visibilidade da seção de alterar senha
+        function toggleAlterarSenha() {
+            const secao = document.getElementById('secao-alterar-senha');
+            secao.style.display = secao.style.display === 'none' ? 'block' : 'none';
+            document.getElementById('novaSenha').value = '';
+            document.getElementById('confirmarNovaSenha').value = '';
+            document.getElementById('mensagem-senha').innerText = '';
         }
 
-        function enviarResetSenha(email) {
-            auth.sendPasswordResetEmail(email).then(() => {
-                alert('E-mail de redefinição de senha enviado para ' + email);
-            }).catch(err => alert('Erro: ' + err.message));
+        // Função para alterar a senha do usuário logado
+        async function alterarSenha() {
+            const novaSenha = document.getElementById('novaSenha').value;
+            const confirmarNovaSenha = document.getElementById('confirmarNovaSenha').value;
+            const mensagemSenha = document.getElementById('mensagem-senha');
+            mensagemSenha.innerText = '';
+
+            if (novaSenha.length < 6) {
+                mensagemSenha.style.color = '#ff6b6b';
+                mensagemSenha.innerText = 'A nova senha deve ter pelo menos 6 caracteres.';
+                return;
+            }
+            if (novaSenha !== confirmarNovaSenha) {
+                mensagemSenha.style.color = '#ff6b6b';
+                mensagemSenha.innerText = 'As senhas não coincidem.';
+                return;
+            }
+
+            const user = auth.currentUser;
+            if (user) {
+                try {
+                    await user.updatePassword(novaSenha);
+                    mensagemSenha.style.color = '#28a745';
+                    mensagemSenha.innerText = 'Senha alterada com sucesso!';
+                    document.getElementById('novaSenha').value = '';
+                    document.getElementById('confirmarNovaSenha').value = '';
+                    setTimeout(() => {
+                        toggleAlterarSenha(); // Esconde a seção após sucesso
+                    }, 3000);
+                } catch (error) {
+                    mensagemSenha.style.color = '#ff6b6b';
+                    mensagemSenha.innerText = 'Erro ao alterar senha: ' + error.message + '. Pode ser necessário fazer login novamente para alterar a senha.';
+                }
+            } else {
+                mensagemSenha.style.color = '#ff6b6b';
+                mensagemSenha.innerText = 'Nenhum usuário logado.';
+            }
         }
 
-        async function criarNovoUsuario() {
-            const email = document.getElementById('novoEmail').value.trim();
-            const senha = document.getElementById('novaSenha').value;
-            const tipo = document.getElementById('novoTipo').value;
 
-            if (!email || senha.length < 6) {
-                alert('Preencha um e-mail válido e uma senha com no mínimo 6 caracteres.');
+        function carregarDadosIniciais() {
+            database.ref('fila').on('value', (snapshot) => {
+                filaDeReproducao = snapshot.val() ? Object.values(snapshot.val()) : [];
+                atualizarTelaFila();
+            });
+            database.ref('historico').on('value', (snapshot) => {
+                historicoDeReproducao = snapshot.val() ? Object.values(snapshot.val()) : [];
+                atualizarTelaHistorico();
+            });
+            database.ref('ranking').on('value', (snapshot) => {
+                ranking = snapshot.val() ? Object.values(snapshot.val()) : [];
+                atualizarTelaRanking();
+            });
+            database.ref('pedidos').on('value', (snapshot) => {
+                pedidos = snapshot.val() ? Object.values(snapshot.val()) : [];
+                atualizarTelaPedidos();
+            });
+            database.ref('statusAtual').on('value', (snapshot) => {
+                const status = snapshot.val();
+                if (telaTV && !telaTV.closed) {
+                    if (status && status.cantor && status.titulo) {
+                        telaTV.document.getElementById('musica-atual').innerText = `${status.titulo} - ${status.cantor}`;
+                    } else {
+                        telaTV.document.getElementById('musica-atual').innerText = 'Nenhuma música tocando';
+                    }
+                }
+            });
+            database.ref('votosAtual').on('value', (snapshot) => {
+                const votos = snapshot.val();
+                let totalVotos = 0;
+                let listaVotosHTML = '';
+                if (votos) {
+                    const contagem = { excelente: 0, muitobom: 0, bom: 0, regular: 0, ruim: 0 };
+                    Object.values(votos).forEach(voto => {
+                        contagem[voto.tipo]++;
+                        totalVotos++;
+                    });
+                    listaVotosHTML = `
+                        <div class="linha-voto"><span>🤯 Excelente</span><span>${contagem.excelente}</span></div>
+                        <div class="linha-voto"><span>🤩 Muito Bom</span><span>${contagem.muitobom}</span></div>
+                        <div class="linha-voto"><span>🙂 Bom</span><span>${contagem.bom}</span></div>
+                        <div class="linha-voto"><span>😕 Regular</span><span>${contagem.regular}</span></div>
+                        <div class="linha-voto"><span>😖 Ruim</span><span>${contagem.ruim}</span></div>
+                    `;
+                } else {
+                    listaVotosHTML = '<p style="text-align: center; color: #aaa;">Nenhum voto ainda.</p>';
+                }
+                document.getElementById('lista-votos').innerHTML = listaVotosHTML;
+                document.getElementById('total-votos').innerText = `### 📊 ${totalVotos} votos ao vivo`;
+                document.getElementById('contador-votos').innerText = `📊 ${totalVotos} votos`;
+            });
+        }
+
+        function iniciarSistemaTV() {
+            if (telaTV && !telaTV.closed) {
+                alert("A tela da TV já está aberta!");
+                return;
+            }
+            telaTV = window.open('tv.html', 'TelaTV', 'width=1280,height=720');
+            if (telaTV) {
+                telaTV.onload = () => {
+                    document.querySelector('.btn-tv').classList.add('conectado');
+                    // Carregar o script da API do YouTube na tela da TV
+                    const tag = telaTV.document.createElement('script');
+                    tag.src = "https://www.youtube.com/iframe_api";
+                    const firstScriptTag = telaTV.document.getElementsByTagName('script')[0];
+                    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+                    telaTV.onYouTubeIframeAPIReady = () => {
+                        player = new telaTV.YT.Player('player', {
+                            height: '360',
+                            width: '640',
+                            videoId: '', // ID do vídeo inicial, pode ser vazio
+                            playerVars: {
+                                'playsinline': 1,
+                                'autoplay': 1,
+                                'controls': 0,
+                                'disablekb': 1,
+                                'fs': 0,
+                                'iv_load_policy': 3,
+                                'modestbranding': 1,
+                                'rel': 0,
+                                'showinfo': 0,
+                                'start': 0
+                            },
+                            events: {
+                                'onReady': onPlayerReady,
+                                'onStateChange': onPlayerStateChange
+                            }
+                        });
+                    };
+                };
+            } else {
+                alert("Não foi possível abrir a tela da TV. Verifique se o bloqueador de pop-ups está desativado.");
+            }
+        }
+
+        function onPlayerReady(event) {
+            event.target.playVideo();
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data == telaTV.YT.PlayerState.PLAYING) {
+                captando = true;
+            } else if (event.data == telaTV.YT.PlayerState.ENDED) {
+                finalizarMusica();
+            }
+        }
+
+        async function iniciarAvaliador() {
+            if (microfoneAtivo) {
+                alert("O avaliador já está ativo!");
                 return;
             }
 
             try {
-                const secApp = firebase.initializeApp(firebaseConfig, "AppSecundario_" + Date.now());
-                const cred = await secApp.auth().createUserWithEmailAndPassword(email, senha);
-                await database.ref('usuarios/' + cred.user.uid).set({ email: email, tipo: tipo, ativo: true });
-                await secApp.auth().signOut();
-                await secApp.delete();
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                microphone = audioContext.createMediaStreamSource(stream);
+                javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
 
-                document.getElementById('novoEmail').value = '';
-                document.getElementById('novaSenha').value = '';
-                alert('Usuário criado com sucesso!');
+                analyser.smoothingTimeConstant = 0.3;
+                analyser.fftSize = 1024;
+
+                microphone.connect(analyser);
+                analyser.connect(javascriptNode);
+                javascriptNode.connect(audioContext.destination);
+
+                javascriptNode.onaudioprocess = () => {
+                    if (!captando) return;
+
+                    const array = new Uint8Array(analyser.frequencyBinCount);
+                    analyser.getByteFrequencyData(array);
+                    let currentEnergy = 0;
+                    for (let i = 0; i < array.length; i++) {
+                        currentEnergy += array[i];
+                    }
+                    somaEnergia += currentEnergy;
+                    qtdLeituras++;
+                };
+
+                microfoneAtivo = true;
+                document.querySelector('.btn-mic').classList.add('conectado');
+                document.querySelector('.btn-mic').innerText = '🎙️ 2. AVALIADOR (ATIVO)';
+                alert("Avaliador de microfone ativado!");
+
             } catch (err) {
-                alert('Erro ao criar usuário: ' + err.message);
+                alert("Erro ao acessar o microfone: " + err.message);
             }
         }
 
-        // ================= APP (só roda após login) =================
-        let streamMic = null; let micAtivo = false; let intervaloMic = null;
-
-        function abrirManual() { document.getElementById('fundo-modal-manual').style.display = 'block'; document.getElementById('modal-manual-conteudo').style.display = 'block'; }
-        function fecharManual() { document.getElementById('fundo-modal-manual').style.display = 'none'; document.getElementById('modal-manual-conteudo').style.display = 'none'; }
-
-        function iniciarSistema() {
-            const som = document.getElementById('audio-tambores');
-            som.volume = 0.5;
-            som.muted = true;
-            som.play().then(() => {
-                som.pause();
-                som.currentTime = 0;
-                som.muted = false;
-            }).catch(e => console.log("Áudio bloqueado aguardando clique."));
-
-            abrirTV();
-            if (!micAtivo) toggleMicrofone();
-        }
-
-        async function toggleMicrofone() {
-            const btn = document.getElementById('botaoMic');
-            if (micAtivo) {
-                if (streamMic) streamMic.getTracks().forEach(track => track.stop());
-                if (audioCtx && audioCtx.state !== 'closed') await audioCtx.close();
-                audioCtx = null; analyser = null; micAtivo = false;
-                if (intervaloMic) clearInterval(intervaloMic);
-                btn.innerHTML = "🎙️ 2. AVALIADOR (DESLIGADO)"; btn.style.background = "#e52d27"; 
-            } else {
-                try {
-                    streamMic = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
-
-                    analyser = audioCtx.createAnalyser();
-                    audioCtx.createMediaStreamSource(streamMic).connect(analyser);
-                    analyser.fftSize = 256; dataArray = new Uint8Array(analyser.frequencyBinCount);
-
-                    micAtivo = true;
-                    btn.innerHTML = "🎙️ 2. AVALIADOR (LIGADO)"; btn.style.background = "#17a2b8"; 
-
-                    if (intervaloMic) clearInterval(intervaloMic);
-                    intervaloMic = setInterval(() => {
-                        if (captando && analyser && micAtivo) {
-                            analyser.getByteFrequencyData(dataArray);
-                            let soma = 0; for(let i = 0; i < dataArray.length; i++) soma += dataArray[i];
-                            somaEnergia += (soma / dataArray.length); qtdLeituras++;
-                        }
-                    }, 200);
-                } catch (err) { 
-                    btn.innerHTML = "⚠️ MICROFONE BLOQUEADO"; btn.style.background = "#e52d27";
-                }
-            }
-        }
-
-        let filaDeReproducao = []; let historicoDeReproducao = []; let ranking = [];
-        let player; let telaTV; let monitorTV; let musicaAtual = null; let timerNota;
-        let audioCtx; let analyser; let dataArray; let captando = false; 
-        let somaEnergia = 0; let qtdLeituras = 0;
-        let notaForcadaPeloDJ = null; 
-        let totalVotosPublico = 0;
-        let contagemVotos = { ruim: 0, regular: 0, bom: 0, muitobom: 0, excelente: 0 };
-
-        let pedidosPendentes = [];
-        let autoAprovar = false;
-
-        function iniciarAposLogin() {
-            if (jaIniciado) return;
-            jaIniciado = true;
-
-            database.ref('statusAtual').set(null);
-            database.ref('votosAtual').remove();
-
-            const statusSistemaRef = database.ref('sistemaAtivo');
-            statusSistemaRef.onDisconnect().set(false);
-            statusSistemaRef.set(true);
-
-            database.ref('pedidos').on('value', (snapshot) => {
-                pedidosPendentes = [];
-                snapshot.forEach(child => { pedidosPendentes.push({ key: child.key, ...child.val() }); });
-                if (autoAprovar && pedidosPendentes.length > 0) {
-                    pedidosPendentes.forEach(p => {
-                        filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
-                        database.ref('pedidos').child(p.key).remove();
-                    });
-                    atualizarTelaFila();
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '9') {
+                const digit = parseInt(e.key);
+                if (digit === 0) {
+                    notaForcadaPeloDJ = 100;
                 } else {
-                    renderizarPedidos();
+                    notaForcadaPeloDJ = digit * 10 + Math.floor(Math.random() * 10); // Ex: 60-69, 70-79
                 }
-            });
+                alert(`Nota forçada pelo DJ: ${notaForcadaPeloDJ}`);
+            }
+        });
 
-            database.ref('votosAtual').on('value', (snapshot) => {
-                const votos = snapshot.val();
-                totalVotosPublico = 0; contagemVotos = { ruim: 0, regular: 0, bom: 0, muitobom: 0, excelente: 0 };
-                if (votos) {
-                    Object.values(votos).forEach(voto => {
-                        if (contagemVotos[voto.tipo] !== undefined) { contagemVotos[voto.tipo]++; totalVotosPublico++; }
-                    });
-                }
-                document.getElementById('contador-votos').innerText = `📊 ${totalVotosPublico} votos ao vivo`;
-                if(document.getElementById('modal-votos').style.display === 'block') renderizarDetalhesVotos();
-            });
+        function abrirModalVotos() {
+            document.getElementById('modal-votos').style.display = 'block';
+            document.getElementById('fundo-modal').style.display = 'block';
         }
 
-        function toggleAutoAprovar() {
-            autoAprovar = document.getElementById('chkAutoAprovar').checked;
-            if (autoAprovar && pedidosPendentes.length > 0) {
-                pedidosPendentes.forEach(p => {
-                    filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
-                    database.ref('pedidos').child(p.key).remove();
-                });
-                atualizarTelaFila();
+        function fecharModalVotos() {
+            document.getElementById('modal-votos').style.display = 'none';
+            document.getElementById('fundo-modal').style.display = 'none';
+        }
+
+        function abrirManual() {
+            document.getElementById('modal-manual-conteudo').style.display = 'block';
+            document.getElementById('fundo-modal-manual').style.display = 'block';
+        }
+
+        function fecharManual() {
+            document.getElementById('modal-manual-conteudo').style.display = 'none';
+            document.getElementById('fundo-modal-manual').style.display = 'none';
+        }
+
+        function abrirModalUsuarios() {
+            document.getElementById('modal-usuarios').style.display = 'block';
+            document.getElementById('fundo-modal-usuarios').style.display = 'block';
+            carregarUsuarios();
+        }
+
+        function fecharModalUsuarios() {
+            document.getElementById('modal-usuarios').style.display = 'none';
+            document.getElementById('fundo-modal-usuarios').style.display = 'none';
+        }
+
+        async function carregarUsuarios() {
+            const listaUsuariosDiv = document.getElementById('lista-usuarios');
+            listaUsuariosDiv.innerHTML = '<p style="text-align: center; color: #aaa;">Carregando usuários...</p>';
+
+            try {
+                const snapshot = await database.ref('usuarios').once('value');
+                const usuarios = snapshot.val();
+                let html = '';
+                if (usuarios) {
+                    for (const uid in usuarios) {
+                        const user = usuarios[uid];
+                        html += `
+                            <div class="item-usuario">
+                                <span>${user.email} (${user.tipo}) - ${user.ativo ? 'Ativo' : 'Inativo'}</span>
+                                <div class="botoes-acao">
+                                    <button class="btn-acao ${user.ativo ? 'verde' : 'vermelho'}" onclick="toggleAtivo('${uid}', ${user.ativo})">${user.ativo ? 'Desativar' : 'Ativar'}</button>
+                                    <button class="btn-acao azul" onclick="alterarTipo('${uid}', '${user.tipo}')">Mudar Tipo</button>
+                                    <button class="btn-acao" onclick="excluirUsuarioDB('${uid}')">Excluir</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else {
+                    html = '<p style="text-align: center; color: #aaa;">Nenhum usuário cadastrado no banco de dados.</p>';
+                }
+                listaUsuariosDiv.innerHTML = html;
+            } catch (error) {
+                listaUsuariosDiv.innerHTML = `<p style="color:#ff6b6b; text-align: center;">Erro ao carregar usuários: ${error.message}</p>`;
             }
         }
 
-        function renderizarPedidos() {
-            const divPedidos = document.getElementById('pedidos-lista');
-            if(pedidosPendentes.length === 0) {
-                divPedidos.innerHTML = "<p style='color:#aaa; font-size:13px; text-align:center;'>Nenhum pedido no momento.</p>";
+        async function toggleAtivo(uid, estadoAtual) {
+            await database.ref('usuarios/' + uid).update({ ativo: !estadoAtual });
+            carregarUsuarios();
+        }
+
+        async function alterarTipo(uid, tipoAtual) {
+            const novoTipo = tipoAtual === 'admin' ? 'comum' : 'admin';
+            await database.ref('usuarios/' + uid).update({ tipo: novoTipo });
+            carregarUsuarios();
+        }
+
+        async function excluirUsuarioDB(uid) {
+            if (confirm('Tem certeza que deseja excluir este usuário do banco de dados? Isso não remove a conta de autenticação do Firebase.')) {
+                await database.ref('usuarios/' + uid).remove();
+                carregarUsuarios();
+            }
+        }
+
+        async function criarNovoUsuario() {
+            const email = document.getElementById('novoUsuarioEmail').value;
+            const senha = document.getElementById('novoUsuarioSenha').value;
+            const tipo = document.getElementById('novoUsuarioTipo').value;
+
+            if (!email || !senha) {
+                alert('E-mail e senha são obrigatórios.');
                 return;
             }
-            divPedidos.innerHTML = pedidosPendentes.map((p, index) => `
-                <div class="item-fila" style="border-left: 5px solid #00d2ff; margin-bottom: 8px;">
-                    <span class="titulo-musica">🎵 ${p.titulo} <br> <span class="nome-cantor">🎤 Voz: ${p.cantor}</span></span>
+
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
+                await database.ref('usuarios/' + userCredential.user.uid).set({
+                    email: email,
+                    tipo: tipo,
+                    ativo: true
+                });
+                alert('Usuário criado com sucesso!');
+                document.getElementById('novoUsuarioEmail').value = '';
+                document.getElementById('novoUsuarioSenha').value = '';
+                carregarUsuarios();
+            } catch (error) {
+                alert('Erro ao criar usuário: ' + error.message);
+            }
+        }
+
+        function atualizarTelaPedidos() {
+            const pedidosDiv = document.getElementById('pedidos');
+            const contadorPedidosSpan = document.getElementById('contador-pedidos');
+            contadorPedidosSpan.innerText = pedidos.length;
+
+            pedidosDiv.innerHTML = pedidos.map((item, i) => `
+                <div class="item-fila">
+                    <span class="titulo-musica"><strong>${i+1}º</strong> - ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span></span>
                     <div class="botoes-acao">
-                        <button class="btn-acao" onclick="aprovarPedido(${index})" title="Aceitar e enviar pra Fila">✅</button>
-                        <button class="btn-acao" onclick="rejeitarPedido('${p.key}')" title="Apagar pedido">❌</button>
+                        <button class="btn-acao verde" onclick="aprovarPedido(${i})">✔️</button>
+                        <button class="btn-acao" onclick="removerPedido(${i})">❌</button>
                     </div>
                 </div>
             `).join('');
         }
 
         function aprovarPedido(index) {
-            const p = pedidosPendentes[index];
-            filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
+            const pedido = pedidos[index];
+            filaDeReproducao.push(pedido);
+            database.ref('fila').push(pedido); // Adiciona ao Firebase
+            removerPedido(index); // Remove do Firebase e da lista local
             atualizarTelaFila();
-            database.ref('pedidos').child(p.key).remove(); 
         }
 
-        function rejeitarPedido(key) {
-            if (confirm("Quer mesmo RECUSAR essa música e excluir o pedido?")) {
-                database.ref('pedidos').child(key).remove();
-            }
-        }
-
-        function abrirDetalhesVotos() { renderizarDetalhesVotos(); document.getElementById('fundo-modal').style.display = 'block'; document.getElementById('modal-votos').style.display = 'block'; }
-        function fecharDetalhesVotos() { document.getElementById('fundo-modal').style.display = 'none'; document.getElementById('modal-votos').style.display = 'none'; }
-        function renderizarDetalhesVotos() {
-            document.getElementById('detalhes-votos').innerHTML = `
-                <div class="linha-voto"><span style="color:#00d2ff">🤯 Excelente:</span> <strong>${contagemVotos.excelente}</strong></div>
-                <div class="linha-voto"><span style="color:#28a745">🤩 Muito Bom:</span> <strong>${contagemVotos.muitobom}</strong></div>
-                <div class="linha-voto"><span style="color:#ffeb3b">🙂 Bom:</span> <strong>${contagemVotos.bom}</strong></div>
-                <div class="linha-voto"><span style="color:#fd7e14">😕 Regular:</span> <strong>${contagemVotos.regular}</strong></div>
-                <div class="linha-voto"><span style="color:#e52d27">😖 Ruim:</span> <strong>${contagemVotos.ruim}</strong></div>
-            `;
-        }
-
-        document.addEventListener('keydown', function(event) {
-            if (event.key === '6') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 60; }
-            if (event.key === '7') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 70; }
-            if (event.key === '8') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 80; }
-            if (event.key === '9') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 90; }
-            if (event.key === '0') { notaForcadaPeloDJ = 100; }
-        });
-
-        document.getElementById('campoBusca').addEventListener('keypress', e => { if(e.key === 'Enter') buscarNoYouTube(); });
-
-        function abrirTV() {
-            telaTV = window.open("", "TelaTV", "width=800,height=600");
-            telaTV.document.write(`
-                <!DOCTYPE html><html><head>
-                <base href="\${window.location.href}">
-                <title>TV</title>
-                <style>
-                    body { margin: 0; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; font-family: Arial;}
-                    #player { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1;}
-
-                    #logo-bar { position: absolute !important; top: 0px !important; left: 0px !important; z-index: 25; pointer-events: none; margin: 0 !important; padding: 0 !important; display: flex; align-items: flex-start; }
-                    #logo-bar img { height: 140px !important; width: auto !important; display: block; margin: 0 !important; padding: 0 !important; } 
-                    #logo-bar span { font-size: 34px; font-weight: 900; color: #fff; text-shadow: 3px 3px 10px #000; display: block; margin-top: 15px; margin-left: 15px; white-space: nowrap; }
-
-                    #qr-code { position: absolute !important; top: 20px !important; right: 20px !important; z-index: 25; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
-                    #qr-code img { width: 110px; height: 110px; background: white; padding: 5px; border-radius: 8px; display: block; margin: 0 auto; }
-                    #qr-code p { margin: 8px 0 0 0; color: #fff; font-size: 12px; font-weight: bold; text-transform: uppercase;}
-                    #qr-code span { color: #ffeb3b; font-size: 11px; }
-
-                    #cantor-overlay { position: absolute; top: -200px; right: 170px; background: linear-gradient(90deg, rgba(20,20,20,0.95), rgba(229,45,39,0.85)); padding: 10px 20px; border-radius: 15px; z-index: 24; transition: top 0.8s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: -3px 5px 15px rgba(0,0,0,0.5); max-width: 350px; text-align: right; border: 2px solid #e52d27;}
-                    #cantor-overlay .aviso { font-size: 12px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
-                    #cantor-overlay .nome { font-size: 22px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; line-height: 1.1; word-wrap: break-word;}
-
-                    #tela-nota { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #121212, #3a0000); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
-                    @keyframes piscar { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
-                    #btn-liberar { z-index: 20; padding: 25px 40px; font-size: 24px; font-weight: bold; background: #28a745; color: white; border: none; border-radius: 10px; cursor: pointer; }
-                </style></head>
-                <body>
-                    <div id="logo-bar">
-                        <img src="logop.png" alt="Logo">
-                        <span>PARADA 10.95 BAR</span>
-                    </div>
-
-                    <div id="qr-code">
-                        <img src="qrcode.png" alt="Escaneie para Pedir e Votar">
-                        <p>APONTE O CELULAR</p>
-                        <span>Peça e Vote!</span>
-                    </div>
-
-                    <div id="cantor-overlay"></div>
-
-                    <div id="tela-nota">
-                        <h1 style="font-size: 50px; color: #ffeb3b; margin-bottom: 10px;">🍻 PARADA 10.95 BAR</h1>
-                        <h2 style="font-size: 40px; margin-bottom: 50px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
-                        <div id="nota-loading" style="font-size: 35px; animation: piscar 1s infinite;">Calculando energia e votos do público... 🥁</div>
-                        <div id="nota-resultado" style="display:none; flex-direction:column; align-items:center;">
-                            <div style="font-size: 30px;">Pontuação Final:</div>
-                            <div id="nota-valor" style="font-size: 180px; font-weight: 900;">100</div>
-                        </div>
-                    </div>
-                    <button id="btn-liberar" onclick="this.style.display='none';">👆 CLIQUE AQUI PARA LIBERAR O SOM (Aperte F11)</button>
-                    <div id="player"></div>
-                    <script> function onYouTubeIframeAPIReady() { if(window.opener) window.opener.iniciarPlayer(YT); } <\/script>
-                    <script src="https://www.youtube.com/iframe_api"><\/script>
-                </body></html>
-            `);
-
-            monitorTV = setInterval(() => {
-                if (telaTV && telaTV.closed) {
-                    clearInterval(monitorTV);
-                    document.getElementById('botaoTV').innerHTML = "📺 TELA FECHADA! REABRIR";
-                    document.getElementById('botaoTV').style.background = "#e52d27"; 
-                }
-            }, 1000);
-        }
-
-        function iniciarPlayer(YT_API) {
-            player = new YT_API.Player(telaTV.document.getElementById('player'), {
-                videoId: '', playerVars: { 'autoplay': 1, 'controls': 1, 'fs': 0 }, 
-                events: { 'onStateChange': e => { if (e.data === 0) (musicaAtual && musicaAtual.cantor !== "Convidados") ? gerarNotaFinal() : tocarProxima(true); }, 'onError': e => tocarProxima(true) }
+        function removerPedido(index) {
+            const pedidoParaRemover = pedidos[index];
+            // Encontra a chave do pedido no Firebase para remover
+            database.ref('pedidos').orderByChild('id').equalTo(pedidoParaRemover.id).once('value', snapshot => {
+                snapshot.forEach(childSnapshot => {
+                    childSnapshot.ref.remove();
+                });
             });
-            document.getElementById('botaoTV').innerHTML = "✅ TELA CONECTADA!";
-            document.getElementById('botaoTV').style.background = "#17a2b8";
+            pedidos.splice(index, 1); // Remove localmente
+            atualizarTelaPedidos();
         }
 
-        function gerarNotaFinal() {
-            captando = false; 
+        function finalizarMusica() {
+            captando = false;
             let notaFinal;
-            const votosCongelados = { ...contagemVotos };
-
-            database.ref('statusAtual').set({ cantor: "Avaliando...", titulo: "Olhe para a tela da TV!", id: "avaliando" });
 
             if (notaForcadaPeloDJ !== null) {
-                notaFinal = notaForcadaPeloDJ; notaForcadaPeloDJ = null; 
+                notaFinal = notaForcadaPeloDJ;
+            } else if (qtdLeituras > 0) {
+                const mediaEnergia = somaEnergia / qtdLeituras;
+                // Mapeia a energia para uma nota de 0 a 100. Ajuste os valores conforme a sensibilidade do microfone.
+                // Exemplo: 0 de energia = 0 de nota, 100000 de energia = 100 de nota.
+                notaFinal = Math.min(100, Math.round(mediaEnergia / 1000)); 
             } else {
-                let notaBase;
-                if (qtdLeituras > 0 && micAtivo) {
-                    let energiaMedia = somaEnergia / qtdLeituras;
-                    notaBase = Math.floor(55 + (energiaMedia * 1.2)); 
-                } else {
-                    notaBase = Math.floor(Math.random() * 21) + 65; 
-                }
-                if (notaBase > 85) notaBase = 85;
-
-                let bonusPublico = 0;
-                if(totalVotosPublico > 0) {
-                    bonusPublico = (votosCongelados.excelente * 4) + (votosCongelados.muitobom * 2) + (votosCongelados.bom * 1) - (votosCongelados.regular * 1) - (votosCongelados.ruim * 3);
-                    if (bonusPublico > 15) bonusPublico = 15; 
-                    if (bonusPublico < -15) bonusPublico = -15; 
-                }
-
-                notaFinal = notaBase + bonusPublico;
-                if (notaFinal > 100) notaFinal = 100; 
-                if (notaFinal < 50) notaFinal = 50; 
+                notaFinal = 50; // Nota padrão se não houver captação
             }
 
-            ranking.push({ nome: musicaAtual.cantor, nota: notaFinal, titulo: musicaAtual.titulo, votos: votosCongelados });
-            atualizarTelaRanking();
+            if (musicaAtual) {
+                ranking.push({
+                    nome: musicaAtual.cantor,
+                    titulo: musicaAtual.titulo,
+                    nota: notaFinal,
+                    votos: { excelente: 0, muitobom: 0, bom: 0, regular: 0, ruim: 0 } // Votos serão atualizados pelo listener
+                });
+                database.ref('ranking').push({
+                    nome: musicaAtual.cantor,
+                    titulo: musicaAtual.titulo,
+                    nota: notaFinal,
+                    votos: { excelente: 0, muitobom: 0, bom: 0, regular: 0, ruim: 0 }
+                });
+                atualizarTelaRanking();
+            }
 
             if (telaTV && !telaTV.closed) {
-                telaTV.document.getElementById('nota-cantor-nome').innerText = musicaAtual.cantor;
                 telaTV.document.getElementById('nota-loading').style.display = 'block';
                 telaTV.document.getElementById('nota-resultado').style.display = 'none';
                 telaTV.document.getElementById('tela-nota').style.display = 'flex';
@@ -643,6 +776,7 @@
                 telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
 
                 const som = document.getElementById('audio-tambores');
+                som.volume = 0.5; // Volume dos tambores em 50%
                 som.currentTime = 0;
                 som.play().catch(e => console.log("O áudio foi bloqueado", e));
 
