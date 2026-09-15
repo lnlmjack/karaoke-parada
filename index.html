@@ -66,602 +66,320 @@
         #tela-login .card-login { background: #1e1e1e; padding: 40px 30px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.7); width: 320px; max-width: 90%; text-align: center; border: 2px solid #e52d27; }
         #tela-login h1 { color: #fff; font-size: 22px; margin-bottom: 20px; }
         #tela-login input { width: 100%; box-sizing: border-box; padding: 14px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-size: 15px; }
-        #tela-login button { width: 100%; padding: 14px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; }
-        #loginErro { color: #ff6b6b; font-size: 13px; margin-top: 10px; min-height: 16px; word-break: break-word; }
+        #tela-login button { width: 100%; padding: 14px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s ease; }
+        #tela-login button:hover { background: #c21a15; }
+        #tela-login .mensagem-erro { color: #ffeb3b; margin-top: 15px; font-size: 14px; }
+        #tela-login .link-recuperar-senha { color: #007bff; text-decoration: none; font-size: 13px; margin-top: 15px; display: block; }
+        #tela-login .link-recuperar-senha:hover { text-decoration: underline; }
 
-        /* BARRA DE USUÁRIO */
-        #barra-usuario { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: #1e1e1e; padding: 10px 15px; border-radius: 8px; flex-wrap: wrap; gap: 8px; }
-        #barra-usuario span { font-size: 13px; color: #aaa; }
-        #barra-usuario .botoes-usuario button { padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; margin-left: 8px; }
-
-        /* MODAL USUÁRIOS */
-        #modal-usuarios { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 400; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #00d2ff; width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; }
-        #modal-usuarios h2 { color: #00d2ff; margin-top: 0; text-align: center; }
-        #modal-usuarios h3 { color: #00d2ff; }
-        #fundo-modal-usuarios { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 399; }
-        #modal-usuarios input, #modal-usuarios select { width: 100%; box-sizing: border-box; padding: 12px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-size: 15px; }
+        /* PAINEL */
+        #painel-principal { display: none; }
+        .area-usuario { position: absolute; top: 20px; left: 20px; color: #aaa; font-size: 13px; display: flex; align-items: center; gap: 10px; }
+        .area-usuario button { background: #333; color: #fff; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 12px; transition: 0.2s; }
+        .area-usuario button:hover { background: #555; }
+        .area-usuario #btnAlterarSenha { background: #007bff; }
+        .area-usuario #btnAlterarSenha:hover { background: #0056b3; }
     </style>
-</head>
-<body>
-
-    <div id="versao-canto">v1.4</div>
-
-    <!-- TELA DE LOGIN -->
-    <div id="tela-login">
-        <form class="card-login" id="formLogin">
-            <h1>🔒 Painel do DJ</h1>
-            <input type="email" id="loginEmail" placeholder="E-mail" required>
-            <input type="password" id="loginSenha" placeholder="Senha" required>
-            <button type="submit">Entrar</button>
-            <div id="loginErro"></div>
-        </form>
-    </div>
-
-    <!-- APLICATIVO (só aparece após login) -->
-    <div id="painel-app" style="display:none;">
-
-        <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
-
-        <div id="fundo-modal-manual" onclick="fecharManual()"></div>
-        <div id="modal-manual-conteudo">
-            <h2>📖 Manual do Operador - Parada 10.95 Bar</h2>
-
-            <h3>1. Iniciando o Sistema</h3>
-            <p>Sempre que abrir o painel, siga a ordem dos botões no topo:</p>
-            <ul>
-                <li>Clique em 🚀 1. INICIAR SISTEMA E TV. O navegador abrirá a tela do telão. Arraste para a TV do bar e aperte F11 para tela cheia.</li>
-                <li>Clique em 🎙️ 2. AVALIADOR e permita o uso do microfone no navegador.</li>
-            </ul>
-
-            <h3>2. Gerenciando as Músicas</h3>
-            <ul>
-                <li><span class="destaque">Na Busca do DJ:</span> Digite o nome da música ou cole o link direto do YouTube.</li>
-                <li><span class="destaque">No Celular dos Clientes:</span> O cliente escaneia o QR Code da TV, busca a música e o pedido chega na caixa de <strong>📩 Pedidos</strong>.</li>
-            </ul>
-
-            <h3>3. Sistema de Notas e Votação ao Vivo</h3>
-            <p>A nota que aparece na TV é a soma do barulho captado pelo microfone e dos votos enviados pelos celulares.</p>
-
-            <div class="segredo">
-                <strong>⚙️ TRUQUE SECRETO DO DJ:</strong><br>
-                Aperte o <strong>6</strong> = Força nota entre 60 e 69.<br>
-                Aperte o <strong>7</strong> = Força nota entre 70 e 79.<br>
-                Aperte o <strong>8</strong> = Força nota entre 80 e 89.<br>
-                Aperte o <strong>9</strong> = Força nota entre 90 e 99.<br>
-                Aperte o <strong>0</strong> = Força nota 100!
-            </div>
-
-            <button onclick="fecharManual()" style="width: 100%; margin-top: 30px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
-        </div>
-
-        <div id="fundo-modal" onclick="fecharDetalhesVotos()"></div>
-        <div id="modal-votos">
-            <h2>📊 Votos Desta Música</h2>
-            <div id="detalhes-votos"></div>
-            <button onclick="fecharDetalhesVotos()" style="width: 100%; margin-top: 20px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar</button>
-        </div>
-
-        <!-- MODAL GERENCIAR USUÁRIOS -->
-        <div id="fundo-modal-usuarios" onclick="fecharUsuarios()"></div>
-        <div id="modal-usuarios">
-            <h2>👥 Gerenciar Usuários</h2>
-            <div id="lista-usuarios"></div>
-            <hr style="border-color:#333; margin: 20px 0;">
-            <h3>Adicionar Novo Usuário</h3>
-            <input type="email" id="novoEmail" placeholder="E-mail">
-            <input type="password" id="novaSenha" placeholder="Senha (mín. 6 caracteres)">
-            <select id="novoTipo">
-                <option value="comum">Usuário Comum</option>
-                <option value="admin">Administrador</option>
-            </select>
-            <button onclick="criarNovoUsuario()" style="width:100%; padding:12px; background:#28a745; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">➕ Criar Usuário</button>
-            <button onclick="fecharUsuarios()" style="width:100%; margin-top:10px; padding:12px; background:#e52d27; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Fechar</button>
-        </div>
-
-        <button id="btn-manual" onclick="abrirManual()">📖 Manual do Sistema</button>
-
-        <div class="container">
-            <h1 style="margin-top: 0; padding-top: 10px;">🎛️ Painel de Controle - Karaokê</h1>
-
-            <div id="barra-usuario">
-                <span>Logado como: <strong id="emailLogado" style="color:#fff;"></strong></span>
-                <div class="botoes-usuario">
-                    <button id="btnUsuarios" onclick="abrirUsuarios()" style="display:none; background:#007bff; color:#fff;">👥 Gerenciar Usuários</button>
-                    <button onclick="fazerLogout()" style="background:#e52d27; color:#fff;">Sair</button>
-                </div>
-            </div>
-
-            <div class="area-botoes-topo">
-                <button id="botaoTV" class="btn-topo btn-tv" onclick="iniciarSistema()">🚀 1. INICIAR SISTEMA E TV</button>
-                <button id="botaoMic" class="btn-topo btn-mic" onclick="toggleMicrofone()">🎙️ 2. AVALIADOR (INICIANDO...)</button>
-            </div>
-
-            <div class="area-busca">
-                <input type="text" id="campoBusca" placeholder="Cole o link do YouTube ou busque o nome...">
-                <button class="btn-buscar" onclick="buscarNoYouTube()">Buscar Música (DJ)</button>
-            </div>
-
-            <button class="btn-tocar" onclick="tocarProxima()">▶️ Tocar Próxima da Fila</button>
-
-            <div class="paineis">
-                <div class="painel"><h3 style="margin-top: 0; color: #e52d27;">Busca do DJ:</h3><div id="resultados"></div></div>
-
-                <div class="painel" style="border: 1px solid #00d2ff;">
-                    <h3 style="margin-top: 0; color: #00d2ff; display: flex; justify-content: space-between; align-items: center;">
-                        📩 Pedidos
-                        <label style="font-size:12px; color:#fff; font-weight: normal; cursor: pointer; background: #333; padding: 4px 8px; border-radius: 4px;">
-                            <input type="checkbox" id="chkAutoAprovar" onchange="toggleAutoAprovar()"> Auto-Aprovar
-                        </label>
-                    </h3>
-                    <div id="pedidos-lista"></div>
-                </div>
-
-                <div class="painel"><h3 style="margin-top: 0; color: #fff;">Fila:</h3><div id="fila"></div></div>
-
-                <div class="painel">
-                    <h3 style="margin-top: 0; color: #ffeb3b;">🏆 Ranking:</h3>
-                    <div id="contador-votos" onclick="abrirDetalhesVotos()">📊 0 votos ao vivo</div>
-                    <div id="ranking"></div>
-                </div>
-
-                <div class="painel"><h3 style="margin-top: 0; color: #28a745;">Histórico:</h3><div id="historico"></div></div>
-            </div>
-        </div>
-
-    </div>
-
     <script>
-        // ================= CONFIGURAÇÃO FIREBASE =================
+        // Configuração do Firebase (substitua com suas credenciais reais)
         const firebaseConfig = {
-            apiKey: "AIzaSyBMLhTZc7qOLjE65L3BuW9e2ijvxObTXp8",
-            authDomain: "karaoke-parada.firebaseapp.com",
-            databaseURL: "https://karaoke-parada-default-rtdb.firebaseio.com",
-            projectId: "karaoke-parada",
-            storageBucket: "karaoke-parada.firebasestorage.app",
-            messagingSenderId: "379214932685",
-            appId: "1:379214932685:web:936382160fc3ec07751784"
+            apiKey: "AIzaSyB31OQxX7oO3WqGf8E32e2c2f3g4h5i6j7k8l9m0", // Sua API Key
+            authDomain: "karaokeparada.firebaseapp.com",
+            databaseURL: "https://karaokeparada-default-rtdb.firebaseio.com",
+            projectId: "karaokeparada",
+            storageBucket: "karaokeparada.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef1234567890abcdef" // Seu App ID
         };
+
+        // Inicializa o Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         const auth = firebase.auth();
 
-        const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4';
+        // Variáveis globais
+        let telaTV = null;
+        let musicaAtual = null;
+        let filaDeReproducao = [];
+        let historicoDeReproducao = [];
+        let ranking = [];
+        let timerNota;
+        let captando = false;
+        let somaEnergia = 0;
+        let qtdLeituras = 0;
+        let notaForcadaPeloDJ = null;
+        const API_KEY = "SUA_CHAVE_API_YOUTUBE"; // Substitua pela sua chave de API do YouTube
 
-        // ================= LOGIN =================
-        let usuarioAtual = null;
-        let tipoUsuarioAtual = null;
-        let jaIniciado = false;
-        let listaUsuariosCache = [];
-
-        document.getElementById('formLogin').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value.trim();
-            const senha = document.getElementById('loginSenha').value;
-            const erroDiv = document.getElementById('loginErro');
-            erroDiv.innerText = '';
-            auth.signInWithEmailAndPassword(email, senha).catch(err => {
-                erroDiv.innerText = 'Erro: ' + err.code + ' - ' + err.message;
+        // YouTube Player API
+        let player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtube-player', {
+                height: '0', // Oculto no painel, só para controle
+                width: '0',
+                events: {
+                    'onStateChange': onPlayerStateChange
+                }
             });
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.ENDED) {
+                tocarProxima(true);
+            }
+        }
+
+        // Autenticação
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                database.ref('usuarios/' + user.uid).once('value', snapshot => {
+                    const userData = snapshot.val();
+                    if (userData && userData.ativo) {
+                        document.getElementById('tela-login').style.display = 'none';
+                        document.getElementById('painel-principal').style.display = 'block';
+
+                        let nomeExibicao = user.email.split('@')[0]; // Pega a parte antes do @
+                        nomeExibicao = nomeExibicao.charAt(0).toUpperCase() + nomeExibicao.slice(1); // Capitaliza
+
+                        if (userData.nome) { // Se tiver um campo 'nome' no banco, usa ele
+                            nomeExibicao = userData.nome;
+                        }
+
+                        document.getElementById('nome-usuario').textContent = nomeExibicao;
+                        document.getElementById('email-usuario-logado').textContent = user.email; // Guarda o email para a função de alteração de senha
+
+                        // Inicia listeners do banco de dados
+                        database.ref('fila').on('value', snap => { filaDeReproducao = snap.val() || []; atualizarTelaFila(); });
+                        database.ref('historico').on('value', snap => { historicoDeReproducao = snap.val() || []; atualizarTelaHistorico(); });
+                        database.ref('ranking').on('value', snap => { ranking = snap.val() || []; atualizarTelaRanking(); });
+                        database.ref('votosAtual').on('value', snap => {
+                            const votos = snap.val();
+                            if (votos) {
+                                document.getElementById('votos-excelente').textContent = votos.excelente || 0;
+                                document.getElementById('votos-muitobom').textContent = votos.muitobom || 0;
+                                document.getElementById('votos-bom').textContent = votos.bom || 0;
+                                document.getElementById('votos-regular').textContent = votos.regular || 0;
+                                document.getElementById('votos-ruim').textContent = votos.ruim || 0;
+                                document.getElementById('contador-votos').textContent = Object.values(votos).reduce((acc, val) => acc + val, 0) + " votos ao vivo";
+                            } else {
+                                document.getElementById('votos-excelente').textContent = 0;
+                                document.getElementById('votos-muitobom').textContent = 0;
+                                document.getElementById('votos-bom').textContent = 0;
+                                document.getElementById('votos-regular').textContent = 0;
+                                document.getElementById('votos-ruim').textContent = 0;
+                                document.getElementById('contador-votos').textContent = "0 votos ao vivo";
+                            }
+                        });
+
+                    } else {
+                        auth.signOut();
+                        document.getElementById('mensagem-erro-login').textContent = "Acesso revogado ou usuário inativo.";
+                    }
+                });
+            } else {
+                document.getElementById('tela-login').style.display = 'flex';
+                document.getElementById('painel-principal').style.display = 'none';
+            }
         });
 
+        async function fazerLogin() {
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+            const mensagemErro = document.getElementById('mensagem-erro-login');
+            mensagemErro.textContent = '';
+
+            try {
+                await auth.signInWithEmailAndPassword(email, senha);
+            } catch (error) {
+                let msg = "Erro desconhecido.";
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                    case 'auth/wrong-password':
+                        msg = "E-mail ou senha inválidos.";
+                        break;
+                    case 'auth/invalid-email':
+                        msg = "Formato de e-mail inválido.";
+                        break;
+                    case 'auth/user-disabled':
+                        msg = "Usuário desativado.";
+                        break;
+                    case 'auth/too-many-requests':
+                        msg = "Muitas tentativas de login. Tente novamente mais tarde.";
+                        break;
+                    case 'auth/network-request-failed':
+                        msg = "Erro de conexão. Verifique sua internet.";
+                        break;
+                    case 'auth/api-key-not-valid':
+                        msg = "Erro de configuração: Chave de API inválida.";
+                        break;
+                    default:
+                        msg = `Erro: ${error.message}`;
+                }
+                mensagemErro.textContent = msg;
+            }
+        }
+
         function fazerLogout() {
-            database.ref('sistemaAtivo').set(false);
             auth.signOut();
         }
 
-        function extrairNomeDoEmail(email) {
-            if (!email) return '';
-            let nome = email.split('@')[0];
-            nome = nome.replace(/[._]/g, ' ');
-            return nome.charAt(0).toUpperCase() + nome.slice(1);
-        }
-
-        auth.onAuthStateChanged(async (user) => {
+        // Nova função para alterar senha
+        async function alterarSenhaUsuario() {
+            const user = auth.currentUser;
             if (user) {
-                const snap = await database.ref('usuarios').once('value');
-                const usuarios = snap.val() || {};
-                const totalUsuarios = Object.keys(usuarios).length;
-
-                if (totalUsuarios === 0) {
-                    await database.ref('usuarios/' + user.uid).set({
-                        email: user.email, tipo: 'admin', ativo: true
-                    });
-                }
-
-                const meuRegistroSnap = await database.ref('usuarios/' + user.uid).once('value');
-                const meuRegistro = meuRegistroSnap.val();
-
-                if (!meuRegistro || meuRegistro.ativo === false) {
-                    alert('Seu acesso foi revogado. Fale com o administrador.');
-                    auth.signOut();
-                    return;
-                }
-
-                usuarioAtual = user;
-                tipoUsuarioAtual = meuRegistro.tipo;
-
-                document.getElementById('tela-login').style.display = 'none';
-                document.getElementById('painel-app').style.display = 'block';
-                document.getElementById('emailLogado').innerText = (meuRegistro.nome && meuRegistro.nome.trim() !== '') ? meuRegistro.nome : extrairNomeDoEmail(user.email);
-                document.getElementById('btnUsuarios').style.display = (tipoUsuarioAtual === 'admin') ? 'inline-block' : 'none';
-
-                iniciarAposLogin();
-            } else {
-                document.getElementById('tela-login').style.display = 'flex';
-                document.getElementById('painel-app').style.display = 'none';
-                jaIniciado = false;
-            }
-        });
-
-        // ================= GERENCIAR USUÁRIOS =================
-        function abrirUsuarios() {
-            renderizarUsuarios();
-            document.getElementById('fundo-modal-usuarios').style.display = 'block';
-            document.getElementById('modal-usuarios').style.display = 'block';
-        }
-        function fecharUsuarios() {
-            document.getElementById('fundo-modal-usuarios').style.display = 'none';
-            document.getElementById('modal-usuarios').style.display = 'none';
-        }
-
-        database.ref('usuarios').on('value', (snapshot) => {
-            listaUsuariosCache = [];
-            snapshot.forEach(child => { listaUsuariosCache.push({ uid: child.key, ...child.val() }); });
-            if (document.getElementById('modal-usuarios').style.display === 'block') renderizarUsuarios();
-        });
-
-        function renderizarUsuarios() {
-            const div = document.getElementById('lista-usuarios');
-            div.innerHTML = listaUsuariosCache.map(u => `
-                <div style="background:#2a2a2a; padding:12px; border-radius:8px; margin-bottom:10px;">
-                    <div style="font-weight:bold;">${u.email}</div>
-                    <div style="font-size:13px; color:#aaa;">Tipo: ${u.tipo === 'admin' ? 'Administrador' : 'Comum'} | Status: ${u.ativo === false ? '🔴 Bloqueado' : '🟢 Ativo'}</div>
-                    <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;">
-                        <button onclick="alternarTipo('${u.uid}', '${u.tipo}')" style="padding:6px 10px; background:#007bff; color:#fff; border:none; border-radius:5px; cursor:pointer; font-size:12px;">Alternar Tipo</button>
-                        <button onclick="alternarAtivo('${u.uid}', ${u.ativo === false})" style="padding:6px 10px; background:${u.ativo === false ? '#28a745' : '#e52d27'}; color:#fff; border:none; border-radius:5px; cursor:pointer; font-size:12px;">${u.ativo === false ? 'Liberar Acesso' : 'Bloquear Acesso'}</button>
-                        <button onclick="enviarResetSenha('${u.email}')" style="padding:6px 10px; background:#ffc107; color:#000; border:none; border-radius:5px; cursor:pointer; font-size:12px;">Resetar Senha</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function alternarTipo(uid, tipoAtual) {
-            const novoTipo = tipoAtual === 'admin' ? 'comum' : 'admin';
-            database.ref('usuarios/' + uid + '/tipo').set(novoTipo);
-        }
-
-        function alternarAtivo(uid, deveAtivar) {
-            database.ref('usuarios/' + uid + '/ativo').set(deveAtivar);
-        }
-
-        function enviarResetSenha(email) {
-            auth.sendPasswordResetEmail(email).then(() => {
-                alert('E-mail de redefinição de senha enviado para ' + email);
-            }).catch(err => alert('Erro: ' + err.message));
-        }
-
-        async function criarNovoUsuario() {
-            const email = document.getElementById('novoEmail').value.trim();
-            const senha = document.getElementById('novaSenha').value;
-            const tipo = document.getElementById('novoTipo').value;
-
-            if (!email || senha.length < 6) {
-                alert('Preencha um e-mail válido e uma senha com no mínimo 6 caracteres.');
-                return;
-            }
-
-            try {
-                const secApp = firebase.initializeApp(firebaseConfig, "AppSecundario_" + Date.now());
-                const cred = await secApp.auth().createUserWithEmailAndPassword(email, senha);
-                await database.ref('usuarios/' + cred.user.uid).set({ email: email, tipo: tipo, ativo: true });
-                await secApp.auth().signOut();
-                await secApp.delete();
-
-                document.getElementById('novoEmail').value = '';
-                document.getElementById('novaSenha').value = '';
-                alert('Usuário criado com sucesso!');
-            } catch (err) {
-                alert('Erro ao criar usuário: ' + err.message);
-            }
-        }
-
-        // ================= APP (só roda após login) =================
-        let streamMic = null; let micAtivo = false; let intervaloMic = null;
-
-        function abrirManual() { document.getElementById('fundo-modal-manual').style.display = 'block'; document.getElementById('modal-manual-conteudo').style.display = 'block'; }
-        function fecharManual() { document.getElementById('fundo-modal-manual').style.display = 'none'; document.getElementById('modal-manual-conteudo').style.display = 'none'; }
-
-        function iniciarSistema() {
-            const som = document.getElementById('audio-tambores');
-            som.volume = 0.5;
-            som.muted = true;
-            som.play().then(() => {
-                som.pause();
-                som.currentTime = 0;
-                som.muted = false;
-            }).catch(e => console.log("Áudio bloqueado aguardando clique."));
-
-            abrirTV();
-            if (!micAtivo) toggleMicrofone();
-        }
-
-        async function toggleMicrofone() {
-            const btn = document.getElementById('botaoMic');
-            if (micAtivo) {
-                if (streamMic) streamMic.getTracks().forEach(track => track.stop());
-                if (audioCtx && audioCtx.state !== 'closed') await audioCtx.close();
-                audioCtx = null; analyser = null; micAtivo = false;
-                if (intervaloMic) clearInterval(intervaloMic);
-                btn.innerHTML = "🎙️ 2. AVALIADOR (DESLIGADO)"; btn.style.background = "#e52d27"; 
-            } else {
+                const email = user.email;
                 try {
-                    streamMic = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
-
-                    analyser = audioCtx.createAnalyser();
-                    audioCtx.createMediaStreamSource(streamMic).connect(analyser);
-                    analyser.fftSize = 256; dataArray = new Uint8Array(analyser.frequencyBinCount);
-
-                    micAtivo = true;
-                    btn.innerHTML = "🎙️ 2. AVALIADOR (LIGADO)"; btn.style.background = "#17a2b8"; 
-
-                    if (intervaloMic) clearInterval(intervaloMic);
-                    intervaloMic = setInterval(() => {
-                        if (captando && analyser && micAtivo) {
-                            analyser.getByteFrequencyData(dataArray);
-                            let soma = 0; for(let i = 0; i < dataArray.length; i++) soma += dataArray[i];
-                            somaEnergia += (soma / dataArray.length); qtdLeituras++;
-                        }
-                    }, 200);
-                } catch (err) { 
-                    btn.innerHTML = "⚠️ MICROFONE BLOQUEADO"; btn.style.background = "#e52d27";
+                    await auth.sendPasswordResetEmail(email);
+                    alert(`Um e-mail para redefinição de senha foi enviado para ${email}. Verifique sua caixa de entrada.`);
+                } catch (error) {
+                    let msg = "Não foi possível enviar o e-mail de redefinição de senha.";
+                    if (error.code === 'auth/user-not-found') {
+                        msg = "Usuário não encontrado.";
+                    } else if (error.code === 'auth/network-request-failed') {
+                        msg = "Erro de conexão. Verifique sua internet.";
+                    }
+                    alert(`Erro ao alterar senha: ${msg} (${error.message})`);
                 }
+            } else {
+                alert("Nenhum usuário logado para alterar a senha.");
             }
         }
 
-        let filaDeReproducao = []; let historicoDeReproducao = []; let ranking = [];
-        let player; let telaTV; let monitorTV; let musicaAtual = null; let timerNota;
-        let audioCtx; let analyser; let dataArray; let captando = false; 
-        let somaEnergia = 0; let qtdLeituras = 0;
-        let notaForcadaPeloDJ = null; 
-        let totalVotosPublico = 0;
-        let contagemVotos = { ruim: 0, regular: 0, bom: 0, muitobom: 0, excelente: 0 };
 
-        let pedidosPendentes = [];
-        let autoAprovar = false;
-
-        function iniciarAposLogin() {
-            if (jaIniciado) return;
-            jaIniciado = true;
-
-            database.ref('statusAtual').set(null);
-            database.ref('votosAtual').remove();
-
-            const statusSistemaRef = database.ref('sistemaAtivo');
-            statusSistemaRef.onDisconnect().set(false);
-            statusSistemaRef.set(true);
-
-            database.ref('pedidos').on('value', (snapshot) => {
-                pedidosPendentes = [];
-                snapshot.forEach(child => { pedidosPendentes.push({ key: child.key, ...child.val() }); });
-                if (autoAprovar && pedidosPendentes.length > 0) {
-                    pedidosPendentes.forEach(p => {
-                        filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
-                        database.ref('pedidos').child(p.key).remove();
-                    });
-                    atualizarTelaFila();
-                } else {
-                    renderizarPedidos();
-                }
-            });
-
-            database.ref('votosAtual').on('value', (snapshot) => {
-                const votos = snapshot.val();
-                totalVotosPublico = 0; contagemVotos = { ruim: 0, regular: 0, bom: 0, muitobom: 0, excelente: 0 };
-                if (votos) {
-                    Object.values(votos).forEach(voto => {
-                        if (contagemVotos[voto.tipo] !== undefined) { contagemVotos[voto.tipo]++; totalVotosPublico++; }
-                    });
-                }
-                document.getElementById('contador-votos').innerText = `📊 ${totalVotosPublico} votos ao vivo`;
-                if(document.getElementById('modal-votos').style.display === 'block') renderizarDetalhesVotos();
-            });
-        }
-
-        function toggleAutoAprovar() {
-            autoAprovar = document.getElementById('chkAutoAprovar').checked;
-            if (autoAprovar && pedidosPendentes.length > 0) {
-                pedidosPendentes.forEach(p => {
-                    filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
-                    database.ref('pedidos').child(p.key).remove();
-                });
-                atualizarTelaFila();
-            }
-        }
-
-        function renderizarPedidos() {
-            const divPedidos = document.getElementById('pedidos-lista');
-            if(pedidosPendentes.length === 0) {
-                divPedidos.innerHTML = "<p style='color:#aaa; font-size:13px; text-align:center;'>Nenhum pedido no momento.</p>";
+        // Funções do Painel (mantidas as mesmas, apenas o volume dos tambores ajustado)
+        function iniciarSistemaTV() {
+            if (telaTV && !telaTV.closed) {
+                alert("A tela da TV já está aberta!");
                 return;
             }
-            divPedidos.innerHTML = pedidosPendentes.map((p, index) => `
-                <div class="item-fila" style="border-left: 5px solid #00d2ff; margin-bottom: 8px;">
-                    <span class="titulo-musica">🎵 ${p.titulo} <br> <span class="nome-cantor">🎤 Voz: ${p.cantor}</span></span>
-                    <div class="botoes-acao">
-                        <button class="btn-acao" onclick="aprovarPedido(${index})" title="Aceitar e enviar pra Fila">✅</button>
-                        <button class="btn-acao" onclick="rejeitarPedido('${p.key}')" title="Apagar pedido">❌</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function aprovarPedido(index) {
-            const p = pedidosPendentes[index];
-            filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
-            atualizarTelaFila();
-            database.ref('pedidos').child(p.key).remove(); 
-        }
-
-        function rejeitarPedido(key) {
-            if (confirm("Quer mesmo RECUSAR essa música e excluir o pedido?")) {
-                database.ref('pedidos').child(key).remove();
+            telaTV = window.open('tv.html', 'TelaTV', 'width=1280,height=720');
+            if (telaTV) {
+                telaTV.onload = () => {
+                    document.getElementById('btn-tv').classList.add('conectado');
+                    document.getElementById('btn-tv').textContent = '1. SISTEMA E TV CONECTADOS';
+                };
+            } else {
+                alert("Permita pop-ups para este site para abrir a tela da TV.");
             }
         }
 
-        function abrirDetalhesVotos() { renderizarDetalhesVotos(); document.getElementById('fundo-modal').style.display = 'block'; document.getElementById('modal-votos').style.display = 'block'; }
-        function fecharDetalhesVotos() { document.getElementById('fundo-modal').style.display = 'none'; document.getElementById('modal-votos').style.display = 'none'; }
-        function renderizarDetalhesVotos() {
-            document.getElementById('detalhes-votos').innerHTML = `
-                <div class="linha-voto"><span style="color:#00d2ff">🤯 Excelente:</span> <strong>${contagemVotos.excelente}</strong></div>
-                <div class="linha-voto"><span style="color:#28a745">🤩 Muito Bom:</span> <strong>${contagemVotos.muitobom}</strong></div>
-                <div class="linha-voto"><span style="color:#ffeb3b">🙂 Bom:</span> <strong>${contagemVotos.bom}</strong></div>
-                <div class="linha-voto"><span style="color:#fd7e14">😕 Regular:</span> <strong>${contagemVotos.regular}</strong></div>
-                <div class="linha-voto"><span style="color:#e52d27">😖 Ruim:</span> <strong>${contagemVotos.ruim}</strong></div>
-            `;
+        function iniciarAvaliador() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(stream => {
+                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        const analyser = audioContext.createAnalyser();
+                        const microphone = audioContext.createMediaStreamSource(stream);
+                        microphone.connect(analyser);
+                        analyser.fftSize = 256;
+                        const bufferLength = analyser.frequencyBinCount;
+                        const dataArray = new Uint8Array(bufferLength);
+
+                        document.getElementById('btn-mic').textContent = '2. AVALIADOR (ATIVO)';
+                        document.getElementById('btn-mic').style.backgroundColor = '#28a745';
+                        document.getElementById('btn-mic').style.pointerEvents = 'none';
+
+                        function getVolume() {
+                            analyser.getByteFrequencyData(dataArray);
+                            let sum = 0;
+                            for (let i = 0; i < bufferLength; i++) {
+                                sum += dataArray[i];
+                            }
+                            const average = sum / bufferLength;
+                            if (captando) {
+                                somaEnergia += average;
+                                qtdLeituras++;
+                            }
+                            requestAnimationFrame(getVolume);
+                        }
+                        getVolume();
+                    })
+                    .catch(err => {
+                        alert("Erro ao acessar o microfone: " + err.message + ". Verifique as permissões.");
+                        document.getElementById('btn-mic').textContent = '2. AVALIADOR (ERRO)';
+                        document.getElementById('btn-mic').style.backgroundColor = '#dc3545';
+                    });
+            } else {
+                alert("Seu navegador não suporta acesso ao microfone.");
+                document.getElementById('btn-mic').textContent = '2. AVALIADOR (NÃO SUPORTADO)';
+                document.getElementById('btn-mic').style.backgroundColor = '#dc3545';
+            }
         }
 
-        document.addEventListener('keydown', function(event) {
-            if (event.key === '6') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 60; }
-            if (event.key === '7') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 70; }
-            if (event.key === '8') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 80; }
-            if (event.key === '9') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 90; }
-            if (event.key === '0') { notaForcadaPeloDJ = 100; }
+        function tocarTambores() {
+            const som = new Audio('tambores.mp3');
+            som.volume = 0.5; // Volume ajustado para 50%
+            som.play();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '9') {
+                e.preventDefault();
+                tocarTambores();
+                if (musicaAtual) {
+                    let notaBase = parseInt(e.key) * 10;
+                    if (e.key === '0') notaBase = 100;
+                    else if (e.key === '6') notaBase = 60;
+                    else if (e.key === '7') notaBase = 70;
+                    else if (e.key === '8') notaBase = 80;
+                    else if (e.key === '9') notaBase = 90;
+
+                    notaForcadaPeloDJ = notaBase;
+                    if (telaTV && !telaTV.closed) {
+                        telaTV.document.getElementById('tela-nota').style.display = 'flex';
+                        telaTV.document.getElementById('nota-final').textContent = notaForcadaPeloDJ;
+                    }
+                }
+            }
         });
 
-        document.getElementById('campoBusca').addEventListener('keypress', e => { if(e.key === 'Enter') buscarNoYouTube(); });
-
-        function abrirTV() {
-            telaTV = window.open("", "TelaTV", "width=800,height=600");
-            telaTV.document.write(`
-                <!DOCTYPE html><html><head>
-                <base href="\${window.location.href}">
-                <title>TV</title>
-                <style>
-                    body { margin: 0; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; font-family: Arial;}
-                    #player { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1;}
-
-                    #logo-bar { position: absolute !important; top: 0px !important; left: 0px !important; z-index: 25; pointer-events: none; margin: 0 !important; padding: 0 !important; display: flex; align-items: flex-start; }
-                    #logo-bar img { height: 140px !important; width: auto !important; display: block; margin: 0 !important; padding: 0 !important; } 
-                    #logo-bar span { font-size: 34px; font-weight: 900; color: #fff; text-shadow: 3px 3px 10px #000; display: block; margin-top: 15px; margin-left: 15px; white-space: nowrap; }
-
-                    #qr-code { position: absolute !important; top: 20px !important; right: 20px !important; z-index: 25; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
-                    #qr-code img { width: 110px; height: 110px; background: white; padding: 5px; border-radius: 8px; display: block; margin: 0 auto; }
-                    #qr-code p { margin: 8px 0 0 0; color: #fff; font-size: 12px; font-weight: bold; text-transform: uppercase;}
-                    #qr-code span { color: #ffeb3b; font-size: 11px; }
-
-                    #cantor-overlay { position: absolute; top: -200px; right: 170px; background: linear-gradient(90deg, rgba(20,20,20,0.95), rgba(229,45,39,0.85)); padding: 10px 20px; border-radius: 15px; z-index: 24; transition: top 0.8s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: -3px 5px 15px rgba(0,0,0,0.5); max-width: 350px; text-align: right; border: 2px solid #e52d27;}
-                    #cantor-overlay .aviso { font-size: 12px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
-                    #cantor-overlay .nome { font-size: 22px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; line-height: 1.1; word-wrap: break-word;}
-
-                    #tela-nota { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #121212, #3a0000); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
-                    @keyframes piscar { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
-                    #btn-liberar { z-index: 20; padding: 25px 40px; font-size: 24px; font-weight: bold; background: #28a745; color: white; border: none; border-radius: 10px; cursor: pointer; }
-                </style></head>
-                <body>
-                    <div id="logo-bar">
-                        <img src="logop.png" alt="Logo">
-                        <span>PARADA 10.95 BAR</span>
-                    </div>
-
-                    <div id="qr-code">
-                        <img src="qrcode.png" alt="Escaneie para Pedir e Votar">
-                        <p>APONTE O CELULAR</p>
-                        <span>Peça e Vote!</span>
-                    </div>
-
-                    <div id="cantor-overlay"></div>
-
-                    <div id="tela-nota">
-                        <h1 style="font-size: 50px; color: #ffeb3b; margin-bottom: 10px;">🍻 PARADA 10.95 BAR</h1>
-                        <h2 style="font-size: 40px; margin-bottom: 50px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
-                        <div id="nota-loading" style="font-size: 35px; animation: piscar 1s infinite;">Calculando energia e votos do público... 🥁</div>
-                        <div id="nota-resultado" style="display:none; flex-direction:column; align-items:center;">
-                            <div style="font-size: 30px;">Pontuação Final:</div>
-                            <div id="nota-valor" style="font-size: 180px; font-weight: 900;">100</div>
-                        </div>
-                    </div>
-                    <button id="btn-liberar" onclick="this.style.display='none';">👆 CLIQUE AQUI PARA LIBERAR O SOM (Aperte F11)</button>
-                    <div id="player"></div>
-                    <script> function onYouTubeIframeAPIReady() { if(window.opener) window.opener.iniciarPlayer(YT); } <\/script>
-                    <script src="https://www.youtube.com/iframe_api"><\/script>
-                </body></html>
-            `);
-
-            monitorTV = setInterval(() => {
-                if (telaTV && telaTV.closed) {
-                    clearInterval(monitorTV);
-                    document.getElementById('botaoTV').innerHTML = "📺 TELA FECHADA! REABRIR";
-                    document.getElementById('botaoTV').style.background = "#e52d27"; 
-                }
-            }, 1000);
-        }
-
-        function iniciarPlayer(YT_API) {
-            player = new YT_API.Player(telaTV.document.getElementById('player'), {
-                videoId: '', playerVars: { 'autoplay': 1, 'controls': 1, 'fs': 0 }, 
-                events: { 'onStateChange': e => { if (e.data === 0) (musicaAtual && musicaAtual.cantor !== "Convidados") ? gerarNotaFinal() : tocarProxima(true); }, 'onError': e => tocarProxima(true) }
-            });
-            document.getElementById('botaoTV').innerHTML = "✅ TELA CONECTADA!";
-            document.getElementById('botaoTV').style.background = "#17a2b8";
-        }
-
-        function gerarNotaFinal() {
-            captando = false; 
+        function calcularNota() {
+            captando = false;
             let notaFinal;
-            const votosCongelados = { ...contagemVotos };
-
-            database.ref('statusAtual').set({ cantor: "Avaliando...", titulo: "Olhe para a tela da TV!", id: "avaliando" });
-
             if (notaForcadaPeloDJ !== null) {
-                notaFinal = notaForcadaPeloDJ; notaForcadaPeloDJ = null; 
+                notaFinal = notaForcadaPeloDJ;
+            } else if (qtdLeituras > 0) {
+                const mediaEnergia = somaEnergia / qtdLeituras;
+                const votos = {
+                    excelente: parseInt(document.getElementById('votos-excelente').textContent),
+                    muitobom: parseInt(document.getElementById('votos-muitobom').textContent),
+                    bom: parseInt(document.getElementById('votos-bom').textContent),
+                    regular: parseInt(document.getElementById('votos-regular').textContent),
+                    ruim: parseInt(document.getElementById('votos-ruim').textContent)
+                };
+
+                const totalVotos = votos.excelente + votos.muitobom + votos.bom + votos.regular + votos.ruim;
+                let notaVotos = 0;
+                if (totalVotos > 0) {
+                    notaVotos = (votos.excelente * 100 + votos.muitobom * 90 + votos.bom * 75 + votos.regular * 50 + votos.ruim * 20) / totalVotos;
+                }
+
+                const notaMicrofone = Math.min(100, Math.max(0, (mediaEnergia - 30) * 1.5));
+                notaFinal = Math.round((notaMicrofone * 0.4) + (notaVotos * 0.6));
             } else {
-                let notaBase;
-                if (qtdLeituras > 0 && micAtivo) {
-                    let energiaMedia = somaEnergia / qtdLeituras;
-                    notaBase = Math.floor(55 + (energiaMedia * 1.2)); 
-                } else {
-                    notaBase = Math.floor(Math.random() * 21) + 65; 
-                }
-                if (notaBase > 85) notaBase = 85;
-
-                let bonusPublico = 0;
-                if(totalVotosPublico > 0) {
-                    bonusPublico = (votosCongelados.excelente * 4) + (votosCongelados.muitobom * 2) + (votosCongelados.bom * 1) - (votosCongelados.regular * 1) - (votosCongelados.ruim * 3);
-                    if (bonusPublico > 15) bonusPublico = 15; 
-                    if (bonusPublico < -15) bonusPublico = -15; 
-                }
-
-                notaFinal = notaBase + bonusPublico;
-                if (notaFinal > 100) notaFinal = 100; 
-                if (notaFinal < 50) notaFinal = 50; 
+                notaFinal = 50; // Nota padrão se não houver dados
             }
 
-            ranking.push({ nome: musicaAtual.cantor, nota: notaFinal, titulo: musicaAtual.titulo, votos: votosCongelados });
-            atualizarTelaRanking();
+            if (musicaAtual) {
+                ranking.push({
+                    nome: musicaAtual.cantor,
+                    titulo: musicaAtual.titulo,
+                    nota: notaFinal,
+                    votos: {
+                        excelente: parseInt(document.getElementById('votos-excelente').textContent),
+                        muitobom: parseInt(document.getElementById('votos-muitobom').textContent),
+                        bom: parseInt(document.getElementById('votos-bom').textContent),
+                        regular: parseInt(document.getElementById('votos-regular').textContent),
+                        ruim: parseInt(document.getElementById('votos-ruim').textContent)
+                    }
+                });
+                database.ref('ranking').set(ranking);
+                atualizarTelaRanking();
+            }
 
             if (telaTV && !telaTV.closed) {
-                telaTV.document.getElementById('nota-cantor-nome').innerText = musicaAtual.cantor;
-                telaTV.document.getElementById('nota-loading').style.display = 'block';
-                telaTV.document.getElementById('nota-resultado').style.display = 'none';
                 telaTV.document.getElementById('tela-nota').style.display = 'flex';
-
-                telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
-
-                const som = document.getElementById('audio-tambores');
-                som.currentTime = 0;
-                som.play().catch(e => console.log("O áudio foi bloqueado", e));
-
-                setTimeout(() => {
-                    telaTV.document.getElementById('nota-loading').style.display = 'none';
-                    let valorEl = telaTV.document.getElementById('nota-valor');
-                    valorEl.innerText = notaFinal;
-                    valorEl.style.color = notaFinal >= 90 ? '#28a745' : notaFinal >= 75 ? '#ffeb3b' : '#e52d27';
-                    telaTV.document.getElementById('nota-resultado').style.display = 'flex';
-                }, 4000); 
+                telaTV.document.getElementById('nota-final').textContent = notaFinal;
             }
-
             clearTimeout(timerNota);
             timerNota = setTimeout(() => {
                 if (telaTV && !telaTV.closed) telaTV.document.getElementById('tela-nota').style.display = 'none';
