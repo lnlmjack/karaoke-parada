@@ -63,7 +63,7 @@
 
         /* TELA DE PROPAGANDA (quando o sistema está desligado) */
         #tela-propaganda { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 30px 20px; box-sizing: border-box; background: radial-gradient(circle at top, #1e1e1e, #000); text-align: center; }
-        #tela-propaganda .bola { font-size: 70px; margin-bottom: 10px; }
+        #tela-propaganda img.logo-propaganda { width: 160px; height: 160px; margin-bottom: 15px; border-radius: 50%; box-shadow: 0 8px 25px rgba(0,0,0,0.6); }
         #tela-propaganda h1 { color: #e52d27; font-size: 26px; margin-bottom: 15px; }
         #tela-propaganda p { color: #ddd; font-size: 17px; line-height: 1.6; max-width: 400px; margin-bottom: 8px; }
         #tela-propaganda .dia-certo { color: #ffeb3b; font-weight: bold; font-size: 20px; margin: 15px 0; }
@@ -77,10 +77,10 @@
 
     <!-- TELA DE PROPAGANDA: só aparece se o painel do DJ estiver desligado -->
     <div id="tela-propaganda">
-        <div class="bola">🪩</div>
+        <img class="logo-propaganda" src="logop.png" alt="Parada 10.95 Bar">
         <h1>🍻 Parada 10.95 Bar</h1>
         <p>Hoje não é dia de karaokê por aqui!</p>
-        <div class="dia-certo">Toda TERÇA-FEIRA a partir das 20h</div>
+        <div class="dia-certo">Toda TERÇA-FEIRA a partir das 19h</div>
         <p>Fico feliz que você se interessou, só errou a data! Te esperamos na próxima terça no Parada 10.95 Bar. 🎤</p>
     </div>
 
@@ -188,7 +188,6 @@
         let votoPendente = null;
         let musicasCatalogo = [];
 
-        // VERIFICA SE O PAINEL DO DJ ESTÁ ABERTO
         database.ref('sistemaAtivo').on('value', (snapshot) => {
             const ativo = snapshot.val();
             if (ativo) {
