@@ -6,33 +6,33 @@
     <title>Painel do DJ - Karaokê</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-    
+
     <style>
         body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; padding: 20px; margin: 0; }
         .container { max-width: 1600px; margin: 0 auto; position: relative; }
-        
+
         .area-botoes-topo { display: flex; gap: 15px; margin-bottom: 25px; }
         .btn-topo { flex: 1; padding: 15px; font-size: 16px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s;}
         .btn-tv { background: #007bff; } .btn-tv:hover { background: #0056b3; } .btn-tv.conectado { background: #17a2b8; pointer-events: none; }
         .btn-mic { background: #e52d27; text-align: center; display: flex; align-items: center; justify-content: center; } 
         .btn-mic:hover { filter: brightness(1.2); }
-        
+
         .btn-tocar { background: #28a745; width: 100%; padding: 15px; font-size: 16px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 20px;}
 
         .area-busca { display: flex; gap: 10px; margin-bottom: 15px; }
         input { flex: 1; padding: 12px; border-radius: 5px; border: none; font-size: 16px; }
         .btn-buscar { padding: 12px 25px; background: #e52d27; color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer;}
-        
+
         .paineis { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
         .painel { background: #1e1e1e; padding: 15px; border-radius: 8px; height: 450px; overflow-y: auto; position: relative;}
-        
+
         .item-resultado, .item-fila, .item-historico, .item-ranking { margin: 10px 0; padding: 12px; background: #333; border-radius: 5px; }
         .item-resultado { cursor: pointer; transition: 0.2s; } .item-resultado:hover { background: #e52d27; }
-        
+
         .item-fila { border-left: 5px solid #e52d27; display: flex; justify-content: space-between; align-items: center; }
         .titulo-musica { flex: 1; font-size: 14px; } .nome-cantor { color: #aaa; font-size: 12px; display: block; font-style: italic; }
         .botoes-acao { display: flex; gap: 3px; } .btn-acao { background: transparent; border: none; cursor: pointer; font-size: 16px; padding: 5px; transition: 0.2s;} .btn-acao:hover { transform: scale(1.2); }
-        
+
         .item-historico { border-left: 5px solid #28a745; color: #888; font-size: 14px; background: #222; }
         .item-ranking { border-left: 5px solid #ffeb3b; background: #222; font-size: 14px; display: flex; flex-direction: column; align-items: stretch; transition: 0.2s; }
         .item-ranking:hover { background: #2a2a2a; }
@@ -57,16 +57,20 @@
         #modal-manual-conteudo .destaque { font-weight: bold; color: #fff; }
         #modal-manual-conteudo .segredo { background: #222; border-left: 4px solid #28a745; padding: 15px; margin-top: 20px; border-radius: 5px; font-style: italic; }
         #fundo-modal-manual { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 299; }
+
+        #versao-canto { position: fixed; bottom: 6px; right: 8px; font-size: 10px; color: #555; z-index: 500; font-family: monospace; }
     </style>
 </head>
 <body>
+
+    <div id="versao-canto">v1.0</div>
 
     <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
     <div id="modal-manual-conteudo">
         <h2>📖 Manual do Operador - Parada 10.95 Bar</h2>
-        
+
         <h3>1. Iniciando o Sistema</h3>
         <p>Sempre que abrir o painel, siga a ordem dos botões no topo:</p>
         <ul>
@@ -106,7 +110,7 @@
 
     <div class="container">
         <h1 style="margin-top: 0; padding-top: 10px;">🎛️ Painel de Controle - Karaokê</h1>
-        
+
         <div class="area-botoes-topo">
             <button id="botaoTV" class="btn-topo btn-tv" onclick="iniciarSistema()">🚀 1. INICIAR SISTEMA E TV</button>
             <button id="botaoMic" class="btn-topo btn-mic" onclick="toggleMicrofone()">🎙️ 2. AVALIADOR (INICIANDO...)</button>
@@ -121,7 +125,7 @@
 
         <div class="paineis">
             <div class="painel"><h3 style="margin-top: 0; color: #e52d27;">Busca do DJ:</h3><div id="resultados"></div></div>
-            
+
             <div class="painel" style="border: 1px solid #00d2ff;">
                 <h3 style="margin-top: 0; color: #00d2ff; display: flex; justify-content: space-between; align-items: center;">
                     📩 Pedidos
@@ -133,13 +137,13 @@
             </div>
 
             <div class="painel"><h3 style="margin-top: 0; color: #fff;">Fila:</h3><div id="fila"></div></div>
-            
+
             <div class="painel">
                 <h3 style="margin-top: 0; color: #ffeb3b;">🏆 Ranking:</h3>
                 <div id="contador-votos" onclick="abrirDetalhesVotos()">📊 0 votos ao vivo</div>
                 <div id="ranking"></div>
             </div>
-            
+
             <div class="painel"><h3 style="margin-top: 0; color: #28a745;">Histórico:</h3><div id="historico"></div></div>
         </div>
     </div>
@@ -152,7 +156,7 @@
 
         function iniciarSistema() {
             const som = document.getElementById('audio-tambores');
-            som.volume = 0.5; // VOLUME DOS TAMBORES REDUZIDO PELA METADE
+            som.volume = 0.5;
             som.muted = true;
             som.play().then(() => {
                 som.pause();
@@ -177,7 +181,7 @@
                     streamMic = await navigator.mediaDevices.getUserMedia({ audio: true });
                     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                     if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
-                    
+
                     analyser = audioCtx.createAnalyser();
                     audioCtx.createMediaStreamSource(streamMic).connect(analyser);
                     analyser.fftSize = 256; dataArray = new Uint8Array(analyser.frequencyBinCount);
@@ -222,6 +226,12 @@
 
         database.ref('statusAtual').set(null);
         database.ref('votosAtual').remove();
+
+        // AVISA A PÁGINA DE VOTAÇÃO QUE O SISTEMA ESTÁ ATIVO
+        // Se o painel fechar ou cair a internet, o Firebase muda sozinho pra false
+        const statusSistemaRef = database.ref('sistemaAtivo');
+        statusSistemaRef.onDisconnect().set(false);
+        statusSistemaRef.set(true);
 
         let pedidosPendentes = [];
         let autoAprovar = false;
@@ -305,13 +315,12 @@
             `;
         }
 
-        // NOVO CÓDIGO DAS NOTAS FORÇADAS DO DJ
         document.addEventListener('keydown', function(event) {
-            if (event.key === '6') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 60; } // Sorteia entre 60 e 69
-            if (event.key === '7') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 70; } // Sorteia entre 70 e 79
-            if (event.key === '8') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 80; } // Sorteia entre 80 e 89
-            if (event.key === '9') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 90; } // Sorteia entre 90 e 99
-            if (event.key === '0') { notaForcadaPeloDJ = 100; } // Crava 100
+            if (event.key === '6') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 60; }
+            if (event.key === '7') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 70; }
+            if (event.key === '8') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 80; }
+            if (event.key === '9') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 90; }
+            if (event.key === '0') { notaForcadaPeloDJ = 100; }
         });
 
         document.getElementById('campoBusca').addEventListener('keypress', e => { if(e.key === 'Enter') buscarNoYouTube(); });
@@ -325,22 +334,20 @@
                 <style>
                     body { margin: 0; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; font-family: Arial;}
                     #player { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1;}
-                    
+
                     #logo-bar { position: absolute !important; top: 0px !important; left: 0px !important; z-index: 25; pointer-events: none; margin: 0 !important; padding: 0 !important; display: flex; align-items: flex-start; }
                     #logo-bar img { height: 140px !important; width: auto !important; display: block; margin: 0 !important; padding: 0 !important; } 
                     #logo-bar span { font-size: 34px; font-weight: 900; color: #fff; text-shadow: 3px 3px 10px #000; display: block; margin-top: 15px; margin-left: 15px; white-space: nowrap; }
-                    
-                    /* QR CODE NA QUINA DIREITA (top 20px) */
+
                     #qr-code { position: absolute !important; top: 20px !important; right: 20px !important; z-index: 25; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
                     #qr-code img { width: 110px; height: 110px; background: white; padding: 5px; border-radius: 8px; display: block; margin: 0 auto; }
                     #qr-code p { margin: 8px 0 0 0; color: #fff; font-size: 12px; font-weight: bold; text-transform: uppercase;}
                     #qr-code span { color: #ffeb3b; font-size: 11px; }
 
-                    /* CAIXA DO NOME - Fica escondida pra cima (-200px) e desce até o (20px) ao lado do QR Code (right 170px) */
                     #cantor-overlay { position: absolute; top: -200px; right: 170px; background: linear-gradient(90deg, rgba(20,20,20,0.95), rgba(229,45,39,0.85)); padding: 10px 20px; border-radius: 15px; z-index: 24; transition: top 0.8s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: -3px 5px 15px rgba(0,0,0,0.5); max-width: 350px; text-align: right; border: 2px solid #e52d27;}
                     #cantor-overlay .aviso { font-size: 12px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
                     #cantor-overlay .nome { font-size: 22px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; line-height: 1.1; word-wrap: break-word;}
-                    
+
                     #tela-nota { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #121212, #3a0000); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
                     @keyframes piscar { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
                     #btn-liberar { z-index: 20; padding: 25px 40px; font-size: 24px; font-weight: bold; background: #28a745; color: white; border: none; border-radius: 10px; cursor: pointer; }
@@ -350,16 +357,15 @@
                         <img src="logop.png" alt="Logo">
                         <span>PARADA 10.95 BAR</span>
                     </div>
-                    
+
                     <div id="qr-code">
                         <img src="qrcode.png" alt="Escaneie para Pedir e Votar">
                         <p>APONTE O CELULAR</p>
                         <span>Peça e Vote!</span>
                     </div>
 
-                    <!-- Caixa do nome flutuante -->
                     <div id="cantor-overlay"></div>
-                    
+
                     <div id="tela-nota">
                         <h1 style="font-size: 50px; color: #ffeb3b; margin-bottom: 10px;">🍻 PARADA 10.95 BAR</h1>
                         <h2 style="font-size: 40px; margin-bottom: 50px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
@@ -398,7 +404,7 @@
             captando = false; 
             let notaFinal;
             const votosCongelados = { ...contagemVotos };
-            
+
             database.ref('statusAtual').set({ cantor: "Avaliando...", titulo: "Olhe para a tela da TV!", id: "avaliando" });
 
             if (notaForcadaPeloDJ !== null) {
@@ -412,14 +418,14 @@
                     notaBase = Math.floor(Math.random() * 21) + 65; 
                 }
                 if (notaBase > 85) notaBase = 85;
-                
+
                 let bonusPublico = 0;
                 if(totalVotosPublico > 0) {
                     bonusPublico = (votosCongelados.excelente * 4) + (votosCongelados.muitobom * 2) + (votosCongelados.bom * 1) - (votosCongelados.regular * 1) - (votosCongelados.ruim * 3);
                     if (bonusPublico > 15) bonusPublico = 15; 
                     if (bonusPublico < -15) bonusPublico = -15; 
                 }
-                
+
                 notaFinal = notaBase + bonusPublico;
                 if (notaFinal > 100) notaFinal = 100; 
                 if (notaFinal < 50) notaFinal = 50; 
@@ -433,8 +439,7 @@
                 telaTV.document.getElementById('nota-loading').style.display = 'block';
                 telaTV.document.getElementById('nota-resultado').style.display = 'none';
                 telaTV.document.getElementById('tela-nota').style.display = 'flex';
-                
-                // ESCONDE O NOME DO CANTOR (Sobe para o teto)
+
                 telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
 
                 const som = document.getElementById('audio-tambores');
@@ -495,17 +500,16 @@
         function iniciarMusica(m) {
             clearTimeout(timerNota);
             if (telaTV && !telaTV.closed) telaTV.document.getElementById('tela-nota').style.display = 'none';
-            
+
             database.ref('votosAtual').remove();
             database.ref('statusAtual').set({ cantor: m.cantor, titulo: m.titulo, id: Date.now() });
 
             musicaAtual = m; historicoDeReproducao.push(m);
             atualizarTelaFila(); atualizarTelaHistorico();
-            
+
             if (telaTV && !telaTV.closed && m.cantor !== "Convidados") {
                 telaTV.document.getElementById('cantor-overlay').innerHTML = `<div style="display:inline-block; vertical-align:middle;"><span class="aviso">Com a Voz</span><p class="nome">${m.cantor}</p></div>`;
-                
-                // MÁGICA AQUI: A caixa inicia no teto e desce animada para os 20px no topo (ao lado do QR code)
+
                 telaTV.document.getElementById('cantor-overlay').style.top = '-200px'; 
                 setTimeout(() => telaTV.document.getElementById('cantor-overlay').style.top = '20px', 100);
             }
@@ -517,7 +521,7 @@
             if(!telaTV || telaTV.closed) return alert("⚠️ A Tela da TV está fechada! Clique no botão azul '1. INICIAR SISTEMA E TV' antes de tocar a música."); 
             iniciarMusica(filaDeReproducao.splice(i, 1)[0]); 
         }
-        
+
         function tocarProxima(auto = false) {
             if(!telaTV || telaTV.closed) {
                 if (!auto) alert("⚠️ A Tela da TV está fechada! Clique no botão azul '1. INICIAR SISTEMA E TV' antes de tocar a música.");
@@ -526,7 +530,7 @@
             if(filaDeReproducao.length > 0) {
                 iniciarMusica(filaDeReproducao.shift()); 
             } else {
-                if(telaTV && !telaTV.closed) telaTV.document.getElementById('cantor-overlay').style.top = '-200px'; // Esconde pro teto
+                if(telaTV && !telaTV.closed) telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
                 database.ref('statusAtual').set(null);
             }
         }
@@ -546,7 +550,7 @@
         }
 
         function atualizarTelaHistorico() { document.getElementById('historico').innerHTML = historicoDeReproducao.slice().reverse().map(item => `<div class="item-historico">✔️ ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span></div>`).join(''); }
-        
+
         function atualizarTelaRanking() {
             document.getElementById('ranking').innerHTML = [...ranking].sort((a,b) => b.nota - a.nota).map((item, i) => `
                 <div class="item-ranking" onclick="document.getElementById('votos-rank-${i}').style.display = document.getElementById('votos-rank-${i}').style.display === 'none' ? 'block' : 'none'" style="cursor:pointer;" title="Clique para ver os votos!">
@@ -559,7 +563,7 @@
                         </div>
                         <div class="pontuacao">${item.nota}</div>
                     </div>
-                    
+
                     <div id="votos-rank-${i}" style="display:none; margin-top: 15px; background: #111; padding: 10px; border-radius: 5px; font-size: 13px; text-align: center;">
                         <strong>Registro da Plateia:</strong><br><br>
                         <span style="color:#00d2ff">🤯 ${item.votos.excelente}</span> &nbsp;|&nbsp; 
