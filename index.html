@@ -84,7 +84,7 @@
 </head>
 <body>
 
-    <div id="versao-canto">v1.3</div>
+    <div id="versao-canto">v1.4</div>
 
     <!-- TELA DE LOGIN -->
     <div id="tela-login">
@@ -249,6 +249,13 @@
             auth.signOut();
         }
 
+        function extrairNomeDoEmail(email) {
+            if (!email) return '';
+            let nome = email.split('@')[0];
+            nome = nome.replace(/[._]/g, ' ');
+            return nome.charAt(0).toUpperCase() + nome.slice(1);
+        }
+
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 const snap = await database.ref('usuarios').once('value');
@@ -275,7 +282,7 @@
 
                 document.getElementById('tela-login').style.display = 'none';
                 document.getElementById('painel-app').style.display = 'block';
-                document.getElementById('emailLogado').innerText = user.email;
+                document.getElementById('emailLogado').innerText = (meuRegistro.nome && meuRegistro.nome.trim() !== '') ? meuRegistro.nome : extrairNomeDoEmail(user.email);
                 document.getElementById('btnUsuarios').style.display = (tipoUsuarioAtual === 'admin') ? 'inline-block' : 'none';
 
                 iniciarAposLogin();
