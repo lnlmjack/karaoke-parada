@@ -67,7 +67,7 @@
         #tela-login h1 { color: #fff; font-size: 22px; margin-bottom: 20px; }
         #tela-login input { width: 100%; box-sizing: border-box; padding: 14px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-size: 15px; }
         #tela-login button { width: 100%; padding: 14px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; }
-        #loginErro { color: #ff6b6b; font-size: 13px; margin-top: 10px; min-height: 16px; }
+        #loginErro { color: #ff6b6b; font-size: 13px; margin-top: 10px; min-height: 16px; word-break: break-word; }
 
         /* BARRA DE USUÁRIO */
         #barra-usuario { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: #1e1e1e; padding: 10px 15px; border-radius: 8px; flex-wrap: wrap; gap: 8px; }
@@ -84,7 +84,7 @@
 </head>
 <body>
 
-    <div id="versao-canto">v1.1</div>
+    <div id="versao-canto">v1.2</div>
 
     <!-- TELA DE LOGIN -->
     <div id="tela-login">
@@ -240,7 +240,7 @@
             const erroDiv = document.getElementById('loginErro');
             erroDiv.innerText = '';
             auth.signInWithEmailAndPassword(email, senha).catch(err => {
-                erroDiv.innerText = 'E-mail ou senha incorretos.';
+                erroDiv.innerText = 'Erro: ' + err.code + ' - ' + err.message;
             });
         });
 
