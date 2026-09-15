@@ -6,6 +6,7 @@
     <title>Painel do DJ - Karaokê</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 
     <style>
         body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; padding: 20px; margin: 0; }
@@ -59,96 +60,305 @@
         #fundo-modal-manual { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 299; }
 
         #versao-canto { position: fixed; bottom: 6px; right: 8px; font-size: 10px; color: #555; z-index: 500; font-family: monospace; }
+
+        /* LOGIN */
+        #tela-login { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: radial-gradient(circle at top, #1e1e1e, #000); }
+        #tela-login .card-login { background: #1e1e1e; padding: 40px 30px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.7); width: 320px; max-width: 90%; text-align: center; border: 2px solid #e52d27; }
+        #tela-login h1 { color: #fff; font-size: 22px; margin-bottom: 20px; }
+        #tela-login input { width: 100%; box-sizing: border-box; padding: 14px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-size: 15px; }
+        #tela-login button { width: 100%; padding: 14px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; }
+        #loginErro { color: #ff6b6b; font-size: 13px; margin-top: 10px; min-height: 16px; }
+
+        /* BARRA DE USUÁRIO */
+        #barra-usuario { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: #1e1e1e; padding: 10px 15px; border-radius: 8px; flex-wrap: wrap; gap: 8px; }
+        #barra-usuario span { font-size: 13px; color: #aaa; }
+        #barra-usuario .botoes-usuario button { padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; margin-left: 8px; }
+
+        /* MODAL USUÁRIOS */
+        #modal-usuarios { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 400; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #00d2ff; width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; }
+        #modal-usuarios h2 { color: #00d2ff; margin-top: 0; text-align: center; }
+        #modal-usuarios h3 { color: #00d2ff; }
+        #fundo-modal-usuarios { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 399; }
+        #modal-usuarios input, #modal-usuarios select { width: 100%; box-sizing: border-box; padding: 12px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-size: 15px; }
     </style>
 </head>
 <body>
 
-    <div id="versao-canto">v1.0</div>
+    <div id="versao-canto">v1.1</div>
 
-    <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
-
-    <div id="fundo-modal-manual" onclick="fecharManual()"></div>
-    <div id="modal-manual-conteudo">
-        <h2>📖 Manual do Operador - Parada 10.95 Bar</h2>
-
-        <h3>1. Iniciando o Sistema</h3>
-        <p>Sempre que abrir o painel, siga a ordem dos botões no topo:</p>
-        <ul>
-            <li>Clique em <span class="destaque">🚀 1. INICIAR SISTEMA E TV</span>. O navegador abrirá a tela do telão. Arraste para a TV do bar e aperte <span class="destaque">F11</span> para tela cheia.</li>
-            <li>Clique em <span class="destaque">🎙️ 2. AVALIADOR</span> e permita o uso do microfone no navegador.</li>
-        </ul>
-
-        <h3>2. Gerenciando as Músicas</h3>
-        <ul>
-            <li><span class="destaque">Na Busca do DJ:</span> Digite o nome da música ou cole o link direto do YouTube.</li>
-            <li><span class="destaque">No Celular dos Clientes:</span> O cliente escaneia o QR Code da TV, busca a música e o pedido chega na caixa de <strong>📩 Pedidos</strong>.</li>
-        </ul>
-
-        <h3>3. Sistema de Notas e Votação ao Vivo</h3>
-        <p>A nota que aparece na TV é a soma do barulho captado pelo microfone e dos votos enviados pelos celulares.</p>
-
-        <div class="segredo">
-            <strong>⚙️ TRUQUE SECRETO DO DJ:</strong><br>
-            Aperte o <strong>6</strong> = Força nota entre 60 e 69.<br>
-            Aperte o <strong>7</strong> = Força nota entre 70 e 79.<br>
-            Aperte o <strong>8</strong> = Força nota entre 80 e 89.<br>
-            Aperte o <strong>9</strong> = Força nota entre 90 e 99.<br>
-            Aperte o <strong>0</strong> = Força nota 100!
-        </div>
-
-        <button onclick="fecharManual()" style="width: 100%; margin-top: 30px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
+    <!-- TELA DE LOGIN -->
+    <div id="tela-login">
+        <form class="card-login" id="formLogin">
+            <h1>🔒 Painel do DJ</h1>
+            <input type="email" id="loginEmail" placeholder="E-mail" required>
+            <input type="password" id="loginSenha" placeholder="Senha" required>
+            <button type="submit">Entrar</button>
+            <div id="loginErro"></div>
+        </form>
     </div>
 
-    <div id="fundo-modal" onclick="fecharDetalhesVotos()"></div>
-    <div id="modal-votos">
-        <h2>📊 Votos Desta Música</h2>
-        <div id="detalhes-votos"></div>
-        <button onclick="fecharDetalhesVotos()" style="width: 100%; margin-top: 20px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar</button>
-    </div>
+    <!-- APLICATIVO (só aparece após login) -->
+    <div id="painel-app" style="display:none;">
 
-    <button id="btn-manual" onclick="abrirManual()">📖 Manual do Sistema</button>
+        <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
 
-    <div class="container">
-        <h1 style="margin-top: 0; padding-top: 10px;">🎛️ Painel de Controle - Karaokê</h1>
+        <div id="fundo-modal-manual" onclick="fecharManual()"></div>
+        <div id="modal-manual-conteudo">
+            <h2>📖 Manual do Operador - Parada 10.95 Bar</h2>
 
-        <div class="area-botoes-topo">
-            <button id="botaoTV" class="btn-topo btn-tv" onclick="iniciarSistema()">🚀 1. INICIAR SISTEMA E TV</button>
-            <button id="botaoMic" class="btn-topo btn-mic" onclick="toggleMicrofone()">🎙️ 2. AVALIADOR (INICIANDO...)</button>
-        </div>
+            <h3>1. Iniciando o Sistema</h3>
+            <p>Sempre que abrir o painel, siga a ordem dos botões no topo:</p>
+            <ul>
+                <li>Clique em <span class="destaque">🚀 1. INICIAR SISTEMA E TV</span>. O navegador abrirá a tela do telão. Arraste para a TV do bar e aperte <span class="destaque">F11</span> para tela cheia.</li>
+                <li>Clique em <span class="destaque">🎙️ 2. AVALIADOR</span> e permita o uso do microfone no navegador.</li>
+            </ul>
 
-        <div class="area-busca">
-            <input type="text" id="campoBusca" placeholder="Cole o link do YouTube ou busque o nome...">
-            <button class="btn-buscar" onclick="buscarNoYouTube()">Buscar Música (DJ)</button>
-        </div>
+            <h3>2. Gerenciando as Músicas</h3>
+            <ul>
+                <li><span class="destaque">Na Busca do DJ:</span> Digite o nome da música ou cole o link direto do YouTube.</li>
+                <li><span class="destaque">No Celular dos Clientes:</span> O cliente escaneia o QR Code da TV, busca a música e o pedido chega na caixa de <strong>📩 Pedidos</strong>.</li>
+            </ul>
 
-        <button class="btn-tocar" onclick="tocarProxima()">▶️ Tocar Próxima da Fila</button>
+            <h3>3. Sistema de Notas e Votação ao Vivo</h3>
+            <p>A nota que aparece na TV é a soma do barulho captado pelo microfone e dos votos enviados pelos celulares.</p>
 
-        <div class="paineis">
-            <div class="painel"><h3 style="margin-top: 0; color: #e52d27;">Busca do DJ:</h3><div id="resultados"></div></div>
-
-            <div class="painel" style="border: 1px solid #00d2ff;">
-                <h3 style="margin-top: 0; color: #00d2ff; display: flex; justify-content: space-between; align-items: center;">
-                    📩 Pedidos
-                    <label style="font-size:12px; color:#fff; font-weight: normal; cursor: pointer; background: #333; padding: 4px 8px; border-radius: 4px;">
-                        <input type="checkbox" id="chkAutoAprovar" onchange="toggleAutoAprovar()"> Auto-Aprovar
-                    </label>
-                </h3>
-                <div id="pedidos-lista"></div>
+            <div class="segredo">
+                <strong>⚙️ TRUQUE SECRETO DO DJ:</strong><br>
+                Aperte o <strong>6</strong> = Força nota entre 60 e 69.<br>
+                Aperte o <strong>7</strong> = Força nota entre 70 e 79.<br>
+                Aperte o <strong>8</strong> = Força nota entre 80 e 89.<br>
+                Aperte o <strong>9</strong> = Força nota entre 90 e 99.<br>
+                Aperte o <strong>0</strong> = Força nota 100!
             </div>
 
-            <div class="painel"><h3 style="margin-top: 0; color: #fff;">Fila:</h3><div id="fila"></div></div>
+            <button onclick="fecharManual()" style="width: 100%; margin-top: 30px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
+        </div>
 
-            <div class="painel">
-                <h3 style="margin-top: 0; color: #ffeb3b;">🏆 Ranking:</h3>
-                <div id="contador-votos" onclick="abrirDetalhesVotos()">📊 0 votos ao vivo</div>
-                <div id="ranking"></div>
+        <div id="fundo-modal" onclick="fecharDetalhesVotos()"></div>
+        <div id="modal-votos">
+            <h2>📊 Votos Desta Música</h2>
+            <div id="detalhes-votos"></div>
+            <button onclick="fecharDetalhesVotos()" style="width: 100%; margin-top: 20px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar</button>
+        </div>
+
+        <!-- MODAL GERENCIAR USUÁRIOS -->
+        <div id="fundo-modal-usuarios" onclick="fecharUsuarios()"></div>
+        <div id="modal-usuarios">
+            <h2>👥 Gerenciar Usuários</h2>
+            <div id="lista-usuarios"></div>
+            <hr style="border-color:#333; margin: 20px 0;">
+            <h3>Adicionar Novo Usuário</h3>
+            <input type="email" id="novoEmail" placeholder="E-mail">
+            <input type="password" id="novaSenha" placeholder="Senha (mín. 6 caracteres)">
+            <select id="novoTipo">
+                <option value="comum">Usuário Comum</option>
+                <option value="admin">Administrador</option>
+            </select>
+            <button onclick="criarNovoUsuario()" style="width:100%; padding:12px; background:#28a745; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">➕ Criar Usuário</button>
+            <button onclick="fecharUsuarios()" style="width:100%; margin-top:10px; padding:12px; background:#e52d27; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Fechar</button>
+        </div>
+
+        <button id="btn-manual" onclick="abrirManual()">📖 Manual do Sistema</button>
+
+        <div class="container">
+            <h1 style="margin-top: 0; padding-top: 10px;">🎛️ Painel de Controle - Karaokê</h1>
+
+            <div id="barra-usuario">
+                <span>Logado como: <strong id="emailLogado" style="color:#fff;"></strong></span>
+                <div class="botoes-usuario">
+                    <button id="btnUsuarios" onclick="abrirUsuarios()" style="display:none; background:#007bff; color:#fff;">👥 Gerenciar Usuários</button>
+                    <button onclick="fazerLogout()" style="background:#e52d27; color:#fff;">Sair</button>
+                </div>
             </div>
 
-            <div class="painel"><h3 style="margin-top: 0; color: #28a745;">Histórico:</h3><div id="historico"></div></div>
+            <div class="area-botoes-topo">
+                <button id="botaoTV" class="btn-topo btn-tv" onclick="iniciarSistema()">🚀 1. INICIAR SISTEMA E TV</button>
+                <button id="botaoMic" class="btn-topo btn-mic" onclick="toggleMicrofone()">🎙️ 2. AVALIADOR (INICIANDO...)</button>
+            </div>
+
+            <div class="area-busca">
+                <input type="text" id="campoBusca" placeholder="Cole o link do YouTube ou busque o nome...">
+                <button class="btn-buscar" onclick="buscarNoYouTube()">Buscar Música (DJ)</button>
+            </div>
+
+            <button class="btn-tocar" onclick="tocarProxima()">▶️ Tocar Próxima da Fila</button>
+
+            <div class="paineis">
+                <div class="painel"><h3 style="margin-top: 0; color: #e52d27;">Busca do DJ:</h3><div id="resultados"></div></div>
+
+                <div class="painel" style="border: 1px solid #00d2ff;">
+                    <h3 style="margin-top: 0; color: #00d2ff; display: flex; justify-content: space-between; align-items: center;">
+                        📩 Pedidos
+                        <label style="font-size:12px; color:#fff; font-weight: normal; cursor: pointer; background: #333; padding: 4px 8px; border-radius: 4px;">
+                            <input type="checkbox" id="chkAutoAprovar" onchange="toggleAutoAprovar()"> Auto-Aprovar
+                        </label>
+                    </h3>
+                    <div id="pedidos-lista"></div>
+                </div>
+
+                <div class="painel"><h3 style="margin-top: 0; color: #fff;">Fila:</h3><div id="fila"></div></div>
+
+                <div class="painel">
+                    <h3 style="margin-top: 0; color: #ffeb3b;">🏆 Ranking:</h3>
+                    <div id="contador-votos" onclick="abrirDetalhesVotos()">📊 0 votos ao vivo</div>
+                    <div id="ranking"></div>
+                </div>
+
+                <div class="painel"><h3 style="margin-top: 0; color: #28a745;">Histórico:</h3><div id="historico"></div></div>
+            </div>
         </div>
+
     </div>
 
     <script>
+        // ================= CONFIGURAÇÃO FIREBASE =================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBMLhTZc7qQLjE65L3BuW9e2ijvxObTxp8",
+            authDomain: "karaoke-parada.firebaseapp.com",
+            databaseURL: "https://karaoke-parada-default-rtdb.firebaseio.com",
+            projectId: "karaoke-parada",
+            storageBucket: "karaoke-parada.firebasestorage.app",
+            messagingSenderId: "379214932685",
+            appId: "1:379214932685:web:873e8b5b7d882a4f751784"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
+
+        const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4';
+
+        // ================= LOGIN =================
+        let usuarioAtual = null;
+        let tipoUsuarioAtual = null;
+        let jaIniciado = false;
+        let listaUsuariosCache = [];
+
+        document.getElementById('formLogin').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const senha = document.getElementById('loginSenha').value;
+            const erroDiv = document.getElementById('loginErro');
+            erroDiv.innerText = '';
+            auth.signInWithEmailAndPassword(email, senha).catch(err => {
+                erroDiv.innerText = 'E-mail ou senha incorretos.';
+            });
+        });
+
+        function fazerLogout() {
+            database.ref('sistemaAtivo').set(false);
+            auth.signOut();
+        }
+
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                const snap = await database.ref('usuarios').once('value');
+                const usuarios = snap.val() || {};
+                const totalUsuarios = Object.keys(usuarios).length;
+
+                if (totalUsuarios === 0) {
+                    await database.ref('usuarios/' + user.uid).set({
+                        email: user.email, tipo: 'admin', ativo: true
+                    });
+                }
+
+                const meuRegistroSnap = await database.ref('usuarios/' + user.uid).once('value');
+                const meuRegistro = meuRegistroSnap.val();
+
+                if (!meuRegistro || meuRegistro.ativo === false) {
+                    alert('Seu acesso foi revogado. Fale com o administrador.');
+                    auth.signOut();
+                    return;
+                }
+
+                usuarioAtual = user;
+                tipoUsuarioAtual = meuRegistro.tipo;
+
+                document.getElementById('tela-login').style.display = 'none';
+                document.getElementById('painel-app').style.display = 'block';
+                document.getElementById('emailLogado').innerText = user.email;
+                document.getElementById('btnUsuarios').style.display = (tipoUsuarioAtual === 'admin') ? 'inline-block' : 'none';
+
+                iniciarAposLogin();
+            } else {
+                document.getElementById('tela-login').style.display = 'flex';
+                document.getElementById('painel-app').style.display = 'none';
+                jaIniciado = false;
+            }
+        });
+
+        // ================= GERENCIAR USUÁRIOS =================
+        function abrirUsuarios() {
+            renderizarUsuarios();
+            document.getElementById('fundo-modal-usuarios').style.display = 'block';
+            document.getElementById('modal-usuarios').style.display = 'block';
+        }
+        function fecharUsuarios() {
+            document.getElementById('fundo-modal-usuarios').style.display = 'none';
+            document.getElementById('modal-usuarios').style.display = 'none';
+        }
+
+        database.ref('usuarios').on('value', (snapshot) => {
+            listaUsuariosCache = [];
+            snapshot.forEach(child => { listaUsuariosCache.push({ uid: child.key, ...child.val() }); });
+            if (document.getElementById('modal-usuarios').style.display === 'block') renderizarUsuarios();
+        });
+
+        function renderizarUsuarios() {
+            const div = document.getElementById('lista-usuarios');
+            div.innerHTML = listaUsuariosCache.map(u => `
+                <div style="background:#2a2a2a; padding:12px; border-radius:8px; margin-bottom:10px;">
+                    <div style="font-weight:bold;">${u.email}</div>
+                    <div style="font-size:13px; color:#aaa;">Tipo: ${u.tipo === 'admin' ? 'Administrador' : 'Comum'} | Status: ${u.ativo === false ? '🔴 Bloqueado' : '🟢 Ativo'}</div>
+                    <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;">
+                        <button onclick="alternarTipo('${u.uid}', '${u.tipo}')" style="padding:6px 10px; background:#007bff; color:#fff; border:none; border-radius:5px; cursor:pointer; font-size:12px;">Alternar Tipo</button>
+                        <button onclick="alternarAtivo('${u.uid}', ${u.ativo === false})" style="padding:6px 10px; background:${u.ativo === false ? '#28a745' : '#e52d27'}; color:#fff; border:none; border-radius:5px; cursor:pointer; font-size:12px;">${u.ativo === false ? 'Liberar Acesso' : 'Bloquear Acesso'}</button>
+                        <button onclick="enviarResetSenha('${u.email}')" style="padding:6px 10px; background:#ffc107; color:#000; border:none; border-radius:5px; cursor:pointer; font-size:12px;">Resetar Senha</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function alternarTipo(uid, tipoAtual) {
+            const novoTipo = tipoAtual === 'admin' ? 'comum' : 'admin';
+            database.ref('usuarios/' + uid + '/tipo').set(novoTipo);
+        }
+
+        function alternarAtivo(uid, deveAtivar) {
+            database.ref('usuarios/' + uid + '/ativo').set(deveAtivar);
+        }
+
+        function enviarResetSenha(email) {
+            auth.sendPasswordResetEmail(email).then(() => {
+                alert('E-mail de redefinição de senha enviado para ' + email);
+            }).catch(err => alert('Erro: ' + err.message));
+        }
+
+        async function criarNovoUsuario() {
+            const email = document.getElementById('novoEmail').value.trim();
+            const senha = document.getElementById('novaSenha').value;
+            const tipo = document.getElementById('novoTipo').value;
+
+            if (!email || senha.length < 6) {
+                alert('Preencha um e-mail válido e uma senha com no mínimo 6 caracteres.');
+                return;
+            }
+
+            try {
+                const secApp = firebase.initializeApp(firebaseConfig, "AppSecundario_" + Date.now());
+                const cred = await secApp.auth().createUserWithEmailAndPassword(email, senha);
+                await database.ref('usuarios/' + cred.user.uid).set({ email: email, tipo: tipo, ativo: true });
+                await secApp.auth().signOut();
+                await secApp.delete();
+
+                document.getElementById('novoEmail').value = '';
+                document.getElementById('novaSenha').value = '';
+                alert('Usuário criado com sucesso!');
+            } catch (err) {
+                alert('Erro ao criar usuário: ' + err.message);
+            }
+        }
+
+        // ================= APP (só roda após login) =================
         let streamMic = null; let micAtivo = false; let intervaloMic = null;
 
         function abrirManual() { document.getElementById('fundo-modal-manual').style.display = 'block'; document.getElementById('modal-manual-conteudo').style.display = 'block'; }
@@ -203,19 +413,6 @@
             }
         }
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBMLhTZc7qQLjE65L3BuW9e2ijvxObTxp8",
-            authDomain: "karaoke-parada.firebaseapp.com",
-            databaseURL: "https://karaoke-parada-default-rtdb.firebaseio.com",
-            projectId: "karaoke-parada",
-            storageBucket: "karaoke-parada.firebasestorage.app",
-            messagingSenderId: "379214932685",
-            appId: "1:379214932685:web:873e8b5b7d882a4f751784"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4'; 
         let filaDeReproducao = []; let historicoDeReproducao = []; let ranking = [];
         let player; let telaTV; let monitorTV; let musicaAtual = null; let timerNota;
         let audioCtx; let analyser; let dataArray; let captando = false; 
@@ -224,17 +421,46 @@
         let totalVotosPublico = 0;
         let contagemVotos = { ruim: 0, regular: 0, bom: 0, muitobom: 0, excelente: 0 };
 
-        database.ref('statusAtual').set(null);
-        database.ref('votosAtual').remove();
-
-        // AVISA A PÁGINA DE VOTAÇÃO QUE O SISTEMA ESTÁ ATIVO
-        // Se o painel fechar ou cair a internet, o Firebase muda sozinho pra false
-        const statusSistemaRef = database.ref('sistemaAtivo');
-        statusSistemaRef.onDisconnect().set(false);
-        statusSistemaRef.set(true);
-
         let pedidosPendentes = [];
         let autoAprovar = false;
+
+        function iniciarAposLogin() {
+            if (jaIniciado) return;
+            jaIniciado = true;
+
+            database.ref('statusAtual').set(null);
+            database.ref('votosAtual').remove();
+
+            const statusSistemaRef = database.ref('sistemaAtivo');
+            statusSistemaRef.onDisconnect().set(false);
+            statusSistemaRef.set(true);
+
+            database.ref('pedidos').on('value', (snapshot) => {
+                pedidosPendentes = [];
+                snapshot.forEach(child => { pedidosPendentes.push({ key: child.key, ...child.val() }); });
+                if (autoAprovar && pedidosPendentes.length > 0) {
+                    pedidosPendentes.forEach(p => {
+                        filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
+                        database.ref('pedidos').child(p.key).remove();
+                    });
+                    atualizarTelaFila();
+                } else {
+                    renderizarPedidos();
+                }
+            });
+
+            database.ref('votosAtual').on('value', (snapshot) => {
+                const votos = snapshot.val();
+                totalVotosPublico = 0; contagemVotos = { ruim: 0, regular: 0, bom: 0, muitobom: 0, excelente: 0 };
+                if (votos) {
+                    Object.values(votos).forEach(voto => {
+                        if (contagemVotos[voto.tipo] !== undefined) { contagemVotos[voto.tipo]++; totalVotosPublico++; }
+                    });
+                }
+                document.getElementById('contador-votos').innerText = `📊 ${totalVotosPublico} votos ao vivo`;
+                if(document.getElementById('modal-votos').style.display === 'block') renderizarDetalhesVotos();
+            });
+        }
 
         function toggleAutoAprovar() {
             autoAprovar = document.getElementById('chkAutoAprovar').checked;
@@ -246,20 +472,6 @@
                 atualizarTelaFila();
             }
         }
-
-        database.ref('pedidos').on('value', (snapshot) => {
-            pedidosPendentes = [];
-            snapshot.forEach(child => { pedidosPendentes.push({ key: child.key, ...child.val() }); });
-            if (autoAprovar && pedidosPendentes.length > 0) {
-                pedidosPendentes.forEach(p => {
-                    filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
-                    database.ref('pedidos').child(p.key).remove();
-                });
-                atualizarTelaFila();
-            } else {
-                renderizarPedidos();
-            }
-        });
 
         function renderizarPedidos() {
             const divPedidos = document.getElementById('pedidos-lista');
@@ -290,18 +502,6 @@
                 database.ref('pedidos').child(key).remove();
             }
         }
-
-        database.ref('votosAtual').on('value', (snapshot) => {
-            const votos = snapshot.val();
-            totalVotosPublico = 0; contagemVotos = { ruim: 0, regular: 0, bom: 0, muitobom: 0, excelente: 0 };
-            if (votos) {
-                Object.values(votos).forEach(voto => {
-                    if (contagemVotos[voto.tipo] !== undefined) { contagemVotos[voto.tipo]++; totalVotosPublico++; }
-                });
-            }
-            document.getElementById('contador-votos').innerText = `📊 ${totalVotosPublico} votos ao vivo`;
-            if(document.getElementById('modal-votos').style.display === 'block') renderizarDetalhesVotos();
-        });
 
         function abrirDetalhesVotos() { renderizarDetalhesVotos(); document.getElementById('fundo-modal').style.display = 'block'; document.getElementById('modal-votos').style.display = 'block'; }
         function fecharDetalhesVotos() { document.getElementById('fundo-modal').style.display = 'none'; document.getElementById('modal-votos').style.display = 'none'; }
