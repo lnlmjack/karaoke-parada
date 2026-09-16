@@ -49,10 +49,10 @@
         #btn-manual { position: absolute; top: 20px; right: 20px; background: #333; color: #fff; border: 1px solid #555; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
         #btn-manual:hover { background: #444; border-color: #00d2ff; transform: scale(1.05); }
 
-        #btn-usuarios { display: none; position: absolute; top: 20px; right: 175px; background: #007bff; color: #fff; border: 1px solid #0056b3; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
+        #btn-usuarios { display: none; position: absolute; top: 20px; right: 180px; background: #007bff; color: #fff; border: 1px solid #0056b3; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
         #btn-usuarios:hover { background: #0056b3; transform: scale(1.05); }
 
-        #btn-sair { position: absolute; top: 20px; right: 295px; background: transparent; color: #aaa; border: 1px solid #555; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; }
+        #btn-sair { position: absolute; top: 20px; right: 240px; background: transparent; color: #aaa; border: 1px solid #555; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; }
         #btn-sair:hover { color: #fff; background: #e52d27; border-color: #e52d27; }
 
         #modal-manual-conteudo { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 300; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #00d2ff; width: 90%; max-width: 800px; max-height: 85vh; overflow-y: auto; color: #ddd; }
@@ -203,7 +203,7 @@
     </div>
 
     <button id="btn-sair" onclick="fazerLogout()">🚪 Sair</button>
-    <button id="btn-usuarios" onclick="abrirModalUsuarios()">👥 Usuários</button>
+    <button id="btn-usuarios" onclick="abrirModalUsuarios()" title="Gerenciar Usuários">👥</button>
     <button id="btn-manual" onclick="abrirManual()">📖 Manual do Sistema</button>
 
     <div class="container">
@@ -246,7 +246,7 @@
         </div>
     </div>
 
-    <div class="versao-app">v1.17</div>
+    <div class="versao-app">v1.18</div>
     <div onclick="definirNotaManual()" style="position: fixed; bottom: 4px; right: 35px; font-size: 13px; color: #fff; opacity: 0.3; z-index: 9999; cursor: pointer; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</div>
 
     <script>
@@ -808,7 +808,7 @@
                     let valorEl = telaTV.document.getElementById('nota-valor');
                     valorEl.innerText = notaFinal;
                     valorEl.style.color = notaFinal >= 90 ? '#28a745' : notaFinal >= 75 ? '#ffeb3b' : '#e52d27';
-                    telaTV.document.getElementById('tela-resultado').style.display = 'flex';
+                    telaTV.document.getElementById('nota-resultado').style.display = 'flex';
                 }, 4000); 
             }
 
