@@ -5,7 +5,6 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Painel do DJ - Karaokê</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
     
     <style>
@@ -97,7 +96,7 @@
         <div class="login-box">
             <img src="logop.png" alt="Logo Parada 10.95">
             <h2>🔒 Painel do DJ</h2>
-            <input type="email" id="login-email" class="login-input" placeholder="E-mail de acesso">
+            <input type="text" id="login-usuario" class="login-input" placeholder="Usuário">
             <input type="password" id="login-senha" class="login-input" placeholder="Senha" onkeypress="if(event.key === 'Enter') fazerLogin()">
             <button class="login-btn" onclick="fazerLogin()">Entrar</button>
         </div>
@@ -123,7 +122,7 @@
         </ul>
 
         <h3>3. Sistema de Notas e Votação ao Vivo</h3>
-        <p>A nota que aparece na TV is a soma do barulho captado pelo microfone e dos votos enviados pelos celulares.</p>
+        <p>A nota que aparece na TV é a soma do barulho captado pelo microfone e dos votos enviados pelos celulares.</p>
 
         <div class="segredo">
             <strong>⚙️ TRUQUE SECRETO DO DJ:</strong><br>
@@ -200,10 +199,52 @@
         </div>
     </div>
 
-    <div class="versao-app">v1.13</div>
+    <div class="versao-app">v1.14</div>
     <div onclick="definirNotaManual()" style="position: fixed; bottom: 4px; right: 35px; font-size: 13px; color: #fff; opacity: 0.3; z-index: 9999; cursor: pointer; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</div>
 
     <script>
+        // LISTA DE USUÁRIOS CADASTRADOS (Você pode alterar ou adicionar novos aqui)
+        const usuariosAutorizados = [
+            { usuario: "leonard", senha: "123", tipo: "admin" },
+            { usuario: "operador", senha: "123", tipo: "comum" }
+        ];
+
+        // Verifica o login salvo no navegador ao abrir
+        window.addEventListener('DOMContentLoaded', () => {
+            const usuarioLogado = localStorage.getItem('usuarioLogado');
+            if (usuarioLogado) {
+                document.getElementById('tela-login').style.display = 'none';
+            } else {
+                document.getElementById('tela-login').style.display = 'flex';
+            }
+        });
+
+        function fazerLogin() {
+            const uInput = document.getElementById('login-usuario').value.trim().toLowerCase();
+            const sInput = document.getElementById('login-senha').value;
+            
+            if(!uInput || !sInput) return alert("Preencha usuário e senha!");
+
+            const encontrado = usuariosAutorizados.find(item => item.usuario === uInput && item.senha === sInput);
+
+            if (encontrado) {
+                localStorage.setItem('usuarioLogado', encontrado.usuario);
+                localStorage.setItem('tipoUsuario', encontrado.tipo);
+                document.getElementById('tela-login').style.display = 'none';
+                document.getElementById('login-senha').value = '';
+            } else {
+                alert("Usuário ou senha incorretos!");
+            }
+        }
+
+        function fazerLogout() {
+            if(confirm("Deseja sair do painel?")) {
+                localStorage.removeItem('usuarioLogado');
+                localStorage.removeItem('tipoUsuario');
+                location.reload();
+            }
+        }
+
         const firebaseConfig = {
             apiKey: "AIzaSyBMLhTZc7qQLjE65L3BuW9e2ijvxObTxp8",
             authDomain: "karaoke-parada.firebaseapp.com",
@@ -214,44 +255,8 @@
             appId: "1:379214932685:web:936382160fc3ec07751784"
         };
         firebase.initializeApp(firebaseConfig);
-        
-        // Autenticação Firebase
-        const auth = firebase.auth();
         const database = firebase.database();
         const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4'; 
-
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                document.getElementById('tela-login').style.display = 'none';
-            } else {
-                document.getElementById('tela-login').style.display = 'flex';
-                document.getElementById('login-senha').value = '';
-            }
-        });
-
-        function fazerLogin() {
-            const email = document.getElementById('login-email').value.trim();
-            const senha = document.getElementById('login-senha').value;
-            if(!email || !senha) return alert("Preencha e-mail e senha!");
-            
-            auth.signInWithEmailAndPassword(email, senha).catch(error => {
-                let msg = "Acesso negado: " + error.message;
-                if(error.code === 'auth/invalid-credential' || error.code === 'auth/invalid-login-credentials' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                    msg = "E-mail ou senha incorretos!";
-                } else if (error.code === 'auth/invalid-email') {
-                    msg = "E-mail inválido. Verifique se digitou corretamente.";
-                } else if (error.code === 'auth/api-key-not-valid') {
-                    msg = "Acesso negado: A chave da API do Firebase não tem permissão para Login. Verifique se a Autenticação por E-mail/Senha está ativada no Console do Firebase > Authentication > Métodos de login.";
-                }
-                alert(msg);
-            });
-        }
-
-        function fazerLogout() {
-            if(confirm("Deseja sair do painel?")) {
-                auth.signOut();
-            }
-        }
 
         let streamMic = null; let micAtivo = false; let intervaloMic = null;
 
