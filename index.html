@@ -200,7 +200,7 @@
         </div>
     </div>
 
-    <div class="versao-app">v1.9</div>
+    <div class="versao-app">v1.10</div>
     <div onclick="definirNotaManual()" style="position: fixed; bottom: 4px; right: 35px; font-size: 13px; color: #fff; opacity: 0.3; z-index: 9999; cursor: pointer; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</div>
 
     <script>
@@ -230,13 +230,17 @@
         });
 
         function fazerLogin() {
-            const email = document.getElementById('login-email').value;
+            const email = document.getElementById('login-email').value.trim();
             const senha = document.getElementById('login-senha').value;
             if(!email || !senha) return alert("Preencha e-mail e senha!");
             
             auth.signInWithEmailAndPassword(email, senha).catch(error => {
-                let msg = "Acesso negado.";
-                if(error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') msg = "E-mail ou senha incorretos!";
+                let msg = "Acesso negado: " + error.message;
+                if(error.code === 'auth/invalid-credential' || error.code === 'auth/invalid-login-credentials' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    msg = "E-mail ou senha incorretos!";
+                } else if (error.code === 'auth/invalid-email') {
+                    msg = "E-mail inválido. Verifique se digitou corretamente.";
+                }
                 alert(msg);
             });
         }
