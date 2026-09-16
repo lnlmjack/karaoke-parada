@@ -62,7 +62,6 @@
         #modal-manual-conteudo .segredo { background: #222; border-left: 4px solid #28a745; padding: 15px; margin-top: 20px; border-radius: 5px; font-style: italic; }
         #fundo-modal-manual { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 299; }
         
-        /* Ajuste do z-index para garantir que a versão fique na frente da tela de login */
         .versao-app { position: fixed; bottom: 5px; right: 5px; font-size: 10px; color: rgba(255, 255, 255, 0.3); z-index: 200005; pointer-events: none; }
 
         /* Estilos do Modal de Cantores */
@@ -124,7 +123,7 @@
         </ul>
 
         <h3>3. Sistema de Notas e Votação ao Vivo</h3>
-        <p>A nota que aparece na TV é a soma do barulho captado pelo microfone e dos votos enviados pelos celulares.</p>
+        <p>A nota que aparece na TV is a soma do barulho captado pelo microfone e dos votos enviados pelos celulares.</p>
 
         <div class="segredo">
             <strong>⚙️ TRUQUE SECRETO DO DJ:</strong><br>
@@ -201,7 +200,7 @@
         </div>
     </div>
 
-    <div class="versao-app">v1.12</div>
+    <div class="versao-app">v1.13</div>
     <div onclick="definirNotaManual()" style="position: fixed; bottom: 4px; right: 35px; font-size: 13px; color: #fff; opacity: 0.3; z-index: 9999; cursor: pointer; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</div>
 
     <script>
@@ -242,7 +241,7 @@
                 } else if (error.code === 'auth/invalid-email') {
                     msg = "E-mail inválido. Verifique se digitou corretamente.";
                 } else if (error.code === 'auth/api-key-not-valid') {
-                    msg = "Acesso negado: A chave da API do Firebase não tem permissão para Login. Vá no painel do Firebase > Configurações do Projeto > Geral > 'Web API Key' e atualize a apiKey no código.";
+                    msg = "Acesso negado: A chave da API do Firebase não tem permissão para Login. Verifique se a Autenticação por E-mail/Senha está ativada no Console do Firebase > Authentication > Métodos de login.";
                 }
                 alert(msg);
             });
@@ -661,7 +660,7 @@
                     let valorEl = telaTV.document.getElementById('nota-valor');
                     valorEl.innerText = notaFinal;
                     valorEl.style.color = notaFinal >= 90 ? '#28a745' : notaFinal >= 75 ? '#ffeb3b' : '#e52d27';
-                    telaTV.document.getElementById('nota-resultado').style.display = 'flex';
+                    telaTV.document.getElementById('tela-resultado').style.display = 'flex';
                 }, 4000); 
             }
 
