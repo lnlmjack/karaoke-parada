@@ -1,268 +1,373 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
-
-    <title>Menu - Karaokê Parada 10.95</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Karaokê Parada 10.95 Bar</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script> <!-- Adicionado para consistência, embora não usado para login aqui -->
 
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #121212; color: #fff; margin: 0; padding: 0; text-align: center; }
-        .header { background-color: #e52d27; padding: 15px; font-size: 22px; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.5); text-transform: uppercase; letter-spacing: 1px;}
-
-        #menu-principal { padding: 30px 20px; }
-        .btn-menu-grande { width: 100%; padding: 30px 20px; margin-bottom: 20px; border: none; border-radius: 15px; font-size: 24px; font-weight: 900; cursor: pointer; transition: 0.2s; box-shadow: 0 8px 15px rgba(0,0,0,0.5); text-transform: uppercase;}
-        .btn-menu-grande:active { transform: scale(0.95); }
-        .btn-pedir { background: linear-gradient(135deg, #e52d27, #b31217); color: white; border: 2px solid #ff5252;}
-        .btn-votar { background: linear-gradient(135deg, #007bff, #0056b3); color: white; border: 2px solid #3399ff;}
-        .icone-grande { font-size: 50px; margin-bottom: 10px; display: block;}
-
-        .card { background: #1e1e1e; margin: 15px; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        .card h2 { margin-top: 15px; color: #00d2ff; font-size: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-
-        .btn-voltar { background: #333; color: #fff; border: 1px solid #555; padding: 10px 15px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; display: inline-block; margin-bottom: 10px; width: 100%;}
-
-        .btn-catalogo { background: #00d2ff; color: #000; width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        .btn-catalogo:active { transform: scale(0.95); }
-
-        .alfabeto-container { display: flex; overflow-x: auto; gap: 8px; margin-bottom: 15px; padding-bottom: 10px; }
-        .alfabeto-container::-webkit-scrollbar { height: 6px; }
-        .alfabeto-container::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
-        .btn-letra { flex: 0 0 auto; background: #333; color: #fff; border: 1px solid #555; border-radius: 8px; padding: 10px 15px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-letra.ativo { background: #00d2ff; color: #000; border-color: #00d2ff; }
-
-        #cantor-atual { color: #ffeb3b; font-size: 24px; font-weight: bold; margin: 10px 0; }
-        #status-musica { color: #aaa; font-size: 14px; font-style: italic; margin-bottom: 20px; }
-
-        .btn-voto { width: 100%; padding: 16px; margin: 6px 0; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        .btn-voto:active { transform: scale(0.95); }
-        .v-exc { background: #00d2ff; color: #000; }
-        .v-mb { background: #28a745; color: #fff; }
-        .v-bom { background: #ffeb3b; color: #000; }
-        .v-reg { background: #fd7e14; color: #fff; }
-        .v-ruim { background: #e52d27; color: #fff; }
-
-        #confirmacao-voto { display: none; background: #222; padding: 20px; border-radius: 8px; border: 2px solid #ffeb3b; margin-top: 10px; }
-        .btn-confirmar { width: 48%; padding: 15px; background: #28a745; border: none; border-radius: 8px; color: white; font-weight: bold; font-size: 16px; cursor: pointer;}
-        .btn-cancelar { width: 48%; padding: 15px; background: #e52d27; border: none; border-radius: 8px; color: white; font-weight: bold; font-size: 16px; cursor: pointer;}
-
-        input { width: 100%; box-sizing: border-box; padding: 15px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-size: 16px; margin-bottom: 15px; }
-        .btn-busca { background: #e52d27; color: #fff; width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
-        .btn-busca:active { background: #c21a15; }
-
-        #resultados { margin-top: 20px; text-align: left; }
-        .item-resultado { background: #2a2a2a; padding: 15px; margin-bottom: 10px; border-radius: 8px; border-left: 5px solid #00d2ff; font-size: 15px; line-height: 1.4; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-        .item-resultado:active { background: #333; }
-
-        #notificacao { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #28a745; color: white; padding: 15px 25px; border-radius: 30px; font-weight: bold; font-size: 16px; z-index: 1000; box-shadow: 0 5px 15px rgba(0,0,0,0.6); }
-
-        /* TELA DE PROPAGANDA (quando o sistema está desligado) */
-        #tela-propaganda { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 30px 20px; box-sizing: border-box; background: radial-gradient(circle at top, #1e1e1e, #000); text-align: center; }
-        #tela-propaganda img.logo-propaganda { width: 160px; height: 160px; margin-bottom: 15px; border-radius: 50%; box-shadow: 0 8px 25px rgba(0,0,0,0.6); }
-        #tela-propaganda h1 { color: #e52d27; font-size: 26px; margin-bottom: 15px; }
-        #tela-propaganda p { color: #ddd; font-size: 17px; line-height: 1.6; max-width: 400px; margin-bottom: 8px; }
-        #tela-propaganda .dia-certo { color: #ffeb3b; font-weight: bold; font-size: 20px; margin: 15px 0; }
-
-        #versao-canto { position: fixed; bottom: 6px; right: 8px; font-size: 10px; color: #555; z-index: 500; font-family: monospace; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #121212;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative;
+        }
+        h1, h2 {
+            color: #e52d27;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #ccc;
+            line-height: 1.6;
+        }
+        .menu-option, .vote-option {
+            background-color: #333;
+            color: #fff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            font-size: 1.1em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .menu-option:hover, .vote-option:hover {
+            background-color: #e52d27;
+            transform: translateY(-2px);
+        }
+        .success-message {
+            background-color: #28a745;
+            color: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-weight: bold;
+            display: none;
+        }
+        #tela-propaganda {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            width: 100%;
+            background-color: #121212;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        #tela-propaganda img {
+            max-width: 80%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        #tela-propaganda h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        #tela-propaganda p {
+            font-size: 1.2em;
+            margin: 5px 0;
+        }
+        #tela-propaganda button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        #tela-propaganda button:hover {
+            background-color: #0056b3;
+        }
+        #buscaCatalogo, #campoBusca {
+            width: calc(100% - 30px);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #555;
+            background-color: #333;
+            color: #fff;
+            font-size: 1em;
+        }
+        .botoes-letras {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        .btn-letra {
+            background-color: #555;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s;
+        }
+        .btn-letra:hover, .btn-letra.ativo {
+            background-color: #e52d27;
+        }
+        .item-resultado {
+            background-color: #333;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 5px;
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .item-resultado:hover {
+            background-color: #e52d27;
+        }
+        .item-resultado strong {
+            display: block;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        .item-resultado span {
+            font-size: 0.9em;
+            color: #aaa;
+        }
+        .confirm-buttons button {
+            background-color: #e52d27;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+        .confirm-buttons button.cancel {
+            background-color: #555;
+        }
+        .confirm-buttons button:hover {
+            filter: brightness(1.2);
+        }
+        .version-info {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            color: #aaa;
+            font-size: 0.8em;
+        }
     </style>
 </head>
 <body>
-
-    <div id="versao-canto">v1.0</div>
-
-    <!-- TELA DE PROPAGANDA: só aparece se o painel do DJ estiver desligado -->
     <div id="tela-propaganda">
-        <img class="logo-propaganda" src="logop.png" alt="Parada 10.95 Bar">
+        <img src="logop.png" alt="Parada 10.95 Bar Logo">
         <h1>🍻 Parada 10.95 Bar</h1>
         <p>Hoje não é dia de karaokê por aqui!</p>
-        <div class="dia-certo">Toda TERÇA-FEIRA a partir das 19h</div>
+        <p>Toda TERÇA-FEIRA a partir das 19h</p>
         <p>Fico feliz que você se interessou, só errou a data! Te esperamos na próxima terça no Parada 10.95 Bar. 🎤</p>
+        <button onclick="iniciarVotacao()">Entendi, quero ver as opções!</button>
+        <div class="version-info">v1.0</div>
     </div>
 
-    <!-- SISTEMA NORMAL: só aparece quando o painel do DJ está ativo -->
-    <div id="app-container">
+    <div id="main-content" class="container" style="display: none;">
+        <img src="logop.png" alt="Parada 10.95 Bar Logo" style="max-width: 150px; margin-bottom: 20px;">
+        <h1>🍻 Parada 10.95 Bar</h1>
 
-        <div class="header">
-            🍻 Parada 10.95 Bar
+        <div id="mainMenu">
+            <h2>O que você quer fazer?</h2>
+            <div class="menu-option" onclick="mostrarAba('pedir')">📩 Pedir Música</div>
+            <div class="menu-option" onclick="mostrarAba('votar')">⭐ Votar no Cantor</div>
+            <div class="menu-option" onclick="mostrarAba('menu')">⬅️ Voltar ao Menu</div>
         </div>
 
-        <div id="menu-principal">
-            <h2 style="color: #fff; margin-bottom: 30px; font-size: 20px;">O que você quer fazer?</h2>
-
-            <button class="btn-menu-grande btn-pedir" onclick="mostrarAba('pedir')">
-                <span class="icone-grande">📩</span>
-                Pedir Música
-            </button>
-
-            <button class="btn-menu-grande btn-votar" onclick="mostrarAba('votar')">
-                <span class="icone-grande">⭐</span>
-                Votar no Cantor
-            </button>
-        </div>
-
-        <div class="card" id="aba-pedir" style="display: none;">
-            <button class="btn-voltar" onclick="mostrarAba('menu')">⬅️ Voltar ao Menu</button>
-
-            <h2 style="color: #ffeb3b;">📩 Escolha sua Música</h2>
-
-            <button class="btn-catalogo" onclick="mostrarAba('catalogo')">🗂️ Explorar Catálogo de Músicas</button>
-
-            <p style="font-size: 14px; color: #ccc; margin-bottom: 15px;">Ou pesquise livremente no YouTube:</p>
-
-            <input type="text" id="campoBusca" placeholder="Ex: Evidências Chitãozinho...">
-            <button class="btn-busca" onclick="buscarMusica()">🔍 Buscar no YouTube</button>
-
+        <div id="requestMusicMenu" style="display: none;">
+            <h2>📩 Escolha sua Música</h2>
+            <div class="menu-option" onclick="mostrarAba('catalogo')">🗂️ Explorar Catálogo de Músicas</div>
+            <p>Ou pesquise livremente no YouTube:</p>
+            <input type="text" id="campoBusca" placeholder="Nome da música ou artista...">
+            <div class="menu-option" onclick="buscarMusica()">🔍 Buscar no YouTube</div>
             <div id="resultados"></div>
+            <div class="menu-option" onclick="mostrarAba('menu')">⬅️ Voltar para a Busca</div>
         </div>
 
-        <div class="card" id="aba-catalogo" style="display: none;">
-            <button class="btn-voltar" onclick="mostrarAba('pedir')">⬅️ Voltar para a Busca</button>
-
-            <h2 style="color: #00d2ff;">🗂️ Catálogo Completo</h2>
-            <p style="font-size: 14px; color: #ccc; margin-bottom: 15px;">Toque na letra inicial do artista ou digite na barra abaixo:</p>
-
-            <div id="filtro-alfabeto" class="alfabeto-container"></div>
-
-            <input type="text" id="buscaCatalogo" placeholder="🔎 Digite aqui o cantor ou a música..." onkeyup="filtrarCatalogo()">
-
-            <div id="lista-catalogo" style="height: 400px; overflow-y: auto; text-align: left; padding-right: 5px;">
-                <p style="text-align: center; color: #aaa;">Carregando músicas...</p>
+        <div id="catalogSection" style="display: none;">
+            <h2>🗂️ Catálogo Completo</h2>
+            <p>Toque na letra inicial do artista ou digite na barra abaixo:</p>
+            <div class="botoes-letras">
+                <button class="btn-letra ativo" id="btn-letra-TODOS" onclick="filtrarPorLetra('TODOS')">TODOS</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('A')">A</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('B')">B</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('C')">C</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('D')">D</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('E')">E</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('F')">F</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('G')">G</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('H')">H</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('I')">I</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('J')">J</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('K')">K</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('L')">L</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('M')">M</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('N')">N</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('O')">O</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('P')">P</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('Q')">Q</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('R')">R</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('S')">S</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('T')">T</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('U')">U</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('V')">V</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('W')">W</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('X')">X</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('Y')">Y</button>
+                <button class="btn-letra" onclick="filtrarPorLetra('Z')">Z</button>
             </div>
+            <input type="text" id="buscaCatalogo" placeholder="Pesquisar no catálogo..." onkeyup="filtrarCatalogo()">
+            <div id="lista-catalogo">
+                <p>Carregando músicas...</p>
+            </div>
+            <div class="menu-option" onclick="mostrarAba('requestMusicMenu')">⬅️ Voltar ao Menu</div>
         </div>
 
-        <div class="card" id="aba-votar" style="display: none;">
-            <button class="btn-voltar" onclick="mostrarAba('menu')">⬅️ Voltar ao Menu</button>
-
+        <div id="voteSingerSection" style="display: none;">
             <h2>🎤 No Palco Agora</h2>
-            <div id="status-palco">
-                <div id="cantor-atual">Aguardando...</div>
-                <div id="status-musica">Preste atenção na TV!</div>
+            <p id="cantor-atual">Aguardando...</p>
+            <p id="status-musica">Preste atenção na TV!</p>
+            <p id="msg-agradecimento" style="display: none;">✅ Seu voto já foi registrado para esta música!</p>
+
+            <div id="lista-botoes">
+                <p>O que você achou da apresentação?</p>
+                <div class="vote-option" onclick="prepararVoto('Excelente', '🤯 Excelente')">🤯 Excelente</div>
+                <div class="vote-option" onclick="prepararVoto('Muito Bom', '🤩 Muito Bom')">🤩 Muito Bom</div>
+                <div class="vote-option" onclick="prepararVoto('Bom', '🙂 Bom')">🙂 Bom</div>
+                <div class="vote-option" onclick="prepararVoto('Regular', '😕 Regular')">😕 Regular</div>
+                <div class="vote-option" onclick="prepararVoto('Ruim', '😖 Ruim')">😖 Ruim</div>
             </div>
 
-            <div id="lista-botoes" style="display: none;">
-                <p style="margin-bottom: 10px; font-size: 14px; color: #ccc;">O que você achou da apresentação?</p>
-                <button class="btn-voto v-exc" onclick="prepararVoto('excelente', '🤯 Excelente')">🤯 Excelente</button>
-                <button class="btn-voto v-mb" onclick="prepararVoto('muitobom', '🤩 Muito Bom')">🤩 Muito Bom</button>
-                <button class="btn-voto v-bom" onclick="prepararVoto('bom', '🙂 Bom')">🙂 Bom</button>
-                <button class="btn-voto v-reg" onclick="prepararVoto('regular', '😕 Regular')">😕 Regular</button>
-                <button class="btn-voto v-ruim" onclick="prepararVoto('ruim', '😖 Ruim')">😖 Ruim</button>
-            </div>
-
-            <div id="confirmacao-voto">
-                <p style="margin-top: 0; font-size: 18px; color: #fff;">Confirmar voto:<br><strong id="texto-voto-escolhido" style="font-size: 26px; display: block; margin-top: 10px;"></strong></p>
-                <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-                    <button class="btn-cancelar" onclick="cancelarVoto()">❌ Cancelar</button>
-                    <button class="btn-confirmar" onclick="confirmarVoto()">✅ Votar!</button>
+            <div id="confirmacao-voto" style="display: none;">
+                <p>Confirmar voto: <strong id="texto-voto-escolhido"></strong></p>
+                <div class="confirm-buttons">
+                    <button class="cancel" onclick="cancelarVoto()">❌ Cancelar</button>
+                    <button class="vote" onclick="confirmarVoto()">✅ Votar!</button>
                 </div>
             </div>
-
-            <div id="msg-agradecimento" style="display: none; color: #28a745; font-weight: bold; font-size: 18px; margin-top: 20px;">
-                ✅ Voto registrado!
-            </div>
+            <div class="menu-option" onclick="mostrarAba('menu')">⬅️ Voltar ao Menu</div>
         </div>
 
+        <div id="requestSuccess" class="success-message" style="display: none;">
+            ✅ Pedido enviado ao DJ!
+        </div>
+        <div class="version-info">v1.0</div>
     </div>
 
-    <div id="notificacao">✅ Pedido enviado ao DJ!</div>
-
     <script>
+        // Configuração do Firebase (ATUALIZADA COM SUAS CREDENCIAIS)
         const firebaseConfig = {
-            apiKey: "AIzaSyBMLhTZc7qQLjE65L3BuW9e2ijvxObTxp8",
+            apiKey: "AIzaSyC2Y-xxxxxxxxxxxxxxxxxxxxxxxxxxxx", // Sua API Key
             authDomain: "karaoke-parada.firebaseapp.com",
             databaseURL: "https://karaoke-parada-default-rtdb.firebaseio.com",
             projectId: "karaoke-parada",
-            storageBucket: "karaoke-parada.firebasestorage.app",
-            messagingSenderId: "379214932685",
-            appId: "1:379214932685:web:873e8b5b7d882a4f751784"
+            storageBucket: "karaoke-parada.appspot.com",
+            messagingSenderId: "xxxxxxxxxxxx", // Seu Messaging Sender ID
+            appId: "1:xxxxxxxxxxxx:web:xxxxxxxxxxxxxxxxxxxxxx" // Seu App ID
         };
+
+        // Inicializa o Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-        const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4'; 
 
+        // Sua API Key do YouTube
+        const API_KEY = "AIzaSyC2Y-xxxxxxxxxxxxxxxxxxxxxxxxxxxx"; 
+
+        let musicasCatalogo = [];
         let idCantorAtual = null;
         let votoPendente = null;
-        let musicasCatalogo = [];
 
-        database.ref('sistemaAtivo').on('value', (snapshot) => {
-            const ativo = snapshot.val();
-            if (ativo) {
-                document.getElementById('tela-propaganda').style.display = 'none';
-                document.getElementById('app-container').style.display = 'block';
-            } else {
-                document.getElementById('tela-propaganda').style.display = 'flex';
-                document.getElementById('app-container').style.display = 'none';
-            }
-        });
+        function iniciarVotacao() {
+            document.getElementById('tela-propaganda').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            mostrarAba('menu');
+        }
 
         function mostrarAba(aba) {
-            document.getElementById('menu-principal').style.display = 'none';
-            document.getElementById('aba-pedir').style.display = 'none';
-            document.getElementById('aba-votar').style.display = 'none';
-            document.getElementById('aba-catalogo').style.display = 'none';
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('requestMusicMenu').style.display = 'none';
+            document.getElementById('catalogSection').style.display = 'none';
+            document.getElementById('voteSingerSection').style.display = 'none';
+            document.getElementById('requestSuccess').style.display = 'none';
 
-            if (aba === 'menu') document.getElementById('menu-principal').style.display = 'block';
-            if (aba === 'pedir') document.getElementById('aba-pedir').style.display = 'block';
-            if (aba === 'votar') document.getElementById('aba-votar').style.display = 'block';
-            if (aba === 'catalogo') document.getElementById('aba-catalogo').style.display = 'block';
-        }
-
-        function gerarBotoesAlfabeto() {
-            const div = document.getElementById('filtro-alfabeto');
-            const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-            let html = `<button class="btn-letra ativo" id="btn-letra-TODOS" onclick="filtrarPorLetra('TODOS')">TUDO</button>`;
-
-            alfabeto.forEach(letra => {
-                html += `<button class="btn-letra" id="btn-letra-${letra}" onclick="filtrarPorLetra('${letra}')">${letra}</button>`;
-            });
-            div.innerHTML = html;
-        }
-
-        function filtrarPorLetra(letra) {
-            document.querySelectorAll('.btn-letra').forEach(b => b.classList.remove('ativo'));
-            document.getElementById('btn-letra-' + letra).classList.add('ativo');
-            document.getElementById('buscaCatalogo').value = '';
-
-            if (letra === 'TODOS') {
-                renderizarCatalogo(musicasCatalogo.slice(0, 150));
-                return;
+            if (aba === 'menu') {
+                document.getElementById('mainMenu').style.display = 'block';
+            } else if (aba === 'pedir') {
+                document.getElementById('requestMusicMenu').style.display = 'block';
+                document.getElementById('campoBusca').value = '';
+                document.getElementById('resultados').innerHTML = '';
+            } else if (aba === 'catalogo') {
+                document.getElementById('catalogSection').style.display = 'block';
+                document.getElementById('buscaCatalogo').value = '';
+                filtrarPorLetra('TODOS'); // Carrega o catálogo inicial
+            } else if (aba === 'votar') {
+                document.getElementById('voteSingerSection').style.display = 'block';
             }
-
-            const filtrados = musicasCatalogo.filter(m => m.cantor.toUpperCase().startsWith(letra)).slice(0, 150);
-            renderizarCatalogo(filtrados);
         }
 
         async function carregarCatalogo() {
-            gerarBotoesAlfabeto();
             try {
-                const response = await fetch('catalogo.csv?v=' + new Date().getTime());
-                const text = await response.text();
+                const response = await fetch('catalogo.csv');
+                const csvData = await response.text();
+                processarCSV(csvData);
+            } catch (e) {
+                document.getElementById('lista-catalogo').innerHTML = '<p style="color:#e52d27; text-align:center;">Catálogo offline. Peça digitando na busca principal.</p>';
+            }
+        }
 
-                const delimitador = text.split('\n')[0].includes(';') ? ';' : ',';
-                let linhas = text.split('\n');
+        function processarCSV(csvData) {
+            const linhas = csvData.split('\n');
+            if (linhas.length === 0) return;
 
-                let headers = [];
-                let celulaH = ''; let aspasH = false;
-                let linhaH = linhas[0].trim();
-                for(let j = 0; j < linhaH.length; j++) {
-                    let char = linhaH[j];
-                    if(char === '"') aspasH = !aspasH;
-                    else if (char === delimitador && !aspasH) { headers.push(celulaH.trim().toUpperCase()); celulaH = ''; }
-                    else celulaH += char;
+            try {
+                const delimitador = ',';
+                const primeiraLinha = linhas[0].trim();
+                const headers = primeiraLinha.split(delimitador).map(h => h.replace(/^"|"$/g, '').trim().toUpperCase());
+
+                let idxCantor = headers.indexOf('CANTOR');
+                let idxTitulo = headers.indexOf('TÍTULO') !== -1 ? headers.indexOf('TÍTULO') : headers.indexOf('TITULO');
+                let idxInicio = headers.indexOf('INÍCIO DA LETRA') !== -1 ? headers.indexOf('INÍCIO DA LETRA') : headers.indexOf('INICIO');
+
+                if (idxCantor === -1 || idxTitulo === -1) {
+                    console.error("Cabeçalhos 'CANTOR' ou 'TÍTULO' não encontrados no CSV.");
+                    return;
                 }
-                headers.push(celulaH.trim().toUpperCase());
 
-                let idxCantor = 0, idxTitulo = 2, idxInicio = 3;
-                headers.forEach((h, i) => {
-                    if (h.includes('CANTOR')) idxCantor = i;
-                    if (h.includes('TÍTULO') || h.includes('TITULO') || h === 'MUSICA' || h === 'MÚSICA') idxTitulo = i;
-                    if (h.includes('INÍCIO') || h.includes('INICIO') || h.includes('LETRA')) idxInicio = i;
-                });
-
+                musicasCatalogo = [];
                 for (let i = 1; i < linhas.length; i++) {
                     let linha = linhas[i].trim();
                     if (!linha) continue;
@@ -282,12 +387,203 @@
                     if (colunas.length > Math.max(idxCantor, idxTitulo)) {
                         let cantor = colunas[idxCantor] ? colunas[idxCantor].replace(/^"|"$/g, '').trim() : '';
                         let titulo = colunas[idxTitulo] ? colunas[idxTitulo].replace(/^"|"$/g, '').trim() : '';
-                        let inicio = colunas[idxInicio] ? colunas[idxInicio].replace(/^"|"$/g, '').trim() : '';
+                        let inicio = idxInicio !== -1 && colunas[idxInicio] ? colunas[idxInicio].replace(/^"|"$/g, '').trim() : '';
 
                         if(cantor && titulo) {
                             musicasCatalogo.push({ 
                                 cantor: cantor, 
                                 titulo: titulo, 
                                 inicio: inicio,
-                                filtro: (cantor + " " + titulo + " " +
+                                filtro: (cantor + " " + titulo + " " + inicio).toLowerCase() 
+                            });
+                        }
+                    }
+                }
 
+                musicasCatalogo.sort((a, b) => a.cantor.localeCompare(b.cantor, 'pt-BR'));
+                renderizarCatalogo(musicasCatalogo.slice(0, 150)); 
+            } catch(e) {
+                console.error("Erro ao processar CSV:", e);
+                document.getElementById('lista-catalogo').innerHTML = '<p style="color:#e52d27; text-align:center;">Catálogo offline. Peça digitando na busca principal.</p>';
+            }
+        }
+
+        function renderizarCatalogo(lista) {
+            const div = document.getElementById('lista-catalogo');
+            div.innerHTML = '';
+            if(lista.length === 0) {
+                div.innerHTML = '<p style="text-align:center; color:#aaa;">Nenhuma música encontrada.</p>';
+                return;
+            }
+            let html = '';
+            lista.forEach(m => {
+                let tituloEscapado = m.titulo.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                let cantorEscapado = m.cantor.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+
+                html += `
+                <div class="item-resultado" onclick="selecionarDoCatalogo('${tituloEscapado}', '${cantorEscapado}')">
+                    <strong style="font-size: 18px; display: block; margin-bottom: 5px;">🎤 ${m.cantor}</strong>
+                    <span style="font-size: 16px; color: #fff; display: block; margin-bottom: 3px;">🎵 ${m.titulo}</span>
+                    ${m.inicio ? `<span style="font-size: 13px; color: #aaa; display: block; font-style: italic;">📝 ${m.inicio}</span>` : ''}
+                </div>`;
+            });
+            div.innerHTML = html;
+        }
+
+        function filtrarCatalogo() {
+            document.querySelectorAll('.btn-letra').forEach(b => b.classList.remove('ativo'));
+
+            const termo = document.getElementById('buscaCatalogo').value.toLowerCase();
+            if (!termo) {
+                document.getElementById('btn-letra-TODOS').classList.add('ativo');
+                renderizarCatalogo(musicasCatalogo.slice(0, 150));
+                return;
+            }
+            const filtrados = musicasCatalogo.filter(m => m.filtro.includes(termo)).slice(0, 150);
+            renderizarCatalogo(filtrados);
+        }
+
+        function filtrarPorLetra(letra) {
+            document.querySelectorAll('.btn-letra').forEach(b => b.classList.remove('ativo'));
+            document.getElementById('btn-letra-' + letra).classList.add('ativo');
+            document.getElementById('buscaCatalogo').value = ''; // Limpa a busca por texto
+
+            if (letra === 'TODOS') {
+                renderizarCatalogo(musicasCatalogo.slice(0, 150));
+            } else {
+                const filtrados = musicasCatalogo.filter(m => m.cantor.startsWith(letra)).slice(0, 150);
+                renderizarCatalogo(filtrados);
+            }
+        }
+
+        function selecionarDoCatalogo(titulo, cantor) {
+            mostrarAba('pedir');
+            document.getElementById('campoBusca').value = titulo + " " + cantor;
+            buscarMusica(); 
+        }
+
+        window.onload = () => { carregarCatalogo(); };
+
+        database.ref('statusAtual').on('value', (snapshot) => {
+            const status = snapshot.val();
+            if (status && status.id !== "avaliando") {
+                document.getElementById('cantor-atual').innerText = "Voz: " + status.cantor;
+                document.getElementById('status-musica').innerText = "🎵 " + status.titulo;
+                idCantorAtual = status.id;
+
+                if (localStorage.getItem('voto_' + idCantorAtual)) {
+                    bloquearVoto();
+                } else {
+                    liberarVoto();
+                }
+            } else if (status && status.id === "avaliando") {
+                document.getElementById('cantor-atual').innerText = "Calculando as Notas...";
+                document.getElementById('status-musica').innerText = "Olhe para a tela da TV!";
+                esconderVoto();
+            } else {
+                document.getElementById('cantor-atual').innerText = "Palco Livre!";
+                document.getElementById('status-musica').innerText = "Nenhuma música tocando no momento.";
+                esconderVoto();
+            }
+        });
+
+        function liberarVoto() {
+            document.getElementById('lista-botoes').style.display = 'block';
+            document.getElementById('confirmacao-voto').style.display = 'none';
+            document.getElementById('msg-agradecimento').style.display = 'none';
+            votoPendente = null;
+        }
+
+        function esconderVoto() {
+            document.getElementById('lista-botoes').style.display = 'none';
+            document.getElementById('confirmacao-voto').style.display = 'none';
+            document.getElementById('msg-agradecimento').style.display = 'none';
+            votoPendente = null;
+        }
+
+        function bloquearVoto() {
+            document.getElementById('lista-botoes').style.display = 'none';
+            document.getElementById('confirmacao-voto').style.display = 'none';
+            document.getElementById('msg-agradecimento').style.display = 'block';
+            votoPendente = null;
+        }
+
+        function prepararVoto(tipo, texto) {
+            votoPendente = tipo;
+            document.getElementById('texto-voto-escolhido').innerText = texto;
+            document.getElementById('lista-botoes').style.display = 'none';
+            document.getElementById('confirmacao-voto').style.display = 'block';
+        }
+
+        function cancelarVoto() {
+            votoPendente = null;
+            document.getElementById('confirmacao-voto').style.display = 'none';
+            document.getElementById('lista-botoes').style.display = 'block';
+        }
+
+        function confirmarVoto() {
+            if (!votoPendente || !idCantorAtual) return;
+
+            database.ref('votosAtual').push({ tipo: votoPendente });
+            localStorage.setItem('voto_' + idCantorAtual, 'sim');
+            bloquearVoto();
+        }
+
+        document.getElementById('campoBusca').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') buscarMusica();
+        });
+
+        async function buscarMusica() {
+            const termo = document.getElementById('campoBusca').value;
+            if (!termo) return alert("Digite o nome de uma música!");
+
+            const div = document.getElementById('resultados');
+            div.innerHTML = '<p style="text-align:center; color:#00d2ff;">Buscando no acervo...</p>'; 
+
+            const query = encodeURIComponent(termo + " karaoke -oficial -clipe -live");
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${query}&type=video&key=${API_KEY}`;
+
+            try {
+                const res = await fetch(url); 
+                const dados = await res.json();
+                div.innerHTML = '';
+
+                if(dados.items.length === 0) {
+                    div.innerHTML = '<p style="color:#e52d27;">Música não encontrada. Tente outro nome.</p>';
+                    return;
+                }
+
+                dados.items.forEach(v => {
+                    const btn = document.createElement('div');
+                    btn.className = 'item-resultado';
+                    btn.innerHTML = `<strong>${v.snippet.title}</strong><br><span style="font-size:12px; color:#aaa;">Clique para escolher</span>`; 
+
+                    btn.onclick = () => fazerPedido(v.id.videoId, v.snippet.title);
+                    div.appendChild(btn);
+                });
+            } catch (err) { 
+                div.innerHTML = "<p style='color:#e52d27'>Erro ao buscar. Chame o DJ.</p>"; 
+            }
+        }
+
+        function fazerPedido(videoId, titulo) {
+            const nomeCantor = prompt("Música selecionada! Qual o seu nome (Voz)?");
+
+            if (nomeCantor !== null && nomeCantor.trim() !== "") {
+                database.ref('pedidos').push({
+                    videoId: videoId,
+                    titulo: titulo,
+                    cantor: nomeCantor.trim()
+                }).then(() => {
+                    document.getElementById('campoBusca').value = "";
+                    document.getElementById('resultados').innerHTML = "";
+
+                    document.getElementById('requestSuccess').style.display = 'block';
+                    setTimeout(() => document.getElementById('requestSuccess').style.display = 'none', 4000);
+                    mostrarAba('menu'); 
+                });
+            }
+        }
+    </script>
+</body>
+</html>
