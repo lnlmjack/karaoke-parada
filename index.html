@@ -146,7 +146,7 @@
         </div>
     </div>
 
-    <div class="versao-app">v1.5</div>
+    <div class="versao-app">v1.6</div>
     <div onclick="definirNotaManual()" style="position: fixed; bottom: 4px; right: 35px; font-size: 13px; color: #fff; opacity: 0.3; z-index: 9999; cursor: pointer; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</div>
 
     <script>
@@ -227,6 +227,7 @@
         let somaEnergia = 0; let qtdLeituras = 0;
         let notaForcadaPeloDJ = null; 
         let totalVotosPublico = 0;
+        let erroNoPlayer = false; 
         let contagemVotos = { ruim: 0, regular: 0, bom: 0, muitobom: 0, excelente: 0 };
 
         database.ref('statusAtual').set(null);
@@ -314,13 +315,12 @@
             `;
         }
 
-        // NOVO CÓDIGO DAS NOTAS FORÇADAS DO DJ
         document.addEventListener('keydown', function(event) {
-            if (event.key === '6') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 60; } // Sorteia entre 60 e 69
-            if (event.key === '7') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 70; } // Sorteia entre 70 e 79
-            if (event.key === '8') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 80; } // Sorteia entre 80 e 89
-            if (event.key === '9') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 90; } // Sorteia entre 90 e 99
-            if (event.key === '0') { notaForcadaPeloDJ = 100; } // Crava 100
+            if (event.key === '6') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 60; } 
+            if (event.key === '7') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 70; } 
+            if (event.key === '8') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 80; } 
+            if (event.key === '9') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 90; } 
+            if (event.key === '0') { notaForcadaPeloDJ = 100; } 
         });
 
         function definirNotaManual() {
@@ -409,7 +409,13 @@
         function iniciarPlayer(YT_API) {
             player = new YT_API.Player(telaTV.document.getElementById('player'), {
                 videoId: '', playerVars: { 'autoplay': 1, 'controls': 1, 'fs': 0 }, 
-                events: { 'onStateChange': e => { if (e.data === 0) (musicaAtual && musicaAtual.cantor !== "Convidados") ? gerarNotaFinal() : tocarProxima(true); }, 'onError': e => tocarProxima(true) }
+                events: { 
+                    'onStateChange': e => { if (e.data === 0) (musicaAtual && musicaAtual.cantor !== "Convidados") ? gerarNotaFinal() : tocarProxima(true); }, 
+                    'onError': e => {
+                        erroNoPlayer = true;
+                        alert("⚠️ O YOUTUBE BLOQUEOU ESTE VÍDEO!\n\nBusque outra versão agora. Ao clicar no resultado, escolha 'OK' para substituir a música falha e tocar na hora, mantendo o nome do cantor atual na tela.");
+                    } 
+                }
             });
             document.getElementById('botaoTV').innerHTML = "✅ TELA CONECTADA!";
             document.getElementById('botaoTV').style.background = "#17a2b8";
@@ -490,6 +496,17 @@
 
             const videoId = extrairVideoId(termo);
             if (videoId) {
+                if (musicaAtual && erroNoPlayer) {
+                    if (confirm("⚠️ Substituir a música que falhou por este link e tocar agora? (Mantendo o cantor atual)")) {
+                        musicaAtual.videoId = videoId;
+                        musicaAtual.titulo = "Música via Link";
+                        erroNoPlayer = false;
+                        player.loadVideoById(musicaAtual.videoId);
+                        player.playVideo();
+                        document.getElementById('campoBusca').value = "";
+                        return;
+                    }
+                }
                 const c = prompt("🎤 Link reconhecido! Qual a voz dessa música?"); if(c === null) return;
                 filaDeReproducao.push({ videoId: videoId, titulo: "Música via Link", cantor: c.trim() === "" ? "Convidados" : c });
                 atualizarTelaFila(); document.getElementById('campoBusca').value = ""; return;
@@ -501,6 +518,16 @@
                 dados.items.forEach(v => {
                     const d = document.createElement('div'); d.className = 'item-resultado'; d.innerHTML = v.snippet.title; 
                     d.onclick = () => {
+                        if (musicaAtual && erroNoPlayer) {
+                            if (confirm("⚠️ Substituir a música que falhou por esta versão e tocar agora? (Mantendo o cantor atual)")) {
+                                musicaAtual.videoId = v.id.videoId;
+                                musicaAtual.titulo = v.snippet.title;
+                                erroNoPlayer = false;
+                                player.loadVideoById(musicaAtual.videoId);
+                                player.playVideo();
+                                return;
+                            }
+                        }
                         const c = prompt("🎤 Qual a voz dessa música?"); if(c === null) return;
                         filaDeReproducao.push({ videoId: v.id.videoId, titulo: v.snippet.title, cantor: c.trim() === "" ? "Convidados" : c });
                         atualizarTelaFila();
@@ -530,7 +557,7 @@
                 telaTV.document.getElementById('cantor-overlay').style.top = '-200px'; 
                 setTimeout(() => telaTV.document.getElementById('cantor-overlay').style.top = '20px', 100);
             }
-            captando = true; somaEnergia = 0; qtdLeituras = 0; notaForcadaPeloDJ = null;
+            captando = true; somaEnergia = 0; qtdLeituras = 0; notaForcadaPeloDJ = null; erroNoPlayer = false;
             player.loadVideoById(m.videoId); player.playVideo(); 
         }
 
