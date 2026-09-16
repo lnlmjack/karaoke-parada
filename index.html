@@ -146,7 +146,7 @@
         </div>
     </div>
 
-    <div class="versao-app">v1.4</div>
+    <div class="versao-app">v1.5</div>
     <div onclick="definirNotaManual()" style="position: fixed; bottom: 4px; right: 35px; font-size: 13px; color: #fff; opacity: 0.3; z-index: 9999; cursor: pointer; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</div>
 
     <script>
@@ -217,7 +217,11 @@
         const database = firebase.database();
 
         const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4'; 
-        let filaDeReproducao = []; let historicoDeReproducao = []; let ranking = [];
+        
+        let filaDeReproducao = JSON.parse(localStorage.getItem('filaDeReproducao')) || []; 
+        let historicoDeReproducao = JSON.parse(localStorage.getItem('historicoDeReproducao')) || []; 
+        let ranking = JSON.parse(localStorage.getItem('ranking')) || [];
+
         let player; let telaTV; let monitorTV; let musicaAtual = null; let timerNota;
         let audioCtx; let analyser; let dataArray; let captando = false; 
         let somaEnergia = 0; let qtdLeituras = 0;
@@ -549,6 +553,7 @@
         }
 
         function atualizarTelaFila() {
+            localStorage.setItem('filaDeReproducao', JSON.stringify(filaDeReproducao));
             document.getElementById('fila').innerHTML = filaDeReproducao.map((item, i) => `
                 <div class="item-fila">
                     <span class="titulo-musica"><strong>${i+1}º</strong> - ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span></span>
@@ -562,9 +567,13 @@
             `).join('');
         }
 
-        function atualizarTelaHistorico() { document.getElementById('historico').innerHTML = historicoDeReproducao.slice().reverse().map(item => `<div class="item-historico">✔️ ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span></div>`).join(''); }
+        function atualizarTelaHistorico() { 
+            localStorage.setItem('historicoDeReproducao', JSON.stringify(historicoDeReproducao));
+            document.getElementById('historico').innerHTML = historicoDeReproducao.slice().reverse().map(item => `<div class="item-historico">✔️ ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span></div>`).join(''); 
+        }
         
         function atualizarTelaRanking() {
+            localStorage.setItem('ranking', JSON.stringify(ranking));
             document.getElementById('ranking').innerHTML = [...ranking].sort((a,b) => b.nota - a.nota).map((item, i) => `
                 <div class="item-ranking" onclick="document.getElementById('votos-rank-${i}').style.display = document.getElementById('votos-rank-${i}').style.display === 'none' ? 'block' : 'none'" style="cursor:pointer;" title="Clique para ver os votos!">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -588,6 +597,11 @@
                 </div>
             `).join('');
         }
+
+        // Renderiza os dados salvos assim que a página carrega
+        atualizarTelaFila();
+        atualizarTelaHistorico();
+        atualizarTelaRanking();
     </script>
 </body>
 </html>
