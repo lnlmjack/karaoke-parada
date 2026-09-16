@@ -120,10 +120,11 @@
             font-size: 12px;
         }
         #logo-login {
-            width: 150px;
+            width: 150px; /* Ajuste o tamanho conforme necessário */
             margin-bottom: 20px;
         }
 
+        /* Estilos para a seção de alteração de senha */
         #change-password-section {
             background-color: #2a2a2a;
             padding: 15px;
@@ -294,15 +295,15 @@
     </div>
 
     <script>
-        // Firebase Configuration
+        // Firebase Configuration (SUBSTITUA PELAS SUAS CREDENCIAIS REAIS DO FIREBASE)
         const firebaseConfig = {
-            apiKey: "AIzaSyBMLhTZc7qOLjE65L3BuW9e2ijvxObTXp8",
-            authDomain: "karaoke-parada.firebaseapp.com",
-            databaseURL: "https://karaoke-parada-default-rtdb.firebaseio.com",
-            projectId: "karaoke-parada",
-            storageBucket: "karaoke-parada.firebasestorage.app",
-            messagingSenderId: "379214932685",
-            appId: "1:379214932685:web:873e8b5b7d882a4f751784"
+            apiKey: "AIzaSyBMLhTZc7qOLjE65L3BuW9e2ijvxObTXp8", // Certifique-se de que esta é a chave correta e completa
+            authDomain: "SEU_AUTH_DOMAIN_AQUI",
+            databaseURL: "SUA_DATABASE_URL_AQUI",
+            projectId: "SEU_PROJECT_ID_AQUI",
+            storageBucket: "SEU_STORAGE_BUCKET_AQUI",
+            messagingSenderId: "SEU_MESSAGING_SENDER_ID_AQUI",
+            appId: "SEU_APP_ID_AQUI"
         };
 
         firebase.initializeApp(firebaseConfig);
@@ -451,29 +452,19 @@
         function adicionarAFila(titulo, cantor, videoId) {
             filaDeReproducao.push({ titulo, cantor, videoId });
             database.ref('fila').set(filaDeReproducao);
-            console.log(`"${titulo}" adicionada à fila.`);
+            alert(`"${titulo}" adicionada à fila.`);
         }
 
         function aprovarPedido(index) {
             const pedido = pedidos[index];
             adicionarAFila(pedido.titulo, pedido.cantor, pedido.videoId);
-            
-            if (pedido.idFirebase) {
-                database.ref(`pedidos/${pedido.idFirebase}`).remove();
-            } else {
-                pedidos.splice(index, 1);
-                database.ref('pedidos').set(pedidos);
-            }
+            pedidos.splice(index, 1);
+            database.ref('pedidos').set(pedidos);
         }
 
         function recusarPedido(index) {
-            const pedido = pedidos[index];
-            if (pedido.idFirebase) {
-                database.ref(`pedidos/${pedido.idFirebase}`).remove();
-            } else {
-                pedidos.splice(index, 1);
-                database.ref('pedidos').set(pedidos);
-            }
+            pedidos.splice(index, 1);
+            database.ref('pedidos').set(pedidos);
         }
 
         function toggleAutoAprovar() {
@@ -592,39 +583,17 @@
 
         function loadFila() {
             database.ref('fila').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    // Proteção contra o Firebase quebrando a lista
-                    let novaFila = Array.isArray(data) ? data : Object.values(data);
-                    // Remove buracos nulos para o painel não travar
-                    filaDeReproducao = novaFila.filter(item => item !== null && item !== undefined);
-                } else {
-                    filaDeReproducao = [];
-                }
+                filaDeReproducao = snapshot.val() || [];
                 atualizarTelaFila();
             });
         }
 
         function loadPedidos() {
             database.ref('pedidos').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    // Lê corretamente os pedidos enviados pelo celular (votacao.html)
-                    if (Array.isArray(data)) {
-                        pedidos = data.filter(item => item !== null);
-                    } else {
-                        pedidos = Object.keys(data).map(key => ({
-                            ...data[key],
-                            idFirebase: key // Salva o ID único do pedido
-                        }));
-                    }
-                } else {
-                    pedidos = [];
-                }
-                
+                pedidos = snapshot.val() || [];
                 if (autoAprovar) {
                     while (pedidos.length > 0) {
-                        aprovarPedido(0); 
+                        aprovarPedido(0); // Aprova o primeiro pedido automaticamente
                     }
                 }
                 atualizarTelaPedidos();
@@ -692,6 +661,11 @@
         // Carrega o som dos tambores
         const somTambores = new Audio('tambores.mp3');
         somTambores.volume = 0.5; // Volume ajustado para 50%
+
+        // Exemplo de como tocar o som (pode ser integrado a eventos específicos)
+        // function tocarTambores() {
+        //     somTambores.play();
+        // }
 
         function toggleManual() {
             const manualModal = document.getElementById('manual-modal');
