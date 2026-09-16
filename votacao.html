@@ -332,21 +332,30 @@
                 if (status && status.id !== "avaliando") {
                     document.getElementById('cantor-atual').innerText = "Voz: " + status.cantor;
                     document.getElementById('status-musica').innerText = "🎵 " + status.titulo;
-                    idCantorAtual = status.id;
-
-                    if (localStorage.getItem('voto_' + idCantorAtual)) {
-                        bloquearVoto();
-                    } else {
-                        liberarVoto();
+                    
+                    // Somente atualiza os botões se o cantor mudou
+                    if (idCantorAtual !== status.id) {
+                        idCantorAtual = status.id;
+                        if (localStorage.getItem('voto_' + idCantorAtual)) {
+                            bloquearVoto();
+                        } else {
+                            liberarVoto();
+                        }
                     }
                 } else if (status && status.id === "avaliando") {
-                    document.getElementById('cantor-atual').innerText = "Calculando as Notas...";
-                    document.getElementById('status-musica').innerText = "Olhe para a tela da TV!";
-                    esconderVoto();
+                    if (idCantorAtual !== "avaliando") {
+                        idCantorAtual = "avaliando";
+                        document.getElementById('cantor-atual').innerText = "Calculando as Notas...";
+                        document.getElementById('status-musica').innerText = "Olhe para a tela da TV!";
+                        esconderVoto();
+                    }
                 } else {
-                    document.getElementById('cantor-atual').innerText = "Palco Livre!";
-                    document.getElementById('status-musica').innerText = "Nenhuma música tocando no momento.";
-                    esconderVoto();
+                    if (idCantorAtual !== null) {
+                        idCantorAtual = null;
+                        document.getElementById('cantor-atual').innerText = "Palco Livre!";
+                        document.getElementById('status-musica').innerText = "Nenhuma música tocando no momento.";
+                        esconderVoto();
+                    }
                 }
             } catch (e) {
                 // Falha de rede local, ignora sem quebrar a tela
@@ -482,6 +491,19 @@
                 });
             }
         }
+
+        // Sistema automático para buscar e espelhar a versão exata do index.html
+        fetch('index.html?v=' + new Date().getTime())
+            .then(res => res.text())
+            .then(html => {
+                const match = html.match(/<div class="versao-app">(v[0-9.]+)<\/div>/);
+                if (match && match[1]) {
+                    const divVersao = document.createElement('div');
+                    divVersao.style.cssText = "position: fixed; bottom: 5px; right: 5px; font-size: 10px; color: rgba(255, 255, 255, 0.3); z-index: 9999; pointer-events: none;";
+                    divVersao.innerText = match[1];
+                    document.body.appendChild(divVersao);
+                }
+            }).catch(() => {});
     </script>
 </body>
 </html>
