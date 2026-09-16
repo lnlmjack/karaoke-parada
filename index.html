@@ -49,10 +49,10 @@
         #btn-manual { position: absolute; top: 20px; right: 20px; background: #333; color: #fff; border: 1px solid #555; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
         #btn-manual:hover { background: #444; border-color: #00d2ff; transform: scale(1.05); }
 
-        #btn-usuarios { display: none; position: absolute; top: 20px; right: 160px; background: #007bff; color: #fff; border: 1px solid #0056b3; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
+        #btn-usuarios { display: none; position: absolute; top: 20px; right: 150px; background: #007bff; color: #fff; border: 1px solid #0056b3; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
         #btn-usuarios:hover { background: #0056b3; transform: scale(1.05); }
 
-        #btn-sair { position: absolute; top: 20px; right: 290px; background: transparent; color: #aaa; border: 1px solid #555; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; }
+        #btn-sair { position: absolute; top: 20px; right: 265px; background: transparent; color: #aaa; border: 1px solid #555; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; }
         #btn-sair:hover { color: #fff; background: #e52d27; border-color: #e52d27; }
 
         #modal-manual-conteudo { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 300; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #00d2ff; width: 90%; max-width: 800px; max-height: 85vh; overflow-y: auto; color: #ddd; }
@@ -246,7 +246,7 @@
         </div>
     </div>
 
-    <div class="versao-app">v1.15</div>
+    <div class="versao-app">v1.16</div>
     <div onclick="definirNotaManual()" style="position: fixed; bottom: 4px; right: 35px; font-size: 13px; color: #fff; opacity: 0.3; z-index: 9999; cursor: pointer; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</div>
 
     <script>
@@ -256,12 +256,10 @@
             { usuario: "operador", senha: "123", tipo: "comum" }
         ];
 
-        // Salva inicial se não houver
         if (!localStorage.getItem('usuariosAutorizados')) {
             localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
         }
 
-        // Verifica o login salvo no navegador ao abrir
         window.addEventListener('DOMContentLoaded', () => {
             const usuarioLogado = localStorage.getItem('usuarioLogado');
             const tipoUsuario = localStorage.getItem('tipoUsuario');
@@ -329,7 +327,7 @@
                     <td><strong>${u.usuario}</strong></td>
                     <td><span style="padding: 2px 6px; border-radius: 4px; font-size: 11px; background: ${u.tipo === 'admin' ? '#007bff' : '#333'}">${u.tipo.toUpperCase()}</span></td>
                     <td style="text-align: right;">
-                        <button onclick="editarUsuario(${index})" style="background:transparent; border:none; cursor:pointer; font-size:14px;" title="Editar Senha">✏️</button>
+                        <button onclick="editarUsuario(${index})" style="background:transparent; border:none; cursor:pointer; font-size:14px;" title="Editar Usuário/Senha">✏️</button>
                         ${usuariosAutorizados.length > 1 ? `<button onclick="excluirUsuario(${index})" style="background:transparent; border:none; cursor:pointer; font-size:14px;" title="Excluir">❌</button>` : ''}
                     </td>
                 </tr>
@@ -358,13 +356,27 @@
 
         function editarUsuario(index) {
             const user = usuariosAutorizados[index];
-            const novaSenha = prompt(`Digite a nova senha para o usuário "${user.usuario}":`);
-            if (novaSenha !== null && novaSenha.trim() !== "") {
-                usuariosAutorizados[index].senha = novaSenha.trim();
-                localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
-                renderizarTabelaUsuarios();
-                alert("Senha alterada com sucesso!");
+            const novoNome = prompt("Editar nome de usuário:", user.usuario);
+            if (novoNome === null) return;
+            
+            const nomeLimpo = novoNome.trim().toLowerCase();
+            if (!nomeLimpo) return alert("O nome não pode ficar vazio!");
+
+            if (nomeLimpo !== user.usuario && usuariosAutorizados.some(u => u.usuario === nomeLimpo)) {
+                return alert("Já existe outro usuário com esse nome!");
             }
+
+            const novaSenha = prompt(`Editar senha para o usuário "${nomeLimpo}":`, user.senha);
+            if (novaSenha === null) return;
+
+            const senhaLimpa = novaSenha.trim();
+            if (!senhaLimpa) return alert("A senha não pode ficar vazia!");
+
+            usuariosAutorizados[index].usuario = nomeLimpo;
+            usuariosAutorizados[index].senha = senhaLimpa;
+            localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
+            renderizarTabelaUsuarios();
+            alert("Usuário atualizado com sucesso!");
         }
 
         function excluirUsuario(index) {
