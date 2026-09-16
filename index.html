@@ -59,6 +59,22 @@
         #fundo-modal-manual { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 299; }
         
         .versao-app { position: fixed; bottom: 5px; right: 5px; font-size: 10px; color: rgba(255, 255, 255, 0.3); z-index: 9999; pointer-events: none; }
+
+        /* Estilos do Modal de Cantores */
+        #fundo-modal-cantor { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 400; }
+        #modal-cantor { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 401; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #00d2ff; width: 90%; max-width: 400px; color: #fff; text-align: center; }
+        #modal-cantor h2 { margin-top: 0; color: #00d2ff; border-bottom: 1px solid #333; padding-bottom: 10px; font-size: 20px;}
+        #input-nome-cantor { width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #555; background: #222; color: #fff; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; }
+        #lista-cantores-salvos { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; max-height: 150px; overflow-y: auto; justify-content: center; }
+        .chip-cantor { background: #333; border: 1px solid #555; padding: 6px 12px; border-radius: 20px; font-size: 14px; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .chip-cantor:hover { background: #444; border-color: #00d2ff; }
+        .chip-cantor span { cursor: pointer; flex: 1; }
+        .btn-acao-chip { background: transparent; border: none; cursor: pointer; font-size: 12px; color: #aaa; padding: 0; margin: 0;}
+        .btn-acao-chip:hover { color: #fff; transform: scale(1.1); }
+        .botoes-modal-cantor { display: flex; gap: 10px; }
+        .btn-confirmar { flex: 2; padding: 12px; background: #28a745; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px;}
+        .btn-cancelar { flex: 1; padding: 12px; background: #e52d27; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px;}
+        .btn-limpar-cantores { margin-top: 15px; background: transparent; border: none; color: #aaa; text-decoration: underline; cursor: pointer; font-size: 12px; width: 100%; text-align: center;}
     </style>
 </head>
 <body>
@@ -104,6 +120,19 @@
         <button onclick="fecharDetalhesVotos()" style="width: 100%; margin-top: 20px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar</button>
     </div>
 
+    <!-- Novo Modal de Cantores -->
+    <div id="fundo-modal-cantor" onclick="fecharModalCantor()"></div>
+    <div id="modal-cantor">
+        <h2>🎤 Quem vai cantar?</h2>
+        <input type="text" id="input-nome-cantor" placeholder="Digite o nome (ex: João e Maria)...">
+        <div id="lista-cantores-salvos"></div>
+        <div class="botoes-modal-cantor">
+            <button onclick="confirmarCantor()" class="btn-confirmar">Confirmar</button>
+            <button onclick="fecharModalCantor()" class="btn-cancelar">Cancelar</button>
+        </div>
+        <button onclick="limparCantores()" class="btn-limpar-cantores">🗑️ Limpar Lista Salva</button>
+    </div>
+
     <button id="btn-manual" onclick="abrirManual()">📖 Manual do Sistema</button>
 
     <div class="container">
@@ -146,7 +175,7 @@
         </div>
     </div>
 
-    <div class="versao-app">v1.6</div>
+    <div class="versao-app">v1.7</div>
     <div onclick="definirNotaManual()" style="position: fixed; bottom: 4px; right: 35px; font-size: 13px; color: #fff; opacity: 0.3; z-index: 9999; cursor: pointer; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</div>
 
     <script>
@@ -221,6 +250,8 @@
         let filaDeReproducao = JSON.parse(localStorage.getItem('filaDeReproducao')) || []; 
         let historicoDeReproducao = JSON.parse(localStorage.getItem('historicoDeReproducao')) || []; 
         let ranking = JSON.parse(localStorage.getItem('ranking')) || [];
+        let cantoresSalvos = JSON.parse(localStorage.getItem('cantoresSalvos')) || [];
+        let musicaPendente = null; 
 
         let player; let telaTV; let monitorTV; let musicaAtual = null; let timerNota;
         let audioCtx; let analyser; let dataArray; let captando = false; 
@@ -314,6 +345,90 @@
                 <div class="linha-voto"><span style="color:#e52d27">😖 Ruim:</span> <strong>${contagemVotos.ruim}</strong></div>
             `;
         }
+
+        // Funções do Novo Modal de Cantores
+        function abrirModalCantor(videoId, titulo) {
+            musicaPendente = { videoId, titulo };
+            document.getElementById('input-nome-cantor').value = '';
+            renderizarCantoresSalvos();
+            document.getElementById('fundo-modal-cantor').style.display = 'block';
+            document.getElementById('modal-cantor').style.display = 'block';
+            document.getElementById('input-nome-cantor').focus();
+        }
+
+        function fecharModalCantor() {
+            musicaPendente = null;
+            document.getElementById('fundo-modal-cantor').style.display = 'none';
+            document.getElementById('modal-cantor').style.display = 'none';
+        }
+
+        function confirmarCantor() {
+            let cantor = document.getElementById('input-nome-cantor').value.trim();
+            if (cantor === "") cantor = "Convidados";
+            
+            if (cantor !== "Convidados" && !cantoresSalvos.includes(cantor)) {
+                cantoresSalvos.push(cantor);
+                localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
+            }
+
+            if (musicaPendente) {
+                filaDeReproducao.push({ videoId: musicaPendente.videoId, titulo: musicaPendente.titulo, cantor: cantor });
+                atualizarTelaFila();
+                document.getElementById('campoBusca').value = ""; 
+            }
+            fecharModalCantor();
+        }
+
+        function selecionarCantorSalvo(nome) {
+            document.getElementById('input-nome-cantor').value = nome;
+        }
+
+        function excluirCantorSalvo(nome, event) {
+            event.stopPropagation(); 
+            if (confirm(`Excluir ${nome} da lista salva?`)) {
+                cantoresSalvos = cantoresSalvos.filter(c => c !== nome);
+                localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
+                renderizarCantoresSalvos();
+            }
+        }
+
+        function editarCantorSalvo(nomeAntigo, event) {
+            event.stopPropagation();
+            const novoNome = prompt("Editar nome:", nomeAntigo);
+            if (novoNome && novoNome.trim() !== "" && novoNome !== nomeAntigo) {
+                const index = cantoresSalvos.indexOf(nomeAntigo);
+                if (index !== -1) {
+                    cantoresSalvos[index] = novoNome.trim();
+                    localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
+                    renderizarCantoresSalvos();
+                }
+            }
+        }
+
+        function renderizarCantoresSalvos() {
+            const div = document.getElementById('lista-cantores-salvos');
+            if (cantoresSalvos.length === 0) {
+                div.innerHTML = "<span style='color:#777; font-size:13px;'>Nenhum cantor salvo ainda.</span>";
+                return;
+            }
+            div.innerHTML = cantoresSalvos.map(c => `
+                <div class="chip-cantor">
+                    <span onclick="selecionarCantorSalvo('${c.replace(/'/g, "\\'")}')">${c}</span>
+                    <button class="btn-acao-chip" onclick="editarCantorSalvo('${c.replace(/'/g, "\\'")}', event)" title="Editar">✏️</button>
+                    <button class="btn-acao-chip" onclick="excluirCantorSalvo('${c.replace(/'/g, "\\'")}', event)" title="Excluir">❌</button>
+                </div>
+            `).join('');
+        }
+
+        function limparCantores() {
+            if (confirm("Quer apagar TODOS os nomes salvos?")) {
+                cantoresSalvos = [];
+                localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
+                renderizarCantoresSalvos();
+            }
+        }
+
+        document.getElementById('input-nome-cantor').addEventListener('keypress', e => { if(e.key === 'Enter') confirmarCantor(); });
 
         document.addEventListener('keydown', function(event) {
             if (event.key === '6') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 60; } 
@@ -507,9 +622,8 @@
                         return;
                     }
                 }
-                const c = prompt("🎤 Link reconhecido! Qual a voz dessa música?"); if(c === null) return;
-                filaDeReproducao.push({ videoId: videoId, titulo: "Música via Link", cantor: c.trim() === "" ? "Convidados" : c });
-                atualizarTelaFila(); document.getElementById('campoBusca').value = ""; return;
+                abrirModalCantor(videoId, "Música via Link");
+                return;
             }
 
             const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(termo + " karaoke -oficial -clipe -live")}&type=video&key=${API_KEY}`;
@@ -528,9 +642,7 @@
                                 return;
                             }
                         }
-                        const c = prompt("🎤 Qual a voz dessa música?"); if(c === null) return;
-                        filaDeReproducao.push({ videoId: v.id.videoId, titulo: v.snippet.title, cantor: c.trim() === "" ? "Convidados" : c });
-                        atualizarTelaFila();
+                        abrirModalCantor(v.id.videoId, v.snippet.title);
                     };
                     div.appendChild(d);
                 });
