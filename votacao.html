@@ -7,15 +7,15 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    
+
     <title>Menu - Karaokê Parada 10.95</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-    
+
     <style>
         body { font-family: 'Arial', sans-serif; background-color: #121212; color: #fff; margin: 0; padding: 0; text-align: center; }
         .header { background-color: #e52d27; padding: 15px; font-size: 22px; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.5); text-transform: uppercase; letter-spacing: 1px;}
-        
+
         /* ESTILOS DO MENU PRINCIPAL */
         #menu-principal { padding: 30px 20px; }
         .btn-menu-grande { width: 100%; padding: 30px 20px; margin-bottom: 20px; border: none; border-radius: 15px; font-size: 24px; font-weight: 900; cursor: pointer; transition: 0.2s; box-shadow: 0 8px 15px rgba(0,0,0,0.5); text-transform: uppercase;}
@@ -26,9 +26,9 @@
 
         .card { background: #1e1e1e; margin: 15px; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .card h2 { margin-top: 15px; color: #00d2ff; font-size: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        
+
         .btn-voltar { background: #333; color: #fff; border: 1px solid #555; padding: 10px 15px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; display: inline-block; margin-bottom: 10px; width: 100%;}
-        
+
         .btn-catalogo { background: #00d2ff; color: #000; width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         .btn-catalogo:active { transform: scale(0.95); }
 
@@ -42,123 +42,121 @@
         /* Area de Votação */
         #cantor-atual { color: #ffeb3b; font-size: 24px; font-weight: bold; margin: 10px 0; }
         #status-musica { color: #aaa; font-size: 14px; font-style: italic; margin-bottom: 20px; }
-        
+
         .btn-voto { width: 100%; padding: 16px; margin: 6px 0; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         .btn-voto:active { transform: scale(0.95); }
-        .v-exc { background: #00d2ff; color: #000; }
-        .v-mb { background: #28a745; color: #fff; }
-        .v-bom { background: #ffeb3b; color: #000; }
-        .v-reg { background: #fd7e14; color: #fff; }
-        .v-ruim { background: #e52d27; color: #fff; }
+        .v-exc { background: linear-gradient(135deg, #28a745, #218838); color: white; }
+        .v-mb { background: linear-gradient(135deg, #17a2b8, #138496); color: white; }
+        .v-bom { background: linear-gradient(135deg, #ffc107, #e0a800); color: black; }
+        .v-reg { background: linear-gradient(135deg, #fd7e14, #e66b00); color: white; }
+        .v-ruim { background: linear-gradient(135deg, #dc3545, #c82333); color: white; }
 
-        /* Area de Confirmação de Voto */
-        #confirmacao-voto { display: none; background: #222; padding: 20px; border-radius: 8px; border: 2px solid #ffeb3b; margin-top: 10px; }
-        .btn-confirmar { width: 48%; padding: 15px; background: #28a745; border: none; border-radius: 8px; color: white; font-weight: bold; font-size: 16px; cursor: pointer;}
-        .btn-cancelar { width: 48%; padding: 15px; background: #e52d27; border: none; border-radius: 8px; color: white; font-weight: bold; font-size: 16px; cursor: pointer;}
+        #confirmacao-voto { display: none; margin-top: 20px; }
+        #confirmacao-voto p { font-size: 18px; margin-bottom: 15px; }
+        .btn-confirmar { background: linear-gradient(135deg, #28a745, #218838); color: white; width: 48%; margin-right: 4%; }
+        .btn-cancelar { background: linear-gradient(135deg, #6c757d, #5a6268); color: white; width: 48%; }
 
-        /* Area de Busca */
-        input { width: 100%; box-sizing: border-box; padding: 15px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-size: 16px; margin-bottom: 15px; }
-        .btn-busca { background: #e52d27; color: #fff; width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
-        .btn-busca:active { background: #c21a15; }
-        
-        #resultados { margin-top: 20px; text-align: left; }
-        .item-resultado { background: #2a2a2a; padding: 15px; margin-bottom: 10px; border-radius: 8px; border-left: 5px solid #00d2ff; font-size: 15px; line-height: 1.4; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-        .item-resultado:active { background: #333; }
-        
-        #notificacao { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #28a745; color: white; padding: 15px 25px; border-radius: 30px; font-weight: bold; font-size: 16px; z-index: 1000; box-shadow: 0 5px 15px rgba(0,0,0,0.6); }
+        #msg-agradecimento { display: none; margin-top: 20px; color: #28a745; font-size: 18px; font-weight: bold; }
+
+        /* ESTILOS DA BUSCA */
+        #aba-pedir, #aba-catalogo { display: none; padding: 20px; }
+        input[type="text"] { width: calc(100% - 22px); padding: 10px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #555; background-color: #333; color: #fff; font-size: 16px; }
+        .btn-buscar { background: linear-gradient(135deg, #00d2ff, #0099cc); color: #000; width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .btn-buscar:active { transform: scale(0.95); }
+        .item-resultado { background-color: #333; padding: 12px; margin-bottom: 10px; border-radius: 8px; text-align: left; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        .item-resultado:hover { background-color: #444; }
+        .item-resultado strong { color: #00d2ff; }
+        .item-resultado span { color: #ccc; font-size: 14px; }
+
+        #notificacao {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .version-info { position: fixed; bottom: 10px; right: 10px; font-size: 0.8em; color: #888; z-index: 1001; }
     </style>
 </head>
 <body>
+    <div class="header">🍻 Parada 10.95 Bar</div>
 
-    <div class="header">
-        🍻 Parada 10.95 Bar
-    </div>
-
-    <!-- TELA 1: MENU PRINCIPAL -->
-    <div id="menu-principal">
-        <h2 style="color: #fff; margin-bottom: 30px; font-size: 20px;">O que você quer fazer?</h2>
-        
-        <button class="btn-menu-grande btn-pedir" onclick="mostrarAba('pedir')">
-            <span class="icone-grande">📩</span>
-            Pedir Música
-        </button>
-        
-        <button class="btn-menu-grande btn-votar" onclick="mostrarAba('votar')">
-            <span class="icone-grande">⭐</span>
-            Votar no Cantor
-        </button>
-    </div>
-
-    <!-- TELA 2: PEDIR MÚSICA -->
-    <div class="card" id="aba-pedir" style="display: none;">
-        <button class="btn-voltar" onclick="mostrarAba('menu')">⬅️ Voltar ao Menu</button>
-        
-        <h2 style="color: #ffeb3b;">📩 Escolha sua Música</h2>
-        
-        <button class="btn-catalogo" onclick="mostrarAba('catalogo')">🗂️ Explorar Catálogo de Músicas</button>
-        
-        <p style="font-size: 14px; color: #ccc; margin-bottom: 15px;">Ou pesquise livremente no YouTube:</p>
-        
-        <input type="text" id="campoBusca" placeholder="Ex: Evidências Chitãozinho...">
-        <button class="btn-busca" onclick="buscarMusica()">🔍 Buscar no YouTube</button>
-        
-        <div id="resultados"></div>
-    </div>
-
-    <!-- TELA 3: CATÁLOGO DE MÚSICAS -->
-    <div class="card" id="aba-catalogo" style="display: none;">
-        <button class="btn-voltar" onclick="mostrarAba('pedir')">⬅️ Voltar para a Busca</button>
-        
-        <h2 style="color: #00d2ff;">🗂️ Catálogo Completo</h2>
-        <p style="font-size: 14px; color: #ccc; margin-bottom: 15px;">Toque na letra inicial do artista ou digite na barra abaixo:</p>
-        
-        <!-- ALFABETO DE BUSCA RÁPIDA -->
-        <div id="filtro-alfabeto" class="alfabeto-container">
-            <!-- Botões gerados no Javascript -->
-        </div>
-
-        <input type="text" id="buscaCatalogo" placeholder="🔎 Digite aqui o cantor ou a música..." onkeyup="filtrarCatalogo()">
-        
-        <div id="lista-catalogo" style="height: 400px; overflow-y: auto; text-align: left; padding-right: 5px;">
-            <p style="text-align: center; color: #aaa;">Carregando músicas...</p>
+    <div id="aba-menu">
+        <div id="menu-principal">
+            <button class="btn-menu-grande btn-pedir" onclick="mostrarAba('pedir')">
+                <span class="icone-grande">📩</span> Pedir Música
+            </button>
+            <button class="btn-menu-grande btn-votar" onclick="mostrarAba('votar')">
+                <span class="icone-grande">⭐</span> Votar no Cantor
+            </button>
         </div>
     </div>
 
-    <!-- TELA 4: QUEM ESTÁ CANTANDO E VOTAÇÃO -->
-    <div class="card" id="aba-votar" style="display: none;">
-        <button class="btn-voltar" onclick="mostrarAba('menu')">⬅️ Voltar ao Menu</button>
-        
-        <h2>🎤 No Palco Agora</h2>
-        <div id="status-palco">
-            <div id="cantor-atual">Aguardando...</div>
-            <div id="status-musica">Preste atenção na TV!</div>
+    <div id="aba-pedir">
+        <div class="card">
+            <h2>📩 Escolha sua Música</h2>
+            <button class="btn-catalogo" onclick="mostrarAba('catalogo')">🗂️ Explorar Catálogo de Músicas</button>
+            <p style="margin-top: 20px;">Ou pesquise livremente no YouTube:</p>
+            <input type="text" id="campoBusca" placeholder="Nome da música ou artista">
+            <button class="btn-buscar" onclick="buscarMusica()">🔍 Buscar no YouTube</button>
+            <div id="resultados"></div>
+            <button class="btn-voltar" onclick="mostrarAba('menu')">⬅️ Voltar ao Menu</button>
         </div>
+    </div>
 
-        <div id="lista-botoes" style="display: none;">
-            <p style="margin-bottom: 10px; font-size: 14px; color: #ccc;">O que você achou da apresentação?</p>
-            <button class="btn-voto v-exc" onclick="prepararVoto('excelente', '🤯 Excelente')">🤯 Excelente</button>
-            <button class="btn-voto v-mb" onclick="prepararVoto('muitobom', '🤩 Muito Bom')">🤩 Muito Bom</button>
-            <button class="btn-voto v-bom" onclick="prepararVoto('bom', '🙂 Bom')">🙂 Bom</button>
-            <button class="btn-voto v-reg" onclick="prepararVoto('regular', '😕 Regular')">😕 Regular</button>
-            <button class="btn-voto v-ruim" onclick="prepararVoto('ruim', '😖 Ruim')">😖 Ruim</button>
-        </div>
-
-        <div id="confirmacao-voto">
-            <p style="margin-top: 0; font-size: 18px; color: #fff;">Confirmar voto:<br><strong id="texto-voto-escolhido" style="font-size: 26px; display: block; margin-top: 10px;"></strong></p>
-            <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-                <button class="btn-cancelar" onclick="cancelarVoto()">❌ Cancelar</button>
-                <button class="btn-confirmar" onclick="confirmarVoto()">✅ Votar!</button>
+    <div id="aba-catalogo">
+        <div class="card">
+            <h2>🗂️ Catálogo Completo</h2>
+            <div class="alfabeto-container" id="alfabeto-container">
+                <button class="btn-letra ativo" id="btn-letra-TODOS" onclick="filtrarPorLetra('TODOS')">TODOS</button>
             </div>
+            <input type="text" id="buscaCatalogo" placeholder="Buscar no catálogo..." onkeyup="filtrarCatalogo()">
+            <div id="lista-catalogo">
+                <p style="text-align:center; color:#aaa;">Carregando músicas...</p>
+            </div>
+            <button class="btn-voltar" onclick="mostrarAba('pedir')">⬅️ Voltar para a Busca</button>
         </div>
+    </div>
 
-        <div id="msg-agradecimento" style="display: none; color: #28a745; font-weight: bold; font-size: 18px; margin-top: 20px;">
-            ✅ Voto registrado!
+    <div id="aba-votar">
+        <div class="card">
+            <h2>🎤 No Palco Agora</h2>
+            <p id="cantor-atual">Aguardando...</p>
+            <p id="status-musica">Preste atenção na TV!</p>
+
+            <div id="lista-botoes">
+                <p style="margin-top: 20px;">O que você achou da apresentação?</p>
+                <button class="btn-voto v-exc" onclick="prepararVoto('excelente', '🤯 Excelente')">🤯 Excelente</button>
+                <button class="btn-voto v-mb" onclick="prepararVoto('muito_bom', '🤩 Muito Bom')">🤩 Muito Bom</button>
+                <button class="btn-voto v-bom" onclick="prepararVoto('bom', '🙂 Bom')">🙂 Bom</button>
+                <button class="btn-voto v-reg" onclick="prepararVoto('regular', '😕 Regular')">😕 Regular</button>
+                <button class="btn-voto v-ruim" onclick="prepararVoto('ruim', '😖 Ruim')">😖 Ruim</button>
+            </div>
+
+            <div id="confirmacao-voto">
+                <p>Confirmar voto: <strong id="texto-voto-escolhido"></strong></p>
+                <button class="btn-voto btn-cancelar" onclick="cancelarVoto()">❌ Cancelar</button>
+                <button class="btn-voto btn-confirmar" onclick="confirmarVoto()">✅ Votar!</button>
+            </div>
+
+            <p id="msg-agradecimento">✅ Voto registrado!</p>
+            <button class="btn-voltar" onclick="mostrarAba('menu')">⬅️ Voltar ao Menu</button>
         </div>
     </div>
 
     <div id="notificacao">✅ Pedido enviado ao DJ!</div>
+    <div class="version-info">v1.1</div>
 
     <script>
+        // Firebase configuration (SUBSTITUA COM SUAS CREDENCIAIS)
         const firebaseConfig = {
             apiKey: "AIzaSyBMLhTZc7qQLjE65L3BuW9e2ijvxObTxp8",
             authDomain: "karaoke-parada.firebaseapp.com",
@@ -168,113 +166,67 @@
             messagingSenderId: "379214932685",
             appId: "1:379214932685:web:873e8b5b7d882a4f751784"
         };
+
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-        const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4'; 
-        
+
+        const API_KEY = "SUA_CHAVE_API_YOUTUBE"; // Substitua pela sua chave da API do YouTube
+
         let idCantorAtual = null;
         let votoPendente = null;
         let musicasCatalogo = [];
 
-        function mostrarAba(aba) {
-            document.getElementById('menu-principal').style.display = 'none';
+        function mostrarAba(abaId) {
+            document.getElementById('aba-menu').style.display = 'none';
             document.getElementById('aba-pedir').style.display = 'none';
             document.getElementById('aba-votar').style.display = 'none';
             document.getElementById('aba-catalogo').style.display = 'none';
-
-            if (aba === 'menu') document.getElementById('menu-principal').style.display = 'block';
-            if (aba === 'pedir') document.getElementById('aba-pedir').style.display = 'block';
-            if (aba === 'votar') document.getElementById('aba-votar').style.display = 'block';
-            if (aba === 'catalogo') document.getElementById('aba-catalogo').style.display = 'block';
+            document.getElementById('aba-' + abaId).style.display = 'block';
         }
 
-        // GERA OS BOTÕES DE A a Z
+        // Inicializa mostrando o menu principal
+        document.addEventListener('DOMContentLoaded', () => {
+            mostrarAba('menu');
+            gerarBotoesAlfabeto();
+        });
+
         function gerarBotoesAlfabeto() {
-            const div = document.getElementById('filtro-alfabeto');
-            const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-            let html = `<button class="btn-letra ativo" id="btn-letra-TODOS" onclick="filtrarPorLetra('TODOS')">TUDO</button>`;
-            
-            alfabeto.forEach(letra => {
-                html += `<button class="btn-letra" id="btn-letra-${letra}" onclick="filtrarPorLetra('${letra}')">${letra}</button>`;
-            });
-            div.innerHTML = html;
+            const container = document.getElementById('alfabeto-container');
+            for (let i = 65; i <= 90; i++) { // Letras de A a Z
+                const letra = String.fromCharCode(i);
+                const btn = document.createElement('button');
+                btn.className = 'btn-letra';
+                btn.innerText = letra;
+                btn.onclick = () => filtrarPorLetra(letra);
+                container.appendChild(btn);
+            }
         }
 
         function filtrarPorLetra(letra) {
             document.querySelectorAll('.btn-letra').forEach(b => b.classList.remove('ativo'));
             document.getElementById('btn-letra-' + letra).classList.add('ativo');
-            document.getElementById('buscaCatalogo').value = ''; // Limpa a barra de pesquisa
+            document.getElementById('buscaCatalogo').value = ''; // Limpa a busca por texto
 
             if (letra === 'TODOS') {
                 renderizarCatalogo(musicasCatalogo.slice(0, 150));
-                return;
+            } else {
+                const filtrados = musicasCatalogo.filter(m => m.cantor.toUpperCase().startsWith(letra)).slice(0, 150);
+                renderizarCatalogo(filtrados);
             }
-
-            const filtrados = musicasCatalogo.filter(m => m.cantor.toUpperCase().startsWith(letra)).slice(0, 150);
-            renderizarCatalogo(filtrados);
         }
 
         async function carregarCatalogo() {
-            gerarBotoesAlfabeto(); // Desenha os botões na tela
             try {
-                const response = await fetch('catalogo.csv?v=' + new Date().getTime());
+                const response = await fetch('catalogo.csv');
                 const text = await response.text();
-                
-                const delimitador = text.split('\n')[0].includes(';') ? ';' : ',';
-                let linhas = text.split('\n');
-
-                let headers = [];
-                let celulaH = ''; let aspasH = false;
-                let linhaH = linhas[0].trim();
-                for(let j = 0; j < linhaH.length; j++) {
-                    let char = linhaH[j];
-                    if(char === '"') aspasH = !aspasH;
-                    else if (char === delimitador && !aspasH) { headers.push(celulaH.trim().toUpperCase()); celulaH = ''; }
-                    else celulaH += char;
-                }
-                headers.push(celulaH.trim().toUpperCase());
-
-                let idxCantor = 0, idxTitulo = 2, idxInicio = 3;
-                headers.forEach((h, i) => {
-                    if (h.includes('CANTOR')) idxCantor = i;
-                    if (h.includes('TÍTULO') || h.includes('TITULO') || h === 'MUSICA' || h === 'MÚSICA') idxTitulo = i;
-                    if (h.includes('INÍCIO') || h.includes('INICIO') || h.includes('LETRA')) idxInicio = i;
-                });
-                
-                for (let i = 1; i < linhas.length; i++) {
-                    let linha = linhas[i].trim();
-                    if (!linha) continue;
-                    
-                    let colunas = [];
-                    let celula = '';
-                    let aspas = false;
-                    for(let j = 0; j < linha.length; j++) {
-                        let char = linha[j];
-                        if(char === '"') aspas = !aspas;
-                        else if (char === delimitador && !aspas) {
-                            colunas.push(celula.trim()); celula = '';
-                        } else celula += char;
-                    }
-                    colunas.push(celula.trim());
-
-                    if (colunas.length > Math.max(idxCantor, idxTitulo)) {
-                        let cantor = colunas[idxCantor] ? colunas[idxCantor].replace(/^"|"$/g, '').trim() : '';
-                        let titulo = colunas[idxTitulo] ? colunas[idxTitulo].replace(/^"|"$/g, '').trim() : '';
-                        let inicio = colunas[idxInicio] ? colunas[idxInicio].replace(/^"|"$/g, '').trim() : '';
-                        
-                        if(cantor && titulo) {
-                            musicasCatalogo.push({ 
-                                cantor: cantor, 
-                                titulo: titulo, 
-                                inicio: inicio,
-                                filtro: (cantor + " " + titulo + " " + inicio).toLowerCase() 
-                            });
-                        }
-                    }
-                }
-                
+                const linhas = text.split('\n').slice(1); // Ignora o cabeçalho
+                musicasCatalogo = linhas.map(linha => {
+                    const [cantor, titulo, inicio] = linha.split(',');
+                    return { cantor: cantor ? cantor.trim() : '', titulo: titulo ? titulo.trim() : '', inicio: inicio ? inicio.trim() : '', filtro: (cantor + ' ' + titulo + ' ' + inicio).toLowerCase() };
+                }).filter(m => m.cantor && m.titulo); // Filtra linhas vazias ou incompletas
                 musicasCatalogo.sort((a, b) => a.cantor.localeCompare(b.cantor, 'pt-BR'));
-                renderizarCatalogo(musicasCatalogo.slice(0, 150)); 
+                renderizarCatalogo(musicasCatalogo.slice(0, 150)); // Exibe as primeiras 150 por padrão
             } catch(e) {
                 document.getElementById('lista-catalogo').innerHTML = '<p style="color:#e52d27; text-align:center;">Catálogo offline. Peça digitando na busca principal.</p>';
             }
@@ -291,7 +243,7 @@
             lista.forEach(m => {
                 let tituloEscapado = m.titulo.replace(/'/g, "\\'").replace(/"/g, "&quot;");
                 let cantorEscapado = m.cantor.replace(/'/g, "\\'").replace(/"/g, "&quot;");
-                
+
                 html += `
                 <div class="item-resultado" onclick="selecionarDoCatalogo('${tituloEscapado}', '${cantorEscapado}')">
                     <strong style="font-size: 18px; display: block; margin-bottom: 5px;">🎤 ${m.cantor}</strong>
@@ -304,7 +256,7 @@
 
         function filtrarCatalogo() {
             document.querySelectorAll('.btn-letra').forEach(b => b.classList.remove('ativo'));
-            
+
             const termo = document.getElementById('buscaCatalogo').value.toLowerCase();
             if (!termo) {
                 document.getElementById('btn-letra-TODOS').classList.add('ativo');
@@ -323,6 +275,7 @@
 
         window.onload = () => { carregarCatalogo(); };
 
+        // Listener para o status da música atual na TV
         database.ref('statusAtual').on('value', (snapshot) => {
             const status = snapshot.val();
             if (status && status.id !== "avaliando") {
@@ -382,7 +335,7 @@
 
         function confirmarVoto() {
             if (!votoPendente || !idCantorAtual) return;
-            
+
             database.ref('votosAtual').push({ tipo: votoPendente });
             localStorage.setItem('voto_' + idCantorAtual, 'sim');
             bloquearVoto();
@@ -395,18 +348,18 @@
         async function buscarMusica() {
             const termo = document.getElementById('campoBusca').value;
             if (!termo) return alert("Digite o nome de uma música!");
-            
+
             const div = document.getElementById('resultados');
-            div.innerHTML = '<p style="text-align:center; color:#00d2ff;">Buscando no acervo...</p>'; 
+            div.innerHTML = '<p style="text-align:center; color:#00d2ff;">Buscando no YouTube...</p>'; 
 
             const query = encodeURIComponent(termo + " karaoke -oficial -clipe -live");
             const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${query}&type=video&key=${API_KEY}`;
-            
+
             try {
                 const res = await fetch(url); 
                 const dados = await res.json();
                 div.innerHTML = '';
-                
+
                 if(dados.items.length === 0) {
                     div.innerHTML = '<p style="color:#e52d27;">Música não encontrada. Tente outro nome.</p>';
                     return;
@@ -416,8 +369,8 @@
                     const btn = document.createElement('div');
                     btn.className = 'item-resultado';
                     btn.innerHTML = `<strong>${v.snippet.title}</strong><br><span style="font-size:12px; color:#aaa;">Clique para escolher</span>`; 
-                    
-                    btn.onclick = () => fazerPedido(v.id.videoId, v.snippet.title);
+
+                    btn.onclick = () => fazerPedido(v.id.videoId, v.snippet.title, 'youtube');
                     div.appendChild(btn);
                 });
             } catch (err) { 
@@ -425,18 +378,21 @@
             }
         }
 
-        function fazerPedido(videoId, titulo) {
+        function fazerPedido(videoId, titulo, source) {
             const nomeCantor = prompt("Música selecionada! Qual o seu nome (Voz)?");
-            
+
             if (nomeCantor !== null && nomeCantor.trim() !== "") {
+                // A lógica de auto-aprovar é do DJ, então o pedido do cliente sempre vai para 'pedidos'
                 database.ref('pedidos').push({
                     videoId: videoId,
                     titulo: titulo,
-                    cantor: nomeCantor.trim()
+                    cantor: nomeCantor.trim(),
+                    source: source,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
                 }).then(() => {
                     document.getElementById('campoBusca').value = "";
                     document.getElementById('resultados').innerHTML = "";
-                    
+
                     mostrarAba('menu'); 
                     const notif = document.getElementById('notificacao');
                     notif.style.display = 'block';
