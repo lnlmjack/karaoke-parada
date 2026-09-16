@@ -175,7 +175,7 @@
         </div>
     </div>
 
-    <div class="versao-app">v1.7</div>
+    <div class="versao-app">v1.8</div>
     <div onclick="definirNotaManual()" style="position: fixed; bottom: 4px; right: 35px; font-size: 13px; color: #fff; opacity: 0.3; z-index: 9999; cursor: pointer; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</div>
 
     <script>
@@ -267,11 +267,21 @@
         let pedidosPendentes = [];
         let autoAprovar = false;
 
+        function salvarCantorAutomaticamente(nome) {
+            if (!nome || nome.trim() === "" || nome.trim() === "Convidados") return;
+            const nomeFormatado = nome.trim();
+            if (!cantoresSalvos.includes(nomeFormatado)) {
+                cantoresSalvos.push(nomeFormatado);
+                localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
+            }
+        }
+
         function toggleAutoAprovar() {
             autoAprovar = document.getElementById('chkAutoAprovar').checked;
             if (autoAprovar && pedidosPendentes.length > 0) {
                 pedidosPendentes.forEach(p => {
                     filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
+                    salvarCantorAutomaticamente(p.cantor);
                     database.ref('pedidos').child(p.key).remove();
                 });
                 atualizarTelaFila();
@@ -284,6 +294,7 @@
             if (autoAprovar && pedidosPendentes.length > 0) {
                 pedidosPendentes.forEach(p => {
                     filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
+                    salvarCantorAutomaticamente(p.cantor);
                     database.ref('pedidos').child(p.key).remove();
                 });
                 atualizarTelaFila();
@@ -312,6 +323,7 @@
         function aprovarPedido(index) {
             const p = pedidosPendentes[index];
             filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
+            salvarCantorAutomaticamente(p.cantor);
             atualizarTelaFila();
             database.ref('pedidos').child(p.key).remove(); 
         }

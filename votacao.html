@@ -67,6 +67,8 @@
         .item-resultado:active { background: #333; }
         
         #notificacao { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #28a745; color: white; padding: 15px 25px; border-radius: 30px; font-weight: bold; font-size: 16px; z-index: 1000; box-shadow: 0 5px 15px rgba(0,0,0,0.6); }
+
+        .versao-app { position: fixed; bottom: 5px; right: 5px; font-size: 10px; color: rgba(255, 255, 255, 0.3); z-index: 9999; pointer-events: none; }
     </style>
 </head>
 <body>
@@ -158,6 +160,7 @@
     </div>
 
     <div id="notificacao">✅ Pedido enviado ao DJ!</div>
+    <div class="versao-app">v1.8</div>
 
     <script>
         const firebaseConfig = {
@@ -491,19 +494,6 @@
                 });
             }
         }
-
-        // Sistema automático para buscar e espelhar a versão exata do index.html
-        fetch('index.html?v=' + new Date().getTime())
-            .then(res => res.text())
-            .then(html => {
-                const match = html.match(/<div class="versao-app">(v[0-9.]+)<\/div>/);
-                if (match && match[1]) {
-                    const divVersao = document.createElement('div');
-                    divVersao.style.cssText = "position: fixed; bottom: 5px; right: 5px; font-size: 10px; color: rgba(255, 255, 255, 0.3); z-index: 9999; pointer-events: none;";
-                    divVersao.innerText = match[1];
-                    document.body.appendChild(divVersao);
-                }
-            }).catch(() => {});
     </script>
 </body>
 </html>
