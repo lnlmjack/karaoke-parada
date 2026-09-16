@@ -7,22 +7,23 @@
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; position: relative; min-height: 100vh; }
         h1, h2, h3 { color: #0056b3; }
-        .container { max-width: 800px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-bottom: 40px; } /* Adicionado margin-bottom para a versão */
+        .container { max-width: 800px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-bottom: 40px; }
         .manual-section { margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
         .manual-section:last-child { border-bottom: none; }
         button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px; margin-bottom: 10px; }
         button:hover { background-color: #0056b3; }
         input[type="text"] { padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: calc(100% - 100px); margin-right: 10px; }
-        #dj-queue-list ul { list-style: none; padding: 0; }
-        #dj-queue-list li { background-color: #e9ecef; margin-bottom: 5px; padding: 8px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
-        #dj-queue-list li button { background-color: #dc3545; margin: 0; padding: 5px 10px; }
-        #dj-queue-list li button:hover { background-color: #c82333; }
+        #dj-queue-list ul, #pending-requests-list ul { list-style: none; padding: 0; }
+        #dj-queue-list li, #pending-requests-list li { background-color: #e9ecef; margin-bottom: 5px; padding: 8px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+        #dj-queue-list li button, #pending-requests-list li button { background-color: #28a745; margin: 0; padding: 5px 10px; }
+        #dj-queue-list li button.remove, #pending-requests-list li button.remove { background-color: #dc3545; }
+        #dj-queue-list li button:hover, #pending-requests-list li button:hover { opacity: 0.8; }
         #manual-content { display: block; }
         #painel-controle { display: none; }
-        #search-results { margin-top: 10px; border: 1px solid #eee; max-height: 200px; overflow-y: auto; }
-        #search-results div { padding: 8px; border-bottom: 1px solid #eee; cursor: pointer; }
-        #search-results div:hover { background-color: #f0f0f0; }
-        #search-results div:last-child { border-bottom: none; }
+        #dj-search-results { margin-top: 10px; border: 1px solid #eee; max-height: 200px; overflow-y: auto; }
+        #dj-search-results div { padding: 8px; border-bottom: 1px solid #eee; cursor: pointer; }
+        #dj-search-results div:hover { background-color: #f0f0f0; }
+        #dj-search-results div:last-child { border-bottom: none; }
         .song-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
         .song-item:last-child { border-bottom: none; }
         .song-info { flex-grow: 1; text-align: left; }
@@ -84,9 +85,11 @@
             <button onclick="searchSongsDJ()">Buscar</button>
             <div id="dj-search-results"></div>
 
-            <h3>📩 Pedidos <input type="checkbox" id="auto-approve-checkbox"> Auto-Aprovar</h3>
+            <h3>📩 Pedidos <input type="checkbox" id="auto-approve-checkbox-dj"> Auto-Aprovar</h3>
             <div id="pending-requests-list">
-                <!-- Pedidos pendentes serão carregados aqui -->
+                <ul>
+                    <!-- Pedidos pendentes serão carregados aqui -->
+                </ul>
             </div>
 
             <h3>Fila:</h3>
@@ -115,21 +118,21 @@
     <script>
         // Firebase configuration (SUBSTITUA COM SUAS CREDENCIAIS)
         const firebaseConfig = {
-            apiKey: "AIzaSyBMLhTZc7qQLjE65L3BuW9e2ijvxObTxp8",
-            authDomain: "karaoke-parada.firebaseapp.com",
-            databaseURL: "https://karaoke-parada-default-rtdb.firebaseio.com",
-            projectId: "karaoke-parada",
-            storageBucket: "karaoke-parada.firebasestorage.app",
-            messagingSenderId: "379214932685",
-            appId: "1:379214932685:web:873e8b5b7d882a4f751784"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+        const YOUTUBE_API_KEY = 'YOUR_YOUTUBE_API_KEY'; // Sua chave da API do YouTube
 
-        let currentQueue = [];
-        let pendingRequests = [];
+        let catalog = []; // Catálogo de músicas carregado do CSV
 
         function toggleManualAndPainel() {
             const manual = document.getElementById('manual-content');
@@ -148,167 +151,272 @@
             window.open('link_da_votacao.txt', '_blank'); // Assumindo que link_da_votacao.txt contém a URL da TV
         }
 
-        // DJ Search (YouTube API - placeholder for actual implementation)
-        const API_KEY = "SUA_CHAVE_API_YOUTUBE"; // Substitua pela sua chave da API do YouTube
+        // --- Funções de Busca e Fila do DJ ---
+
+        // Carrega o catálogo CSV (se existir)
+        async function loadCatalogDJ() {
+            try {
+                const response = await fetch('catalogo.csv?v=' + new Date().getTime());
+                const text = await response.text();
+
+                const delimitador = text.split('\n')[0].includes(';') ? ';' : ',';
+                let linhas = text.split('\n');
+
+                let headers = [];
+                let celulaH = ''; let aspasH = false;
+                let linhaH = linhas[0].trim();
+                for(let j = 0; j < linhaH.length; j++) {
+                    let char = linhaH[j];
+                    if(char === '"') aspasH = !aspasH;
+                    else if (char === delimitador && !aspasH) { headers.push(celulaH.trim().toUpperCase()); celulaH = ''; }
+                    else celulaH += char;
+                }
+                headers.push(celulaH.trim().toUpperCase());
+
+                let idxCantor = 0, idxTitulo = 2, idxInicio = 3;
+                headers.forEach((h, i) => {
+                    if (h.includes('CANTOR')) idxCantor = i;
+                    if (h.includes('TÍTULO') || h.includes('TITULO') || h === 'MUSICA' || h === 'MÚSICA') idxTitulo = i;
+                    if (h.includes('INÍCIO') || h.includes('INICIO') || h.includes('LETRA')) idxInicio = i;
+                });
+
+                for (let i = 1; i < linhas.length; i++) {
+                    let linha = linhas[i].trim();
+                    if (!linha) continue;
+
+                    let colunas = [];
+                    let celula = '';
+                    let aspas = false;
+                    for(let j = 0; j < linha.length; j++) {
+                        let char = linha[j];
+                        if(char === '"') aspas = !aspas;
+                        else if (char === delimitador && !aspas) {
+                            colunas.push(celula.trim()); celula = '';
+                        } else celula += char;
+                    }
+                    colunas.push(celula.trim());
+
+                    if (colunas.length > Math.max(idxCantor, idxTitulo)) {
+                        let cantor = colunas[idxCantor] ? colunas[idxCantor].replace(/^"|"$/g, '').trim() : '';
+                        let titulo = colunas[idxTitulo] ? colunas[idxTitulo].replace(/^"|"$/g, '').trim() : '';
+                        let inicio = colunas[idxInicio] ? colunas[idxInicio].replace(/^"|"$/g, '').trim() : '';
+
+                        if(cantor && titulo) {
+                            catalog.push({ 
+                                cantor: cantor, 
+                                titulo: titulo, 
+                                inicio: inicio,
+                                filtro: (cantor + " " + titulo + " " + inicio).toLowerCase() 
+                            });
+                        }
+                    }
+                }
+                catalog.sort((a, b) => a.cantor.localeCompare(b.cantor, 'pt-BR'));
+            } catch(e) {
+                console.warn("Catálogo CSV não encontrado ou com erro. A busca do DJ será apenas no YouTube.", e);
+            }
+        }
 
         async function searchSongsDJ() {
-            const termo = document.getElementById('dj-search-input').value;
+            const termo = document.getElementById('dj-search-input').value.toLowerCase();
             if (!termo) return alert("Digite o nome de uma música ou artista para buscar!");
 
             const div = document.getElementById('dj-search-results');
-            div.innerHTML = '<p style="text-align:center; color:#0056b3;">Buscando no YouTube...</p>';
+            div.innerHTML = '<p style="text-align:center; color:#0056b3;">Buscando...</p>';
 
-            const query = encodeURIComponent(termo + " karaoke -oficial -clipe -live");
-            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${query}&type=video&key=${API_KEY}`;
+            let results = [];
 
-            try {
-                const res = await fetch(url);
-                const dados = await res.json();
-                div.innerHTML = '';
-
-                if (dados.items.length === 0) {
-                    div.innerHTML = '<p style="color:#dc3545;">Música não encontrada. Tente outro nome.</p>';
-                    return;
-                }
-
-                dados.items.forEach(v => {
-                    const btn = document.createElement('div');
-                    btn.className = 'song-item';
-                    btn.innerHTML = `
-                        <div class="song-info">
-                            <strong>${v.snippet.title}</strong>
-                            <span>${v.snippet.channelTitle}</span>
-                        </div>
-                        <div class="song-actions">
-                            <button onclick="addSongToQueue('${v.id.videoId}', '${v.snippet.title.replace(/'/g, "\\'")}', 'DJ')">Adicionar à Fila</button>
-                        </div>
-                    `;
-                    div.appendChild(btn);
+            // 1. Buscar no catálogo local primeiro
+            const catalogResults = catalog.filter(m => m.filtro.includes(termo)).slice(0, 5);
+            catalogResults.forEach(m => {
+                results.push({
+                    videoId: null, // Não tem videoId para músicas do catálogo
+                    title: `${m.cantor} - ${m.titulo}`,
+                    source: 'catalog'
                 });
-            } catch (err) {
-                console.error("Erro ao buscar no YouTube:", err);
-                div.innerHTML = "<p style='color:#dc3545'>Erro ao buscar. Verifique a chave da API do YouTube.</p>";
+            });
+
+            // 2. Se não houver resultados suficientes no catálogo, buscar no YouTube
+            if (results.length < 5) {
+                try {
+                    const query = encodeURIComponent(termo + " karaoke -oficial -clipe -live");
+                    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=${5 - results.length}&q=${query}&type=video&key=${YOUTUBE_API_KEY}`;
+
+                    const res = await fetch(url); 
+                    const dados = await res.json();
+
+                    dados.items.forEach(v => {
+                        results.push({
+                            videoId: v.id.videoId,
+                            title: v.snippet.title,
+                            source: 'youtube'
+                        });
+                    });
+                } catch (err) { 
+                    console.error("Erro ao buscar no YouTube:", err);
+                    // Não alertar o DJ, apenas mostrar que houve erro na busca do YouTube
+                }
             }
+
+            div.innerHTML = '';
+            if(results.length === 0) {
+                div.innerHTML = '<p style="color:#dc3545;">Música não encontrada. Tente outro nome.</p>';
+                return;
+            }
+
+            results.forEach(item => {
+                const btn = document.createElement('div');
+                btn.className = 'song-item';
+                btn.innerHTML = `
+                    <div class="song-info">
+                        <strong>${item.title}</strong>
+                        <span>(Fonte: ${item.source === 'youtube' ? 'YouTube' : 'Catálogo'})</span>
+                    </div>
+                    <div class="song-actions">
+                        <button onclick="addSongToQueue('${item.videoId || ''}', '${item.title.replace(/'/g, "\\'")}', 'DJ', '${item.source}')">Adicionar à Fila</button>
+                    </div>
+                `;
+                div.appendChild(btn);
+            });
         }
 
-        function addSongToQueue(videoId, title, requestedBy) {
+        function addSongToQueue(videoId, title, requestedBy, source) {
             database.ref('songQueue').push({
                 videoId: videoId,
-                titulo: title,
-                cantor: requestedBy,
-                timestamp: firebase.database.ServerValue.TIMESTAMP,
-                status: 'queued' // 'queued', 'playing', 'played'
+                title: title,
+                requestedBy: requestedBy,
+                source: source,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            }).then(() => {
+                document.getElementById('dj-search-input').value = '';
+                document.getElementById('dj-search-results').innerHTML = '';
+            }).catch(error => {
+                console.error("Erro ao adicionar música à fila:", error);
+                alert("Erro ao adicionar música à fila.");
             });
-            document.getElementById('dj-search-results').innerHTML = ''; // Limpa resultados após adicionar
-            document.getElementById('dj-search-input').value = ''; // Limpa o campo de busca
-        }
-
-        function approveRequest(requestId, videoId, title, requestedBy) {
-            database.ref('pedidos').child(requestId).remove(); // Remove do pending
-            addSongToQueue(videoId, title, requestedBy); // Adiciona à fila principal
-        }
-
-        function removeSongFromQueue(songId) {
-            database.ref('songQueue').child(songId).remove();
         }
 
         function playNextSong() {
-            if (currentQueue.length > 0) {
-                const nextSong = currentQueue[0];
-                // Marcar a música como "playing" no Firebase
-                database.ref('songQueue').child(nextSong.id).update({ status: 'playing' });
-                // Mover a música para o histórico após um tempo (simulado)
-                setTimeout(() => {
-                    database.ref('songQueue').child(nextSong.id).remove(); // Remove da fila
-                    database.ref('history').push({ ...nextSong, status: 'played', playedAt: firebase.database.ServerValue.TIMESTAMP }); // Adiciona ao histórico
-                }, 5000); // Simula 5 segundos de reprodução
-            } else {
-                alert("A fila está vazia!");
+            database.ref('songQueue').orderByChild('timestamp').limitToFirst(1).once('value', snapshot => {
+                if (snapshot.exists()) {
+                    const firstSongKey = Object.keys(snapshot.val())[0];
+                    const firstSong = snapshot.val()[firstSongKey];
+
+                    // Atualiza o status da música atual na TV
+                    database.ref('statusAtual').set({
+                        id: firstSongKey, // Usar a chave do Firebase como ID único
+                        cantor: firstSong.requestedBy,
+                        titulo: firstSong.title,
+                        videoId: firstSong.videoId,
+                        source: firstSong.source,
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    }).then(() => {
+                        // Remove a música da fila
+                        database.ref('songQueue/' + firstSongKey).remove();
+                        // Opcional: Adicionar ao histórico
+                        database.ref('history').push(firstSong);
+                    }).catch(error => {
+                        console.error("Erro ao tocar próxima música:", error);
+                        alert("Erro ao tocar próxima música.");
+                    });
+                } else {
+                    alert("A fila está vazia!");
+                }
+            });
+        }
+
+        function removeSongFromQueue(key) {
+            if (confirm("Tem certeza que deseja remover esta música da fila?")) {
+                database.ref('songQueue/' + key).remove().catch(error => {
+                    console.error("Erro ao remover música da fila:", error);
+                    alert("Erro ao remover música da fila.");
+                });
             }
         }
 
-        // Listeners para Firebase Realtime Database
-        database.ref('pedidos').on('value', (snapshot) => {
-            pendingRequests = [];
-            const requestsList = document.getElementById('pending-requests-list');
-            requestsList.innerHTML = '';
-            snapshot.forEach((childSnapshot) => {
-                const request = { id: childSnapshot.key, ...childSnapshot.val() };
-                pendingRequests.push(request);
-
-                const autoApprove = document.getElementById('auto-approve-checkbox').checked;
-                if (autoApprove) {
-                    approveRequest(request.id, request.videoId, request.titulo, request.cantor);
-                } else {
-                    const li = document.createElement('div');
-                    li.className = 'song-item';
-                    li.innerHTML = `
-                        <div class="song-info">
-                            <strong>${request.titulo}</strong>
-                            <span>Cantor: ${request.cantor}</span>
-                        </div>
-                        <div class="song-actions">
-                            <button onclick="approveRequest('${request.id}', '${request.videoId}', '${request.titulo.replace(/'/g, "\\'")}', '${request.cantor.replace(/'/g, "\\'")}')">Aprovar</button>
-                            <button onclick="database.ref('pedidos').child('${request.id}').remove()">Rejeitar</button>
-                        </div>
-                    `;
-                    requestsList.appendChild(li);
-                }
+        function approveRequest(key, videoId, title, requestedBy, source) {
+            database.ref('songQueue').push({
+                videoId: videoId,
+                title: title,
+                requestedBy: requestedBy,
+                source: source,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            }).then(() => {
+                database.ref('pedidos/' + key).remove();
+            }).catch(error => {
+                console.error("Erro ao aprovar pedido:", error);
+                alert("Erro ao aprovar pedido.");
             });
-            if (pendingRequests.length === 0 && !document.getElementById('auto-approve-checkbox').checked) {
-                requestsList.innerHTML = '<p style="color:#aaa;">Nenhum pedido pendente.</p>';
-            }
-        });
+        }
 
+        function rejectRequest(key) {
+            if (confirm("Tem certeza que deseja rejeitar este pedido?")) {
+                database.ref('pedidos/' + key).remove().catch(error => {
+                    console.error("Erro ao rejeitar pedido:", error);
+                    alert("Erro ao rejeitar pedido.");
+                });
+            }
+        }
+
+        // --- Listeners do Firebase ---
+
+        // Listener para a fila de músicas
         database.ref('songQueue').on('value', (snapshot) => {
-            currentQueue = [];
             const queueList = document.getElementById('dj-queue-list').querySelector('ul');
             queueList.innerHTML = '';
-            snapshot.forEach((childSnapshot) => {
-                const song = { id: childSnapshot.key, ...childSnapshot.val() };
-                currentQueue.push(song);
-            });
+            if (snapshot.exists()) {
+                const songs = [];
+                snapshot.forEach(childSnapshot => {
+                    songs.push({ key: childSnapshot.key, ...childSnapshot.val() });
+                });
+                // Ordenar por timestamp para garantir a ordem de chegada
+                songs.sort((a, b) => a.timestamp - b.timestamp);
 
-            // Ordenar a fila por timestamp
-            currentQueue.sort((a, b) => a.timestamp - b.timestamp);
-
-            if (currentQueue.length === 0) {
-                queueList.innerHTML = '<p style="color:#aaa;">A fila está vazia.</p>';
-            } else {
-                currentQueue.forEach((song, index) => {
+                songs.forEach(song => {
                     const li = document.createElement('li');
                     li.innerHTML = `
-                        ${index + 1}. <strong>${song.titulo}</strong> (Cantor: ${song.cantor})
-                        <button onclick="removeSongFromQueue('${song.id}')">Remover</button>
+                        <span>${song.requestedBy} - ${song.title}</span>
+                        <button class="remove" onclick="removeSongFromQueue('${song.key}')">Remover</button>
                     `;
                     queueList.appendChild(li);
                 });
-            }
-        });
-
-        database.ref('history').on('value', (snapshot) => {
-            const historyList = document.getElementById('history-list');
-            historyList.innerHTML = '';
-            const history = [];
-            snapshot.forEach((childSnapshot) => {
-                history.push(childSnapshot.val());
-            });
-            history.sort((a, b) => b.playedAt - a.playedAt); // Mais recente primeiro
-
-            if (history.length === 0) {
-                historyList.innerHTML = '<p style="color:#aaa;">Nenhuma música tocada ainda.</p>';
             } else {
-                history.slice(0, 5).forEach(song => { // Mostrar as últimas 5
-                    const p = document.createElement('p');
-                    p.innerHTML = `<strong>${song.titulo}</strong> (Cantor: ${song.cantor}) - Tocada em: ${new Date(song.playedAt).toLocaleTimeString()}`;
-                    historyList.appendChild(p);
-                });
+                queueList.innerHTML = '<li>Fila vazia.</li>';
             }
         });
 
-        // Inicializa o painel de controle visível por padrão
+        // Listener para pedidos pendentes
+        database.ref('pedidos').on('value', (snapshot) => {
+            const pendingList = document.getElementById('pending-requests-list').querySelector('ul');
+            pendingList.innerHTML = '';
+            if (snapshot.exists()) {
+                const requests = [];
+                snapshot.forEach(childSnapshot => {
+                    requests.push({ key: childSnapshot.key, ...childSnapshot.val() });
+                });
+                requests.sort((a, b) => a.timestamp - b.timestamp);
+
+                requests.forEach(req => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span>${req.cantor} - ${req.titulo}</span>
+                        <div>
+                            <button onclick="approveRequest('${req.key}', '${req.videoId || ''}', '${req.titulo.replace(/'/g, "\\'")}', '${req.cantor.replace(/'/g, "\\'")}', '${req.source}')">Aprovar</button>
+                            <button class="remove" onclick="rejectRequest('${req.key}')">Rejeitar</button>
+                        </div>
+                    `;
+                    pendingList.appendChild(li);
+                });
+            } else {
+                pendingList.innerHTML = '<li>Nenhum pedido pendente.</li>';
+            }
+        });
+
+        // Inicialização
         document.addEventListener('DOMContentLoaded', () => {
-            toggleManualAndPainel(); // Esconde o manual e mostra o painel
+            loadCatalogDJ(); // Carrega o catálogo para a busca do DJ
+            // Garante que o painel de controle esteja visível por padrão ou conforme a lógica inicial
+            toggleManualAndPainel(); // Exibe o painel de controle por padrão
         });
     </script>
 </body>
