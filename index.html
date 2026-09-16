@@ -2,361 +2,521 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel do DJ - Parada 10.95 Bar</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Painel do DJ - Karaokê</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+
     <style>
-        body {
-            font-family: sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            color: #333;
+        body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; padding: 20px; margin: 0; }
+        .container { max-width: 1600px; margin: 0 auto; position: relative; }
+
+        .area-botoes-topo { display: flex; gap: 15px; margin-bottom: 25px; }
+        .btn-topo { flex: 1; padding: 15px; font-size: 16px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s;}
+        .btn-tv { background: #007bff; } .btn-tv:hover { background: #0056b3; } .btn-tv.conectado { background: #17a2b8; pointer-events: none; }
+        .btn-mic { background: #e52d27; text-align: center; display: flex; align-items: center; justify-content: center; } 
+        .btn-mic:hover { filter: brightness(1.2); }
+
+        .btn-tocar { background: #28a745; width: 100%; padding: 15px; font-size: 16px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 20px;}
+
+        .area-busca { display: flex; gap: 10px; margin-bottom: 15px; }
+        input { flex: 1; padding: 12px; border-radius: 5px; border: none; font-size: 16px; }
+        .btn-buscar { padding: 12px 25px; background: #e52d27; color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer;}
+
+        .paineis { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+        .painel { background: #1e1e1e; padding: 15px; border-radius: 8px; height: 450px; overflow-y: auto; position: relative;}
+
+        .item-resultado, .item-fila, .item-historico, .item-ranking { margin: 10px 0; padding: 12px; background: #333; border-radius: 5px; }
+        .item-resultado { cursor: pointer; transition: 0.2s; } .item-resultado:hover { background: #e52d27; }
+
+        .item-fila { border-left: 5px solid #e52d27; display: flex; justify-content: space-between; align-items: center; }
+        .titulo-musica { flex: 1; font-size: 14px; } .nome-cantor { color: #aaa; font-size: 12px; display: block; font-style: italic; }
+        .botoes-acao { display: flex; gap: 3px; } .btn-acao { background: transparent; border: none; cursor: pointer; font-size: 16px; padding: 5px; transition: 0.2s;} .btn-acao:hover { transform: scale(1.2); }
+
+        .item-historico { border-left: 5px solid #28a745; color: #888; font-size: 14px; background: #222; }
+        .item-ranking { border-left: 5px solid #ffeb3b; background: #222; font-size: 14px; display: flex; flex-direction: column; align-items: stretch; transition: 0.2s; }
+        .item-ranking:hover { background: #2a2a2a; }
+        .info-ranking { flex: 1; } .pontuacao { font-size: 26px; color: #ffeb3b; font-weight: 900; margin-left: 10px; }
+
+        #contador-votos { position: absolute; top: 15px; right: 15px; background: #e52d27; padding: 8px 12px; border-radius: 20px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        #contador-votos:hover { transform: scale(1.05); background: #c21a15; }
+
+        #modal-votos { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 200; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #e52d27; width: 300px; }
+        #modal-votos h2 { margin-top: 0; color: #fff; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .linha-voto { display: flex; justify-content: space-between; font-size: 20px; margin: 12px 0; border-bottom: 1px dashed #333; padding-bottom: 5px; }
+        #fundo-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 199; }
+
+        #btn-manual { position: absolute; top: 20px; right: 20px; background: #333; color: #fff; border: 1px solid #555; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
+        #btn-manual:hover { background: #555; }
+
+        #manual-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 200; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #007bff; width: 80%; max-width: 600px; max-height: 80vh; overflow-y: auto; }
+        #manual-modal h2, #manual-modal h3 { color: #007bff; }
+        #manual-modal p, #manual-modal li { color: #ccc; line-height: 1.6; }
+        #manual-modal ul { list-style-type: disc; margin-left: 20px; }
+        #manual-modal button { margin-top: 20px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        #manual-modal button:hover { background: #0056b3; }
+
+        #login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #121212;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            position: relative; /* Para posicionar a versão */
+            align-items: center;
+            z-index: 1000;
         }
-        #login-container, #dj-panel {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        #login-form {
+            background-color: #1e1e1e;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             text-align: center;
-            width: 90%;
-            max-width: 400px;
-            box-sizing: border-box;
+            width: 300px;
         }
-        #dj-panel {
-            display: none; /* Oculto por padrão */
-            text-align: left;
+        #login-form h1 {
+            color: #e52d27;
+            margin-bottom: 30px;
         }
-        h1 {
-            color: #2c3e50;
+        #login-form input {
+            width: calc(100% - 24px);
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background-color: #333;
+            color: #fff;
+            font-size: 16px;
+        }
+        #login-form button {
+            width: 100%;
+            padding: 12px;
+            background-color: #e52d27;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #login-form button:hover {
+            background-color: #c21a15;
+        }
+        #login-error {
+            color: #ff4d4d;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        #version-display {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #aaa;
+            font-size: 12px;
+        }
+        #logo-login {
+            width: 150px; /* Ajuste o tamanho conforme necessário */
             margin-bottom: 20px;
         }
-        img {
-            max-width: 150px;
-            margin-bottom: 20px;
+
+        /* Estilos para a seção de alteração de senha */
+        #change-password-section {
+            background-color: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid #444;
         }
-        input[type="password"] {
+        #change-password-section input {
             width: calc(100% - 20px);
             padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #555;
+            background-color: #333;
+            color: #fff;
         }
-        button {
-            background-color: #e74c3c;
+        #change-password-section button {
+            padding: 10px 15px;
+            background-color: #007bff;
             color: white;
-            padding: 10px 20px;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
+            margin-top: 5px;
         }
-        button:hover {
-            background-color: #c0392b;
+        #change-password-section button:hover {
+            background-color: #0056b3;
         }
-        .version-display {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            font-size: 0.7em;
-            color: #777;
-        }
-        .manual-section {
-            margin-top: 20px;
-            border-top: 1px solid #eee;
-            padding-top: 20px;
-        }
-        .manual-section h3 {
-            color: #34495e;
-        }
-        .manual-section ul {
-            list-style: none;
-            padding: 0;
-        }
-        .manual-section li {
-            margin-bottom: 8px;
-        }
-        .manual-section li::before {
-            content: "• ";
-            color: #e74c3c;
-            font-weight: bold;
-            display: inline-block;
-            width: 1em;
-            margin-left: -1em;
-        }
-        .hidden {
-            display: none;
-        }
-        .message {
-            color: #e74c3c;
+        #change-password-status {
             margin-top: 10px;
+            font-size: 14px;
+            color: #fff;
+        }
+        .user-info-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background-color: #1e1e1e;
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+        .user-info-bar span {
+            font-size: 16px;
             font-weight: bold;
         }
-        /* Estilos para o painel do DJ */
-        #dj-panel h2, #dj-panel h3 {
-            color: #2c3e50;
-            margin-top: 20px;
-            margin-bottom: 10px;
+        .user-actions button {
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
         }
-        #dj-panel button {
-            margin-right: 10px;
-            margin-bottom: 10px;
+        .user-actions button:hover {
+            background-color: #0056b3;
         }
-        #dj-panel ul {
-            list-style: none;
-            padding: 0;
-        }
-        #dj-panel li {
-            background-color: #ecf0f1;
-            padding: 10px;
-            margin-bottom: 5px;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        #dj-panel li button {
-            background-color: #3498db;
-            padding: 5px 10px;
-            font-size: 0.9em;
-        }
-        #dj-panel li button:hover {
-            background-color: #2980b9;
-        }
-        #dj-panel .manual-content {
-            background-color: #ecf0f1;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-            display: none; /* Oculto por padrão */
-        }
-        #dj-panel .manual-content h3 {
-            margin-top: 0;
-        }
-        #dj-panel .manual-content ul {
-            list-style: disc;
-            margin-left: 20px;
-        }
-        #dj-panel .manual-content li::before {
-            content: none;
-        }
+
     </style>
 </head>
 <body>
-    <div id="login-container">
-        <img src="logop.png" alt="Logo Parada 10.95 Bar">
-        <h1>🔒 Painel do DJ</h1>
-        <input type="password" id="password-input" placeholder="Senha do DJ">
-        <button id="login-button">Entrar</button>
-        <p id="login-message" class="message hidden">Senha incorreta.</p>
+    <div id="login-screen">
+        <div id="login-form">
+            <img id="logo-login" src="logop.png" alt="Logo">
+            <h1>🔒 Painel do DJ</h1>
+            <input type="email" id="login-email" placeholder="Usuário (e-mail)" required>
+            <input type="password" id="login-password" placeholder="Senha" required>
+            <button onclick="login()">Entrar</button>
+            <p id="login-error"></p>
+        </div>
+        <div id="version-display">v1.5</div>
     </div>
 
-    <div id="dj-panel" class="hidden">
-        <img src="logop.png" alt="Logo Parada 10.95 Bar">
-        <h1>Painel do DJ</h1>
-        <p>Bem-vindo, <span id="logged-in-user">DJ</span>!</p>
-        <button id="logout-button">Sair</button>
-        <button id="change-password-button">Alterar Senha</button>
+    <div id="main-content" style="display: none;">
+        <div class="container">
+            <div class="user-info-bar">
+                <span id="logged-in-as"></span>
+                <div class="user-actions">
+                    <button onclick="showChangePasswordSection()">Alterar Senha</button>
+                    <button onclick="logout()">Sair</button>
+                </div>
+            </div>
 
-        <div id="change-password-section" class="hidden">
-            <h3>Alterar Minha Senha</h3>
-            <input type="password" id="new-password-input" placeholder="Nova Senha">
-            <input type="password" id="confirm-new-password-input" placeholder="Confirmar Nova Senha">
-            <button id="save-new-password-button">Salvar Nova Senha</button>
-            <p id="password-change-message" class="message hidden"></p>
-        </div>
+            <div id="change-password-section" style="display: none;">
+                <h3>Alterar Minha Senha</h3>
+                <input type="password" id="new-password" placeholder="Nova Senha (mínimo 6 caracteres)" required>
+                <input type="password" id="confirm-new-password" placeholder="Confirmar Nova Senha" required>
+                <button onclick="changePassword()">Salvar Nova Senha</button>
+                <p id="change-password-status"></p>
+            </div>
 
-        <hr>
+            <div class="area-botoes-topo">
+                <button class="btn-topo btn-tv" onclick="iniciarSistema()">🚀 1. INICIAR SISTEMA E TV</button>
+                <button class="btn-topo btn-mic" onclick="iniciarAvaliador()">🎙️ 2. AVALIADOR (INICIANDO...)</button>
+            </div>
 
-        <button>🚀 1. INICIAR SISTEMA E TV</button>
-        <button>🎙️ 2. AVALIADOR (INICIANDO...)</button>
-        <input type="text" placeholder="Buscar">
-        <button>▶️ Tocar Próxima da Fila</button>
+            <div class="area-busca">
+                <input type="text" id="busca-dj" placeholder="Buscar Música (DJ)">
+                <button class="btn-buscar" onclick="buscarMusicaDJ()">Buscar</button>
+            </div>
 
-        <h3>Busca do DJ:</h3>
-        <p>Conteúdo da busca...</p>
+            <button class="btn-tocar" onclick="tocarProxima()">▶️ Tocar Próxima da Fila</button>
 
-        <h3>📩 Pedidos [0] [<input type="checkbox">] Auto-Aprovar</h3>
-        <ul>
-            <li>Pedido de Música 1 <button>Aprovar</button></li>
-            <li>Pedido de Música 2 <button>Aprovar</button></li>
-        </ul>
-
-        <h3>Fila:</h3>
-        <ul>
-            <li>Música na Fila 1</li>
-            <li>Música na Fila 2</li>
-        </ul>
-
-        <h3>🏆 Ranking:</h3>
-        <p>Conteúdo do ranking...</p>
-
-        <h3>Histórico:</h3>
-        <p>Conteúdo do histórico...</p>
-
-        <button id="view-votes-button">📊 Votos Desta Música</button>
-        <div id="votes-section" class="hidden">
-            <h4>Votos para a Música Atual</h4>
-            <p>Detalhes dos votos...</p>
-            <button>Fechar</button>
-        </div>
-
-        <button id="show-manual-button">📖 Manual do Sistema</button>
-        <div id="manual-content" class="manual-content">
-            <h2>📖 Manual do Operador - Parada 10.95 Bar</h2>
-            <h3>1. Iniciando o Sistema</h3>
-            <ul>
-                <li>Clique em 🚀 1. INICIAR SISTEMA E TV. O navegador abrirá a tela do telão. Arraste para a TV do bar e aperte F11 para tela cheia.</li>
-                <li>Clique em 🎙️ 2. AVALIADOR e permita o uso do microfone no navegador.</li>
-            </ul>
-            <h3>2. Gerenciando as Músicas</h3>
-            <ul>
-                <li>Na Busca do DJ: Digite o nome da música ou cole o link direto do YouTube.</li>
-                <li>No Celular dos Clientes: O cliente escaneia o QR Code da TV, busca a música e o pedido chega na caixa de <strong>📩 Pedidos</strong>.</li>
-            </ul>
-            <h3>3. Sistema de Notas e Votação ao Vivo</h3>
-            <p>A nota que aparece na TV é a soma do barulho captado pelo microfone e dos votos enviados pelos celulares.</p>
-            <p><strong>⚙️ TRUQUE SECRETO DO DJ:</strong></p>
-            <ul>
-                <li>Aperte o <strong>6</strong> = Força nota entre 60 e 69.</li>
-                <li>Aperte o <strong>7</strong> = Força nota entre 70 e 79.</li>
-                <li>Aperte o <strong>8</strong> = Força nota entre 80 e 89.</li>
-                <li>Aperte o <strong>9</strong> = Força nota entre 90 e 99.</li>
-                <li>Aperte o <strong>0</strong> = Força nota 100!</li>
-            </ul>
-            <button id="close-manual-button">Fechar Manual</button>
+            <div class="paineis">
+                <div class="painel">
+                    <h3>Busca do DJ:</h3>
+                    <div id="resultados-busca"></div>
+                </div>
+                <div class="painel">
+                    <h3>📩 Pedidos [<span id="contador-pedidos">0</span>] <input type="checkbox" id="auto-aprovar-checkbox" onchange="toggleAutoAprovar()"> Auto-Aprovar</h3>
+                    <div id="pedidos"></div>
+                </div>
+                <div class="painel">
+                    <h3>Fila:</h3>
+                    <div id="fila"></div>
+                </div>
+                <div class="painel">
+                    <h3>🏆 Ranking:</h3>
+                    <div id="ranking"></div>
+                </div>
+                <div class="painel">
+                    <h3>Histórico:</h3>
+                    <div id="historico"></div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="version-display">v1.6</div>
+    <!-- Modal de Votos -->
+    <div id="fundo-modal" onclick="fecharModalVotos()"></div>
+    <div id="modal-votos">
+        <h2>📊 Votos Desta Música</h2>
+        <div id="votos-atuais"></div>
+        <button onclick="fecharModalVotos()">Fechar</button>
+    </div>
+
+    <!-- Manual do Operador -->
+    <button id="btn-manual" onclick="toggleManual()">📖 Manual do Sistema</button>
+    <div id="manual-modal">
+        <h2>📖 Manual do Operador - Parada 10.95 Bar</h2>
+        <h3>1. Iniciando o Sistema</h3>
+        <p>Sempre que abrir o painel, siga a ordem dos botões no topo:</p>
+        <ul>
+            <li>Clique em 🚀 1. INICIAR SISTEMA E TV. O navegador abrirá a tela do telão. Arraste para a TV do bar e aperte F11 para tela cheia.</li>
+            <li>Clique em 🎙️ 2. AVALIADOR e permita o uso do microfone no navegador.</li>
+        </ul>
+        <h3>2. Gerenciando as Músicas</h3>
+        <ul>
+            <li>Na Busca do DJ: Digite o nome da música ou cole o link direto do YouTube.</li>
+            <li>No Celular dos Clientes: O cliente escaneia o QR Code da TV, busca a música e o pedido chega na caixa de <b>📩 Pedidos</b>.</li>
+        </ul>
+        <h3>3. Sistema de Notas e Votação ao Vivo</h3>
+        <p>A nota que aparece na TV é a soma do barulho captado pelo microfone e dos votos enviados pelos celulares.</p>
+        <p><b>⚙️ TRUQUE SECRETO DO DJ:</b></p>
+        <ul>
+            <li>Aperte o <b>6</b> = Força nota entre 60 e 69.</li>
+            <li>Aperte o <b>7</b> = Força nota entre 70 e 79.</li>
+            <li>Aperte o <b>8</b> = Força nota entre 80 e 89.</li>
+            <li>Aperte o <b>9</b> = Força nota entre 90 e 99.</li>
+            <li>Aperte o <b>0</b> = Força nota 100!</li>
+        </ul>
+        <button onclick="toggleManual()">Fechar Manual</button>
+    </div>
 
     <script>
-        const DJ_PASSWORD_KEY = 'dj_password';
-        const DEFAULT_DJ_PASSWORD = 'senha123'; // Senha padrão inicial
+        // Firebase Configuration (SUBSTITUA PELAS SUAS CREDENCIAIS REAIS DO FIREBASE)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBMLhTZc7qQLjE65L3BuW9e2ijvxObTxp8", // Chave correta do votacao.html
+            authDomain: "karaoke-parada.firebaseapp.com",
+            databaseURL: "https://karaoke-parada-default-rtdb.firebaseio.com",
+            projectId: "karaoke-parada",
+            storageBucket: "karaoke-parada.firebasestorage.app",
+            messagingSenderId: "379214932685",
+            appId: "1:379214932685:web:873e8b5b7d882a4f751784"
+        };
 
-        const loginContainer = document.getElementById('login-container');
-        const djPanel = document.getElementById('dj-panel');
-        const passwordInput = document.getElementById('password-input');
-        const loginButton = document.getElementById('login-button');
-        const loginMessage = document.getElementById('login-message');
-        const logoutButton = document.getElementById('logout-button');
-        const changePasswordButton = document.getElementById('change-password-button');
-        const changePasswordSection = document.getElementById('change-password-section');
-        const newPasswordInput = document.getElementById('new-password-input');
-        const confirmNewPasswordInput = document.getElementById('confirm-new-password-input');
-        const saveNewPasswordButton = document.getElementById('save-new-password-button');
-        const passwordChangeMessage = document.getElementById('password-change-message');
-        const loggedInUserSpan = document.getElementById('logged-in-user');
-        const showManualButton = document.getElementById('show-manual-button');
-        const manualContent = document.getElementById('manual-content');
-        const closeManualButton = document.getElementById('close-manual-button');
-        const viewVotesButton = document.getElementById('view-votes-button');
-        const votesSection = document.getElementById('votes-section');
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
 
-        // Inicializa a senha se não existir no localStorage
-        if (!localStorage.getItem(DJ_PASSWORD_KEY)) {
-            localStorage.setItem(DJ_PASSWORD_KEY, DEFAULT_DJ_PASSWORD);
-        }
+        let telaTV = null;
+        let filaDeReproducao = [];
+        let historicoDeReproducao = [];
+        let ranking = [];
+        let pedidos = [];
+        let musicaAtual = null;
+        let captando = false;
+        let somaEnergia = 0;
+        let qtdLeituras = 0;
+        let notaForcadaPeloDJ = null;
+        let autoAprovar = false;
 
-        function checkLogin() {
-            if (localStorage.getItem('is_logged_in') === 'true') {
-                showDjPanel();
+        // Listener de autenticação
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-content').style.display = 'block';
+                updateLoggedInUserDisplay(user);
+                loadFila();
+                loadPedidos();
+                loadHistorico();
+                loadRanking();
+                loadStatusAtual();
             } else {
-                showLogin();
-            }
-        }
-
-        function showLogin() {
-            loginContainer.classList.remove('hidden');
-            djPanel.classList.add('hidden');
-            passwordInput.value = '';
-            loginMessage.classList.add('hidden');
-            changePasswordSection.classList.add('hidden'); // Esconde a seção de mudança de senha
-            manualContent.classList.add('hidden'); // Esconde o manual
-            votesSection.classList.add('hidden'); // Esconde votos
-        }
-
-        function showDjPanel() {
-            loginContainer.classList.add('hidden');
-            djPanel.classList.remove('hidden');
-            loggedInUserSpan.textContent = 'DJ'; // Por enquanto, um nome genérico
-            changePasswordSection.classList.add('hidden'); // Garante que a seção de mudança de senha esteja oculta ao entrar
-            manualContent.classList.add('hidden'); // Garante que o manual esteja oculto ao entrar
-            votesSection.classList.add('hidden'); // Garante que votos esteja oculto ao entrar
-        }
-
-        loginButton.addEventListener('click', () => {
-            const enteredPassword = passwordInput.value;
-            const storedPassword = localStorage.getItem(DJ_PASSWORD_KEY);
-
-            if (enteredPassword === storedPassword) {
-                localStorage.setItem('is_logged_in', 'true');
-                showDjPanel();
-            } else {
-                loginMessage.classList.remove('hidden');
+                document.getElementById('login-screen').style.display = 'flex';
+                document.getElementById('main-content').style.display = 'none';
+                document.getElementById('login-error').textContent = '';
+                document.getElementById('login-email').value = '';
+                document.getElementById('login-password').value = '';
             }
         });
 
-        logoutButton.addEventListener('click', () => {
-            localStorage.removeItem('is_logged_in');
-            showLogin();
-        });
+        async function updateLoggedInUserDisplay(user) {
+            let displayName = user.email.split('@')[0]; // Pega a parte antes do @
+            displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1); // Primeira letra maiúscula
 
-        changePasswordButton.addEventListener('click', () => {
-            changePasswordSection.classList.toggle('hidden');
-            passwordChangeMessage.classList.add('hidden');
-            newPasswordInput.value = '';
-            confirmNewPasswordInput.value = '';
-        });
+            // Tenta buscar um nome no Realtime Database
+            const userRef = database.ref(`usuarios/${user.uid}/nome`);
+            const snapshot = await userRef.once('value');
+            if (snapshot.exists() && snapshot.val()) {
+                displayName = snapshot.val();
+            }
+            document.getElementById('logged-in-as').textContent = `Logado como: ${displayName}`;
+        }
 
-        saveNewPasswordButton.addEventListener('click', () => {
-            const newPassword = newPasswordInput.value;
-            const confirmPassword = confirmNewPasswordInput.value;
+        function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            auth.signInWithEmailAndPassword(email, password)
+                .catch(error => {
+                    document.getElementById('login-error').textContent = 'Erro ao fazer login: ' + error.message;
+                });
+        }
 
-            if (newPassword === '' || confirmPassword === '') {
-                passwordChangeMessage.textContent = 'Preencha ambos os campos de senha.';
-                passwordChangeMessage.classList.remove('hidden');
+        function logout() {
+            auth.signOut();
+        }
+
+        function showChangePasswordSection() {
+            const section = document.getElementById('change-password-section');
+            if (section.style.display === 'none') {
+                section.style.display = 'block';
+                document.getElementById('new-password').value = '';
+                document.getElementById('confirm-new-password').value = '';
+                document.getElementById('change-password-status').textContent = '';
+            } else {
+                section.style.display = 'none';
+            }
+        }
+
+        function changePassword() {
+            const newPassword = document.getElementById('new-password').value;
+            const confirmNewPassword = document.getElementById('confirm-new-password').value;
+            const statusElement = document.getElementById('change-password-status');
+
+            if (newPassword !== confirmNewPassword) {
+                statusElement.textContent = 'As senhas não coincidem.';
+                statusElement.style.color = '#ff4d4d';
+                return;
+            }
+            if (newPassword.length < 6) {
+                statusElement.textContent = 'A nova senha deve ter no mínimo 6 caracteres.';
+                statusElement.style.color = '#ff4d4d';
                 return;
             }
 
-            if (newPassword === confirmPassword) {
-                localStorage.setItem(DJ_PASSWORD_KEY, newPassword);
-                passwordChangeMessage.textContent = 'Senha alterada com sucesso!';
-                passwordChangeMessage.style.color = 'green';
-                passwordChangeMessage.classList.remove('hidden');
-                newPasswordInput.value = '';
-                confirmNewPasswordInput.value = '';
-                setTimeout(() => {
-                    changePasswordSection.classList.add('hidden');
-                }, 2000);
+            const user = auth.currentUser;
+            if (user) {
+                user.updatePassword(newPassword).then(() => {
+                    statusElement.textContent = 'Senha alterada com sucesso!';
+                    statusElement.style.color = '#28a745';
+                    document.getElementById('new-password').value = '';
+                    document.getElementById('confirm-new-password').value = '';
+                    setTimeout(() => {
+                        document.getElementById('change-password-section').style.display = 'none';
+                    }, 3000);
+                }).catch((error) => {
+                    statusElement.textContent = 'Erro ao alterar senha: ' + error.message;
+                    statusElement.style.color = '#ff4d4d';
+                });
             } else {
-                passwordChangeMessage.textContent = 'As senhas não coincidem.';
-                passwordChangeMessage.style.color = '#e74c3c';
-                passwordChangeMessage.classList.remove('hidden');
+                statusElement.textContent = 'Nenhum usuário logado.';
+                statusElement.style.color = '#ff4d4d';
             }
-        });
+        }
 
-        showManualButton.addEventListener('click', () => {
-            manualContent.classList.toggle('hidden');
-        });
+        function iniciarSistema() {
+            telaTV = window.open('tv.html', 'TelaTV', 'width=800,height=600');
+            if (telaTV) {
+                document.querySelector('.btn-tv').classList.add('conectado');
+                document.querySelector('.btn-tv').textContent = '🚀 SISTEMA E TV CONECTADOS';
+            } else {
+                alert('Permita pop-ups para abrir a tela da TV.');
+            }
+        }
 
-        closeManualButton.addEventListener('click', () => {
-            manualContent.classList.add('hidden');
-        });
+        function iniciarAvaliador() {
+            alert('Funcionalidade de avaliador de microfone ainda não implementada.');
+        }
 
-        viewVotesButton.addEventListener('click', () => {
-            votesSection.classList.toggle('hidden');
-        });
+        function buscarMusicaDJ() {
+            const termo = document.getElementById('busca-dj').value;
+            if (termo.trim() === '') {
+                alert('Digite algo para buscar.');
+                return;
+            }
+            // Simulação de busca no YouTube
+            const resultados = [
+                { titulo: 'Música de Exemplo 1', artista: 'Artista A', videoId: 'dQw4w9WgXcQ' },
+                { titulo: 'Música de Exemplo 2', artista: 'Artista B', videoId: 'y6120QOlsfU' },
+                { titulo: 'Música de Exemplo 3', artista: 'Artista C', videoId: 'cvh0nX08nwg' }
+            ];
+            document.getElementById('resultados-busca').innerHTML = resultados.map(item => `
+                <div class="item-resultado" onclick="adicionarAFila('${item.titulo}', '${item.artista}', '${item.videoId}')">
+                    ${item.titulo} - ${item.artista}
+                </div>
+            `).join('');
+        }
 
-        // Verifica o login ao carregar a página
-        checkLogin();
-    </script>
-</body>
-</html>
+        function adicionarAFila(titulo, cantor, videoId) {
+            filaDeReproducao.push({ titulo, cantor, videoId });
+            database.ref('fila').set(filaDeReproducao);
+            alert(`"${titulo}" adicionada à fila.`);
+        }
+
+        function aprovarPedido(index) {
+            const pedido = pedidos[index];
+            adicionarAFila(pedido.titulo, pedido.cantor, pedido.videoId);
+            pedidos.splice(index, 1);
+            database.ref('pedidos').set(pedidos);
+        }
+
+        function recusarPedido(index) {
+            pedidos.splice(index, 1);
+            database.ref('pedidos').set(pedidos);
+        }
+
+        function toggleAutoAprovar() {
+            autoAprovar = document.getElementById('auto-aprovar-checkbox').checked;
+            if (autoAprovar) {
+                alert('Auto-aprovação de pedidos ativada.');
+            } else {
+                alert('Auto-aprovação de pedidos desativada.');
+            }
+        }
+
+        function iniciarMusica(m) {
+            musicaAtual = m;
+            historicoDeReproducao.push(m);
+            // O histórico é gerenciado localmente, mas se quiser persistir entre sessões,
+            // precisaria salvar e carregar do Realtime Database também.
+            // Por enquanto, ela é resetada ao recarregar a página.
+
+            if (telaTV && !telaTV.closed) {
+                telaTV.document.getElementById('titulo-musica-overlay').textContent = m.titulo;
+                telaTV.document.getElementById('cantor-overlay').innerHTML = `<div style="display:inline-block; vertical-align:middle;"><span class="aviso">Com a Voz</span><p class="nome">${m.cantor}</p></div>`;
+
+                telaTV.document.getElementById('cantor-overlay').style.top = '-200px'; 
+                setTimeout(() => telaTV.document.getElementById('cantor-overlay').style.top = '20px', 100);
+            }
+            captando = true; somaEnergia = 0; qtdLeituras = 0; notaForcadaPeloDJ = null;
+            // Simulação de player do YouTube
+            player.loadVideoById(m.videoId); player.playVideo(); 
+        }
+
+        function tocarMusicaEspecifica(i) { 
+            if(!telaTV || telaTV.closed) return alert("⚠️ A Tela da TV está fechada! Clique no botão azul '1. INICIAR SISTEMA E TV' antes de tocar a música."); 
+            iniciarMusica(filaDeReproducao.splice(i, 1)[0]); 
+            database.ref('fila').set(filaDeReproducao); // Atualiza a fila no Firebase
+        }
+
+        function tocarProxima(auto = false) {
+            if(!telaTV || telaTV.closed) {
+                if (!auto) alert("⚠️ A Tela da TV está fechada! Clique no botão azul '1. INICIAR SISTEMA E TV' antes de tocar a música.");
+                return;
+            }
+            if(filaDeReproducao.length > 0) {
+                iniciarMusica(filaDeReproducao.shift()); 
+                database.ref('fila').set(filaDeReproducao); // Atualiza a fila no Firebase
+            } else {
+                if(telaTV && !telaTV.closed) telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
+                database.ref('statusAtual').set(null);
+            }
+        }
+
+        function moverMusica(index, direcao) {
+            const musica = filaDeReproducao[index];
+            filaDeReproducao.splice(index, 1);
+            filaDeReproducao.splice(index + direcao, 0, musica);
+            database.ref('fila').set(filaDeReproducao);
+        }
+
+        function removerMusica(index)
+
