@@ -49,7 +49,10 @@
         #btn-manual { position: absolute; top: 20px; right: 20px; background: #333; color: #fff; border: 1px solid #555; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
         #btn-manual:hover { background: #444; border-color: #00d2ff; transform: scale(1.05); }
 
-        #btn-sair { position: absolute; top: 20px; right: 180px; background: transparent; color: #aaa; border: 1px solid #555; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; }
+        #btn-usuarios { display: none; position: absolute; top: 20px; right: 160px; background: #007bff; color: #fff; border: 1px solid #0056b3; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
+        #btn-usuarios:hover { background: #0056b3; transform: scale(1.05); }
+
+        #btn-sair { position: absolute; top: 20px; right: 290px; background: transparent; color: #aaa; border: 1px solid #555; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; }
         #btn-sair:hover { color: #fff; background: #e52d27; border-color: #e52d27; }
 
         #modal-manual-conteudo { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 300; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #00d2ff; width: 90%; max-width: 800px; max-height: 85vh; overflow-y: auto; color: #ddd; }
@@ -78,6 +81,16 @@
         .btn-confirmar { flex: 2; padding: 12px; background: #28a745; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px;}
         .btn-cancelar { flex: 1; padding: 12px; background: #e52d27; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px;}
         .btn-limpar-cantores { margin-top: 15px; background: transparent; border: none; color: #aaa; text-decoration: underline; cursor: pointer; font-size: 12px; width: 100%; text-align: center;}
+
+        /* Estilos do Modal de Gerenciamento de Usuários (Admin) */
+        #fundo-modal-usuarios { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 500; }
+        #modal-usuarios { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 501; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #007bff; width: 90%; max-width: 500px; color: #fff; }
+        #modal-usuarios h2 { margin-top: 0; color: #007bff; border-bottom: 1px solid #333; padding-bottom: 10px; font-size: 20px; text-align: center; }
+        .tabela-usuarios { width: 100%; margin-bottom: 20px; border-collapse: collapse; text-align: left; font-size: 14px; }
+        .tabela-usuarios th, .tabela-usuarios td { padding: 8px; border-bottom: 1px solid #333; }
+        .tabela-usuarios th { color: #007bff; }
+        .form-novo-usuario { background: #222; padding: 15px; border-radius: 8px; margin-top: 15px; }
+        .form-novo-usuario input, .form-novo-usuario select { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #555; background: #111; color: #fff; box-sizing: border-box; font-size: 14px; }
 
         /* Estilos da Tela de Login */
         #tela-login { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #1a1a1a; z-index: 200000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
@@ -136,6 +149,39 @@
         <button onclick="fecharManual()" style="width: 100%; margin-top: 30px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
     </div>
 
+    <!-- Modal de Gerenciamento de Usuários (Admin) -->
+    <div id="fundo-modal-usuarios" onclick="fecharModalUsuarios()"></div>
+    <div id="modal-usuarios">
+        <h2>👥 Gerenciar Usuários</h2>
+        <div style="max-height: 180px; overflow-y: auto;">
+            <table class="tabela-usuarios">
+                <thead>
+                    <tr>
+                        <th>Usuário</th>
+                        <th>Tipo</th>
+                        <th style="text-align: right;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-corpo-usuarios">
+                    <!-- Preenchido via JS -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="form-novo-usuario">
+            <strong>Adicionar Novo Usuário:</strong>
+            <input type="text" id="novo-user-nome" placeholder="Nome de usuário">
+            <input type="password" id="novo-user-senha" placeholder="Senha">
+            <select id="novo-user-tipo">
+                <option value="comum">Operador Comum</option>
+                <option value="admin">Administrador</option>
+            </select>
+            <button onclick="adicionarNovoUsuario()" style="width: 100%; padding: 10px; background: #28a745; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Adicionar Usuário</button>
+        </div>
+
+        <button onclick="fecharModalUsuarios()" style="width: 100%; margin-top: 15px; padding: 10px; background: #333; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Fechar</button>
+    </div>
+
     <div id="fundo-modal" onclick="fecharDetalhesVotos()"></div>
     <div id="modal-votos">
         <h2>📊 Votos Desta Música</h2>
@@ -157,6 +203,7 @@
     </div>
 
     <button id="btn-sair" onclick="fazerLogout()">🚪 Sair</button>
+    <button id="btn-usuarios" onclick="abrirModalUsuarios()">👥 Usuários</button>
     <button id="btn-manual" onclick="abrirManual()">📖 Manual do Sistema</button>
 
     <div class="container">
@@ -199,21 +246,33 @@
         </div>
     </div>
 
-    <div class="versao-app">v1.14</div>
+    <div class="versao-app">v1.15</div>
     <div onclick="definirNotaManual()" style="position: fixed; bottom: 4px; right: 35px; font-size: 13px; color: #fff; opacity: 0.3; z-index: 9999; cursor: pointer; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</div>
 
     <script>
-        // LISTA DE USUÁRIOS CADASTRADOS (Você pode alterar ou adicionar novos aqui)
-        const usuariosAutorizados = [
+        // GERENCIAMENTO DE USUÁRIOS SALVOS NO LOCALSTORAGE
+        let usuariosAutorizados = JSON.parse(localStorage.getItem('usuariosAutorizados')) || [
             { usuario: "leonard", senha: "123", tipo: "admin" },
             { usuario: "operador", senha: "123", tipo: "comum" }
         ];
 
+        // Salva inicial se não houver
+        if (!localStorage.getItem('usuariosAutorizados')) {
+            localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
+        }
+
         // Verifica o login salvo no navegador ao abrir
         window.addEventListener('DOMContentLoaded', () => {
             const usuarioLogado = localStorage.getItem('usuarioLogado');
+            const tipoUsuario = localStorage.getItem('tipoUsuario');
+
             if (usuarioLogado) {
                 document.getElementById('tela-login').style.display = 'none';
+                if (tipoUsuario === 'admin') {
+                    document.getElementById('btn-usuarios').style.display = 'block';
+                } else {
+                    document.getElementById('btn-usuarios').style.display = 'none';
+                }
             } else {
                 document.getElementById('tela-login').style.display = 'flex';
             }
@@ -232,6 +291,12 @@
                 localStorage.setItem('tipoUsuario', encontrado.tipo);
                 document.getElementById('tela-login').style.display = 'none';
                 document.getElementById('login-senha').value = '';
+                
+                if (encontrado.tipo === 'admin') {
+                    document.getElementById('btn-usuarios').style.display = 'block';
+                } else {
+                    document.getElementById('btn-usuarios').style.display = 'none';
+                }
             } else {
                 alert("Usuário ou senha incorretos!");
             }
@@ -242,6 +307,72 @@
                 localStorage.removeItem('usuarioLogado');
                 localStorage.removeItem('tipoUsuario');
                 location.reload();
+            }
+        }
+
+        // Funções do Modal de Administração de Usuários
+        function abrirModalUsuarios() {
+            renderizarTabelaUsuarios();
+            document.getElementById('fundo-modal-usuarios').style.display = 'block';
+            document.getElementById('modal-usuarios').style.display = 'block';
+        }
+
+        function fecharModalUsuarios() {
+            document.getElementById('fundo-modal-usuarios').style.display = 'none';
+            document.getElementById('modal-usuarios').style.display = 'none';
+        }
+
+        function renderizarTabelaUsuarios() {
+            const tbody = document.getElementById('tabela-corpo-usuarios');
+            tbody.innerHTML = usuariosAutorizados.map((u, index) => `
+                <tr>
+                    <td><strong>${u.usuario}</strong></td>
+                    <td><span style="padding: 2px 6px; border-radius: 4px; font-size: 11px; background: ${u.tipo === 'admin' ? '#007bff' : '#333'}">${u.tipo.toUpperCase()}</span></td>
+                    <td style="text-align: right;">
+                        <button onclick="editarUsuario(${index})" style="background:transparent; border:none; cursor:pointer; font-size:14px;" title="Editar Senha">✏️</button>
+                        ${usuariosAutorizados.length > 1 ? `<button onclick="excluirUsuario(${index})" style="background:transparent; border:none; cursor:pointer; font-size:14px;" title="Excluir">❌</button>` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function adicionarNovoUsuario() {
+            const nome = document.getElementById('novo-user-nome').value.trim().toLowerCase();
+            const senha = document.getElementById('novo-user-senha').value;
+            const tipo = document.getElementById('novo-user-tipo').value;
+
+            if (!nome || !senha) return alert("Preencha o nome e a senha do novo usuário!");
+            
+            if (usuariosAutorizados.some(u => u.usuario === nome)) {
+                return alert("Já existe um usuário com esse nome!");
+            }
+
+            usuariosAutorizados.push({ usuario: nome, senha: senha, tipo: tipo });
+            localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
+            
+            document.getElementById('novo-user-nome').value = '';
+            document.getElementById('novo-user-senha').value = '';
+            renderizarTabelaUsuarios();
+            alert("Usuário adicionado com sucesso!");
+        }
+
+        function editarUsuario(index) {
+            const user = usuariosAutorizados[index];
+            const novaSenha = prompt(`Digite a nova senha para o usuário "${user.usuario}":`);
+            if (novaSenha !== null && novaSenha.trim() !== "") {
+                usuariosAutorizados[index].senha = novaSenha.trim();
+                localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
+                renderizarTabelaUsuarios();
+                alert("Senha alterada com sucesso!");
+            }
+        }
+
+        function excluirUsuario(index) {
+            const user = usuariosAutorizados[index];
+            if (confirm(`Tem certeza que deseja excluir o usuário "${user.usuario}"?`)) {
+                usuariosAutorizados.splice(index, 1);
+                localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
+                renderizarTabelaUsuarios();
             }
         }
 
@@ -665,7 +796,7 @@
                     let valorEl = telaTV.document.getElementById('nota-valor');
                     valorEl.innerText = notaFinal;
                     valorEl.style.color = notaFinal >= 90 ? '#28a745' : notaFinal >= 75 ? '#ffeb3b' : '#e52d27';
-                    telaTV.document.getElementById('tela-resultado').style.display = 'flex';
+                    telaTV.document.getElementById('nota-resultado').style.display = 'flex';
                 }, 4000); 
             }
 
