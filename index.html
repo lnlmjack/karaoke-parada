@@ -146,7 +146,8 @@
         </div>
     </div>
 
-    <div class="versao-app">v1.2</div>
+    <div class="versao-app">v1.3</div>
+    <div onclick="definirNotaManual()" style="position: fixed; bottom: 5px; left: 5px; font-size: 10px; color: rgba(255, 255, 255, 0.2); z-index: 9999; cursor: pointer;" title="Forçar Nota Específica">⚙️</div>
 
     <script>
         let streamMic = null; let micAtivo = false; let intervaloMic = null;
@@ -317,6 +318,18 @@
             if (event.key === '9') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 90; } // Sorteia entre 90 e 99
             if (event.key === '0') { notaForcadaPeloDJ = 100; } // Crava 100
         });
+
+        function definirNotaManual() {
+            let nota = prompt("Definir nota final manualmente (0 a 100):");
+            if (nota !== null && nota !== "") {
+                let valor = parseInt(nota, 10);
+                if (!isNaN(valor) && valor >= 0 && valor <= 100) {
+                    notaForcadaPeloDJ = valor;
+                } else {
+                    alert("Nota inválida. Digite um número de 0 a 100.");
+                }
+            }
+        }
 
         document.getElementById('campoBusca').addEventListener('keypress', e => { if(e.key === 'Enter') buscarNoYouTube(); });
 
