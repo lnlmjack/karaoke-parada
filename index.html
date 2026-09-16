@@ -722,7 +722,711 @@
                 }).then(() => {
                     document.getElementById('campoBusca').value = "";
                     document.getElementById('resultados').innerHTML = "";
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Painel do DJ - Karaokê</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <!-- O Firebase Auth não é mais necessário sem a tela de login -->
+    <!-- <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script> -->
 
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; padding: 20px; margin: 0; }
+        .container { max-width: 1600px; margin: 0 auto; position: relative; }
+
+        .area-botoes-topo { display: flex; gap: 15px; margin-bottom: 25px; }
+        .btn-topo { flex: 1; padding: 15px; font-size: 16px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s;}
+        .btn-tv { background: #007bff; } .btn-tv:hover { background: #0056b3; } .btn-tv.conectado { background: #17a2b8; pointer-events: none; }
+        .btn-mic { background: #e52d27; text-align: center; display: flex; align-items: center; justify-content: center; } 
+        .btn-mic:hover { filter: brightness(1.2); }
+
+        .btn-tocar { background: #28a745; width: 100%; padding: 15px; font-size: 16px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 20px;}
+
+        .area-busca { display: flex; gap: 10px; margin-bottom: 15px; }
+        input { flex: 1; padding: 12px; border-radius: 5px; border: none; font-size: 16px; }
+        .btn-buscar { padding: 12px 25px; background: #e52d27; color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer;}
+
+        .paineis { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+        .painel { background: #1e1e1e; padding: 15px; border-radius: 8px; height: 450px; overflow-y: auto; position: relative;}
+
+        .item-resultado, .item-fila, .item-historico, .item-ranking { margin: 10px 0; padding: 12px; background: #333; border-radius: 5px; }
+        .item-resultado { cursor: pointer; transition: 0.2s; } .item-resultado:hover { background: #e52d27; }
+
+        .item-fila { border-left: 5px solid #e52d27; display: flex; justify-content: space-between; align-items: center; }
+        .titulo-musica { flex: 1; font-size: 14px; } .nome-cantor { color: #aaa; font-size: 12px; display: block; font-style: italic; }
+        .botoes-acao { display: flex; gap: 3px; } .btn-acao { background: transparent; border: none; cursor: pointer; font-size: 16px; padding: 5px; transition: 0.2s;} .btn-acao:hover { transform: scale(1.2); }
+
+        .item-historico { border-left: 5px solid #28a745; color: #888; font-size: 14px; background: #222; }
+        .item-ranking { border-left: 5px solid #ffeb3b; background: #222; font-size: 14px; display: flex; flex-direction: column; align-items: stretch; transition: 0.2s; }
+        .item-ranking:hover { background: #2a2a2a; }
+        .info-ranking { flex: 1; } .pontuacao { font-size: 26px; color: #ffeb3b; font-weight: 900; margin-left: 10px; }
+
+        #contador-votos { position: absolute; top: 15px; right: 15px; background: #e52d27; padding: 8px 12px; border-radius: 20px; font-weight: bold; font-size: 13px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        #contador-votos:hover { transform: scale(1.05); background: #c21a15; }
+
+        #modal-votos { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 200; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #e52d27; width: 300px; }
+        #modal-votos h2 { margin-top: 0; color: #fff; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .linha-voto { display: flex; justify-content: space-between; font-size: 20px; margin: 12px 0; border-bottom: 1px dashed #333; padding-bottom: 5px; }
+        #fundo-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 199; }
+
+        #btn-manual { position: absolute; top: 20px; right: 20px; background: #333; color: #fff; border: 1px solid #555; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
+        #btn-manual:hover { background: #555; }
+
+        #manual-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 200; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #007bff; width: 80%; max-width: 600px; max-height: 80vh; overflow-y: auto; }
+        #manual-modal h2, #manual-modal h3 { color: #007bff; }
+        #manual-modal p, #manual-modal li { color: #ccc; line-height: 1.6; }
+        #manual-modal ul { list-style-type: disc; margin-left: 20px; }
+        #manual-modal button { margin-top: 20px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        #manual-modal button:hover { background: #0056b3; }
+
+        /* A tela de login foi removida, então estes estilos não são mais aplicados */
+        /*
+        #login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #121212;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        #login-form {
+            background-color: #1e1e1e;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            width: 300px;
+        }
+        #login-form h1 {
+            color: #e52d27;
+            margin-bottom: 30px;
+        }
+        #login-form input {
+            width: calc(100% - 24px);
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background-color: #333;
+            color: #fff;
+            font-size: 16px;
+        }
+        #login-form button {
+            width: 100%;
+            padding: 12px;
+            background-color: #e52d27;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #login-form button:hover {
+            background-color: #c21a15;
+        }
+        #login-error {
+            color: #ff4d4d;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        #logo-login {
+            width: 150px;
+            margin-bottom: 20px;
+        }
+        */
+
+        #version-display {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #aaa;
+            font-size: 12px;
+        }
+
+        /* Estilos para a seção de alteração de senha (oculta por padrão e não funcional sem login) */
+        #change-password-section {
+            background-color: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid #444;
+            display: none; /* Sempre oculta agora */
+        }
+        #change-password-section input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #555;
+            background-color: #333;
+            color: #fff;
+        }
+        #change-password-section button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        #change-password-section button:hover {
+            background-color: #0056b3;
+        }
+        #change-password-status {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #fff;
+        }
+        .user-info-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background-color: #1e1e1e;
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+        .user-info-bar span {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .user-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .user-actions button {
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .user-actions button:hover {
+            background-color: #0056b3;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- A tela de login foi removida, o conteúdo principal é exibido diretamente -->
+    <!-- <div id="login-screen"> ... </div> -->
+
+    <div id="main-content">
+        <div class="container">
+            <div class="user-info-bar">
+                <span id="logged-in-as">Logado como: DJ (Acesso Direto)</span>
+                <div class="user-actions">
+                    <!-- Botões de alteração de senha e sair foram removidos, pois não há login -->
+                    <!-- <button onclick="showChangePasswordSection()">Alterar Senha</button> -->
+                    <!-- <button onclick="logout()">Sair</button> -->
+                </div>
+            </div>
+
+            <!-- A seção de alteração de senha não é mais funcional sem login -->
+            <div id="change-password-section">
+                <h3>Alterar Minha Senha</h3>
+                <input type="password" id="new-password" placeholder="Nova Senha" required>
+                <input type="password" id="confirm-password" placeholder="Confirmar Nova Senha" required>
+                <button onclick="changePassword()">Salvar Nova Senha</button>
+                <p id="change-password-status"></p>
+            </div>
+
+            <div class="area-botoes-topo">
+                <button class="btn-topo btn-tv" id="btn-tv">🚀 1. INICIAR SISTEMA E TV</button>
+                <button class="btn-topo btn-mic" id="btn-mic">🎙️ 2. AVALIADOR (INICIANDO...)</button>
+            </div>
+
+            <div class="area-busca">
+                <input type="text" id="campoBusca" placeholder="Buscar música no YouTube ou acervo...">
+                <button class="btn-buscar" onclick="buscarMusica()">Buscar</button>
+            </div>
+            <div id="resultados" class="painel" style="height: 200px;"></div>
+
+            <button class="btn-tocar">▶️ Tocar Próxima da Fila</button>
+
+            <div class="paineis">
+                <div class="painel">
+                    <h3>📩 Pedidos [0] <input type="checkbox" id="auto-aprovar"> Auto-Aprovar</h3>
+                    <div id="lista-pedidos"></div>
+                </div>
+                <div class="painel">
+                    <h3>Fila:</h3>
+                    <div id="lista-fila"></div>
+                </div>
+                <div class="painel">
+                    <h3>🏆 Ranking:</h3>
+                    <div id="lista-ranking"></div>
+                </div>
+                <div class="painel">
+                    <h3>Histórico:</h3>
+                    <div id="lista-historico"></div>
+                </div>
+            </div>
+
+            <div id="contador-votos" style="display: none;">
+                📊 Votos Desta Música: <span id="total-votos">0</span>
+            </div>
+
+            <div id="modal-votos">
+                <h2>📊 Votos Desta Música</h2>
+                <div id="detalhes-votos">
+                    <!-- Detalhes dos votos serão inseridos aqui -->
+                </div>
+                <button onclick="document.getElementById('modal-votos').style.display='none'; document.getElementById('fundo-modal').style.display='none';">Fechar</button>
+            </div>
+            <div id="fundo-modal"></div>
+
+            <button id="btn-manual" onclick="toggleManual()">📖 Manual do Sistema</button>
+
+            <div id="manual-modal">
+                <h2>📖 Manual do Operador - Parada 10.95 Bar</h2>
+                <h3>1. Iniciando o Sistema</h3>
+                <ul>
+                    <li>Sempre que abrir o painel, siga a ordem dos botões no topo:</li>
+                    <li>Clique em 🚀 1. INICIAR SISTEMA E TV. O navegador abrirá a tela do telão. Arraste para a TV do bar e aperte F11 para tela cheia.</li>
+                    <li>Clique em 🎙️ 2. AVALIADOR e permita o uso do microfone no navegador.</li>
+                </ul>
+                <h3>2. Gerenciando as Músicas</h3>
+                <ul>
+                    <li>Na Busca do DJ: Digite o nome da música ou cole o link direto do YouTube.</li>
+                    <li>No Celular dos Clientes: O cliente escaneia o QR Code da TV, busca a música e o pedido chega na caixa de <b>📩 Pedidos</b>.</li>
+                </ul>
+                <h3>3. Sistema de Notas e Votação ao Vivo</h3>
+                <ul>
+                    <li>A nota que aparece na TV é a soma do barulho captado pelo microfone e dos votos enviados pelos celulares.</li>
+                </ul>
+                <h4>⚙️ TRUQUE SECRETO DO DJ:</h4>
+                <ul>
+                    <li>Aperte o <b>6</b> = Força nota entre 60 e 69.</li>
+                    <li>Aperte o <b>7</b> = Força nota entre 70 e 79.</li>
+                    <li>Aperte o <b>8</b> = Força nota entre 80 e 89.</li>
+                    <li>Aperte o <b>9</b> = Força nota entre 90 e 99.</li>
+                    <li>Aperte o <b>0</b> = Força nota 100!</li>
+                </ul>
+                <button onclick="toggleManual()">Fechar Manual</button>
+            </div>
+        </div>
+        <div id="version-display">v1.7</div>
+    </div>
+
+    <script>
+        // Configuração do Firebase (ATUALIZE ESTES VALORES COM AS SUAS CREDENCIAIS REAIS DO FIREBASE)
+        const firebaseConfig = {
+            apiKey: "AIzaSyC2Y-xxxxxxxxxxxxxxxxxxxxxxxxxxxx", // <-- SUBSTITUA ESTE VALOR PELA SUA API KEY REAL
+            authDomain: "karaoke-parada.firebaseapp.com",
+            databaseURL: "https://karaoke-parada-default-rtdb.firebaseio.com",
+            projectId: "karaoke-parada",
+            storageBucket: "karaoke-parada.appspot.com",
+            messagingSenderId: "xxxxxxxxxxxx", // <-- SUBSTITUA ESTE VALOR PELO SEU MESSAGING SENDER ID REAL
+            appId: "1:xxxxxxxxxxxx:web:xxxxxxxxxxxxxxxxxxxxxx" // <-- SUBSTITUA ESTE VALOR PELO SEU APP ID REAL
+        };
+
+        // Inicializa o Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Sua API Key do YouTube (SUBSTITUA ESTE VALOR PELA SUA API KEY REAL DO YOUTUBE)
+        const API_KEY = "AIzaSyC2Y-xxxxxxxxxxxxxxxxxxxxxxxxxxxx"; 
+
+        // Funções de login e alteração de senha foram removidas.
+        // O painel agora é acessado diretamente.
+
+        // Exibe o manual
+        function toggleManual() {
+            const manualModal = document.getElementById('manual-modal');
+            const fundoModal = document.getElementById('fundo-modal');
+            if (manualModal.style.display === 'block') {
+                manualModal.style.display = 'none';
+                fundoModal.style.display = 'none';
+            } else {
+                manualModal.style.display = 'block';
+                fundoModal.style.display = 'block';
+            }
+        }
+
+        // Variáveis globais para o catálogo e votação
+        let musicasCatalogo = [];
+        let idCantorAtual = null;
+        let votoPendente = null;
+
+        // Carrega o catálogo CSV
+        async function carregarCatalogo() {
+            try {
+                const response = await fetch('catalogo.csv');
+                const csvData = await response.text();
+                processarCSV(csvData);
+            } catch (e) {
+                document.getElementById('lista-catalogo').innerHTML = '<p style="color:#e52d27; text-align:center;">Catálogo offline. Peça digitando na busca principal.</p>';
+            }
+        }
+
+        function processarCSV(csvData) {
+            const linhas = csvData.split('\n');
+            if (linhas.length === 0) return;
+
+            try {
+                const delimitador = ',';
+                const primeiraLinha = linhas[0].trim();
+                const headers = primeiraLinha.split(delimitador).map(h => h.replace(/^"|"$/g, '').trim().toUpperCase());
+
+                let idxCantor = headers.indexOf('CANTOR');
+                let idxTitulo = headers.indexOf('TÍTULO') !== -1 ? headers.indexOf('TÍTULO') : headers.indexOf('TITULO');
+                let idxInicio = headers.indexOf('INÍCIO DA LETRA') !== -1 ? headers.indexOf('INÍCIO DA LETRA') : headers.indexOf('INICIO');
+
+                if (idxCantor === -1 || idxTitulo === -1) {
+                    console.error("Cabeçalhos 'CANTOR' ou 'TÍTULO' não encontrados no CSV.");
+                    return;
+                }
+
+                musicasCatalogo = [];
+                for (let i = 1; i < linhas.length; i++) {
+                    let linha = linhas[i].trim();
+                    if (!linha) continue;
+
+                    let colunas = [];
+                    let celula = '';
+                    let aspas = false;
+                    for(let j = 0; j < linha.length; j++) {
+                        let char = linha[j];
+                        if(char === '"') aspas = !aspas;
+                        else if (char === delimitador && !aspas) {
+                            colunas.push(celula.trim()); celula = '';
+                        } else celula += char;
+                    }
+                    colunas.push(celula.trim());
+
+                    if (colunas.length > Math.max(idxCantor, idxTitulo)) {
+                        let cantor = colunas[idxCantor] ? colunas[idxCantor].replace(/^"|"$/g, '').trim() : '';
+                        let titulo = colunas[idxTitulo] ? colunas[idxTitulo].replace(/^"|"$/g, '').trim() : '';
+                        let inicio = idxInicio !== -1 && colunas[idxInicio] ? colunas[idxInicio].replace(/^"|"$/g, '').trim() : '';
+
+                        if(cantor && titulo) {
+                            musicasCatalogo.push({ 
+                                cantor: cantor, 
+                                titulo: titulo, 
+                                inicio: inicio,
+                                filtro: (cantor + " " + titulo + " " + inicio).toLowerCase() 
+                            });
+                        }
+                    }
+                }
+
+                musicasCatalogo.sort((a, b) => a.cantor.localeCompare(b.cantor, 'pt-BR'));
+                // O catálogo não é renderizado no painel do DJ, apenas na tela de votação
+                // renderizarCatalogo(musicasCatalogo.slice(0, 150)); 
+            } catch(e) {
+                console.error("Erro ao processar CSV:", e);
+                // document.getElementById('lista-catalogo').innerHTML = '<p style="color:#e52d27; text-align:center;">Catálogo offline. Peça digitando na busca principal.</p>';
+            }
+        }
+
+        // Funções de busca e pedido de música (mantidas para o DJ)
+        async function buscarMusica() {
+            const termo = document.getElementById('campoBusca').value;
+            if (!termo) return alert("Digite o nome de uma música!");
+
+            const div = document.getElementById('resultados');
+            div.innerHTML = '<p style="text-align:center; color:#00d2ff;">Buscando no YouTube...</p>'; 
+
+            const query = encodeURIComponent(termo + " karaoke -oficial -clipe -live");
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${query}&type=video&key=${API_KEY}`;
+
+            try {
+                const res = await fetch(url); 
+                const dados = await res.json();
+                div.innerHTML = '';
+
+                if(dados.items.length === 0) {
+                    div.innerHTML = '<p style="color:#e52d27;">Música não encontrada. Tente outro nome.</p>';
+                    return;
+                }
+
+                dados.items.forEach(v => {
+                    const btn = document.createElement('div');
+                    btn.className = 'item-resultado';
+                    btn.innerHTML = `<strong>${v.snippet.title}</strong><br><span style="font-size:12px; color:#aaa;">Clique para adicionar à fila</span>`; 
+
+                    btn.onclick = () => adicionarAFila(v.id.videoId, v.snippet.title);
+                    div.appendChild(btn);
+                });
+            } catch (err) { 
+                div.innerHTML = "<p style='color:#e52d27'>Erro ao buscar. Verifique a API Key do YouTube.</p>"; 
+                console.error("Erro na busca do YouTube:", err);
+            }
+        }
+
+        function adicionarAFila(videoId, titulo) {
+            // Aqui você pode adicionar a lógica para adicionar a música à fila do DJ
+            // Por enquanto, apenas um alerta para demonstrar
+            alert(`Música "${titulo}" (ID: ${videoId}) adicionada à fila.`);
+            // Exemplo: database.ref('filaDJ').push({ videoId: videoId, titulo: titulo, adicionadoPor: 'DJ' });
+            document.getElementById('campoBusca').value = "";
+            document.getElementById('resultados').innerHTML = "";
+        }
+
+        // Event listener para a busca do DJ
+        document.getElementById('campoBusca').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') buscarMusica();
+        });
+
+        // Inicialização
+        window.onload = () => { 
+            carregarCatalogo(); 
+            // O main-content já está visível por padrão
+        };
+
+        // Observadores do Firebase para pedidos, fila, ranking, histórico (mantidos)
+        database.ref('pedidos').on('value', (snapshot) => {
+            const pedidos = snapshot.val();
+            const listaPedidos = document.getElementById('lista-pedidos');
+            listaPedidos.innerHTML = '';
+            let count = 0;
+            if (pedidos) {
+                Object.keys(pedidos).forEach(key => {
+                    const pedido = pedidos[key];
+                    const div = document.createElement('div');
+                    div.className = 'item-fila';
+                    div.innerHTML = `
+                        <div class="titulo-musica">
+                            <strong>${pedido.titulo}</strong>
+                            <span class="nome-cantor">Voz: ${pedido.cantor}</span>
+                        </div>
+                        <div class="botoes-acao">
+                            <button class="btn-acao" onclick="aprovarPedido('${key}')">✅</button>
+                            <button class="btn-acao" onclick="rejeitarPedido('${key}')">❌</button>
+                        </div>
+                    `;
+                    listaPedidos.appendChild(div);
+                    count++;
+                });
+            }
+            document.querySelector('.painel:nth-child(1) h3').innerHTML = `📩 Pedidos [${count}] <input type="checkbox" id="auto-aprovar"> Auto-Aprovar`;
+        });
+
+        function aprovarPedido(key) {
+            database.ref('pedidos/' + key).once('value', (snapshot) => {
+                const pedido = snapshot.val();
+                if (pedido) {
+                    database.ref('fila').push(pedido)
+                        .then(() => database.ref('pedidos/' + key).remove());
+                }
+            });
+        }
+
+        function rejeitarPedido(key) {
+            database.ref('pedidos/' + key).remove();
+        }
+
+        database.ref('fila').on('value', (snapshot) => {
+            const fila = snapshot.val();
+            const listaFila = document.getElementById('lista-fila');
+            listaFila.innerHTML = '';
+            if (fila) {
+                Object.keys(fila).forEach(key => {
+                    const item = fila[key];
+                    const div = document.createElement('div');
+                    div.className = 'item-fila';
+                    div.innerHTML = `
+                        <div class="titulo-musica">
+                            <strong>${item.titulo}</strong>
+                            <span class="nome-cantor">Voz: ${item.cantor}</span>
+                        </div>
+                        <div class="botoes-acao">
+                            <button class="btn-acao" onclick="moverParaHistorico('${key}')">▶️</button>
+                            <button class="btn-acao" onclick="removerDaFila('${key}')">🗑️</button>
+                        </div>
+                    `;
+                    listaFila.appendChild(div);
+                });
+            }
+        });
+
+        function moverParaHistorico(key) {
+            database.ref('fila/' + key).once('value', (snapshot) => {
+                const item = snapshot.val();
+                if (item) {
+                    database.ref('historico').push({ ...item, data: new Date().toISOString() })
+                        .then(() => database.ref('fila/' + key).remove());
+                }
+            });
+        }
+
+        function removerDaFila(key) {
+            database.ref('fila/' + key).remove();
+        }
+
+        database.ref('historico').on('value', (snapshot) => {
+            const historico = snapshot.val();
+            const listaHistorico = document.getElementById('lista-historico');
+            listaHistorico.innerHTML = '';
+            if (historico) {
+                // Exibir os últimos 10 itens do histórico
+                const ultimosItens = Object.values(historico).slice(-10).reverse();
+                ultimosItens.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'item-historico';
+                    div.innerHTML = `
+                        <strong>${item.titulo}</strong>
+                        <span class="nome-cantor">Voz: ${item.cantor}</span>
+                    `;
+                    listaHistorico.appendChild(div);
+                });
+            }
+        });
+
+        database.ref('ranking').on('value', (snapshot) => {
+            const ranking = snapshot.val();
+            const listaRanking = document.getElementById('lista-ranking');
+            listaRanking.innerHTML = '';
+            if (ranking) {
+                // Converter objeto para array e ordenar por pontuação
+                const rankingArray = Object.values(ranking).sort((a, b) => b.pontuacao - a.pontuacao);
+                rankingArray.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'item-ranking';
+                    div.innerHTML = `
+                        <div class="info-ranking">
+                            <strong>${item.cantor}</strong>
+                            <span class="nome-cantor">Músicas: ${item.musicasCantadas}</span>
+                        </div>
+                        <span class="pontuacao">${item.pontuacao}</span>
+                    `;
+                    listaRanking.appendChild(div);
+                });
+            }
+        });
+
+        // Lógica para o botão "Tocar Próxima da Fila"
+        document.querySelector('.btn-tocar').addEventListener('click', () => {
+            database.ref('fila').limitToFirst(1).once('value', (snapshot) => {
+                const filaItem = snapshot.val();
+                if (filaItem) {
+                    const key = Object.keys(filaItem)[0];
+                    const musicaAtual = filaItem[key];
+                    database.ref('statusAtual').set({
+                        id: key,
+                        videoId: musicaAtual.videoId,
+                        titulo: musicaAtual.titulo,
+                        cantor: musicaAtual.cantor,
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    }).then(() => {
+                        database.ref('fila/' + key).remove();
+                        // Atualizar ranking (exemplo simples)
+                        database.ref('ranking').orderByChild('cantor').equalTo(musicaAtual.cantor).once('value', (rankSnapshot) => {
+                            if (rankSnapshot.exists()) {
+                                const rankKey = Object.keys(rankSnapshot.val())[0];
+                                const currentRank = rankSnapshot.val()[rankKey];
+                                database.ref('ranking/' + rankKey).update({
+                                    musicasCantadas: (currentRank.musicasCantadas || 0) + 1,
+                                    pontuacao: (currentRank.pontuacao || 0) + 100 // Exemplo de pontuação
+                                });
+                            } else {
+                                database.ref('ranking').push({
+                                    cantor: musicaAtual.cantor,
+                                    musicasCantadas: 1,
+                                    pontuacao: 100
+                                });
+                            }
+                        });
+                    });
+                } else {
+                    alert("A fila está vazia!");
+                }
+            });
+        });
+
+        // Lógica para o botão "INICIAR SISTEMA E TV"
+        document.getElementById('btn-tv').addEventListener('click', () => {
+            window.open('votacao.html', '_blank');
+            document.getElementById('btn-tv').classList.add('conectado');
+        });
+
+        // Lógica para o botão "AVALIADOR (INICIANDO...)" - Placeholder
+        document.getElementById('btn-mic').addEventListener('click', () => {
+            alert("Funcionalidade de avaliador de microfone ainda não implementada.");
+        });
+
+        // Lógica para o "Auto-Aprovar"
+        document.getElementById('auto-aprovar').addEventListener('change', (event) => {
+            if (event.target.checked) {
+                // Implementar lógica de auto-aprovação
+                alert("Auto-Aprovar ativado. Novos pedidos serão automaticamente movidos para a fila.");
+            } else {
+                alert("Auto-Aprovar desativado.");
+            }
+        });
+
+        // Lógica para o contador de votos (exemplo)
+        database.ref('votosAtual').on('value', (snapshot) => {
+            const votos = snapshot.val();
+            let totalVotos = 0;
+            const detalhesVotos = {}; // Para armazenar a contagem por tipo de voto
+
+            if (votos) {
+                Object.values(votos).forEach(voto => {
+                    totalVotos++;
+                    detalhesVotos[voto.tipo] = (detalhesVotos[voto.tipo] || 0) + 1;
+                });
+            }
+
+            const contadorVotosElement = document.getElementById('contador-votos');
+            const totalVotosSpan = document.getElementById('total-votos');
+            const detalhesVotosDiv = document.getElementById('detalhes-votos');
+
+            if (totalVotos > 0) {
+                contadorVotosElement.style.display = 'block';
+                totalVotosSpan.innerText = totalVotos;
+
+                let htmlDetalhes = '';
+                for (const tipo in detalhesVotos) {
+                    htmlDetalhes += `<div class="linha-voto"><span>${tipo}</span><span>${detalhesVotos[tipo]}</span></div>`;
+                }
+                detalhesVotosDiv.innerHTML = htmlDetalhes;
+            } else {
+                contadorVotosElement.style.display = 'none';
+                detalhesVotosDiv.innerHTML = '<p style="text-align:center; color:#aaa;">Nenhum voto ainda.</p>';
+            }
+        });
+
+        document.getElementById('contador-votos').addEventListener('click', () => {
+            document.getElementById('modal-votos').style.display = 'block';
+            document.getElementById('fundo-modal').style.display = 'block';
+        });
+
+        // Truques secretos do DJ (teclas 0-9)
+        document.addEventListener('keydown', (event) => {
+            if (['0', '6', '7', '8', '9'].includes(event.key)) {
+                let notaMin, notaMax;
+                switch (event.key) {
+                    case '0': notaMin = 100; notaMax = 100; break;
+                    case '6': notaMin = 60; notaMax = 69; break;
+                    case '7': notaMin = 70; notaMax = 79; break;
+                    case '8': notaMin = 80; notaMax = 89; break;
+                    case '9': notaMin = 90; notaMax = 99; break;
+                }
+                const notaForcada = Math.floor(Math.random() * (notaMax - notaMin + 1)) + notaMin;
+                alert(`Nota forçada: ${notaForcada}`);
+                // Aqui você enviaria a nota para o Firebase, por exemplo:
+                // database.ref('notasForcadas').push({ nota: notaForcada, timestamp: firebase.database.ServerValue.TIMESTAMP });
+            }
+        });
+
+    </script>
+</body>
+</html>
                     // Esta notificação é para o votacao.html, mas está no index.html.
                     // Se a intenção é que o DJ receba uma notificação, a lógica abaixo está correta.
                     const notif = document.getElementById('notificacao'); // Este elemento não existe no HTML atual do index.
