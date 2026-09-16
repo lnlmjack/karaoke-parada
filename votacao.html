@@ -3,179 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Karaokê Parada 10.95 Bar</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script> <!-- Adicionado para consistência, embora não usado para login aqui -->
-
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: Arial, sans-serif;
             background-color: #121212;
             color: #fff;
             margin: 0;
             padding: 0;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow-x: hidden;
+            text-align: center;
         }
         .container {
             width: 90%;
             max-width: 600px;
-            margin: 20px auto;
-            padding: 20px;
             background-color: #1e1e1e;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-            text-align: center;
             position: relative;
         }
         h1, h2 {
             color: #e52d27;
             margin-bottom: 20px;
         }
-        p {
-            color: #ccc;
-            line-height: 1.6;
+        .message {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            line-height: 1.5;
         }
         .menu-option, .vote-option {
             background-color: #333;
-            color: #fff;
             padding: 15px;
             margin: 10px 0;
             border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
+            transition: background-color 0.3s;
             font-size: 1.1em;
             font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
         }
         .menu-option:hover, .vote-option:hover {
             background-color: #e52d27;
-            transform: translateY(-2px);
         }
-        .success-message {
-            background-color: #28a745;
-            color: white;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-            font-weight: bold;
-            display: none;
-        }
-        #tela-propaganda {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            width: 100%;
-            background-color: #121212;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-        }
-        #tela-propaganda img {
-            max-width: 80%;
-            height: auto;
-            margin-bottom: 20px;
-        }
-        #tela-propaganda h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        #tela-propaganda p {
-            font-size: 1.2em;
-            margin: 5px 0;
-        }
-        #tela-propaganda button {
-            background-color: #007bff;
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 5px;
-            font-size: 1.1em;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: background-color 0.3s;
-        }
-        #tela-propaganda button:hover {
-            background-color: #0056b3;
-        }
-        #buscaCatalogo, #campoBusca {
+        input[type="text"] {
             width: calc(100% - 30px);
-            padding: 10px;
+            padding: 12px;
             margin: 10px 0;
-            border-radius: 5px;
             border: 1px solid #555;
+            border-radius: 5px;
             background-color: #333;
             color: #fff;
             font-size: 1em;
         }
-        .botoes-letras {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 5px;
-            margin-bottom: 15px;
-        }
-        .btn-letra {
-            background-color: #555;
-            color: white;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: background-color 0.3s;
-        }
-        .btn-letra:hover, .btn-letra.ativo {
-            background-color: #e52d27;
-        }
         .item-resultado {
             background-color: #333;
-            padding: 12px;
+            padding: 10px;
             margin: 8px 0;
             border-radius: 5px;
-            text-align: left;
             cursor: pointer;
             transition: background-color 0.3s;
+            text-align: left;
         }
         .item-resultado:hover {
-            background-color: #e52d27;
+            background-color: #007bff;
         }
-        .item-resultado strong {
-            display: block;
-            font-size: 1.1em;
-            margin-bottom: 5px;
-        }
-        .item-resultado span {
-            font-size: 0.9em;
-            color: #aaa;
+        .success-message {
+            background-color: #28a745;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: bold;
         }
         .confirm-buttons button {
-            background-color: #e52d27;
-            color: white;
             padding: 10px 20px;
+            margin: 5px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin: 5px;
+            font-weight: bold;
             font-size: 1em;
-            transition: background-color 0.3s;
         }
-        .confirm-buttons button.cancel {
-            background-color: #555;
+        .confirm-buttons .cancel {
+            background-color: #dc3545;
+            color: white;
+        }
+        .confirm-buttons .vote {
+            background-color: #28a745;
+            color: white;
         }
         .confirm-buttons button:hover {
-            filter: brightness(1.2);
+            opacity: 0.8;
+        }
+        #tela-propaganda img {
+            max-width: 150px;
+            margin-bottom: 20px;
         }
         .version-info {
             position: absolute;
@@ -184,127 +111,151 @@
             color: #aaa;
             font-size: 0.8em;
         }
+        .filtro-alfabeto {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        .btn-letra {
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #555;
+            padding: 5px 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.2s;
+        }
+        .btn-letra:hover, .btn-letra.ativo {
+            background-color: #e52d27;
+            border-color: #e52d27;
+        }
+        #lista-catalogo {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 10px;
+            padding-right: 5px; /* Para scrollbar */
+        }
     </style>
 </head>
 <body>
-    <div id="tela-propaganda">
-        <img src="logop.png" alt="Parada 10.95 Bar Logo">
-        <h1>🍻 Parada 10.95 Bar</h1>
-        <p>Hoje não é dia de karaokê por aqui!</p>
-        <p>Toda TERÇA-FEIRA a partir das 19h</p>
-        <p>Fico feliz que você se interessou, só errou a data! Te esperamos na próxima terça no Parada 10.95 Bar. 🎤</p>
-        <button onclick="iniciarVotacao()">Entendi, quero ver as opções!</button>
-        <div class="version-info">v1.0</div>
-    </div>
-
-    <div id="main-content" class="container" style="display: none;">
-        <img src="logop.png" alt="Parada 10.95 Bar Logo" style="max-width: 150px; margin-bottom: 20px;">
-        <h1>🍻 Parada 10.95 Bar</h1>
-
-        <div id="mainMenu">
-            <h2>O que você quer fazer?</h2>
-            <div class="menu-option" onclick="mostrarAba('pedir')">📩 Pedir Música</div>
-            <div class="menu-option" onclick="mostrarAba('votar')">⭐ Votar no Cantor</div>
-            <div class="menu-option" onclick="mostrarAba('menu')">⬅️ Voltar ao Menu</div>
+    <div class="container">
+        <div id="tela-propaganda">
+            <img src="logop.png" alt="Parada 10.95 Bar">
+            <h1>🍻 Parada 10.95 Bar</h1>
+            <p class="message">Hoje não é dia de karaokê por aqui!</p>
+            <p class="message">Toda TERÇA-FEIRA a partir das 19h</p>
+            <p class="message">Fico feliz que você se interessou, só errou a data! Te esperamos na próxima terça no Parada 10.95 Bar. 🎤</p>
+            <button onclick="iniciarVotacao()" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1.1em;">Entendi, quero ver o sistema!</button>
         </div>
 
-        <div id="requestMusicMenu" style="display: none;">
-            <h2>📩 Escolha sua Música</h2>
-            <div class="menu-option" onclick="mostrarAba('catalogo')">🗂️ Explorar Catálogo de Músicas</div>
-            <p>Ou pesquise livremente no YouTube:</p>
-            <input type="text" id="campoBusca" placeholder="Nome da música ou artista...">
-            <div class="menu-option" onclick="buscarMusica()">🔍 Buscar no YouTube</div>
-            <div id="resultados"></div>
-            <div class="menu-option" onclick="mostrarAba('menu')">⬅️ Voltar para a Busca</div>
-        </div>
-
-        <div id="catalogSection" style="display: none;">
-            <h2>🗂️ Catálogo Completo</h2>
-            <p>Toque na letra inicial do artista ou digite na barra abaixo:</p>
-            <div class="botoes-letras">
-                <button class="btn-letra ativo" id="btn-letra-TODOS" onclick="filtrarPorLetra('TODOS')">TODOS</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('A')">A</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('B')">B</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('C')">C</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('D')">D</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('E')">E</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('F')">F</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('G')">G</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('H')">H</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('I')">I</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('J')">J</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('K')">K</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('L')">L</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('M')">M</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('N')">N</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('O')">O</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('P')">P</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('Q')">Q</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('R')">R</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('S')">S</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('T')">T</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('U')">U</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('V')">V</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('W')">W</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('X')">X</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('Y')">Y</button>
-                <button class="btn-letra" onclick="filtrarPorLetra('Z')">Z</button>
-            </div>
-            <input type="text" id="buscaCatalogo" placeholder="Pesquisar no catálogo..." onkeyup="filtrarCatalogo()">
-            <div id="lista-catalogo">
-                <p>Carregando músicas...</p>
-            </div>
-            <div class="menu-option" onclick="mostrarAba('requestMusicMenu')">⬅️ Voltar ao Menu</div>
-        </div>
-
-        <div id="voteSingerSection" style="display: none;">
-            <h2>🎤 No Palco Agora</h2>
-            <p id="cantor-atual">Aguardando...</p>
-            <p id="status-musica">Preste atenção na TV!</p>
-            <p id="msg-agradecimento" style="display: none;">✅ Seu voto já foi registrado para esta música!</p>
-
-            <div id="lista-botoes">
-                <p>O que você achou da apresentação?</p>
-                <div class="vote-option" onclick="prepararVoto('Excelente', '🤯 Excelente')">🤯 Excelente</div>
-                <div class="vote-option" onclick="prepararVoto('Muito Bom', '🤩 Muito Bom')">🤩 Muito Bom</div>
-                <div class="vote-option" onclick="prepararVoto('Bom', '🙂 Bom')">🙂 Bom</div>
-                <div class="vote-option" onclick="prepararVoto('Regular', '😕 Regular')">😕 Regular</div>
-                <div class="vote-option" onclick="prepararVoto('Ruim', '😖 Ruim')">😖 Ruim</div>
+        <div id="main-content" style="display: none;">
+            <div id="mainMenu">
+                <h2>O que você quer fazer?</h2>
+                <div class="menu-option" onclick="mostrarAba('pedir')">📩 Pedir Música</div>
+                <div class="menu-option" onclick="mostrarAba('votar')">⭐ Votar no Cantor</div>
             </div>
 
-            <div id="confirmacao-voto" style="display: none;">
-                <p>Confirmar voto: <strong id="texto-voto-escolhido"></strong></p>
-                <div class="confirm-buttons">
-                    <button class="cancel" onclick="cancelarVoto()">❌ Cancelar</button>
-                    <button class="vote" onclick="confirmarVoto()">✅ Votar!</button>
+            <div id="requestMusicMenu" style="display: none;">
+                <h2>📩 Escolha sua Música</h2>
+                <div class="menu-option" onclick="mostrarAba('catalogo')">🗂️ Explorar Catálogo de Músicas</div>
+                <p>Ou pesquise livremente no YouTube:</p>
+                <input type="text" id="campoBusca" placeholder="Nome da música ou artista..." onkeypress="if(event.keyCode==13) buscarMusica()">
+                <div class="menu-option" onclick="buscarMusica()">🔍 Buscar no YouTube</div>
+                <div id="resultados" style="max-height: 200px; overflow-y: auto;"></div>
+                <div class="menu-option" onclick="mostrarAba('menu')">⬅️ Voltar para o Menu</div>
+            </div>
+
+            <div id="catalogSection" style="display: none;">
+                <h2>🗂️ Catálogo Completo</h2>
+                <p>Toque na letra inicial do artista ou digite na barra abaixo:</p>
+                <div class="filtro-alfabeto" id="filtro-alfabeto">
+                    <button class="btn-letra ativo" id="btn-letra-TODOS" onclick="filtrarPorLetra('TODOS')">TUDO</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('A')">A</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('B')">B</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('C')">C</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('D')">D</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('E')">E</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('F')">F</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('G')">G</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('H')">H</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('I')">I</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('J')">J</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('K')">K</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('L')">L</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('M')">M</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('N')">N</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('O')">O</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('P')">P</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('Q')">Q</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('R')">R</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('S')">S</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('T')">T</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('U')">U</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('V')">V</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('W')">W</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('X')">X</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('Y')">Y</button>
+                    <button class="btn-letra" onclick="filtrarPorLetra('Z')">Z</button>
                 </div>
+                <input type="text" id="buscaCatalogo" placeholder="Pesquisar no catálogo..." onkeyup="filtrarCatalogo()">
+                <div id="lista-catalogo">
+                    <p>Carregando músicas...</p>
+                </div>
+                <div class="menu-option" onclick="mostrarAba('requestMusicMenu')">⬅️ Voltar ao Menu</div>
             </div>
-            <div class="menu-option" onclick="mostrarAba('menu')">⬅️ Voltar ao Menu</div>
-        </div>
 
-        <div id="requestSuccess" class="success-message" style="display: none;">
-            ✅ Pedido enviado ao DJ!
+            <div id="voteSingerSection" style="display: none;">
+                <h2>🎤 No Palco Agora</h2>
+                <p id="cantor-atual">Aguardando...</p>
+                <p id="status-musica">Preste atenção na TV!</p>
+                <p id="msg-agradecimento" style="display: none;">✅ Seu voto já foi registrado para esta música!</p>
+
+                <div id="lista-botoes">
+                    <p>O que você achou da apresentação?</p>
+                    <div class="vote-option" onclick="prepararVoto('Excelente', '🤯 Excelente')">🤯 Excelente</div>
+                    <div class="vote-option" onclick="prepararVoto('Muito Bom', '🤩 Muito Bom')">🤩 Muito Bom</div>
+                    <div class="vote-option" onclick="prepararVoto('Bom', '🙂 Bom')">🙂 Bom</div>
+                    <div class="vote-option" onclick="prepararVoto('Regular', '😕 Regular')">😕 Regular</div>
+                    <div class="vote-option" onclick="prepararVoto('Ruim', '😖 Ruim')">😖 Ruim</div>
+                </div>
+
+                <div id="confirmacao-voto" style="display: none;">
+                    <p>Confirmar voto: <strong id="texto-voto-escolhido"></strong></p>
+                    <div class="confirm-buttons">
+                        <button class="cancel" onclick="cancelarVoto()">❌ Cancelar</button>
+                        <button class="vote" onclick="confirmarVoto()">✅ Votar!</button>
+                    </div>
+                </div>
+                <div class="menu-option" onclick="mostrarAba('menu')">⬅️ Voltar ao Menu</div>
+            </div>
+
+            <div id="requestSuccess" class="success-message" style="display: none;">
+                ✅ Pedido enviado ao DJ!
+            </div>
+            <div class="version-info">v1.1</div>
         </div>
-        <div class="version-info">v1.0</div>
     </div>
 
     <script>
-        // Configuração do Firebase (ATUALIZADA COM SUAS CREDENCIAIS)
+        // Configuração do Firebase (ATUALIZE ESTES VALORES COM AS SUAS CREDENCIAIS REAIS DO FIREBASE)
         const firebaseConfig = {
-            apiKey: "AIzaSyC2Y-xxxxxxxxxxxxxxxxxxxxxxxxxxxx", // Sua API Key
+            apiKey: "AIzaSyC2Y-xxxxxxxxxxxxxxxxxxxxxxxxxxxx", // <-- SUBSTITUA ESTE VALOR PELA SUA API KEY REAL
             authDomain: "karaoke-parada.firebaseapp.com",
             databaseURL: "https://karaoke-parada-default-rtdb.firebaseio.com",
             projectId: "karaoke-parada",
             storageBucket: "karaoke-parada.appspot.com",
-            messagingSenderId: "xxxxxxxxxxxx", // Seu Messaging Sender ID
-            appId: "1:xxxxxxxxxxxx:web:xxxxxxxxxxxxxxxxxxxxxx" // Seu App ID
+            messagingSenderId: "xxxxxxxxxxxx", // <-- SUBSTITUA ESTE VALOR PELO SEU MESSAGING SENDER ID REAL
+            appId: "1:xxxxxxxxxxxx:web:xxxxxxxxxxxxxxxxxxxxxx" // <-- SUBSTITUA ESTE VALOR PELO SEU APP ID REAL
         };
 
         // Inicializa o Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Sua API Key do YouTube
+        // Sua API Key do YouTube (SUBSTITUA ESTE VALOR PELA SUA API KEY REAL DO YOUTUBE)
         const API_KEY = "AIzaSyC2Y-xxxxxxxxxxxxxxxxxxxxxxxxxxxx"; 
 
         let musicasCatalogo = [];
@@ -451,7 +402,7 @@
             if (letra === 'TODOS') {
                 renderizarCatalogo(musicasCatalogo.slice(0, 150));
             } else {
-                const filtrados = musicasCatalogo.filter(m => m.cantor.startsWith(letra)).slice(0, 150);
+                const filtrados = musicasCatalogo.filter(m => m.cantor.toUpperCase().startsWith(letra)).slice(0, 150);
                 renderizarCatalogo(filtrados);
             }
         }
