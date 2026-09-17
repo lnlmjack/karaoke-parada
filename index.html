@@ -58,10 +58,10 @@
         #btn-reset-tudo { position: absolute; top: 20px; right: 335px; background: #b31217; color: #fff; border: 1px solid #ff5252; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; }
         #btn-reset-tudo:hover { background: #e52d27; transform: scale(1.05); }
 
-        .btn-limpar-painel { background: #333; color: #aaa; border: none; font-size: 11px; padding: 3px 8px; border-radius: 4px; cursor: pointer; float: right; transition: 0.2s; }
+        .btn-limpar-painel { background: #333; color: #aaa; border: none; font-size: 11px; padding: 3px 8px; border-radius: 4px; cursor: pointer; transition: 0.2s; }
         .btn-limpar-painel:hover { background: #e52d27; color: #fff; }
 
-        #modal-manual-conteudo { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 300; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #00d2ff; width: 90%; max-width: 800px; max-height: 85vh; overflow-y: auto; color: #ddd; }
+        #modal-manual-conteudo { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 300; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #00d2ff; width: 90%; max-width: 850px; max-height: 85vh; overflow-y: auto; color: #ddd; }
         #modal-manual-conteudo h2 { color: #00d2ff; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; font-size: 24px; text-align: center;}
         #modal-manual-conteudo h3 { color: #ffeb3b; margin-top: 25px; margin-bottom: 10px; font-size: 18px; border-left: 4px solid #e52d27; padding-left: 10px; }
         #modal-manual-conteudo p, #modal-manual-conteudo li { line-height: 1.6; font-size: 15px; }
@@ -123,6 +123,7 @@
 
     <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
 
+    <!-- MANUAL DO SISTEMA ATUALIZADO (v1.20) -->
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
     <div id="modal-manual-conteudo">
         <h2>📖 Manual Completo do Operador - Parada 10.95 Bar</h2>
@@ -147,7 +148,7 @@
             <li><span class="destaque">Busca do DJ:</span> Digite o nome da música ou cole o link direto do YouTube na barra de pesquisa e clique em "Buscar Música (DJ)".</li>
             <li><span class="destaque">Seleção de Cantores (Modal Flutuante):</span> Ao clicar em qualquer música buscada, abrirá uma janela perguntando "Quem vai cantar?". Nela, você pode digitar um nome novo (solo, dupla ou trio) ou selecionar rapidamente por chips em formato de acesso rápido. Os nomes digitados são salvos automaticamente para o próximo uso.</li>
             <li><span class="destaque">📩 Pedidos dos Clientes:</span> Os clientes escaneiam o QR Code na TV para pedir músicas pelo celular. Os pedidos chegam em tempo real na caixa de "Pedidos". Você pode aprová-los individualmente ou ativar a caixa <span class="destaque">Auto-Aprovar</span> para que entrem direto na fila.</li>
-            <li><span class="destaque">🧹 Limpeza de Painéis:</span> Cada painel possui botões dedicados de limpeza individual (<span class="destaque">🗑️ Limpar Fila</span>, <span class="destaque">🗑️ Limpar Ranking</span>, <span class="destaque">🗑️ Limpar Histórico</span>) para você zerar os dados ao iniciar um novo dia no bar, além de um botão geral de <span class="destaque">⚠️ Resetar Tudo</span> no topo.</li>
+            <li><span class="destaque">🧹 Limpeza e Reset de Dados:</span> Para iniciar um novo dia de trabalho, você pode usar o botão geral <span class="destaque">⚠️ Resetar Tudo</span> no topo para zerar todas as listas de uma vez, ou usar os botões de limpeza individuais localizados diretamente no cabeçalho de cada painel (<span class="destaque">🗑️ Limpar Fila</span>, <span class="destaque">🗑️ Limpar Ranking</span>, <span class="destaque">🗑️ Limpar Histórico</span>). O sistema preserva a estabilidade das atualizações automáticas de tela com total segurança.</li>
         </ul>
 
         <h3>4. Sistema de Votação ao Fim da Música e Ranking</h3>
@@ -283,7 +284,7 @@
         </div>
     </div>
 
-    <div class="versao-app">v1.19</div>
+    <div class="versao-app">v1.20</div>
     <div onclick="definirNotaManual()" style="position: fixed; bottom: 4px; right: 35px; font-size: 13px; color: #fff; opacity: 0.3; z-index: 9999; cursor: pointer; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</div>
 
     <script>
