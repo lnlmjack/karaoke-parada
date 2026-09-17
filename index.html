@@ -55,7 +55,7 @@
         #btn-sair { position: absolute; top: 20px; right: 240px; background: transparent; color: #aaa; border: 1px solid #555; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; }
         #btn-sair:hover { color: #fff; background: #e52d27; border-color: #e52d27; }
 
-        #modal-manual-conteudo { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 300; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #00d2ff; width: 90%; max-width: 800px; max-height: 85vh; overflow-y: auto; color: #ddd; }
+        #modal-manual-conteudo { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 300; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #00d2ff; width: 90%; max-width: 850px; max-height: 85vh; overflow-y: auto; color: #ddd; }
         #modal-manual-conteudo h2 { color: #00d2ff; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; font-size: 24px; text-align: center;}
         #modal-manual-conteudo h3 { color: #ffeb3b; margin-top: 25px; margin-bottom: 10px; font-size: 18px; border-left: 4px solid #e52d27; padding-left: 10px; }
         #modal-manual-conteudo p, #modal-manual-conteudo li { line-height: 1.6; font-size: 15px; }
@@ -117,33 +117,48 @@
 
     <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
 
+    <!-- MANUAL DO SISTEMA ATUALIZADO (v1.18) -->
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
     <div id="modal-manual-conteudo">
-        <h2>📖 Manual do Operador - Parada 10.95 Bar</h2>
+        <h2>📖 Manual Completo do Operador - Parada 10.95 Bar</h2>
         
-        <h3>1. Iniciando o Sistema</h3>
-        <p>Sempre que abrir o painel, siga a ordem dos botões no topo:</p>
+        <h3>1. Acesso e Controle de Contas (Login)</h3>
+        <p>O sistema possui controle de acesso com dois perfis de usuários:</p>
         <ul>
-            <li>Clique em <span class="destaque">🚀 1. INICIAR SISTEMA E TV</span>. O navegador abrirá a tela do telão. Arraste para a TV do bar e aperte <span class="destaque">F11</span> para tela cheia.</li>
-            <li>Clique em <span class="destaque">🎙️ 2. AVALIADOR</span> e permita o uso do microfone no navegador.</li>
+            <li><span class="destaque">Administrador:</span> Possui acesso completo ao painel, incluindo a gestão de contas (botão 👥 no topo).</li>
+            <li><span class="destaque">Operador Comum:</span> Gerencia as músicas, fila e pedidos, mas não tem acesso ao painel de gerenciamento de usuários.</li>
+            <li><span class="destaque">Painel de Usuários (Exclusivo Admin):</span> Clicando no ícone 👥 no topo, o administrador pode adicionar novos operadores, alterar nomes de usuário, atualizar senhas ou excluir contas existentes com salvamento imediato.</li>
         </ul>
 
-        <h3>2. Gerenciando as Músicas</h3>
+        <h3>2. Iniciando o Sistema</h3>
+        <p>Ao abrir o painel e fazer login, siga a ordem correta no topo da tela:</p>
         <ul>
-            <li><span class="destaque">Na Busca do DJ:</span> Digite o nome da música ou cole o link direto do YouTube.</li>
-            <li><span class="destaque">No Celular dos Clientes:</span> O cliente escaneia o QR Code da TV, busca a música e o pedido chega na caixa de <strong>📩 Pedidos</strong>.</li>
+            <li>Clique em <span class="destaque">🚀 1. INICIAR SISTEMA E TV</span>. O navegador abrirá a tela do telão. Arraste a janela para a TV do bar e aperte <span class="destaque">F11</span> para habilitar a tela cheia.</li>
+            <li>Clique em <span class="destaque">🎙️ 2. AVALIADOR</span> para ativar o microfone e permitir a captação de energia e barulho da plateia.</li>
         </ul>
 
-        <h3>3. Sistema de Notas e Votação ao Vivo</h3>
-        <p>A nota que aparece na TV é a soma do barulho captado pelo microfone e dos votos enviados pelos celulares.</p>
+        <h3>3. Gerenciando Músicas e Pedidos (DJ e Clientes)</h3>
+        <ul>
+            <li><span class="destaque">Busca do DJ:</span> Digite o nome da música ou cole o link direto do YouTube na barra de pesquisa e clique em "Buscar Música (DJ)".</li>
+            <li><span class="destaque">Seleção de Cantores (Modal Flutuante):</span> Ao clicar em qualquer música buscada, abrirá uma janela perguntando "Quem vai cantar?". Nela, você pode digitar um nome novo (solo, dupla ou trio) ou selecionar rapidamente por chips em formato de acesso rápido. Os nomes digitados são salvos automaticamente para o próximo uso.</li>
+            <li><span class="destaque">📩 Pedidos dos Clientes:</span> Os clientes escaneiam o QR Code na TV para pedir músicas pelo celular. Os pedidos chegam em tempo real na caixa de "Pedidos". Você pode aprová-los individualmente ou ativar a caixa <span class="destaque">Auto-Aprovar</span> para que entrem direto na fila.</li>
+        </ul>
+
+        <h3>4. Sistema de Votação ao Fim da Música e Ranking</h3>
+        <p>Quando a música termina, a pontuação final é calculada automaticamente combinando o volume captado pelo microfone e os votos enviados ao vivo pelos celulares do público.</p>
+        <ul>
+            <li><span class="destaque">Detalhes dos Votos:</span> Clicando no contador superior direito (<span class="destaque">📊 X votos ao vivo</span>), você visualiza a contagem exata de reações da plateia (Excelente, Muito Bom, Bom, Regular, Ruim).</li>
+            <li><span class="destaque">Ranking:</span> Exibe as melhores apresentações da noite em ordem decrescente de pontuação. Clicando em cima de qualquer item do ranking, você abre o registro detalhado dos votos que aquele cantor recebeu.</li>
+        </ul>
 
         <div class="segredo">
-            <strong>⚙️ TRUQUE SECRETO DO DJ:</strong><br>
-            Aperte o <strong>6</strong> = Força nota entre 60 e 69.<br>
-            Aperte o <strong>7</strong> = Força nota entre 70 e 79.<br>
-            Aperte o <strong>8</strong> = Força nota entre 80 e 89.<br>
-            Aperte o <strong>9</strong> = Força nota entre 90 e 99.<br>
-            Aperte o <strong>0</strong> = Força nota 100!
+            <strong>⚙️ TRUQUES SECRETOS DO DJ (ATALHOS DE TECLADO & CONFIG):</strong><br>
+            • Pressionar a tecla <strong>6</strong> no teclado = Força nota aleatória entre 60 e 69.<br>
+            • Pressionar a tecla <strong>7</strong> = Força nota entre 70 e 79.<br>
+            • Pressionar a tecla <strong>8</strong> = Força nota entre 80 e 89.<br>
+            • Pressionar a tecla <strong>9</strong> = Força nota entre 90 e 99.<br>
+            • Pressionar a tecla <strong>0</strong> = Força nota máxima 100!<br>
+            • Clicar no ícone de engrenagem discreto (⚙️) no rodapé esquerdo permite definir manualmente qualquer nota de 0 a 100 para o cantor atual.
         </div>
 
         <button onclick="fecharManual()" style="width: 100%; margin-top: 30px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
