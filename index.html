@@ -38,7 +38,7 @@
         .item-ranking:hover { background: #2a2a2a; }
         .info-ranking { flex: 1; } .pontuacao { font-size: 26px; color: #ffeb3b; font-weight: 900; margin-left: 10px; }
 
-        #contador-votos { position: absolute; top: 15px; right: 15px; background: #e52d27; padding: 8px 12px; border-radius: 20px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        #contador-votos { background: #e52d27; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 11px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.5); display: inline-block; }
         #contador-votos:hover { transform: scale(1.05); background: #c21a15; }
 
         #modal-votos { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 200; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #e52d27; width: 300px; }
@@ -153,7 +153,7 @@
         <h3>4. Sistema de Votação ao Fim da Música e Ranking</h3>
         <p>Quando a música termina, a pontuação final é calculada automaticamente combinando o volume captado pelo microfone e os votos enviados ao vivo pelos celulares do público.</p>
         <ul>
-            <li><span class="destaque">Detalhes dos Votos:</span> Clicando no contador superior direito (<span class="destaque">📊 X votos ao vivo</span>), você visualiza a contagem exata de reações da plateia (Excelente, Muito Bom, Bom, Regular, Ruim).</li>
+            <li><span class="destaque">Detalhes dos Votos:</span> Clicando no contador superior esquerdo do ranking (<span class="destaque">📊 X votos ao vivo</span>), você visualiza a contagem exata de reações da plateia (Excelente, Muito Bom, Bom, Regular, Ruim).</li>
             <li><span class="destaque">Ranking:</span> Exibe as melhores apresentações da noite em ordem decrescente de pontuação. Clicando em cima de qualquer item do ranking, você abre o registro detalhado dos votos que aquele cantor recebeu.</li>
         </ul>
 
@@ -264,9 +264,9 @@
                 <div id="fila"></div>
             </div>
             
-            <div class="painel">
-                <h3 style="margin-top: 0; color: #ffeb3b; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="display:inline-block; margin-right:5px;">🏆 Ranking:</span>
+            <div class="painel" style="position: relative;">
+                <h3 style="margin-top: 0; color: #ffeb3b; display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px;">
+                    <span>🏆 Ranking:</span>
                     <button class="btn-limpar-painel" onclick="limparRanking()">🗑️ Limpar Ranking</button>
                 </h3>
                 <div id="contador-votos" onclick="abrirDetalhesVotos()">📊 0 votos ao vivo</div>
@@ -283,7 +283,7 @@
         </div>
     </div>
 
-    <div class="versao-app">v1.21</div>
+    <div class="versao-app">v1.22</div>
     <div onclick="definirNotaManual()" style="position: fixed; bottom: 4px; right: 35px; font-size: 13px; color: #fff; opacity: 0.3; z-index: 9999; cursor: pointer; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</div>
 
     <script>
@@ -879,7 +879,7 @@
                     let valorEl = telaTV.document.getElementById('nota-valor');
                     valorEl.innerText = notaFinal;
                     valorEl.style.color = notaFinal >= 90 ? '#28a745' : notaFinal >= 75 ? '#ffeb3b' : '#e52d27';
-                    telaTV.document.getElementById('tela-resultado').style.display = 'flex';
+                    telaTV.document.getElementById('nota-resultado').style.display = 'flex';
                 }, 4000); 
             }
 
@@ -1020,7 +1020,7 @@
                         <strong>Registro da Plateia:</strong><br><br>
                         <span style="color:#00d2ff">🤯 ${item.votos.excelente}</span> &nbsp;|&nbsp; 
                         <span style="color:#28a745">🤩 ${item.votos.muitobom}</span> &nbsp;|&nbsp; 
-                        <span style="color:#ffeb3b">🙂 ${item.voton?.bom || item.votos.bom}</span> &nbsp;|&nbsp; 
+                        <span style="color:#ffeb3b">🙂 ${item.votos.bom}</span> &nbsp;|&nbsp; 
                         <span style="color:#fd7e14">😕 ${item.votos.regular}</span> &nbsp;|&nbsp; 
                         <span style="color:#e52d27">😖 ${item.votos.ruim}</span>
                     </div>
