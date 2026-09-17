@@ -123,7 +123,6 @@
 
     <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
 
-    <!-- MANUAL DO SISTEMA ATUALIZADO (v1.20) -->
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
     <div id="modal-manual-conteudo">
         <h2>📖 Manual Completo do Operador - Parada 10.95 Bar</h2>
@@ -267,7 +266,7 @@
             
             <div class="painel">
                 <h3 style="margin-top: 0; color: #ffeb3b; display: flex; justify-content: space-between; align-items: center;">
-                    🏆 Ranking:
+                    <span style="display:inline-block; margin-right:5px;">🏆 Ranking:</span>
                     <button class="btn-limpar-painel" onclick="limparRanking()">🗑️ Limpar Ranking</button>
                 </h3>
                 <div id="contador-votos" onclick="abrirDetalhesVotos()">📊 0 votos ao vivo</div>
@@ -284,7 +283,7 @@
         </div>
     </div>
 
-    <div class="versao-app">v1.20</div>
+    <div class="versao-app">v1.21</div>
     <div onclick="definirNotaManual()" style="position: fixed; bottom: 4px; right: 35px; font-size: 13px; color: #fff; opacity: 0.3; z-index: 9999; cursor: pointer; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</div>
 
     <script>
@@ -880,7 +879,7 @@
                     let valorEl = telaTV.document.getElementById('nota-valor');
                     valorEl.innerText = notaFinal;
                     valorEl.style.color = notaFinal >= 90 ? '#28a745' : notaFinal >= 75 ? '#ffeb3b' : '#e52d27';
-                    telaTV.document.getElementById('nota-resultado').style.display = 'flex';
+                    telaTV.document.getElementById('tela-resultado').style.display = 'flex';
                 }, 4000); 
             }
 
@@ -1021,7 +1020,7 @@
                         <strong>Registro da Plateia:</strong><br><br>
                         <span style="color:#00d2ff">🤯 ${item.votos.excelente}</span> &nbsp;|&nbsp; 
                         <span style="color:#28a745">🤩 ${item.votos.muitobom}</span> &nbsp;|&nbsp; 
-                        <span style="color:#ffeb3b">🙂 ${item.votos.bom}</span> &nbsp;|&nbsp; 
+                        <span style="color:#ffeb3b">🙂 ${item.voton?.bom || item.votos.bom}</span> &nbsp;|&nbsp; 
                         <span style="color:#fd7e14">😕 ${item.votos.regular}</span> &nbsp;|&nbsp; 
                         <span style="color:#e52d27">😖 ${item.votos.ruim}</span>
                     </div>
