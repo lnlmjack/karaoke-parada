@@ -21,7 +21,7 @@
         #btn-canais { background: #ffc107; color: #000; border-color: #e0a800; display: none; } #btn-canais:hover { background: #e0a800; }
         #btn-manual { background: #333; color: #fff; } #btn-manual:hover { background: #444; border-color: #00d2ff; }
 
-        .area-botoes-topo { display: flex; gap: 15px; margin-bottom: 20px; }
+        .area-botoes-topo { display: flex; gap: 15px; margin-bottom: 15px; }
         .btn-topo { flex: 1; padding: 15px; font-size: 16px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s;}
         .btn-tv { background: #007bff; } .btn-tv:hover { background: #0056b3; } .btn-tv.conectado { background: #17a2b8; pointer-events: none; }
         .btn-mic { background: #e52d27; text-align: center; display: flex; align-items: center; justify-content: center; } 
@@ -33,6 +33,13 @@
         input { flex: 1; padding: 12px; border-radius: 5px; border: none; font-size: 16px; }
         .btn-buscar { padding: 12px 25px; background: #e52d27; color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer;}
         
+        /* Barra de canais discreta */
+        .canais-preferidos { display: flex; gap: 5px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; font-size: 11px; color: #777; background: #161616; padding: 6px 10px; border-radius: 4px; border: 1px solid #282828; }
+        .chip-canal { background: #222; border: 1px solid #444; padding: 2px 7px; border-radius: 10px; cursor: pointer; color: #ccc; transition: 0.2s; display: inline-flex; align-items: center; gap: 3px; font-size: 10px; }
+        .chip-canal:hover { background: #333; border-color: #00d2ff; color: #fff; }
+        .chip-canal.ativo { background: #007bff; border-color: #007bff; color: #fff; font-weight: bold; }
+        .chip-canal .ordem-badge { background: rgba(0,0,0,0.5); padding: 1px 3px; border-radius: 6px; font-size: 8px; color: #ffeb3b; }
+
         .paineis { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
         .painel { background: #1e1e1e; padding: 15px; border-radius: 8px; height: 450px; overflow-y: auto; position: relative;}
         
@@ -254,6 +261,10 @@
             <button id="botaoMic" class="btn-topo btn-mic" onclick="toggleMicrofone()">🎙️ 2. AVALIADOR (INICIANDO...)</button>
         </div>
 
+        <div class="canais-preferidos" id="container-chips-canais">
+            <!-- Renderizado dinamicamente via JS de forma discreta -->
+        </div>
+
         <div class="area-busca">
             <input type="text" id="campoBusca" placeholder="Cole o link do YouTube ou busque o nome...">
             <button class="btn-buscar" onclick="buscarNoYouTube()">Buscar Música (DJ)</button>
@@ -301,7 +312,7 @@
         </div>
     </div>
 
-    <div class="versao-app">v1.27</div>
+    <div class="versao-app">v1.28</div>
     <div onclick="definirNotaManual()" style="position: fixed; bottom: 4px; right: 35px; font-size: 13px; color: #fff; opacity: 0.3; z-index: 9999; cursor: pointer; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</div>
 
     <script>
@@ -321,6 +332,15 @@
             localStorage.setItem('canaisFavoritos', JSON.stringify(canaisFavoritos));
         }
 
+        function renderizarChipsCanaisDiscretos() {
+            const container = document.getElementById('container-chips-canais');
+            let html = `<span style="font-weight:bold;">⭐ Preferência:</span>`;
+            canaisFavoritos.forEach((canal, idx) => {
+                html += `<div class="chip-canal"><span class="ordem-badge">${idx+1}º</span> ${canal}</div>`;
+            });
+            container.innerHTML = html;
+        }
+
         // Modal de Canais Favoritos
         function abrirModalCanais() {
             renderizarTabelaCanais();
@@ -331,6 +351,7 @@
         function fecharModalCanais() {
             document.getElementById('fundo-modal-canais').style.display = 'none';
             document.getElementById('modal-canais').style.display = 'none';
+            renderizarChipsCanaisDiscretos();
         }
 
         function renderizarTabelaCanais() {
@@ -388,6 +409,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            renderizarChipsCanaisDiscretos();
             const usuarioLogado = localStorage.getItem('usuarioLogado');
             const tipoUsuario = localStorage.getItem('tipoUsuario');
 
@@ -1036,7 +1058,6 @@
                     const tituloVid = v.snippet.title;
                     const nomeCanalVid = v.snippet.channelTitle;
 
-                    // Verifica se bate com algum favorito para exibir um selo de destaque
                     let matchFavorito = canaisFavoritos.find(c => tituloVid.toLowerCase().includes(c.toLowerCase()) || nomeCanalVid.toLowerCase().includes(c.toLowerCase()));
                     let badgeHtml = matchFavorito ? `<span class="badge-canal-favorito">⭐ ${matchFavorito}</span>` : '';
 
