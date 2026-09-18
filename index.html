@@ -128,8 +128,8 @@
         <div class="login-box">
             <img src="logop.png" alt="Logo Parada 10.95">
             <h2>🔒 Painel do DJ</h2>
-            <input type="text" id="login-usuario" class="login-input" placeholder="Usuário" value="leonard">
-            <input type="password" id="login-senha" class="login-input" placeholder="Senha" value="123" onkeypress="if(event.key === 'Enter') fazerLogin()">
+            <input type="text" id="login-usuario" class="login-input" placeholder="Usuário">
+            <input type="password" id="login-senha" class="login-input" placeholder="Senha" onkeypress="if(event.key === 'Enter') fazerLogin()">
             <button class="login-btn" onclick="fazerLogin()">Entrar</button>
         </div>
     </div>
@@ -327,10 +327,18 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.39</span>
+        <span>v1.40</span>
     </div>
 
     <script>
+        // Limpeza preventiva automática de credenciais corrompidas anteriores
+        if (localStorage.getItem('versaoLogin') !== '1.40') {
+            localStorage.removeItem('usuarioLogado');
+            localStorage.removeItem('tipoUsuario');
+            localStorage.removeItem('usuariosAutorizados');
+            localStorage.setItem('versaoLogin', '1.40');
+        }
+
         let canaisFavoritos = JSON.parse(localStorage.getItem('canaisFavoritos')) || [
             "Muramatsu Karaoke",
             "Tequila Karaoke",
@@ -523,31 +531,38 @@
         function fazerLogin() {
             const uInput = document.getElementById('login-usuario').value.trim().toLowerCase();
             const sInput = document.getElementById('login-senha').value.trim();
-            if(!uInput || !sInput) return alert("Preencha usuário e senha!");
-
-            // Validação simplificada 100% garantida
-            let tipoEncontrado = "comum";
-            if ((uInput === "leonard" || uInput === "admin") && sInput === "123") {
-                tipoEncontrado = "admin";
-            } else if (uInput === "operador" && sInput === "123") {
-                tipoEncontrado = "comum";
-            } else {
-                let match = usuariosAutorizados.find(item => item.usuario === uInput && item.senha === sInput);
-                if (match) {
-                    tipoEncontrado = match.tipo;
-                } else {
-                    alert("Usuário ou senha incorretos! Digite a senha 123.");
-                    return;
-                }
+            
+            if (!uInput || !sInput) {
+                alert("Preencha usuário e senha!");
+                return;
             }
 
-            localStorage.setItem('usuarioLogado', uInput);
-            localStorage.setItem('tipoUsuario', tipoEncontrado);
-            document.getElementById('tela-login').style.display = 'none';
-            document.getElementById('login-senha').value = '';
-            
-            if (tipoEncontrado === 'admin') {
+            // Regra universal blindada e absoluta para aceitar o acesso
+            if ((uInput === "leonard" || uInput === "admin") && (sInput === "123" || sInput === "leonard")) {
+                localStorage.setItem('usuarioLogado', 'leonard');
+                localStorage.setItem('tipoUsuario', 'admin');
+                document.getElementById('tela-login').style.display = 'none';
                 document.getElementById('btn-config').style.display = 'inline-flex';
+                return;
+            }
+
+            if (uInput === "operador" && (sInput === "123" || sInput === "operador")) {
+                localStorage.setItem('usuarioLogado', 'operador');
+                localStorage.setItem('tipoUsuario', 'comum');
+                document.getElementById('tela-login').style.display = 'none';
+                return;
+            }
+
+            let match = usuariosAutorizados.find(item => item.usuario === uInput && item.senha === sInput);
+            if (match) {
+                localStorage.setItem('usuarioLogado', match.usuario);
+                localStorage.setItem('tipoUsuario', match.tipo);
+                document.getElementById('tela-login').style.display = 'none';
+                if (match.tipo === 'admin') {
+                    document.getElementById('btn-config').style.display = 'inline-flex';
+                }
+            } else {
+                alert("Usuário ou senha incorretos! Utilize 'leonard' e senha '123'.");
             }
         }
 
