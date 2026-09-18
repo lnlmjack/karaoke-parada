@@ -152,18 +152,18 @@
         <h3>2. Iniciando o Sistema</h3>
         <p>Ao abrir o painel e fazer login, siga a ordem correta no topo da tela:</p>
         <ul>
-            <li>Clique em <span class="destaque">🚀 1. INICIAR SISTEMA E TV</span>. O navegador abrirá a tela do telão. Arraste a janela para a TV do bar e aperte <span class="destaque">F11</span> para habilitar a tela cheia.</li>
+            <li>Clique em <span class="destaque">🚀 1. INICIAR SISTEMA E TV</span>. O navegador abrirá a janela limpa do telão. Arraste a janela para a TV do bar e aperte <span class="destaque">F11</span> para habilitar a tela cheia.</li>
             <li>Clique em <span class="destaque">🎙️ 2. AVALIADOR</span> para ativar o microfone e permitir a captação de energia e barulho da plateia.</li>
         </ul>
 
-        <h3>3. Contagem Regressiva e Transição</h3>
-        <p>Nas configurações do sistema, você pode definir quantos segundos de pausa deseja entre o fim de uma música e o início da próxima, permitindo que a plateia suba/desça do palco com calma.</p>
+        <h3>3. Contagem Regressiva e Tela de Espera</h3>
+        <p>Nas configurações do sistema, você pode definir quantos segundos de pausa deseja entre o fim de uma música e o início da próxima. Quando a fila esvazia, o telão exibe automaticamente uma tela de propaganda estilizada aguardando a próxima música.</p>
 
         <h3>4. Sistema de Votação e Notas Manuais/Atalhos</h3>
         <p>Quando a música termina, a pontuação final é calculada combinando captação de microfone e votos da plateia, mas o DJ tem controle absoluto:</p>
         <ul>
             <li><span class="destaque">Atalhos de Teclado (6 a 0):</span> Aperte <strong>6</strong> a <strong>0</strong> para forçar notas instantaneamente.</li>
-            <li><span class="destaque">Nota Manual (⚙️ Engrenagem):</span> Clicando no ícone de engrenagem no rodapé esquerdo, você define uma nota exata de 0 a 100. A nota escolhida aparece de forma sutil ao lado da engrenagem.</li>
+            <li><span class="destaque">Nota Manual (⚙️ Engrenagem):</span> Clicando no ícone de engrenagem no rodapé esquerdo, você define uma nota exata de 0 a 100.</li>
         </ul>
 
         <button onclick="fecharManual()" style="width: 100%; margin-top: 30px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
@@ -329,7 +329,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.33</span>
+        <span>v1.34</span>
     </div>
 
     <script>
@@ -831,11 +831,11 @@
         document.getElementById('campoBusca').addEventListener('keypress', e => { if(e.key === 'Enter') buscarNoYouTube(); });
 
         function abrirTV() {
-            telaTV = window.open("", "TelaTV", "width=800,height=600");
+            telaTV = window.open("", "TelaTV", "width=800,height=600,toolbar=0,location=0,status=0,menubar=0,scrollbars=0,resizable=1");
             telaTV.document.write(`
                 <!DOCTYPE html><html><head>
                 <base href="\${window.location.href}">
-                <title>TV</title>
+                <title>TV - Parada 10.95</title>
                 <style>
                     body { margin: 0; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; font-family: Arial;}
                     #player { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1;}
@@ -853,6 +853,13 @@
                     #cantor-overlay .aviso { font-size: 12px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
                     #cantor-overlay .nome { font-size: 22px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; line-height: 1.1; word-wrap: break-word;}
                     
+                    /* TELA DE AGUARDANDO / PROPAGANDA QUANDO A FILA ESTIVER VAZIA */
+                    #tela-aguardando { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #0b0b0b, #1a0000); z-index: 90; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+                    #tela-aguardando img.logo-centro { width: 220px; height: auto; border-radius: 50%; box-shadow: 0 0 40px rgba(229,45,39,0.5); margin-bottom: 25px; animation: pulsar 2s infinite; }
+                    @keyframes pulsar { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+                    #tela-aguardando h1 { font-size: 48px; color: #ffeb3b; margin: 0 0 10px 0; text-shadow: 2px 2px 10px #000; }
+                    #tela-aguardando p { font-size: 24px; color: #fff; margin: 0; text-shadow: 1px 1px 5px #000; }
+
                     #tela-transicao { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: #0a0a0a; z-index: 95; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px; box-sizing: border-box;}
                     #contador-regressivo { font-size: 180px; font-weight: 900; color: #ffeb3b; text-shadow: 0 0 30px rgba(255,235,59,0.5); line-height: 1; margin-top: 15px;}
 
@@ -873,6 +880,13 @@
                     </div>
 
                     <div id="cantor-overlay"></div>
+
+                    <!-- TELA DE ESPERA / PROPAGANDA -->
+                    <div id="tela-aguardando">
+                        <img src="logop.png" class="logo-centro" alt="Logo Bar">
+                        <h1>🍻 AGUARDANDO PRÓXIMA MÚSICA 🍻</h1>
+                        <p>Aponte a câmera para o QR Code e escolha seu som!</p>
+                    </div>
                     
                     <div id="tela-transicao">
                         <h3 style="font-size: 25px; color: #aaa; margin: 0 0 10px 0; text-transform: uppercase;">PRÓXIMO CANTOR:</h3>
@@ -919,6 +933,13 @@
             });
             document.getElementById('botaoTV').innerHTML = "✅ TELA CONECTADA!";
             document.getElementById('botaoTV').style.background = "#17a2b8";
+            
+            // Exibe a tela de propaganda inicial se a fila estiver vazia
+            if (filaDeReproducao.length === 0 && (!musicaAtual)) {
+                if (telaTV && !telaTV.closed) {
+                    telaTV.document.getElementById('tela-aguardando').style.display = 'flex';
+                }
+            }
         }
 
         function gerarNotaFinal() {
@@ -969,7 +990,7 @@
                     let valorEl = telaTV.document.getElementById('nota-valor');
                     valorEl.innerText = notaFinal;
                     valorEl.style.color = notaFinal >= 90 ? '#28a745' : notaFinal >= 75 ? '#ffeb3b' : '#e52d27';
-                    telaTV.document.getElementById('nota-resultado').style.display = 'flex';
+                    telaTV.document.getElementById('tela-resultado').style.display = 'flex';
                 }, 4000); 
             }
 
@@ -1064,7 +1085,10 @@
 
         function executarInicioMusica(m) {
             clearTimeout(timerNota);
-            if (telaTV && !telaTV.closed) telaTV.document.getElementById('tela-nota').style.display = 'none';
+            if (telaTV && !telaTV.closed) {
+                telaTV.document.getElementById('tela-nota').style.display = 'none';
+                telaTV.document.getElementById('tela-aguardando').style.display = 'none';
+            }
             
             database.ref('votosAtual').remove();
             database.ref('statusAtual').set({ cantor: m.cantor, titulo: m.titulo, id: Date.now() });
@@ -1095,6 +1119,7 @@
                 musicaEl.innerText = `🎵 ${m.titulo}`;
                 contadorEl.innerText = tempoRestante;
                 transicaoEl.style.display = 'flex';
+                telaTV.document.getElementById('tela-aguardando').style.display = 'none';
                 telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
 
                 let timerRegressivo = setInterval(() => {
@@ -1125,7 +1150,10 @@
             if(filaDeReproducao.length > 0) {
                 iniciarMusica(filaDeReproducao.shift()); 
             } else {
-                if(telaTV && !telaTV.closed) telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
+                if(telaTV && !telaTV.closed) {
+                    telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
+                    telaTV.document.getElementById('tela-aguardando').style.display = 'flex';
+                }
                 database.ref('statusAtual').set(null);
             }
         }
