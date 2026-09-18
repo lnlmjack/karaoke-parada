@@ -24,9 +24,10 @@
         .btn-buscar { padding: 12px 25px; background: #e52d27; color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer;}
         
         .canais-preferidos { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; align-items: center; font-size: 13px; color: #aaa; }
-        .chip-canal { background: #222; border: 1px solid #444; padding: 5px 10px; border-radius: 15px; cursor: pointer; color: #fff; transition: 0.2s; }
+        .chip-canal { background: #222; border: 1px solid #444; padding: 5px 12px; border-radius: 15px; cursor: pointer; color: #fff; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
         .chip-canal:hover { background: #333; border-color: #00d2ff; }
         .chip-canal.ativo { background: #007bff; border-color: #007bff; font-weight: bold; }
+        .chip-canal .ordem-badge { background: rgba(0,0,0,0.4); padding: 1px 5px; border-radius: 10px; font-size: 10px; color: #ffeb3b; }
 
         .paineis { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
         .painel { background: #1e1e1e; padding: 15px; border-radius: 8px; height: 450px; overflow-y: auto; position: relative;}
@@ -59,10 +60,13 @@
         #btn-usuarios { display: none; position: absolute; top: 20px; right: 180px; background: #007bff; color: #fff; border: 1px solid #0056b3; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
         #btn-usuarios:hover { background: #0056b3; transform: scale(1.05); }
 
-        #btn-sair { position: absolute; top: 20px; right: 240px; background: transparent; color: #aaa; border: 1px solid #555; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; }
+        #btn-canais { display: none; position: absolute; top: 20px; right: 135px; background: #ffc107; color: #000; border: 1px solid #e0a800; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
+        #btn-canais:hover { background: #e0a800; transform: scale(1.05); }
+
+        #btn-sair { position: absolute; top: 20px; right: 235px; background: transparent; color: #aaa; border: 1px solid #555; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; }
         #btn-sair:hover { color: #fff; background: #e52d27; border-color: #e52d27; }
 
-        #btn-reset-tudo { position: absolute; top: 20px; right: 335px; background: #b31217; color: #fff; border: 1px solid #ff5252; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; }
+        #btn-reset-tudo { position: absolute; top: 20px; right: 330px; background: #b31217; color: #fff; border: 1px solid #ff5252; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; }
         #btn-reset-tudo:hover { background: #e52d27; transform: scale(1.05); }
 
         .btn-limpar-painel { background: #333; color: #aaa; border: none; font-size: 11px; padding: 3px 8px; border-radius: 4px; cursor: pointer; transition: 0.2s; }
@@ -78,6 +82,16 @@
         #fundo-modal-manual { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 299; }
         
         .versao-app { position: fixed; bottom: 5px; right: 5px; font-size: 10px; color: rgba(255, 255, 255, 0.3); z-index: 200005; pointer-events: none; }
+
+        /* Estilos do Modal de Canais Favoritos */
+        #fundo-modal-canais { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 550; }
+        #modal-canais { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 551; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #ffc107; width: 90%; max-width: 500px; color: #fff; }
+        #modal-canais h2 { margin-top: 0; color: #ffc107; border-bottom: 1px solid #333; padding-bottom: 10px; font-size: 20px; text-align: center; }
+        .tabela-canais { width: 100%; margin-bottom: 20px; border-collapse: collapse; text-align: left; font-size: 14px; }
+        .tabela-canais th, .tabela-canais td { padding: 8px; border-bottom: 1px solid #333; }
+        .tabela-canais th { color: #ffc107; }
+        .form-novo-canal { background: #222; padding: 15px; border-radius: 8px; margin-top: 15px; }
+        .form-novo-canal input { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #555; background: #111; color: #fff; box-sizing: border-box; font-size: 14px; }
 
         /* Estilos do Modal de Cantores */
         #fundo-modal-cantor { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 400; }
@@ -137,9 +151,9 @@
         <h3>1. Acesso e Controle de Contas (Login)</h3>
         <p>O sistema possui controle de acesso com dois perfis de usuários:</p>
         <ul>
-            <li><span class="destaque">Administrador:</span> Possui acesso completo ao painel, incluindo a gestão de contas (botão 👥 no topo).</li>
-            <li><span class="destaque">Operador Comum:</span> Gerencia as músicas, fila e pedidos, mas não tem acesso ao painel de gerenciamento de usuários.</li>
-            <li><span class="destaque">Painel de Usuários (Exclusivo Admin):</span> Clicando no ícone 👥 no topo, o administrador pode adicionar novos operadores, alterar nomes de usuário, atualizar senhas ou excluir contas existentes com salvamento imediato.</li>
+            <li><span class="destaque">Administrador:</span> Possui acesso completo ao painel, incluindo a gestão de contas (botão 👥) e de canais favoritos (botão ⭐).</li>
+            <li><span class="destaque">Operador Comum:</span> Gerencia as músicas, fila e pedidos.</li>
+            <li><span class="destaque">Painel de Usuários e Canais (Exclusivo Admin):</span> Gerencie operadores e cadastre os canais de karaokê favoritos para priorizar nas buscas.</li>
         </ul>
 
         <h3>2. Iniciando o Sistema</h3>
@@ -151,30 +165,41 @@
 
         <h3>3. Gerenciando Músicas e Pedidos (DJ e Clientes)</h3>
         <ul>
-            <li><span class="destaque">Busca e Filtro de Canais Favoritos:</span> Digite o nome da música na barra de pesquisa. Você pode clicar nos chips de canais favoritos (ex: Karaoke Club, Tequila Karaoke, etc.) para forçar a busca a priorizar canais específicos do YouTube. Os resultados exibem as miniaturas (thumbnails).</li>
-            <li><span class="destaque">Seleção de Cantores (Modal Flutuante):</span> Ao clicar em qualquer música buscada, abrirá uma janela perguntando "Quem vai cantar?". Nela, você pode digitar um nome novo (solo, dupla ou trio) ou selecionar rapidamente por chips em formato de acesso rápido. Os nomes digitados são salvos automaticamente para o próximo uso.</li>
-            <li><span class="destaque">📩 Pedidos dos Clientes:</span> Os clientes escaneiam o QR Code na TV para pedir músicas pelo celular. Os pedidos chegam em tempo real na caixa de "Pedidos". Você pode aprová-los individualmente ou ativar a caixa <span class="destaque">Auto-Aprovar</span> para que entrem direto na fila.</li>
-            <li><span class="destaque">🧹 Limpeza e Reset de Dados:</span> Para iniciar um novo dia de trabalho, você pode usar o botão geral <span class="destaque">⚠️ Resetar Tudo</span> no topo para zerar todas as listas de uma vez, ou usar os botões de limpeza individuais localizados diretamente no cabeçalho de cada painel (<span class="destaque">🗑️ Limpar Fila</span>, <span class="destaque">🗑️ Limpar Ranking</span>, <span class="destaque">🗑️ Limpar Histórico</span>). O sistema preserva a estabilidade das atualizações automáticas de tela com total segurança.</li>
+            <li><span class="destaque">Busca com Canais Favoritos:</span> Digite a música e clique nos canais cadastrados na barra de prioridade para filtrar exatamente quais fontes você quer ver primeiro nas miniaturas.</li>
+            <li><span class="destaque">Seleção de Cantores (Modal Flutuante):</span> Ao clicar em qualquer música buscada, selecione rapidamente o cantor (solo, dupla ou trio) com salvamento automático.</li>
+            <li><span class="destaque">📩 Pedidos dos Clientes:</span> Pedidos via QR Code chegam em tempo real na caixa de "Pedidos" (com opção de Auto-Aprovar).</li>
+            <li><span class="destaque">🧹 Limpeza e Reset de Dados:</span> Use o botão <span class="destaque">⚠️ Resetar Tudo</span> ou os botões individuais de cada painel (<span class="destaque">🗑️ Limpar Fila</span>, <span class="destaque">🗑️ Limpar Ranking</span>, <span class="destaque">🗑️ Limpar Histórico</span>) para iniciar um novo dia com segurança.</li>
         </ul>
-
-        <h3>4. Sistema de Votação ao Fim da Música e Ranking</h3>
-        <p>Quando a música termina, a pontuação final é calculada automaticamente combinando o volume captado pelo microfone e os votos enviados ao vivo pelos celulares du público.</p>
-        <ul>
-            <li><span class="destaque">Detalhes dos Votos:</span> Clicando no contador superior esquerdo do ranking (<span class="destaque">📊 X votos ao vivo</span>), você visualiza a contagem exata de reações da plateia (Excelente, Muito Bom, Bom, Regular, Ruim).</li>
-            <li><span class="destaque">Ranking:</span> Exibe as melhores apresentações da noite em ordem decrescente de pontuação. Clicando em cima de qualquer item do ranking, você abre o registro detalhado dos votos que aquele cantor recebeu.</li>
-        </ul>
-
-        <div class="segredo">
-            <strong>⚙️ TRUQUES SECRETOS DO DJ (ATALHOS DE TECLADO & CONFIG):</strong><br>
-            • Pressionar a tecla <strong>6</strong> no teclado = Força nota aleatória entre 60 e 69.<br>
-            • Pressionar a tecla <strong>7</strong> = Força nota entre 70 e 79.<br>
-            • Pressionar a tecla <strong>8</strong> = Força nota entre 80 e 89.<br>
-            • Pressionar a tecla <strong>9</strong> = Força nota entre 90 e 99.<br>
-            • Pressionar a tecla <strong>0</strong> = Força nota máxima 100!<br>
-            • Clicar no ícone de engrenagem discreto (⚙️) no rodapé esquerdo permite definir manualmente qualquer nota de 0 a 100 para o cantor atual.
-        </div>
 
         <button onclick="fecharManual()" style="width: 100%; margin-top: 30px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
+    </div>
+
+    <!-- Modal de Gerenciamento de Canais Favoritos (Admin) -->
+    <div id="fundo-modal-canais" onclick="fecharModalCanais()"></div>
+    <div id="modal-canais">
+        <h2>⭐ Gerenciar Canais Favoritos</h2>
+        <div style="max-height: 180px; overflow-y: auto;">
+            <table class="tabela-canais">
+                <thead>
+                    <tr>
+                        <th>Ordem</th>
+                        <th>Nome do Canal</th>
+                        <th style="text-align: right;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-corpo-canais">
+                    <!-- Preenchido via JS -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="form-novo-canal">
+            <strong>Adicionar Novo Canal Favorito:</strong>
+            <input type="text" id="novo-canal-nome" placeholder="Nome do canal no YouTube (ex: Karaoke Club)">
+            <button onclick="adicionarNovoCanal()" style="width: 100%; padding: 10px; background: #28a745; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Adicionar Canal</button>
+        </div>
+
+        <button onclick="fecharModalCanais()" style="width: 100%; margin-top: 15px; padding: 10px; background: #333; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Fechar</button>
     </div>
 
     <!-- Modal de Gerenciamento de Usuários (Admin) -->
@@ -233,6 +258,7 @@
     <button id="btn-reset-tudo" onclick="resetarTudo()" title="Zerar Fila, Ranking e Histórico">⚠️ Resetar Tudo</button>
     <button id="btn-sair" onclick="fazerLogout()">🚪 Sair</button>
     <button id="btn-usuarios" onclick="abrirModalUsuarios()" title="Gerenciar Usuários">👥</button>
+    <button id="btn-canais" onclick="abrirModalCanais()" title="Gerenciar Canais Favoritos">⭐ Canais</button>
     <button id="btn-manual" onclick="abrirManual()">📖 Manual do Sistema</button>
 
     <div class="container">
@@ -243,12 +269,8 @@
             <button id="botaoMic" class="btn-topo btn-mic" onclick="toggleMicrofone()">🎙️ 2. AVALIADOR (INICIANDO...)</button>
         </div>
 
-        <div class="canais-preferidos">
-            <span>⭐ Priorizar Canal:</span>
-            <div class="chip-canal ativo" onclick="selecionarCanalFavorito(this, '')">Todos</div>
-            <div class="chip-canal" onclick="selecionarCanalFavorito(this, 'Karaoke Club')">Karaoke Club</div>
-            <div class="chip-canal" onclick="selecionarCanalFavorito(this, 'Tequila Karaoke')">Tequila Karaoke</div>
-            <div class="chip-canal" onclick="selecionarCanalFavorito(this, 'Versão Karaokê')">Versão Karaokê</div>
+        <div class="canais-preferidos" id="container-chips-canais">
+            <!-- Renderizado dinamicamente via JS -->
         </div>
 
         <div class="area-busca">
@@ -298,21 +320,38 @@
         </div>
     </div>
 
-    <div class="versao-app">v1.24</div>
+    <div class="versao-app">v1.25</div>
     <div onclick="definirNotaManual()" style="position: fixed; bottom: 4px; right: 35px; font-size: 13px; color: #fff; opacity: 0.3; z-index: 9999; cursor: pointer; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</div>
 
     <script>
-        // GERENCIAMENTO DE USUÁRIOS SALVOS NO LOCALSTORAGE
+        // GERENCIAMENTO DE USUÁRIOS E CANAIS FAVORITOS NO LOCALSTORAGE
         let usuariosAutorizados = JSON.parse(localStorage.getItem('usuariosAutorizados')) || [
             { usuario: "leonard", senha: "123", tipo: "admin" },
             { usuario: "operador", senha: "123", tipo: "comum" }
         ];
 
-        if (!localStorage.getItem('usuariosAutorizados')) {
-            localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
+        let canaisFavoritos = JSON.parse(localStorage.getItem('canaisFavoritos')) || [
+            "Karaoke Club",
+            "Tequila Karaoke",
+            "Versão Karaokê"
+        ];
+
+        if (!localStorage.getItem('canaisFavoritos')) {
+            localStorage.setItem('canaisFavoritos', JSON.stringify(canaisFavoritos));
         }
 
         let canalSelecionadoFavorito = "";
+
+        function renderizarChipsCanais() {
+            const container = document.getElementById('container-chips-canais');
+            let html = `<span>⭐ Priorizar Canal:</span> <div class="chip-canal ${canalSelecionadoFavorito === '' ? 'ativo' : ''}" onclick="selecionarCanalFavorito(this, '')">Todos</div>`;
+            
+            canaisFavoritos.forEach((canal, idx) => {
+                let ativo = canalSelecionadoFavorito === canal ? 'ativo' : '';
+                html += `<div class="chip-canal ${ativo}" onclick="selecionarCanalFavorito(this, '${canal.replace(/'/g, "\\'")}')"><span class="ordem-badge">${idx+1}º</span> ${canal}</div>`;
+            });
+            container.innerHTML = html;
+        }
 
         function selecionarCanalFavorito(elemento, nomeCanal) {
             document.querySelectorAll('.chip-canal').forEach(c => c.classList.remove('ativo'));
@@ -320,7 +359,75 @@
             canalSelecionadoFavorito = nomeCanal;
         }
 
+        // Modal de Canais Favoritos
+        function abrirModalCanais() {
+            renderizarTabelaCanais();
+            document.getElementById('fundo-modal-canais').style.display = 'block';
+            document.getElementById('modal-canais').style.display = 'block';
+        }
+
+        function fecharModalCanais() {
+            document.getElementById('fundo-modal-canais').style.display = 'none';
+            document.getElementById('modal-canais').style.display = 'none';
+            renderizarChipsCanais();
+        }
+
+        function renderizarTabelaCanais() {
+            const tbody = document.getElementById('tabela-corpo-canais');
+            tbody.innerHTML = canaisFavoritos.map((canal, index) => `
+                <tr>
+                    <td><strong>${index + 1}º</strong></td>
+                    <td>${canal}</td>
+                    <td style="text-align: right;">
+                        <button onclick="subirCanal(${index})" style="background:transparent; border:none; cursor:pointer; font-size:14px;" title="Mover para cima">⬆️</button>
+                        <button onclick="descerCanal(${index})" style="background:transparent; border:none; cursor:pointer; font-size:14px;" title="Mover para baixo">⬇️</button>
+                        <button onclick="excluirCanal(${index})" style="background:transparent; border:none; cursor:pointer; font-size:14px;" title="Excluir">❌</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function adicionarNovoCanal() {
+            const nome = document.getElementById('novo-canal-nome').value.trim();
+            if (!nome) return alert("Digite o nome do canal!");
+            if (canaisFavoritos.includes(nome)) return alert("Este canal já está cadastrado!");
+
+            canaisFavoritos.push(nome);
+            localStorage.setItem('canaisFavoritos', JSON.stringify(canaisFavoritos));
+            document.getElementById('novo-canal-nome').value = '';
+            renderizarTabelaCanais();
+        }
+
+        function subirCanal(index) {
+            if (index > 0) {
+                let temp = canaisFavoritos[index];
+                canaisFavoritos[index] = canaisFavoritos[index - 1];
+                canaisFavoritos[index - 1] = temp;
+                localStorage.setItem('canaisFavoritos', JSON.stringify(canaisFavoritos));
+                renderizarTabelaCanais();
+            }
+        }
+
+        function descerCanal(index) {
+            if (index < canaisFavoritos.length - 1) {
+                let temp = canaisFavoritos[index];
+                canaisFavoritos[index] = canaisFavoritos[index + 1];
+                canaisFavoritos[index + 1] = temp;
+                localStorage.setItem('canaisFavoritos', JSON.stringify(canaisFavoritos));
+                renderizarTabelaCanais();
+            }
+        }
+
+        function excluirCanal(index) {
+            if (confirm(`Excluir o canal "${canaisFavoritos[index]}"?`)) {
+                canaisFavoritos.splice(index, 1);
+                localStorage.setItem('canaisFavoritos', JSON.stringify(canaisFavoritos));
+                renderizarTabelaCanais();
+            }
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
+            renderizarChipsCanais();
             const usuarioLogado = localStorage.getItem('usuarioLogado');
             const tipoUsuario = localStorage.getItem('tipoUsuario');
 
@@ -328,8 +435,10 @@
                 document.getElementById('tela-login').style.display = 'none';
                 if (tipoUsuario === 'admin') {
                     document.getElementById('btn-usuarios').style.display = 'block';
+                    document.getElementById('btn-canais').style.display = 'block';
                 } else {
                     document.getElementById('btn-usuarios').style.display = 'none';
+                    document.getElementById('btn-canais').style.display = 'none';
                 }
             } else {
                 document.getElementById('tela-login').style.display = 'flex';
@@ -352,8 +461,10 @@
                 
                 if (encontrado.tipo === 'admin') {
                     document.getElementById('btn-usuarios').style.display = 'block';
+                    document.getElementById('btn-canais').style.display = 'block';
                 } else {
                     document.getElementById('btn-usuarios').style.display = 'none';
+                    document.getElementById('btn-canais').style.display = 'none';
                 }
             } else {
                 alert("Usuário ou senha incorretos!");
