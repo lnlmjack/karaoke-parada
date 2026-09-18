@@ -40,10 +40,9 @@
         .item-resultado:hover { background: #e52d27; }
         .item-resultado img { width: 70px; height: 50px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
         
-        .info-resultado { flex: 1; display: flex; flex-direction: column; padding-right: 75px; }
+        .info-resultado { flex: 1; display: flex; flex-direction: column; }
         .info-resultado .titulo-video { font-size: 13px; font-weight: bold; line-height: 1.2; }
         .info-resultado .nome-canal { font-size: 11px; color: #00d2ff; margin-top: 4px; font-weight: bold; }
-        .badge-canal-favorito { position: absolute; top: 10px; right: 10px; background: #ffc107; color: #000; font-size: 9px; font-weight: bold; padding: 2px 6px; border-radius: 10px; }
         
         .item-fila { border-left: 5px solid #e52d27; display: flex; justify-content: space-between; align-items: center; }
         .titulo-musica { flex: 1; font-size: 14px; } .nome-cantor { color: #aaa; font-size: 12px; display: block; font-style: italic; }
@@ -74,7 +73,8 @@
         #modal-manual-conteudo .segredo { background: #222; border-left: 4px solid #28a745; padding: 15px; margin-top: 20px; border-radius: 5px; font-style: italic; }
         #fundo-modal-manual { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 299; }
         
-        .versao-app { position: fixed; bottom: 4px; right: 8px; font-size: 12px; color: #fff; opacity: 0.3; z-index: 200005; pointer-events: none; }
+        .versao-app { position: fixed; bottom: 4px; right: 8px; font-size: 12px; color: #fff; opacity: 0.3; z-index: 200005; pointer-events: none; display: flex; align-items: center; gap: 6px; }
+        .versao-app span { color: #fff; }
 
         /* Estilos dos Modais */
         #fundo-modal-config, #fundo-modal-cantor { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 500; }
@@ -319,9 +319,10 @@
     </div>
 
     <div class="versao-app">
-        <span id="display-nota-forcada" style="margin-right: 5px; display: none;">Nota: --</span>v1.30
+        <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
+        <span>v1.31</span>
+        <span onclick="definirNotaManual()" style="cursor: pointer; transition: 0.2s; margin-left: 4px;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
     </div>
-    <div onclick="definirNotaManual()" style="position: fixed; bottom: 4px; right: 65px; font-size: 13px; color: #fff; opacity: 0.3; z-index: 9999; cursor: pointer; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</div>
 
     <script>
         // GERENCIAMENTO DE USUÁRIOS E CANAIS FAVORITOS NO LOCALSTORAGE
@@ -1060,18 +1061,14 @@
                     const tituloVid = v.snippet.title;
                     const nomeCanalVid = v.snippet.channelTitle;
 
-                    let matchFavorito = canaisFavoritos.find(c => tituloVid.toLowerCase().includes(c.toLowerCase()) || nomeCanalVid.toLowerCase().includes(c.toLowerCase()));
-                    let badgeHtml = matchFavorito ? `<span class="badge-canal-favorito">⭐ ${matchFavorito}</span>` : '';
-
                     const d = document.createElement('div'); 
                     d.className = 'item-resultado'; 
                     d.innerHTML = `
                         <img src="${thumbnail}" alt="Thumbnail"> 
                         <div class="info-resultado">
                             <span class="titulo-video">${tituloVid}</span>
-                            <span class="nome-canal">📺 ${nomeCanalVid}</span>
+                            <span class="nome-canal">${nomeCanalVid}</span>
                         </div>
-                        ${badgeHtml}
                     `; 
                     
                     d.onclick = () => {
