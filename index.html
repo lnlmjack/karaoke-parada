@@ -329,7 +329,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.34</span>
+        <span>v1.35</span>
     </div>
 
     <script>
@@ -834,7 +834,7 @@
             telaTV = window.open("", "TelaTV", "width=800,height=600,toolbar=0,location=0,status=0,menubar=0,scrollbars=0,resizable=1");
             telaTV.document.write(`
                 <!DOCTYPE html><html><head>
-                <base href="\${window.location.href}">
+                <base href="${window.location.href}">
                 <title>TV - Parada 10.95</title>
                 <style>
                     body { margin: 0; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; font-family: Arial;}
@@ -858,7 +858,7 @@
                     #tela-aguardando img.logo-centro { width: 220px; height: auto; border-radius: 50%; box-shadow: 0 0 40px rgba(229,45,39,0.5); margin-bottom: 25px; animation: pulsar 2s infinite; }
                     @keyframes pulsar { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
                     #tela-aguardando h1 { font-size: 48px; color: #ffeb3b; margin: 0 0 10px 0; text-shadow: 2px 2px 10px #000; }
-                    #tela-aguardando p { font-size: 24px; color: #fff; margin: 0; text-shadow: 1px 1px 5px #000; }
+                    #tela-aguardando p { font-size: 22px; color: #fff; margin: 0; text-shadow: 1px 1px 5px #000; }
 
                     #tela-transicao { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: #0a0a0a; z-index: 95; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px; box-sizing: border-box;}
                     #contador-regressivo { font-size: 180px; font-weight: 900; color: #ffeb3b; text-shadow: 0 0 30px rgba(255,235,59,0.5); line-height: 1; margin-top: 15px;}
@@ -885,7 +885,7 @@
                     <div id="tela-aguardando">
                         <img src="logop.png" class="logo-centro" alt="Logo Bar">
                         <h1>🍻 AGUARDANDO PRÓXIMA MÚSICA 🍻</h1>
-                        <p>Aponte a câmera para o QR Code e escolha seu som!</p>
+                        <p>Aponte a câmera para o QR Code ou peça a música para o DJ!</p>
                     </div>
                     
                     <div id="tela-transicao">
@@ -906,8 +906,8 @@
                     </div>
                     <button id="btn-liberar" onclick="this.style.display='none';">👆 CLIQUE AQUI PARA LIBERAR O SOM (Aperte F11)</button>
                     <div id="player"></div>
-                    <script> function onYouTubeIframeAPIReady() { if(window.opener) window.opener.iniciarPlayer(YT); } <\/script>
-                    <script src="https://www.youtube.com/iframe_api"><\/script>
+                    <script> function onYouTubeIframeAPIReady() { if(window.opener) window.opener.iniciarPlayer(YT); } </script>
+                    <script src="https://www.youtube.com/iframe_api"></script>
                 </body></html>
             `);
 
@@ -934,7 +934,6 @@
             document.getElementById('botaoTV').innerHTML = "✅ TELA CONECTADA!";
             document.getElementById('botaoTV').style.background = "#17a2b8";
             
-            // Exibe a tela de propaganda inicial se a fila estiver vazia
             if (filaDeReproducao.length === 0 && (!musicaAtual)) {
                 if (telaTV && !telaTV.closed) {
                     telaTV.document.getElementById('tela-aguardando').style.display = 'flex';
@@ -976,7 +975,7 @@
 
             if (telaTV && !telaTV.closed) {
                 telaTV.document.getElementById('nota-cantor-nome').innerText = musicaAtual.cantor;
-                telaTV.document.getElementById('nota-loading').style.display = 'block';
+                telaTV.document.getElementById('nota-loading').style.display = 'none';
                 telaTV.document.getElementById('nota-resultado').style.display = 'none';
                 telaTV.document.getElementById('tela-nota').style.display = 'flex';
                 telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
@@ -990,7 +989,7 @@
                     let valorEl = telaTV.document.getElementById('nota-valor');
                     valorEl.innerText = notaFinal;
                     valorEl.style.color = notaFinal >= 90 ? '#28a745' : notaFinal >= 75 ? '#ffeb3b' : '#e52d27';
-                    telaTV.document.getElementById('tela-resultado').style.display = 'flex';
+                    telaTV.document.getElementById('nota-resultado').style.display = 'flex';
                 }, 4000); 
             }
 
