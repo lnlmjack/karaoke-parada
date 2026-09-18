@@ -329,7 +329,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.35</span>
+        <span>v1.36</span>
     </div>
 
     <script>
@@ -511,6 +511,7 @@
             renderizarChipsCanaisDiscretos();
             const usuarioLogado = localStorage.getItem('usuarioLogado');
             const tipoUsuario = localStorage.getItem('tipoUsuario');
+            
             if (usuarioLogado) {
                 document.getElementById('tela-login').style.display = 'none';
                 if (tipoUsuario === 'admin') {
@@ -989,7 +990,7 @@
                     let valorEl = telaTV.document.getElementById('nota-valor');
                     valorEl.innerText = notaFinal;
                     valorEl.style.color = notaFinal >= 90 ? '#28a745' : notaFinal >= 75 ? '#ffeb3b' : '#e52d27';
-                    telaTV.document.getElementById('nota-resultado').style.display = 'flex';
+                    telaTV.document.getElementById('tela-resultado').style.display = 'flex';
                 }, 4000); 
             }
 
