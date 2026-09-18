@@ -83,8 +83,8 @@
         #modal-config h2 { color: #ffc107; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; font-size: 20px; text-align: center; }
         #modal-cantor h2 { color: #00d2ff; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; font-size: 20px; }
         
-        .abas-config { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        .btn-aba { background: #222; border: 1px solid #444; color: #aaa; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 13px; }
+        .abas-config { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; flex-wrap: wrap; }
+        .btn-aba { background: #222; border: 1px solid #444; color: #aaa; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
         .btn-aba.ativo { background: #ffc107; color: #000; border-color: #ffc107; }
         .conteudo-aba { display: none; } .conteudo-aba.ativo { display: block; }
 
@@ -139,9 +139,8 @@
         <h3>1. Acesso e Controle de Contas (Login)</h3>
         <p>O sistema possui controle de acesso com dois perfis de usuários:</p>
         <ul>
-            <li><span class="destaque">Administrador:</span> Possui acesso completo ao painel, incluindo a gestão de contas e canais através do botão unificado de <span class="destaque">⚙️ Configurações</span>.</li>
+            <li><span class="destaque">Administrador:</span> Possui acesso completo ao painel, incluindo a gestão de contas, canais e tempo de transição através do botão unificado de <span class="destaque">⚙️ Configurações</span>.</li>
             <li><span class="destaque">Operador Comum:</span> Gerencia as músicas, fila, histórico e pedidos em tempo real.</li>
-            <li><span class="destaque">Painel de Configurações (Exclusivo Admin):</span> Gerencie operadores (adicionando, editando ou excluindo senhas) e cadastre os canais de karaokê favoritos em ordem de preferência (1º, 2º, 3º...) para ordenar automaticamente as buscas do YouTube.</li>
         </ul>
 
         <h3>2. Iniciando o Sistema</h3>
@@ -151,33 +150,28 @@
             <li>Clique em <span class="destaque">🎙️ 2. AVALIADOR</span> para ativar o microfone e permitir a captação de energia e barulho da plateia.</li>
         </ul>
 
-        <h3>3. Gerenciando Músicas e Pedidos (DJ e Clientes)</h3>
-        <ul>
-            <li><span class="destaque">Busca Inteligente com Ordenação de Canais e Miniaturas:</span> Digite a música na barra de pesquisa. O sistema busca no YouTube, exibe a miniatura (thumbnail) de cada versão, o nome do canal correspondente e organiza automaticamente os resultados priorizando os canais cadastrados na sua lista de favoritos.</li>
-            <li><span class="destaque">Seleção de Cantores (Modal Flutuante):</span> Ao clicar em qualquer música buscada, selecione rapidamente o cantor (solo, dupla ou trio) com salvamento automático de nomes frequentes.</li>
-            <li><span class="destaque">📩 Pedidos dos Clientes:</span> Pedidos via QR Code na TV chegam em tempo real na caixa de "Pedidos" (com opção de Auto-Aprovar).</li>
-            <li><span class="destaque">🧹 Limpeza e Reset de Dados:</span> Use o botão <span class="destaque">⚠️ Resetar Tudo</span> no topo para limpar tudo de uma vez ou os botões individuais de cada painel (<span class="destaque">🗑️ Limpar Fila</span>, <span class="destaque">🗑️ Limpar Ranking</span>, <span class="destaque">🗑️ Limpar Histórico</span>).</li>
-        </ul>
+        <h3>3. Contagem Regressiva e Transição</h3>
+        <p>Nas configurações do sistema, você pode definir quantos segundos de pausa deseja entre o fim de uma música e o início da próxima, permitindo que a plateia suba/desça do palco com calma.</p>
 
         <h3>4. Sistema de Votação e Notas Manuais/Atalhos</h3>
         <p>Quando a música termina, a pontuação final é calculada combinando captação de microfone e votos da plateia, mas o DJ tem controle absoluto:</p>
         <ul>
-            <li><span class="destaque">Atalhos de Teclado (6 a 0):</span> Aperte <strong>6</strong> (nota 60-69), <strong>7</strong> (nota 70-79), <strong>8</strong> (nota 80-89), <strong>9</strong> (nota 90-99) ou <strong>0</strong> (nota 100) para forçar notas instantaneamente.</li>
-            <li><span class="destaque">Nota Manual (⚙️ Engrenagem):</span> Clicando no ícone de engrenagem no rodapé esquerdo, você define uma nota exata de 0 a 100. A nota escolhida aparece instantaneamente e com total sutileza ao lado da engrenagem para confirmação visual.</li>
-            <li><span class="destaque">Detalhes e Votos da Plateia:</span> Clicando no contador superior esquerdo do ranking (<span class="destaque">📊 X votos ao vivo</span>), você visualiza a contagem exata de reações (Excelente, Muito Bom, Bom, Regular, Ruim).</li>
+            <li><span class="destaque">Atalhos de Teclado (6 a 0):</span> Aperte <strong>6</strong> a <strong>0</strong> para forçar notas instantaneamente.</li>
+            <li><span class="destaque">Nota Manual (⚙️ Engrenagem):</span> Clicando no ícone de engrenagem no rodapé esquerdo, você define uma nota exata de 0 a 100. A nota escolhida aparece de forma sutil ao lado da engrenagem.</li>
         </ul>
 
         <button onclick="fecharManual()" style="width: 100%; margin-top: 30px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
     </div>
 
-    <!-- Modal de Configurações Unificado (Admin: Canais e Usuários) -->
+    <!-- Modal de Configurações Unificado -->
     <div id="fundo-modal-config" onclick="fecharModalConfig()"></div>
     <div id="modal-config">
         <h2>⚙️ Configurações do Sistema</h2>
         
         <div class="abas-config">
             <button class="btn-aba ativo" onclick="mudarAba('canais', event)">⭐ Canais Favoritos</button>
-            <button class="btn-aba" onclick="mudarAba('usuarios', event)">👥 Gerenciar Usuários</button>
+            <button class="btn-aba" onclick="mudarAba('usuarios', event)">👥 Usuários</button>
+            <button class="btn-aba" onclick="mudarAba('transicao', event)">⏳ Transição / Pausa</button>
         </div>
 
         <!-- Conteúdo da Aba Canais -->
@@ -191,9 +185,7 @@
                             <th style="text-align: right;">Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="tabela-corpo-canais">
-                        <!-- Preenchido via JS -->
-                    </tbody>
+                    <tbody id="tabela-corpo-canais"></tbody>
                 </table>
             </div>
             <div class="form-novo-canal">
@@ -214,9 +206,7 @@
                             <th style="text-align: right;">Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="tabela-corpo-usuarios">
-                        <!-- Preenchido via JS -->
-                    </tbody>
+                    <tbody id="tabela-corpo-usuarios"></tbody>
                 </table>
             </div>
             <div class="form-novo-usuario">
@@ -231,6 +221,16 @@
             </div>
         </div>
 
+        <!-- Conteúdo da Aba Transição -->
+        <div id="aba-transicao" class="conteudo-aba">
+            <div class="form-novo-canal">
+                <strong>Tempo de Pausa entre Músicas (Segundos):</strong>
+                <p style="font-size: 12px; color: #aaa; margin: 5px 0 10px 0;">Defina quantos segundos de contagem regressiva devem aparecer antes de iniciar a próxima música (0 para ir direto).</p>
+                <input type="number" id="input-tempo-pausa" min="0" max="60" value="5">
+                <button onclick="salvarTempoPausa()" style="width: 100%; padding: 8px; background: #007bff; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px;">Salvar Tempo</button>
+            </div>
+        </div>
+
         <button onclick="fecharModalConfig()" style="width: 100%; margin-top: 15px; padding: 10px; background: #333; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Fechar</button>
     </div>
 
@@ -241,7 +241,6 @@
         <button onclick="fecharDetalhesVotos()" style="width: 100%; margin-top: 20px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar</button>
     </div>
 
-    <!-- Novo Modal de Cantores -->
     <div id="fundo-modal-cantor" onclick="fecharModalCantor()"></div>
     <div id="modal-cantor">
         <h2>🎤 Quem vai cantar?</h2>
@@ -255,7 +254,6 @@
     </div>
 
     <div class="container">
-        <!-- TOPO ORGANIZADO SEM ENCAVALAR -->
         <div class="topo-header">
             <h1 style="margin: 0; padding: 0;">🎛️ Painel de Controle - Karaokê</h1>
             <div class="topo-botoes-acao">
@@ -320,12 +318,11 @@
 
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
-        <span>v1.31</span>
-        <span onclick="definirNotaManual()" style="cursor: pointer; transition: 0.2s; margin-left: 4px;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
+        <span>v1.32</span>
+        <span onclick="definirNotaManual()" style="cursor: pointer; transition: 0.2s; margin-left: 4px; opacity: 0.3;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
     </div>
 
     <script>
-        // GERENCIAMENTO DE USUÁRIOS E CANAIS FAVORITOS NO LOCALSTORAGE
         let usuariosAutorizados = JSON.parse(localStorage.getItem('usuariosAutorizados')) || [
             { usuario: "leonard", senha: "123", tipo: "admin" },
             { usuario: "operador", senha: "123", tipo: "comum" }
@@ -336,6 +333,8 @@
             "Tequila Karaoke",
             "Versão Karaokê"
         ];
+
+        let tempoPausaSegundos = parseInt(localStorage.getItem('tempoPausaSegundos')) || 5;
 
         if (!localStorage.getItem('canaisFavoritos')) {
             localStorage.setItem('canaisFavoritos', JSON.stringify(canaisFavoritos));
@@ -358,10 +357,10 @@
             }
         }
 
-        // Modal de Configurações
         function abrirModalConfig() {
             renderizarTabelaCanais();
             renderizarTabelaUsuarios();
+            document.getElementById('input-tempo-pausa').value = tempoPausaSegundos;
             document.getElementById('fundo-modal-config').style.display = 'block';
             document.getElementById('modal-config').style.display = 'block';
         }
@@ -369,6 +368,14 @@
         function fecharModalConfig() {
             document.getElementById('fundo-modal-config').style.display = 'none';
             document.getElementById('modal-config').style.display = 'none';
+        }
+
+        function salvarTempoPausa() {
+            let val = parseInt(document.getElementById('input-tempo-pausa').value, 10);
+            if (isNaN(val) || val < 0) val = 0;
+            tempoPausaSegundos = val;
+            localStorage.setItem('tempoPausaSegundos', tempoPausaSegundos);
+            alert("Tempo de pausa salvo com sucesso!");
         }
 
         function renderizarTabelaCanais() {
@@ -445,14 +452,10 @@
             const tipo = document.getElementById('novo-user-tipo').value;
 
             if (!nome || !senha) return alert("Preencha o nome e a senha do novo usuário!");
-            
-            if (usuariosAutorizados.some(u => u.usuario === nome)) {
-                return alert("Já existe um usuário com esse nome!");
-            }
+            if (usuariosAutorizados.some(u => u.usuario === nome)) return alert("Já existe um usuário com esse nome!");
 
             usuariosAutorizados.push({ usuario: nome, senha: senha, tipo: tipo });
             localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
-            
             document.getElementById('novo-user-nome').value = '';
             document.getElementById('novo-user-senha').value = '';
             renderizarTabelaUsuarios();
@@ -463,30 +466,21 @@
             const user = usuariosAutorizados[index];
             const novoNome = prompt("Editar nome de usuário:", user.usuario);
             if (novoNome === null) return;
-            
             const nomeLimpo = novoNome.trim().toLowerCase();
-            if (!nomeLimpo) return alert("O nome não pode ficar vazio!");
+            if (!nomeLimpo) return alert("O nome não pode vazio!");
 
-            if (nomeLimpo !== user.usuario && usuariosAutorizados.some(u => u.usuario === nomeLimpo)) {
-                return alert("Já existe outro usuário com esse nome!");
-            }
-
-            const novaSenha = prompt(`Editar senha para o usuário "${nomeLimpo}":`, user.senha);
+            const novaSenha = prompt(`Editar senha para "${nomeLimpo}":`, user.senha);
             if (novaSenha === null) return;
 
-            const senhaLimpa = novaSenha.trim();
-            if (!senhaLimpa) return alert("A senha não pode ficar vazia!");
-
             usuariosAutorizados[index].usuario = nomeLimpo;
-            usuariosAutorizados[index].senha = senhaLimpa;
+            usuariosAutorizados[index].senha = novaSenha.trim();
             localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
             renderizarTabelaUsuarios();
             alert("Usuário atualizado com sucesso!");
         }
 
         function excluirUsuario(index) {
-            const user = usuariosAutorizados[index];
-            if (confirm(`Tem certeza que deseja excluir o usuário "${user.usuario}"?`)) {
+            if (confirm(`Excluir usuário "${usuariosAutorizados[index].usuario}"?`)) {
                 usuariosAutorizados.splice(index, 1);
                 localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
                 renderizarTabelaUsuarios();
@@ -496,13 +490,10 @@
         window.addEventListener('DOMContentLoaded', () => {
             const usuarioLogado = localStorage.getItem('usuarioLogado');
             const tipoUsuario = localStorage.getItem('tipoUsuario');
-
             if (usuarioLogado) {
                 document.getElementById('tela-login').style.display = 'none';
                 if (tipoUsuario === 'admin') {
                     document.getElementById('btn-config').style.display = 'inline-flex';
-                } else {
-                    document.getElementById('btn-config').style.display = 'none';
                 }
             } else {
                 document.getElementById('tela-login').style.display = 'flex';
@@ -512,21 +503,16 @@
         function fazerLogin() {
             const uInput = document.getElementById('login-usuario').value.trim().toLowerCase();
             const sInput = document.getElementById('login-senha').value;
-            
             if(!uInput || !sInput) return alert("Preencha usuário e senha!");
 
             const encontrado = usuariosAutorizados.find(item => item.usuario === uInput && item.senha === sInput);
-
             if (encontrado) {
                 localStorage.setItem('usuarioLogado', encontrado.usuario);
                 localStorage.setItem('tipoUsuario', encontrado.tipo);
                 document.getElementById('tela-login').style.display = 'none';
                 document.getElementById('login-senha').value = '';
-                
                 if (encontrado.tipo === 'admin') {
                     document.getElementById('btn-config').style.display = 'inline-flex';
-                } else {
-                    document.getElementById('btn-config').style.display = 'none';
                 }
             } else {
                 alert("Usuário ou senha incorretos!");
@@ -541,37 +527,15 @@
             }
         }
 
-        // BOTÕES DE RESET / LIMPEZA
-        function limparFila() {
-            if (confirm("Tem certeza que deseja esvaziar a Fila de Reprodução?")) {
-                filaDeReproducao = [];
-                atualizarTelaFila();
-            }
-        }
-
-        function limparRanking() {
-            if (confirm("Tem certeza que deseja zerar o Ranking de pontuações?")) {
-                ranking = [];
-                atualizarTelaRanking();
-            }
-        }
-
-        function limparHistorico() {
-            if (confirm("Tem certeza que deseja apagar o Histórico?")) {
-                historicoDeReproducao = [];
-                atualizarTelaHistorico();
-            }
-        }
+        function limparFila() { if (confirm("Esvaziar a Fila?")) { filaDeReproducao = []; atualizarTelaFila(); } }
+        function limparRanking() { if (confirm("Zerar o Ranking?")) { ranking = []; atualizarTelaRanking(); } }
+        function limparHistorico() { if (confirm("Apagar o Histórico?")) { historicoDeReproducao = []; atualizarTelaHistorico(); } }
 
         function resetarTudo() {
-            if (confirm("⚠️ ATENÇÃO: Deseja realmente RESETAR TUDO?\n\nIsso vai apagar a Fila, o Ranking e o Histórico para começar um novo dia no bar!")) {
-                filaDeReproducao = [];
-                ranking = [];
-                historicoDeReproducao = [];
-                atualizarTelaFila();
-                atualizarTelaRanking();
-                atualizarTelaHistorico();
-                alert("Sistema resetado com sucesso para um novo dia!");
+            if (confirm("⚠️ Deseja realmente RESETAR TUDO?")) {
+                filaDeReproducao = []; ranking = []; historicoDeReproducao = [];
+                atualizarTelaFila(); atualizarTelaRanking(); atualizarTelaHistorico();
+                alert("Sistema resetado com sucesso!");
             }
         }
 
@@ -595,14 +559,8 @@
 
         function iniciarSistema() {
             const som = document.getElementById('audio-tambores');
-            som.volume = 0.5; // VOLUME DOS TAMBORES REDUZIDO PELA METADE
-            som.muted = true;
-            som.play().then(() => {
-                som.pause();
-                som.currentTime = 0;
-                som.muted = false;
-            }).catch(e => console.log("Áudio bloqueado aguardando clique."));
-
+            som.volume = 0.5; som.muted = true;
+            som.play().then(() => { som.pause(); som.currentTime = 0; som.muted = false; }).catch(e => {});
             abrirTV();
             if (!micAtivo) toggleMicrofone();
         }
@@ -620,14 +578,11 @@
                     streamMic = await navigator.mediaDevices.getUserMedia({ audio: true });
                     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                     if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
-                    
                     analyser = audioCtx.createAnalyser();
                     audioCtx.createMediaStreamSource(streamMic).connect(analyser);
                     analyser.fftSize = 256; dataArray = new Uint8Array(analyser.frequencyBinCount);
-
                     micAtivo = true;
                     btn.innerHTML = "🎙️ 2. AVALIADOR (LIGADO)"; btn.style.background = "#17a2b8"; 
-
                     if (intervaloMic) clearInterval(intervaloMic);
                     intervaloMic = setInterval(() => {
                         if (captando && analyser && micAtivo) {
@@ -636,9 +591,7 @@
                             somaEnergia += (soma / dataArray.length); qtdLeituras++;
                         }
                     }, 200);
-                } catch (err) { 
-                    btn.innerHTML = "⚠️ MICROFONE BLOQUEADO"; btn.style.background = "#e52d27";
-                }
+                } catch (err) { btn.innerHTML = "⚠️ MICROFONE BLOQUEADO"; btn.style.background = "#e52d27"; }
             }
         }
         
@@ -753,7 +706,6 @@
             `;
         }
 
-        // Funções do Novo Modal de Cantores
         function abrirModalCantor(videoId, titulo) {
             musicaPendente = { videoId, titulo };
             document.getElementById('input-nome-cantor').value = '';
@@ -772,12 +724,10 @@
         function confirmarCantor() {
             let cantor = document.getElementById('input-nome-cantor').value.trim();
             if (cantor === "") cantor = "Convidados";
-            
             if (cantor !== "Convidados" && !cantoresSalvos.includes(cantor)) {
                 cantoresSalvos.push(cantor);
                 localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
             }
-
             if (musicaPendente) {
                 filaDeReproducao.push({ videoId: musicaPendente.videoId, titulo: musicaPendente.titulo, cantor: cantor });
                 atualizarTelaFila();
@@ -786,13 +736,11 @@
             fecharModalCantor();
         }
 
-        function selecionarCantorSalvo(nome) {
-            document.getElementById('input-nome-cantor').value = nome;
-        }
+        function selecionarCantorSalvo(nome) { document.getElementById('input-nome-cantor').value = nome; }
 
         function excluirCantorSalvo(nome, event) {
             event.stopPropagation(); 
-            if (confirm(`Excluir ${nome} da lista salva?`)) {
+            if (confirm(`Excluir ${nome}?`)) {
                 cantoresSalvos = cantoresSalvos.filter(c => c !== nome);
                 localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
                 renderizarCantoresSalvos();
@@ -815,20 +763,20 @@
         function renderizarCantoresSalvos() {
             const div = document.getElementById('lista-cantores-salvos');
             if (cantoresSalvos.length === 0) {
-                div.innerHTML = "<span style='color:#777; font-size:13px;'>Nenhum cantor salvo ainda.</span>";
+                div.innerHTML = "<span style='color:#777; font-size:13px;'>Nenhum cantor salvo.</span>";
                 return;
             }
             div.innerHTML = cantoresSalvos.map(c => `
                 <div class="chip-cantor">
                     <span onclick="selecionarCantorSalvo('${c.replace(/'/g, "\\'")}')">${c}</span>
-                    <button class="btn-acao-chip" onclick="editarCantorSalvo('${c.replace(/'/g, "\\'")}', event)" title="Editar">✏️</button>
-                    <button class="btn-acao-chip" onclick="excluirCantorSalvo('${c.replace(/'/g, "\\'")}', event)" title="Excluir">❌</button>
+                    <button class="btn-acao-chip" onclick="editarCantorSalvo('${c.replace(/'/g, "\\'")}', event)">✏️</button>
+                    <button class="btn-acao-chip" onclick="excluirCantorSalvo('${c.replace(/'/g, "\\'")}', event)">❌</button>
                 </div>
             `).join('');
         }
 
         function limparCantores() {
-            if (confirm("Quer apagar TODOS os nomes salvos?")) {
+            if (confirm("Apagar todos os cantores salvos?")) {
                 cantoresSalvos = [];
                 localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
                 renderizarCantoresSalvos();
@@ -854,7 +802,7 @@
                     notaForcadaPeloDJ = valor;
                     atualizarDisplayNotaForcada();
                 } else {
-                    alert("Nota inválida. Digite um número de 0 a 100.");
+                    alert("Nota inválida. Digite de 0 a 100.");
                 }
             }
         }
@@ -871,21 +819,22 @@
                     body { margin: 0; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; font-family: Arial;}
                     #player { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1;}
                     
-                    #logo-bar { position: absolute !important; top: 0px !important; left: 0px !important; z-index: 25; pointer-events: none; margin: 0 !important; padding: 0 !important; display: flex; align-items: flex-start; }
-                    #logo-bar img { height: 140px !important; width: auto !important; display: block; margin: 0 !important; padding: 0 !important; } 
+                    #logo-bar { position: absolute !important; top: 0px !important; left: 0px !important; z-index: 25; pointer-events: none; display: flex; align-items: flex-start; }
+                    #logo-bar img { height: 140px !important; width: auto !important; display: block; } 
                     #logo-bar span { font-size: 34px; font-weight: 900; color: #fff; text-shadow: 3px 3px 10px #000; display: block; margin-top: 15px; margin-left: 15px; white-space: nowrap; }
                     
-                    /* QR CODE NA QUINA DIREITA (top 20px) */
                     #qr-code { position: absolute !important; top: 20px !important; right: 20px !important; z-index: 25; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
                     #qr-code img { width: 110px; height: 110px; background: white; padding: 5px; border-radius: 8px; display: block; margin: 0 auto; }
                     #qr-code p { margin: 8px 0 0 0; color: #fff; font-size: 12px; font-weight: bold; text-transform: uppercase;}
                     #qr-code span { color: #ffeb3b; font-size: 11px; }
 
-                    /* CAIXA DO NOME - Fica escondida pra cima (-200px) e desce até o (20px) ao lado do QR Code (right 170px) */
                     #cantor-overlay { position: absolute; top: -200px; right: 170px; background: linear-gradient(90deg, rgba(20,20,20,0.95), rgba(229,45,39,0.85)); padding: 10px 20px; border-radius: 15px; z-index: 24; transition: top 0.8s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: -3px 5px 15px rgba(0,0,0,0.5); max-width: 350px; text-align: right; border: 2px solid #e52d27;}
                     #cantor-overlay .aviso { font-size: 12px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
                     #cantor-overlay .nome { font-size: 22px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; line-height: 1.1; word-wrap: break-word;}
                     
+                    #tela-transicao { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: #0a0a0a; z-index: 95; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+                    #contador-regressivo { font-size: 220px; font-weight: 900; color: #ffeb3b; text-shadow: 0 0 30px rgba(255,235,59,0.5); line-height: 1; }
+
                     #tela-nota { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #121212, #3a0000); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
                     @keyframes piscar { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
                     #btn-liberar { z-index: 20; padding: 25px 40px; font-size: 24px; font-weight: bold; background: #28a745; color: white; border: none; border-radius: 10px; cursor: pointer; }
@@ -902,9 +851,14 @@
                         <span>Peça e Vote!</span>
                     </div>
 
-                    <!-- Caixa do nome flutuante -->
                     <div id="cantor-overlay"></div>
                     
+                    <div id="tela-transicao">
+                        <h2 style="font-size: 35px; color: #fff; margin-bottom: 20px;">PRÓXIMO CANTOR:</h2>
+                        <h1 id="transicao-cantor-nome" style="font-size: 55px; color: #e52d27; margin-bottom: 30px;"></h1>
+                        <div id="contador-regressivo">5</div>
+                    </div>
+
                     <div id="tela-nota">
                         <h1 style="font-size: 50px; color: #ffeb3b; margin-bottom: 10px;">🍻 PARADA 10.95 BAR</h1>
                         <h2 style="font-size: 40px; margin-bottom: 50px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
@@ -937,7 +891,7 @@
                     'onStateChange': e => { if (e.data === 0) (musicaAtual && musicaAtual.cantor !== "Convidados") ? gerarNotaFinal() : tocarProxima(true); }, 
                     'onError': e => {
                         erroNoPlayer = true;
-                        alert("⚠️ O YOUTUBE BLOQUEOU ESTE VÍDEO!\n\nBusque outra versão agora. Ao clicar no resultado, escolha 'OK' para substituir a música falha e tocar na hora, mantendo o nome do cantor atual na tela.");
+                        alert("⚠️ O YouTube bloqueou este vídeo! Busque outra versão.");
                     } 
                 }
             });
@@ -949,7 +903,6 @@
             captando = false; 
             let notaFinal;
             const votosCongelados = { ...contagemVotos };
-            
             database.ref('statusAtual').set({ cantor: "Avaliando...", titulo: "Olhe para a tela da TV!", id: "avaliando" });
 
             if (notaForcadaPeloDJ !== null) {
@@ -971,10 +924,8 @@
                     if (bonusPublico > 15) bonusPublico = 15; 
                     if (bonusPublico < -15) bonusPublico = -15; 
                 }
-                
                 notaFinal = notaBase + bonusPublico;
-                if (notaFinal > 100) notaFinal = 100; 
-                if (notaFinal < 50) notaFinal = 50; 
+                if (notaFinal > 100) notaFinal = 100; if (notaFinal < 50) notaFinal = 50; 
             }
 
             ranking.push({ nome: musicaAtual.cantor, nota: notaFinal, titulo: musicaAtual.titulo, votos: votosCongelados });
@@ -985,13 +936,11 @@
                 telaTV.document.getElementById('nota-loading').style.display = 'block';
                 telaTV.document.getElementById('nota-resultado').style.display = 'none';
                 telaTV.document.getElementById('tela-nota').style.display = 'flex';
-                
-                // ESCONDE O NOME DO CANTOR (Sobe para o teto)
                 telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
 
                 const som = document.getElementById('audio-tambores');
                 som.currentTime = 0;
-                som.play().catch(e => console.log("O áudio foi bloqueado", e));
+                som.play().catch(e => {});
 
                 setTimeout(() => {
                     telaTV.document.getElementById('nota-loading').style.display = 'none';
@@ -1022,7 +971,7 @@
             const videoId = extrairVideoId(termoOriginal);
             if (videoId) {
                 if (musicaAtual && erroNoPlayer) {
-                    if (confirm("⚠️ Substituir a música que falhou por este link e tocar agora? (Mantendo o cantor atual)")) {
+                    if (confirm("⚠️ Substituir a música que falhou por este link?")) {
                         musicaAtual.videoId = videoId;
                         musicaAtual.titulo = "Música via Link";
                         erroNoPlayer = false;
@@ -1040,7 +989,6 @@
             try {
                 const res = await fetch(url); const dados = await res.json();
                 
-                // ORDENAÇÃO INTELIGENTE POR CANAIS FAVORITOS (Ordem de preferência cadastrada)
                 let itensOrdenados = [...dados.items].sort((a, b) => {
                     let tituloA = a.snippet.title.toLowerCase();
                     let canalA = a.snippet.channelTitle.toLowerCase();
@@ -1050,10 +998,10 @@
                     let canalB = b.snippet.channelTitle.toLowerCase();
                     let indexB = canaisFavoritos.findIndex(c => tituloB.includes(c.toLowerCase()) || canalB.includes(c.toLowerCase()));
 
-                    if (indexA !== -1 && indexB !== -1) return indexA - indexB; // Ambos são favoritos, respeita a ordem 1º, 2º...
-                    if (indexA !== -1) return -1; // A é favorito, vem antes
-                    if (indexB !== -1) return 1;  // B é favorito, vem antes
-                    return 0; // Mantém ordem original para os demais
+                    if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                    if (indexA !== -1) return -1;
+                    if (indexB !== -1) return 1;
+                    return 0;
                 });
 
                 itensOrdenados.forEach(v => {
@@ -1073,7 +1021,7 @@
                     
                     d.onclick = () => {
                         if (musicaAtual && erroNoPlayer) {
-                            if (confirm("⚠️ Substituir a música que falhou por esta versão e tocar agora? (Mantendo o cantor atual)")) {
+                            if (confirm("⚠️ Substituir a música que falhou?")) {
                                 musicaAtual.videoId = v.id.videoId;
                                 musicaAtual.titulo = v.snippet.title;
                                 erroNoPlayer = false;
@@ -1086,13 +1034,13 @@
                     };
                     div.appendChild(d);
                 });
-            } catch (err) { div.innerHTML = "<p style='color:#e52d27'>Limite de busca atingido. Cole o link direto!</p>"; }
+            } catch (err) { div.innerHTML = "<p style='color:#e52d27'>Limite de busca atingido.</p>"; }
         }
 
         function removerMusica(i) { filaDeReproducao.splice(i, 1); atualizarTelaFila(); }
         function moverMusica(i, d) { const t = filaDeReproducao[i]; filaDeReproducao[i] = filaDeReproducao[i+d]; filaDeReproducao[i+d] = t; atualizarTelaFila(); }
 
-        function iniciarMusica(m) {
+        function executarInicioMusica(m) {
             clearTimeout(timerNota);
             if (telaTV && !telaTV.closed) telaTV.document.getElementById('tela-nota').style.display = 'none';
             
@@ -1104,8 +1052,6 @@
             
             if (telaTV && !telaTV.closed && m.cantor !== "Convidados") {
                 telaTV.document.getElementById('cantor-overlay').innerHTML = `<div style="display:inline-block; vertical-align:middle;"><span class="aviso">Com a Voz</span><p class="nome">${m.cantor}</p></div>`;
-                
-                // MÁGICA AQUI: A caixa inicia no teto e desce animada para os 20px no topo (ao lado do QR code)
                 telaTV.document.getElementById('cantor-overlay').style.top = '-200px'; 
                 setTimeout(() => telaTV.document.getElementById('cantor-overlay').style.top = '20px', 100);
             }
@@ -1115,20 +1061,47 @@
             player.loadVideoById(m.videoId); player.playVideo(); 
         }
 
+        function iniciarMusica(m) {
+            if (tempoPausaSegundos > 0 && telaTV && !telaTV.closed) {
+                let tempoRestante = tempoPausaSegundos;
+                let transicaoEl = telaTV.document.getElementById('tela-transicao');
+                let cantorEl = telaTV.document.getElementById('transicao-cantor-nome');
+                let contadorEl = telaTV.document.getElementById('contador-regressivo');
+                
+                cantorEl.innerText = m.cantor;
+                contadorEl.innerText = tempoRestante;
+                transicaoEl.style.display = 'flex';
+                telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
+
+                let timerRegressivo = setInterval(() => {
+                    tempoRestante--;
+                    if (tempoRestante > 0) {
+                        contadorEl.innerText = tempoRestante;
+                    } else {
+                        clearInterval(timerRegressivo);
+                        transicaoEl.style.display = 'none';
+                        executarInicioMusica(m);
+                    }
+                }, 1000);
+            } else {
+                executarInicioMusica(m);
+            }
+        }
+
         function tocarMusicaEspecifica(i) { 
-            if(!telaTV || telaTV.closed) return alert("⚠️ A Tela da TV está fechada! Clique no botão azul '1. INICIAR SISTEMA E TV' antes de tocar a música."); 
+            if(!telaTV || telaTV.closed) return alert("⚠️ A Tela da TV está fechada!"); 
             iniciarMusica(filaDeReproducao.splice(i, 1)[0]); 
         }
         
         function tocarProxima(auto = false) {
             if(!telaTV || telaTV.closed) {
-                if (!auto) alert("⚠️ A Tela da TV está fechada! Clique no botão azul '1. INICIAR SISTEMA E TV' antes de tocar a música.");
+                if (!auto) alert("⚠️ A Tela da TV está fechada!");
                 return;
             }
             if(filaDeReproducao.length > 0) {
                 iniciarMusica(filaDeReproducao.shift()); 
             } else {
-                if(telaTV && !telaTV.closed) telaTV.document.getElementById('cantor-overlay').style.top = '-200px'; // Esconde pro teto
+                if(telaTV && !telaTV.closed) telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
                 database.ref('statusAtual').set(null);
             }
         }
@@ -1166,7 +1139,6 @@
                         </div>
                         <div class="pontuacao">${item.nota}</div>
                     </div>
-                    
                     <div id="votos-rank-${i}" style="display:none; margin-top: 15px; background: #111; padding: 10px; border-radius: 5px; font-size: 13px; text-align: center;">
                         <strong>Registro da Plateia:</strong><br><br>
                         <span style="color:#00d2ff">🤯 ${item.votos.excelente}</span> &nbsp;|&nbsp; 
@@ -1179,7 +1151,6 @@
             `).join('');
         }
 
-        // Renderiza os dados salvos assim que a página carrega
         atualizarTelaFila();
         atualizarTelaHistorico();
         atualizarTelaRanking();
