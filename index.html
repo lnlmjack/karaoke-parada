@@ -25,10 +25,8 @@
         .btn-tv { background: #007bff; } .btn-tv:hover { background: #0056b3; } .btn-tv.conectado { background: #17a2b8; pointer-events: none; }
         .btn-mic { background: #e52d27; text-align: center; display: flex; align-items: center; justify-content: center; } 
         .btn-mic:hover { filter: brightness(1.2); }
-        
-        .btn-tocar { background: #28a745; width: 100%; padding: 15px; font-size: 16px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 20px;}
 
-        .area-busca { display: flex; gap: 10px; margin-bottom: 10px; }
+        .area-busca { display: flex; gap: 10px; margin-bottom: 15px; }
         input { flex: 1; padding: 12px; border-radius: 5px; border: none; font-size: 16px; }
         .btn-buscar { padding: 12px 25px; background: #e52d27; color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer;}
         
@@ -279,8 +277,6 @@
             <button class="btn-buscar" onclick="buscarNoYouTube()">Buscar Música (DJ)</button>
         </div>
 
-        <button class="btn-tocar" onclick="tocarProxima()">▶️ Tocar Próxima da Fila</button>
-
         <div class="paineis">
             <div class="painel"><h3 style="margin-top: 0; color: #e52d27;">Busca do DJ:</h3><div id="resultados"></div></div>
             
@@ -324,7 +320,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.48</span>
+        <span>v1.49</span>
     </div>
 
     <script>
