@@ -73,7 +73,7 @@
         #modal-manual-conteudo .segredo { background: #222; border-left: 4px solid #28a745; padding: 15px; margin-top: 20px; border-radius: 5px; font-style: italic; }
         #fundo-modal-manual { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 299; }
         
-        .versao-app { position: fixed; bottom: 4px; right: 8px; font-size: 12px; color: #fff; opacity: 0.3; z-index: 200005; pointer-events: none; display: flex; align-items: center; gap: 6px; }
+        .versao-app { position: fixed; bottom: 4px; right: 8px; font-size: 12px; color: #fff; opacity: 0.3; pointer-events: none; display: flex; align-items: center; gap: 6px; }
         .versao-app span { color: #fff; }
 
         /* Estilos dos Modais */
@@ -170,14 +170,15 @@
         <button onclick="fecharManual()" style="width: 100%; margin-top: 30px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
     </div>
 
-    <!-- Modal de Configurações Unificado (Admin: Canais e Usuários) -->
+    <!-- Modal de Configurações Unificado (Admin: Canais, Usuários e Tempo de Pausa) -->
     <div id="fundo-modal-config" onclick="fecharModalConfig()"></div>
     <div id="modal-config">
         <h2>⚙️ Configurações do Sistema</h2>
         
         <div class="abas-config">
-            <button class="btn-aba ativo" onclick="mudarAba('canais', event)">⭐ Canais Favoritos</button>
-            <button class="btn-aba" onclick="mudarAba('usuarios', event)">👥 Gerenciar Usuários</button>
+            <button class="btn-aba ativo" onclick="mudarAba('canais', event)">⭐ Canais</button>
+            <button class="btn-aba" onclick="mudarAba('usuarios', event)">👥 Usuários</button>
+            <button class="btn-aba" onclick="mudarAba('transicao', event)">⏳ Tempo de Pausa</button>
         </div>
 
         <!-- Conteúdo da Aba Canais -->
@@ -191,9 +192,7 @@
                             <th style="text-align: right;">Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="tabela-corpo-canais">
-                        <!-- Preenchido via JS -->
-                    </tbody>
+                    <tbody id="tabela-corpo-canais"></tbody>
                 </table>
             </div>
             <div class="form-novo-canal">
@@ -214,9 +213,7 @@
                             <th style="text-align: right;">Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="tabela-corpo-usuarios">
-                        <!-- Preenchido via JS -->
-                    </tbody>
+                    <tbody id="tabela-corpo-usuarios"></tbody>
                 </table>
             </div>
             <div class="form-novo-usuario">
@@ -231,6 +228,16 @@
             </div>
         </div>
 
+        <!-- Conteúdo da Aba Transição (Tempo de Pausa) -->
+        <div id="aba-transicao" class="conteudo-aba">
+            <div class="form-novo-canal">
+                <strong>Pausa entre Músicas (Segundos):</strong>
+                <p style="font-size: 12px; color: #aaa; margin: 5px 0 10px 0;">Tempo de contagem regressiva exibido no telão antes de iniciar a próxima música:</p>
+                <input type="number" id="input-tempo-pausa" min="0" max="60" value="5">
+                <button onclick="salvarTempoPausa()" style="width: 100%; padding: 8px; background: #007bff; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px;">Salvar Tempo de Pausa</button>
+            </div>
+        </div>
+
         <button onclick="fecharModalConfig()" style="width: 100%; margin-top: 15px; padding: 10px; background: #333; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Fechar</button>
     </div>
 
@@ -241,7 +248,7 @@
         <button onclick="fecharDetalhesVotos()" style="width: 100%; margin-top: 20px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar</button>
     </div>
 
-    <!-- Novo Modal de Cantores -->
+    <!-- Modal de Cantores -->
     <div id="fundo-modal-cantor" onclick="fecharModalCantor()"></div>
     <div id="modal-cantor">
         <h2>🎤 Quem vai cantar?</h2>
@@ -255,7 +262,6 @@
     </div>
 
     <div class="container">
-        <!-- TOPO ORGANIZADO SEM ENCAVALAR -->
         <div class="topo-header">
             <h1 style="margin: 0; padding: 0;">🎛️ Painel de Controle - Karaokê</h1>
             <div class="topo-botoes-acao">
@@ -320,12 +326,12 @@
 
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
-        <span>v1.31</span>
+        <span>v1.32</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; transition: 0.2s; margin-left: 4px;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
     </div>
 
     <script>
-        // GERENCIAMENTO DE USUÁRIOS E CANAIS FAVORITOS NO LOCALSTORAGE
+        // GERENCIAMENTO DE USUÁRIOS, CANAIS E TEMPO DE PAUSA NO LOCALSTORAGE
         let usuariosAutorizados = JSON.parse(localStorage.getItem('usuariosAutorizados')) || [
             { usuario: "leonard", senha: "123", tipo: "admin" },
             { usuario: "operador", senha: "123", tipo: "comum" }
@@ -336,6 +342,8 @@
             "Tequila Karaoke",
             "Versão Karaokê"
         ];
+
+        let tempoPausaSegundos = parseInt(localStorage.getItem('tempoPausaSegundos')) || 5;
 
         if (!localStorage.getItem('canaisFavoritos')) {
             localStorage.setItem('canaisFavoritos', JSON.stringify(canaisFavoritos));
@@ -362,6 +370,7 @@
         function abrirModalConfig() {
             renderizarTabelaCanais();
             renderizarTabelaUsuarios();
+            document.getElementById('input-tempo-pausa').value = tempoPausaSegundos;
             document.getElementById('fundo-modal-config').style.display = 'block';
             document.getElementById('modal-config').style.display = 'block';
         }
@@ -369,6 +378,14 @@
         function fecharModalConfig() {
             document.getElementById('fundo-modal-config').style.display = 'none';
             document.getElementById('modal-config').style.display = 'none';
+        }
+
+        function salvarTempoPausa() {
+            let val = parseInt(document.getElementById('input-tempo-pausa').value, 10);
+            if (isNaN(val) || val < 0) val = 0;
+            tempoPausaSegundos = val;
+            localStorage.setItem('tempoPausaSegundos', tempoPausaSegundos);
+            alert("Tempo de pausa salvo com sucesso!");
         }
 
         function renderizarTabelaCanais() {
@@ -595,7 +612,7 @@
 
         function iniciarSistema() {
             const som = document.getElementById('audio-tambores');
-            som.volume = 0.5; // VOLUME DOS TAMBORES REDUZIDO PELA METADE
+            som.volume = 0.5;
             som.muted = true;
             som.play().then(() => {
                 som.pause();
@@ -753,7 +770,7 @@
             `;
         }
 
-        // Funções do Novo Modal de Cantores
+        // Funções do Modal de Cantores
         function abrirModalCantor(videoId, titulo) {
             musicaPendente = { videoId, titulo };
             document.getElementById('input-nome-cantor').value = '';
@@ -875,17 +892,26 @@
                     #logo-bar img { height: 140px !important; width: auto !important; display: block; margin: 0 !important; padding: 0 !important; } 
                     #logo-bar span { font-size: 34px; font-weight: 900; color: #fff; text-shadow: 3px 3px 10px #000; display: block; margin-top: 15px; margin-left: 15px; white-space: nowrap; }
                     
-                    /* QR CODE NA QUINA DIREITA (top 20px) */
                     #qr-code { position: absolute !important; top: 20px !important; right: 20px !important; z-index: 25; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
                     #qr-code img { width: 110px; height: 110px; background: white; padding: 5px; border-radius: 8px; display: block; margin: 0 auto; }
                     #qr-code p { margin: 8px 0 0 0; color: #fff; font-size: 12px; font-weight: bold; text-transform: uppercase;}
                     #qr-code span { color: #ffeb3b; font-size: 11px; }
 
-                    /* CAIXA DO NOME - Fica escondida pra cima (-200px) e desce até o (20px) ao lado do QR Code (right 170px) */
                     #cantor-overlay { position: absolute; top: -200px; right: 170px; background: linear-gradient(90deg, rgba(20,20,20,0.95), rgba(229,45,39,0.85)); padding: 10px 20px; border-radius: 15px; z-index: 24; transition: top 0.8s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: -3px 5px 15px rgba(0,0,0,0.5); max-width: 350px; text-align: right; border: 2px solid #e52d27;}
                     #cantor-overlay .aviso { font-size: 12px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
                     #cantor-overlay .nome { font-size: 22px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; line-height: 1.1; word-wrap: break-word;}
                     
+                    /* TELA DE ESPERA ENTRE MÚSICAS (QUANDO A FILA ESTIVER VAZIA) */
+                    #tela-aguardando { display: flex; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #0b0b0b, #1a0000); z-index: 90; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+                    #tela-aguardando img.logo-centro { width: 220px; height: auto; border-radius: 50%; box-shadow: 0 0 40px rgba(229,45,39,0.5); margin-bottom: 25px; animation: pulsar 2s infinite; }
+                    @keyframes pulsar { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+                    #tela-aguardando h1 { font-size: 48px; color: #ffeb3b; margin: 0 0 10px 0; text-shadow: 2px 2px 10px #000; }
+                    #tela-aguardando p { font-size: 24px; color: #fff; margin: 0; text-shadow: 1px 1px 5px #000; }
+
+                    /* TELA DE TRANSIÇÃO / CONTAGEM REGRESSIVA */
+                    #tela-transicao { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: #0a0a0a; z-index: 95; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px; box-sizing: border-box;}
+                    #contador-regressivo { font-size: 180px; font-weight: 900; color: #ffeb3b; text-shadow: 0 0 30px rgba(255,235,59,0.5); line-height: 1; margin-top: 15px;}
+
                     #tela-nota { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #121212, #3a0000); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
                     @keyframes piscar { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
                     #btn-liberar { z-index: 20; padding: 25px 40px; font-size: 24px; font-weight: bold; background: #28a745; color: white; border: none; border-radius: 10px; cursor: pointer; }
@@ -902,8 +928,22 @@
                         <span>Peça e Vote!</span>
                     </div>
 
-                    <!-- Caixa do nome flutuante -->
                     <div id="cantor-overlay"></div>
+
+                    <!-- TELA DE ESPERA PADRÃO AO ABRIR OU FILA VAZIA -->
+                    <div id="tela-aguardando">
+                        <img src="logop.png" class="logo-centro" alt="Logo Bar">
+                        <h1>🍻 AGUARDANDO PRÓXIMA MÚSICA 🍻</h1>
+                        <p>Aponte a câmera para o QR Code e escolha seu som!</p>
+                    </div>
+
+                    <!-- TELA DE CONTAGEM REGRESSIVA ENTRE MÚSICAS -->
+                    <div id="tela-transicao">
+                        <h3 style="font-size: 25px; color: #aaa; margin: 0 0 10px 0; text-transform: uppercase;">PRÓXIMO CANTOR:</h3>
+                        <h1 id="transicao-cantor-nome" style="font-size: 45px; color: #e52d27; margin: 0 0 15px 0;"></h1>
+                        <h2 id="transicao-musica-titulo" style="font-size: 24px; color: #00d2ff; margin: 0 0 25px 0; font-weight: normal;"></h2>
+                        <div id="contador-regressivo">5</div>
+                    </div>
                     
                     <div id="tela-nota">
                         <h1 style="font-size: 50px; color: #ffeb3b; margin-bottom: 10px;">🍻 PARADA 10.95 BAR</h1>
@@ -943,6 +983,13 @@
             });
             document.getElementById('botaoTV').innerHTML = "✅ TELA CONECTADA!";
             document.getElementById('botaoTV').style.background = "#17a2b8";
+            
+            // Garante que a tela de espera apareça se a fila estiver vazia ao conectar
+            if (filaDeReproducao.length === 0 && !musicaAtual) {
+                if (telaTV && !telaTV.closed) {
+                    telaTV.document.getElementById('tela-aguardando').style.display = 'flex';
+                }
+            }
         }
 
         function gerarNotaFinal() {
@@ -986,7 +1033,6 @@
                 telaTV.document.getElementById('nota-resultado').style.display = 'none';
                 telaTV.document.getElementById('tela-nota').style.display = 'flex';
                 
-                // ESCONDE O NOME DO CANTOR (Sobe para o teto)
                 telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
 
                 const som = document.getElementById('audio-tambores');
@@ -1040,7 +1086,6 @@
             try {
                 const res = await fetch(url); const dados = await res.json();
                 
-                // ORDENAÇÃO INTELIGENTE POR CANAIS FAVORITOS (Ordem de preferência cadastrada)
                 let itensOrdenados = [...dados.items].sort((a, b) => {
                     let tituloA = a.snippet.title.toLowerCase();
                     let canalA = a.snippet.channelTitle.toLowerCase();
@@ -1050,10 +1095,10 @@
                     let canalB = b.snippet.channelTitle.toLowerCase();
                     let indexB = canaisFavoritos.findIndex(c => tituloB.includes(c.toLowerCase()) || canalB.includes(c.toLowerCase()));
 
-                    if (indexA !== -1 && indexB !== -1) return indexA - indexB; // Ambos são favoritos, respeita a ordem 1º, 2º...
-                    if (indexA !== -1) return -1; // A é favorito, vem antes
-                    if (indexB !== -1) return 1;  // B é favorito, vem antes
-                    return 0; // Mantém ordem original para os demais
+                    if (indexA !== -1 && indexB !== -1) return indexA - indexB; 
+                    if (indexA !== -1) return -1; 
+                    if (indexB !== -1) return 1;  
+                    return b.snippet.publishedAt.localeCompare(a.snippet.publishedAt);
                 });
 
                 itensOrdenados.forEach(v => {
@@ -1092,9 +1137,12 @@
         function removerMusica(i) { filaDeReproducao.splice(i, 1); atualizarTelaFila(); }
         function moverMusica(i, d) { const t = filaDeReproducao[i]; filaDeReproducao[i] = filaDeReproducao[i+d]; filaDeReproducao[i+d] = t; atualizarTelaFila(); }
 
-        function iniciarMusica(m) {
+        function executarInicioMusica(m) {
             clearTimeout(timerNota);
-            if (telaTV && !telaTV.closed) telaTV.document.getElementById('tela-nota').style.display = 'none';
+            if (telaTV && !telaTV.closed) {
+                telaTV.document.getElementById('tela-nota').style.display = 'none';
+                telaTV.document.getElementById('tela-aguardando').style.display = 'none';
+            }
             
             database.ref('votosAtual').remove();
             database.ref('statusAtual').set({ cantor: m.cantor, titulo: m.titulo, id: Date.now() });
@@ -1104,8 +1152,6 @@
             
             if (telaTV && !telaTV.closed && m.cantor !== "Convidados") {
                 telaTV.document.getElementById('cantor-overlay').innerHTML = `<div style="display:inline-block; vertical-align:middle;"><span class="aviso">Com a Voz</span><p class="nome">${m.cantor}</p></div>`;
-                
-                // MÁGICA AQUI: A caixa inicia no teto e desce animada para os 20px no topo (ao lado do QR code)
                 telaTV.document.getElementById('cantor-overlay').style.top = '-200px'; 
                 setTimeout(() => telaTV.document.getElementById('cantor-overlay').style.top = '20px', 100);
             }
@@ -1113,6 +1159,36 @@
             atualizarDisplayNotaForcada();
             erroNoPlayer = false;
             player.loadVideoById(m.videoId); player.playVideo(); 
+        }
+
+        function iniciarMusica(m) {
+            if (tempoPausaSegundos > 0 && telaTV && !telaTV.closed) {
+                let tempoRestante = tempoPausaSegundos;
+                let transicaoEl = telaTV.document.getElementById('tela-transicao');
+                let cantorEl = telaTV.document.getElementById('transicao-cantor-nome');
+                let musicaEl = telaTV.document.getElementById('transicao-musica-titulo');
+                let contadorEl = telaTV.document.getElementById('contador-regressivo');
+                
+                cantorEl.innerText = m.cantor;
+                musicaEl.innerText = `🎵 ${m.titulo}`;
+                contadorEl.innerText = tempoRestante;
+                transicaoEl.style.display = 'flex';
+                telaTV.document.getElementById('tela-aguardando').style.display = 'none';
+                telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
+
+                let timerRegressivo = setInterval(() => {
+                    tempoRestante--;
+                    if (tempoRestante > 0) {
+                        contadorEl.innerText = tempoRestante;
+                    } else {
+                        clearInterval(timerRegressivo);
+                        transicaoEl.style.display = 'none';
+                        executarInicioMusica(m);
+                    }
+                }, 1000);
+            } else {
+                executarInicioMusica(m);
+            }
         }
 
         function tocarMusicaEspecifica(i) { 
@@ -1128,7 +1204,10 @@
             if(filaDeReproducao.length > 0) {
                 iniciarMusica(filaDeReproducao.shift()); 
             } else {
-                if(telaTV && !telaTV.closed) telaTV.document.getElementById('cantor-overlay').style.top = '-200px'; // Esconde pro teto
+                if(telaTV && !telaTV.closed) {
+                    telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
+                    telaTV.document.getElementById('tela-aguardando').style.display = 'flex';
+                }
                 database.ref('statusAtual').set(null);
             }
         }
@@ -1146,6 +1225,11 @@
                     </div>
                 </div>
             `).join('');
+            
+            // Se a fila esvaziou e nenhuma música está tocando ativamente, ativa a tela de espera na TV
+            if (filaDeReproducao.length === 0 && !musicaAtual && telaTV && !telaTV.closed) {
+                telaTV.document.getElementById('tela-aguardando').style.display = 'flex';
+            }
         }
 
         function atualizarTelaHistorico() { 
@@ -1179,7 +1263,6 @@
             `).join('');
         }
 
-        // Renderiza os dados salvos assim que a página carrega
         atualizarTelaFila();
         atualizarTelaHistorico();
         atualizarTelaRanking();
