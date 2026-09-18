@@ -324,7 +324,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.44</span>
+        <span>v1.48</span>
     </div>
 
     <script>
@@ -856,8 +856,8 @@
                     #cantor-overlay .aviso { font-size: 12px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
                     #cantor-overlay .nome { font-size: 22px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; line-height: 1.1; word-wrap: break-word;}
                     
-                    /* TELA DE ESPERA COM QR CODE E FRASE CORRETA */
-                    #tela-aguardando { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #0b0b0b, #1a0000); z-index: 90; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+                    /* TELA DE ESPERA IMEDIATA COM QR CODE E FRASE CORRETA */
+                    #tela-aguardando { display: flex; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #0b0b0b, #1a0000); z-index: 90; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
                     #tela-aguardando img.logo-centro { width: 220px; height: auto; border-radius: 50%; box-shadow: 0 0 40px rgba(229,45,39,0.5); margin-bottom: 25px; animation: pulsar 2s infinite; }
                     @keyframes pulsar { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
                     #tela-aguardando h1 { font-size: 48px; color: #ffeb3b; margin: 0 0 10px 0; text-shadow: 2px 2px 10px #000; }
@@ -885,7 +885,7 @@
 
                     <div id="cantor-overlay"></div>
 
-                    <!-- TELA DE ESPERA COM QR CODE E FRASE PEDIDA -->
+                    <!-- TELA DE ESPERA IMEDIATA COM QR CODE E FRASE PEDIDA -->
                     <div id="tela-aguardando">
                         <img src="logop.png" class="logo-centro" alt="Logo Bar">
                         <h1>🍻 AGUARDANDO PRÓXIMA MÚSICA 🍻</h1>
@@ -902,11 +902,11 @@
 
                     <div id="tela-nota">
                         <h1 style="font-size: 50px; color: #ffeb3b; margin-bottom: 10px;">🍻 PARADA 10.95 BAR</h1>
-                        <h2 style="font-size: 40px; margin-bottom: 50px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
-                        <div id="nota-loading" style="font-size: 35px; animation: piscar 1s infinite;">Calculando energia e votos do público... 🥁</div>
+                        <h2 style="font-size: 40px; margin-bottom: 30px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
+                        <div id="nota-loading" style="font-size: 30px; animation: piscar 1s infinite;">Calculando energia e votos do público... 🥁</div>
                         <div id="nota-resultado" style="display:none; flex-direction:column; align-items:center;">
-                            <div style="font-size: 30px;">Pontuação Final:</div>
-                            <div id="nota-valor" style="font-size: 180px; font-weight: 900;">100</div>
+                            <div style="font-size: 25px; color: #aaa;">Pontuação Final:</div>
+                            <div id="nota-valor" style="font-size: 160px; font-weight: 900; line-height: 1.1;">100</div>
                         </div>
                     </div>
                     <button id="btn-liberar" onclick="this.style.display='none';">👆 CLIQUE AQUI PARA LIBERAR O SOM (Aperte F11)</button>
@@ -939,10 +939,8 @@
             document.getElementById('botaoTV').innerHTML = "✅ TELA CONECTADA!";
             document.getElementById('botaoTV').style.background = "#17a2b8";
             
-            if (filaDeReproducao.length === 0 && (!musicaAtual)) {
-                if (telaTV && !telaTV.closed) {
-                    telaTV.document.getElementById('tela-aguardando').style.display = 'flex';
-                }
+            if (telaTV && !telaTV.closed) {
+                telaTV.document.getElementById('tela-aguardando').style.display = 'flex';
             }
         }
 
@@ -979,22 +977,23 @@
             atualizarTelaRanking();
 
             if (telaTV && !telaTV.closed) {
-                telaTV.document.getElementById('nota-cantor-nome').innerText = musicaAtual.cantor;
-                telaTV.document.getElementById('nota-loading').style.display = 'none';
-                telaTV.document.getElementById('nota-resultado').style.display = 'none';
-                telaTV.document.getElementById('tela-nota').style.display = 'flex';
-                telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
+                let tvDoc = telaTV.document;
+                tvDoc.getElementById('nota-cantor-nome').innerText = musicaAtual.cantor;
+                tvDoc.getElementById('nota-loading').style.display = 'block';
+                tvDoc.getElementById('nota-resultado').style.display = 'none';
+                tvDoc.getElementById('tela-nota').style.display = 'flex';
+                tvDoc.getElementById('cantor-overlay').style.top = '-200px';
 
                 const som = document.getElementById('audio-tambores');
                 som.currentTime = 0;
                 som.play().catch(e => {});
 
                 setTimeout(() => {
-                    telaTV.document.getElementById('nota-loading').style.display = 'none';
-                    let valorEl = telaTV.document.getElementById('nota-valor');
+                    tvDoc.getElementById('nota-loading').style.display = 'none';
+                    let valorEl = tvDoc.getElementById('nota-valor');
                     valorEl.innerText = notaFinal;
                     valorEl.style.color = notaFinal >= 90 ? '#28a745' : notaFinal >= 75 ? '#ffeb3b' : '#e52d27';
-                    telaTV.document.getElementById('tela-resultado').style.display = 'flex';
+                    tvDoc.getElementById('nota-resultado').style.display = 'flex';
                 }, 4000); 
             }
 
