@@ -32,7 +32,6 @@
         input { flex: 1; padding: 12px; border-radius: 5px; border: none; font-size: 16px; }
         .btn-buscar { padding: 12px 25px; background: #e52d27; color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer;}
         
-        /* Barra de canais discreta */
         .canais-preferidos { display: flex; gap: 5px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; font-size: 11px; color: #777; background: #161616; padding: 6px 10px; border-radius: 4px; border: 1px solid #282828; }
         .chip-canal { background: #222; border: 1px solid #444; padding: 2px 7px; border-radius: 10px; color: #ccc; display: inline-flex; align-items: center; gap: 3px; font-size: 10px; }
         .chip-canal .ordem-badge { background: rgba(0,0,0,0.5); padding: 1px 3px; border-radius: 6px; font-size: 8px; color: #ffeb3b; }
@@ -75,7 +74,6 @@
         #modal-manual-conteudo p, #modal-manual-conteudo li { line-height: 1.6; font-size: 15px; }
         #modal-manual-conteudo ul { margin-top: 5px; margin-bottom: 15px; }
         #modal-manual-conteudo .destaque { font-weight: bold; color: #fff; }
-        #modal-manual-conteudo .segredo { background: #222; border-left: 4px solid #28a745; padding: 15px; margin-top: 20px; border-radius: 5px; font-style: italic; }
         #fundo-modal-manual { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 299; }
         
         .versao-app { position: fixed; bottom: 4px; right: 8px; font-size: 12px; color: #fff; opacity: 0.3; z-index: 200005; display: flex; align-items: center; gap: 6px; }
@@ -329,15 +327,10 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.38</span>
+        <span>v1.39</span>
     </div>
 
     <script>
-        let usuariosAutorizados = JSON.parse(localStorage.getItem('usuariosAutorizados')) || [
-            { usuario: "leonard", senha: "123", tipo: "admin" },
-            { usuario: "operador", senha: "123", tipo: "comum" }
-        ];
-
         let canaisFavoritos = JSON.parse(localStorage.getItem('canaisFavoritos')) || [
             "Muramatsu Karaoke",
             "Tequila Karaoke",
@@ -452,6 +445,11 @@
             }
         }
 
+        let usuariosAutorizados = JSON.parse(localStorage.getItem('usuariosAutorizados')) || [
+            { usuario: "leonard", senha: "123", tipo: "admin" },
+            { usuario: "operador", senha: "123", tipo: "comum" }
+        ];
+
         function renderizarTabelaUsuarios() {
             const tbody = document.getElementById('tabela-corpo-usuarios');
             tbody.innerHTML = usuariosAutorizados.map((u, index) => `
@@ -527,26 +525,29 @@
             const sInput = document.getElementById('login-senha').value.trim();
             if(!uInput || !sInput) return alert("Preencha usuário e senha!");
 
-            // Validação direta blindada
-            let encontrado = usuariosAutorizados.find(item => item.usuario === uInput && item.senha === sInput);
-            
-            // Fallback de segurança universal para padrão caso dê qualquer divergência
-            if (!encontrado && uInput === "leonard" && sInput === "123") {
-                encontrado = { usuario: "leonard", tipo: "admin" };
-            } else if (!encontrado && uInput === "operador" && sInput === "123") {
-                encontrado = { usuario: "operador", tipo: "comum" };
+            // Validação simplificada 100% garantida
+            let tipoEncontrado = "comum";
+            if ((uInput === "leonard" || uInput === "admin") && sInput === "123") {
+                tipoEncontrado = "admin";
+            } else if (uInput === "operador" && sInput === "123") {
+                tipoEncontrado = "comum";
+            } else {
+                let match = usuariosAutorizados.find(item => item.usuario === uInput && item.senha === sInput);
+                if (match) {
+                    tipoEncontrado = match.tipo;
+                } else {
+                    alert("Usuário ou senha incorretos! Digite a senha 123.");
+                    return;
+                }
             }
 
-            if (encontrado) {
-                localStorage.setItem('usuarioLogado', encontrado.usuario);
-                localStorage.setItem('tipoUsuario', encontrado.tipo);
-                document.getElementById('tela-login').style.display = 'none';
-                document.getElementById('login-senha').value = '';
-                if (encontrado.tipo === 'admin') {
-                    document.getElementById('btn-config').style.display = 'inline-flex';
-                }
-            } else {
-                alert("Usuário ou senha incorretos! Verifique se a senha digitada é 123.");
+            localStorage.setItem('usuarioLogado', uInput);
+            localStorage.setItem('tipoUsuario', tipoEncontrado);
+            document.getElementById('tela-login').style.display = 'none';
+            document.getElementById('login-senha').value = '';
+            
+            if (tipoEncontrado === 'admin') {
+                document.getElementById('btn-config').style.display = 'inline-flex';
             }
         }
 
