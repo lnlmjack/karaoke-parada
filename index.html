@@ -130,8 +130,8 @@
         <div class="login-box">
             <img src="logop.png" alt="Logo Parada 10.95">
             <h2>🔒 Painel do DJ</h2>
-            <input type="text" id="login-usuario" class="login-input" placeholder="Usuário">
-            <input type="password" id="login-senha" class="login-input" placeholder="Senha" onkeypress="if(event.key === 'Enter') fazerLogin()">
+            <input type="text" id="login-usuario" class="login-input" placeholder="Usuário" value="leonard">
+            <input type="password" id="login-senha" class="login-input" placeholder="Senha" value="123" onkeypress="if(event.key === 'Enter') fazerLogin()">
             <button class="login-btn" onclick="fazerLogin()">Entrar</button>
         </div>
     </div>
@@ -329,7 +329,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.36</span>
+        <span>v1.37</span>
     </div>
 
     <script>
@@ -537,7 +537,7 @@
                     document.getElementById('btn-config').style.display = 'inline-flex';
                 }
             } else {
-                alert("Usuário ou senha incorretos!");
+                alert("Usuário ou senha incorretos! Certifique-se de apagar qualquer preenchimento automático incorreto e digite a senha 123.");
             }
         }
 
