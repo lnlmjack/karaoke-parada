@@ -32,6 +32,11 @@
         input { flex: 1; padding: 12px; border-radius: 5px; border: none; font-size: 16px; }
         .btn-buscar { padding: 12px 25px; background: #e52d27; color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer;}
         
+        /* Barra de canais discreta */
+        .canais-preferidos { display: flex; gap: 5px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; font-size: 11px; color: #777; background: #161616; padding: 6px 10px; border-radius: 4px; border: 1px solid #282828; }
+        .chip-canal { background: #222; border: 1px solid #444; padding: 2px 7px; border-radius: 10px; color: #ccc; display: inline-flex; align-items: center; gap: 3px; font-size: 10px; }
+        .chip-canal .ordem-badge { background: rgba(0,0,0,0.5); padding: 1px 3px; border-radius: 6px; font-size: 8px; color: #ffeb3b; }
+
         .paineis { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
         .painel { background: #1e1e1e; padding: 15px; border-radius: 8px; height: 450px; overflow-y: auto; position: relative;}
         
@@ -73,8 +78,9 @@
         #modal-manual-conteudo .segredo { background: #222; border-left: 4px solid #28a745; padding: 15px; margin-top: 20px; border-radius: 5px; font-style: italic; }
         #fundo-modal-manual { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 299; }
         
-        .versao-app { position: fixed; bottom: 4px; right: 8px; font-size: 12px; color: #fff; opacity: 0.3; z-index: 200005; pointer-events: none; display: flex; align-items: center; gap: 6px; }
+        .versao-app { position: fixed; bottom: 4px; right: 8px; font-size: 12px; color: #fff; opacity: 0.3; z-index: 200005; display: flex; align-items: center; gap: 6px; }
         .versao-app span { color: #fff; }
+        .versao-app:hover { opacity: 1; }
 
         /* Estilos dos Modais */
         #fundo-modal-config, #fundo-modal-cantor { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 500; }
@@ -269,6 +275,10 @@
             <button id="botaoMic" class="btn-topo btn-mic" onclick="toggleMicrofone()">🎙️ 2. AVALIADOR (INICIANDO...)</button>
         </div>
 
+        <div class="canais-preferidos" id="container-chips-canais">
+            <!-- Renderizado dinamicamente via JS de forma bem discreta -->
+        </div>
+
         <div class="area-busca">
             <input type="text" id="campoBusca" placeholder="Cole o link do YouTube ou busque o nome...">
             <button class="btn-buscar" onclick="buscarNoYouTube()">Buscar Música (DJ)</button>
@@ -318,8 +328,8 @@
 
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
-        <span>v1.32</span>
-        <span onclick="definirNotaManual()" style="cursor: pointer; transition: 0.2s; margin-left: 4px; opacity: 0.3;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
+        <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
+        <span>v1.33</span>
     </div>
 
     <script>
@@ -338,6 +348,15 @@
 
         if (!localStorage.getItem('canaisFavoritos')) {
             localStorage.setItem('canaisFavoritos', JSON.stringify(canaisFavoritos));
+        }
+
+        function renderizarChipsCanaisDiscretos() {
+            const container = document.getElementById('container-chips-canais');
+            let html = `<span style="font-weight:bold;">⭐ Preferência:</span>`;
+            canaisFavoritos.forEach((canal, idx) => {
+                html += `<div class="chip-canal"><span class="ordem-badge">${idx+1}º</span> ${canal}</div>`;
+            });
+            container.innerHTML = html;
         }
 
         function mudarAba(aba, evento) {
@@ -368,6 +387,7 @@
         function fecharModalConfig() {
             document.getElementById('fundo-modal-config').style.display = 'none';
             document.getElementById('modal-config').style.display = 'none';
+            renderizarChipsCanaisDiscretos();
         }
 
         function salvarTempoPausa() {
@@ -488,6 +508,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            renderizarChipsCanaisDiscretos();
             const usuarioLogado = localStorage.getItem('usuarioLogado');
             const tipoUsuario = localStorage.getItem('tipoUsuario');
             if (usuarioLogado) {
@@ -832,8 +853,8 @@
                     #cantor-overlay .aviso { font-size: 12px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
                     #cantor-overlay .nome { font-size: 22px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; line-height: 1.1; word-wrap: break-word;}
                     
-                    #tela-transicao { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: #0a0a0a; z-index: 95; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-                    #contador-regressivo { font-size: 220px; font-weight: 900; color: #ffeb3b; text-shadow: 0 0 30px rgba(255,235,59,0.5); line-height: 1; }
+                    #tela-transicao { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: #0a0a0a; z-index: 95; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px; box-sizing: border-box;}
+                    #contador-regressivo { font-size: 180px; font-weight: 900; color: #ffeb3b; text-shadow: 0 0 30px rgba(255,235,59,0.5); line-height: 1; margin-top: 15px;}
 
                     #tela-nota { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #121212, #3a0000); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
                     @keyframes piscar { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
@@ -854,8 +875,9 @@
                     <div id="cantor-overlay"></div>
                     
                     <div id="tela-transicao">
-                        <h2 style="font-size: 35px; color: #fff; margin-bottom: 20px;">PRÓXIMO CANTOR:</h2>
-                        <h1 id="transicao-cantor-nome" style="font-size: 55px; color: #e52d27; margin-bottom: 30px;"></h1>
+                        <h3 style="font-size: 25px; color: #aaa; margin: 0 0 10px 0; text-transform: uppercase;">PRÓXIMO CANTOR:</h3>
+                        <h1 id="transicao-cantor-nome" style="font-size: 45px; color: #e52d27; margin: 0 0 15px 0;"></h1>
+                        <h2 id="transicao-musica-titulo" style="font-size: 24px; color: #00d2ff; margin: 0 0 25px 0; font-weight: normal;"></h2>
                         <div id="contador-regressivo">5</div>
                     </div>
 
@@ -891,7 +913,7 @@
                     'onStateChange': e => { if (e.data === 0) (musicaAtual && musicaAtual.cantor !== "Convidados") ? gerarNotaFinal() : tocarProxima(true); }, 
                     'onError': e => {
                         erroNoPlayer = true;
-                        alert("⚠️ O YouTube bloqueou este vídeo! Busque outra versão.");
+                        alert("⚠️ O YouTube bloqueou este vídeo!");
                     } 
                 }
             });
@@ -971,7 +993,7 @@
             const videoId = extrairVideoId(termoOriginal);
             if (videoId) {
                 if (musicaAtual && erroNoPlayer) {
-                    if (confirm("⚠️ Substituir a música que falhou por este link?")) {
+                    if (confirm("⚠️ Substituir a música que falhou?")) {
                         musicaAtual.videoId = videoId;
                         musicaAtual.titulo = "Música via Link";
                         erroNoPlayer = false;
@@ -1066,9 +1088,11 @@
                 let tempoRestante = tempoPausaSegundos;
                 let transicaoEl = telaTV.document.getElementById('tela-transicao');
                 let cantorEl = telaTV.document.getElementById('transicao-cantor-nome');
+                let musicaEl = telaTV.document.getElementById('transicao-musica-titulo');
                 let contadorEl = telaTV.document.getElementById('contador-regressivo');
                 
                 cantorEl.innerText = m.cantor;
+                musicaEl.innerText = `🎵 ${m.titulo}`;
                 contadorEl.innerText = tempoRestante;
                 transicaoEl.style.display = 'flex';
                 telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
