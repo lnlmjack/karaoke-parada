@@ -27,7 +27,9 @@
         .painel { background: #1e1e1e; padding: 15px; border-radius: 8px; height: 450px; overflow-y: auto; position: relative;}
         
         .item-resultado, .item-fila, .item-historico, .item-ranking { margin: 10px 0; padding: 12px; background: #333; border-radius: 5px; }
-        .item-resultado { cursor: pointer; transition: 0.2s; } .item-resultado:hover { background: #e52d27; }
+        .item-resultado { cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px; } 
+        .item-resultado:hover { background: #e52d27; }
+        .item-resultado img { width: 70px; height: 50px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
         
         .item-fila { border-left: 5px solid #e52d27; display: flex; justify-content: space-between; align-items: center; }
         .titulo-musica { flex: 1; font-size: 14px; } .nome-cantor { color: #aaa; font-size: 12px; display: block; font-style: italic; }
@@ -144,7 +146,7 @@
 
         <h3>3. Gerenciando Músicas e Pedidos (DJ e Clientes)</h3>
         <ul>
-            <li><span class="destaque">Busca do DJ:</span> Digite o nome da música ou cole o link direto do YouTube na barra de pesquisa e clique em "Buscar Música (DJ)".</li>
+            <li><span class="destaque">Busca do DJ:</span> Digite o nome da música ou cole o link direto do YouTube na barra de pesquisa e clique em "Buscar Música (DJ)". Agora os resultados exibem as miniaturas (thumbnails) do YouTube para facilitar a identificação visual da versão ideal.</li>
             <li><span class="destaque">Seleção de Cantores (Modal Flutuante):</span> Ao clicar em qualquer música buscada, abrirá uma janela perguntando "Quem vai cantar?". Nela, você pode digitar um nome novo (solo, dupla ou trio) ou selecionar rapidamente por chips em formato de acesso rápido. Os nomes digitados são salvos automaticamente para o próximo uso.</li>
             <li><span class="destaque">📩 Pedidos dos Clientes:</span> Os clientes escaneiam o QR Code na TV para pedir músicas pelo celular. Os pedidos chegam em tempo real na caixa de "Pedidos". Você pode aprová-los individualmente ou ativar a caixa <span class="destaque">Auto-Aprovar</span> para que entrem direto na fila.</li>
             <li><span class="destaque">🧹 Limpeza e Reset de Dados:</span> Para iniciar um novo dia de trabalho, você pode usar o botão geral <span class="destaque">⚠️ Resetar Tudo</span> no topo para zerar todas as listas de uma vez, ou usar os botões de limpeza individuais localizados diretamente no cabeçalho de cada painel (<span class="destaque">🗑️ Limpar Fila</span>, <span class="destaque">🗑️ Limpar Ranking</span>, <span class="destaque">🗑️ Limpar Histórico</span>). O sistema preserva a estabilidade das atualizações automáticas de tela com total segurança.</li>
@@ -283,7 +285,7 @@
         </div>
     </div>
 
-    <div class="versao-app">v1.22</div>
+    <div class="versao-app">v1.23</div>
     <div onclick="definirNotaManual()" style="position: fixed; bottom: 4px; right: 35px; font-size: 13px; color: #fff; opacity: 0.3; z-index: 9999; cursor: pointer; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</div>
 
     <script>
@@ -879,7 +881,7 @@
                     let valorEl = telaTV.document.getElementById('nota-valor');
                     valorEl.innerText = notaFinal;
                     valorEl.style.color = notaFinal >= 90 ? '#28a745' : notaFinal >= 75 ? '#ffeb3b' : '#e52d27';
-                    telaTV.document.getElementById('nota-resultado').style.display = 'flex';
+                    telaTV.document.getElementById('tela-resultado').style.display = 'flex';
                 }, 4000); 
             }
 
@@ -921,7 +923,10 @@
             try {
                 const res = await fetch(url); const dados = await res.json();
                 dados.items.forEach(v => {
-                    const d = document.createElement('div'); d.className = 'item-resultado'; d.innerHTML = v.snippet.title; 
+                    const thumbnail = v.snippet.thumbnails.default.url;
+                    const d = document.createElement('div'); 
+                    d.className = 'item-resultado'; 
+                    d.innerHTML = `<img src="${thumbnail}" alt="Thumbnail"> <span>${v.snippet.title}</span>`; 
                     d.onclick = () => {
                         if (musicaAtual && erroNoPlayer) {
                             if (confirm("⚠️ Substituir a música que falhou por esta versão e tocar agora? (Mantendo o cantor atual)")) {
