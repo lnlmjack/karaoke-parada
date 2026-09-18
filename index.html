@@ -16,8 +16,7 @@
         
         .btn-topo-acao { padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; border: 1px solid #555; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px; }
         #btn-reset-tudo { background: #b31217; color: #fff; border-color: #ff5252; } #btn-reset-tudo:hover { background: #e52d27; }
-        #btn-sair { background: transparent; color: #aaa; } #btn-sair:hover { color: #fff; background: #e52d27; border-color: #e52d27; }
-        #btn-config { background: #ffc107; color: #000; border-color: #e0a800; display: none; } #btn-config:hover { background: #e0a800; }
+        #btn-config { background: #ffc107; color: #000; border-color: #e0a800; } #btn-config:hover { background: #e0a800; }
         #btn-manual { background: #333; color: #fff; } #btn-manual:hover { background: #444; border-color: #00d2ff; }
 
         .area-botoes-topo { display: flex; gap: 15px; margin-bottom: 15px; }
@@ -92,12 +91,12 @@
         .btn-aba.ativo { background: #ffc107; color: #000; border-color: #ffc107; }
         .conteudo-aba { display: none; } .conteudo-aba.ativo { display: block; }
 
-        .tabela-canais, .tabela-usuarios { width: 100%; margin-bottom: 15px; border-collapse: collapse; text-align: left; font-size: 13px; }
-        .tabela-canais th, .tabela-canais td, .tabela-usuarios th, .tabela-usuarios td { padding: 6px; border-bottom: 1px solid #333; }
-        .tabela-canais th { color: #ffc107; } .tabela-usuarios th { color: #007bff; }
+        .tabela-canais { width: 100%; margin-bottom: 15px; border-collapse: collapse; text-align: left; font-size: 13px; }
+        .tabela-canais th, .tabela-canais td { padding: 6px; border-bottom: 1px solid #333; }
+        .tabela-canais th { color: #ffc107; }
         
-        .form-novo-canal, .form-novo-usuario { background: #222; padding: 12px; border-radius: 8px; margin-top: 10px; }
-        .form-novo-canal input, .form-novo-usuario input, .form-novo-usuario select { width: 100%; padding: 8px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #555; background: #111; color: #fff; box-sizing: border-box; font-size: 13px; }
+        .form-novo-canal { background: #222; padding: 12px; border-radius: 8px; margin-top: 10px; }
+        .form-novo-canal input { width: 100%; padding: 8px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #555; background: #111; color: #fff; box-sizing: border-box; font-size: 13px; }
         
         #input-nome-cantor { width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #555; background: #222; color: #fff; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; }
         #lista-cantores-salvos { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; max-height: 150px; overflow-y: auto; justify-content: center; }
@@ -110,29 +109,9 @@
         .btn-confirmar { flex: 2; padding: 12px; background: #28a745; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px;}
         .btn-cancelar { flex: 1; padding: 12px; background: #e52d27; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px;}
         .btn-limpar-cantores { margin-top: 15px; background: transparent; border: none; color: #aaa; text-decoration: underline; cursor: pointer; font-size: 12px; width: 100%; text-align: center;}
-
-        /* Estilos da Tela de Login */
-        #tela-login { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #1a1a1a; z-index: 200000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-        .login-box { background: #222; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); text-align: center; width: 100%; max-width: 350px; }
-        .login-box img { width: 140px; margin-bottom: 20px; border-radius: 50%; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        .login-box h2 { color: #e52d27; font-size: 26px; margin-top: 0; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: bold; }
-        .login-input { width: 100%; padding: 15px; margin-bottom: 15px; background: #333; border: 1px solid #444; border-radius: 6px; color: white; font-size: 16px; box-sizing: border-box; }
-        .login-btn { width: 100%; padding: 15px; background: #e52d27; color: white; font-size: 18px; font-weight: bold; border: 2px solid #fff; border-radius: 6px; cursor: pointer; transition: 0.2s; margin-top: 5px; }
-        .login-btn:hover { background: #c21a15; }
     </style>
 </head>
 <body>
-
-    <!-- Tela de Login Sobreposta -->
-    <div id="tela-login">
-        <div class="login-box">
-            <img src="logop.png" alt="Logo Parada 10.95">
-            <h2>🔒 Painel do DJ</h2>
-            <input type="text" id="login-usuario" class="login-input" placeholder="Usuário">
-            <input type="password" id="login-senha" class="login-input" placeholder="Senha" onkeypress="if(event.key === 'Enter') fazerLogin()">
-            <button class="login-btn" onclick="fazerLogin()">Entrar</button>
-        </div>
-    </div>
 
     <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
 
@@ -140,24 +119,17 @@
     <div id="modal-manual-conteudo">
         <h2>📖 Manual Completo do Operador - Parada 10.95 Bar</h2>
         
-        <h3>1. Acesso e Controle de Contas (Login)</h3>
-        <p>O sistema possui controle de acesso com dois perfis de usuários:</p>
-        <ul>
-            <li><span class="destaque">Administrador:</span> Possui acesso completo ao painel, incluindo a gestão de contas, canais e tempo de transição através do botão unificado de <span class="destaque">⚙️ Configurações</span>.</li>
-            <li><span class="destaque">Operador Comum:</span> Gerencia as músicas, fila, histórico e pedidos em tempo real.</li>
-        </ul>
-
-        <h3>2. Iniciando o Sistema</h3>
-        <p>Ao abrir o painel e fazer login, siga a ordem correta no topo da tela:</p>
+        <h3>1. Iniciando o Sistema</h3>
+        <p>Ao abrir o painel, siga a ordem correta no topo da tela:</p>
         <ul>
             <li>Clique em <span class="destaque">🚀 1. INICIAR SISTEMA E TV</span>. O navegador abrirá a janela limpa do telão. Arraste a janela para a TV do bar e aperte <span class="destaque">F11</span> para habilitar a tela cheia.</li>
             <li>Clique em <span class="destaque">🎙️ 2. AVALIADOR</span> para ativar o microfone e permitir a captação de energia e barulho da plateia.</li>
         </ul>
 
-        <h3>3. Contagem Regressiva e Tela de Espera</h3>
+        <h3>2. Contagem Regressiva e Tela de Espera</h3>
         <p>Nas configurações do sistema, você pode definir quantos segundos de pausa deseja entre o fim de uma música e o início da próxima. Quando a fila esvazia, o telão exibe automaticamente uma tela de propaganda estilizada aguardando a próxima música.</p>
 
-        <h3>4. Sistema de Votação e Notas Manuais/Atalhos</h3>
+        <h3>3. Sistema de Votação e Notas Manuais/Atalhos</h3>
         <p>Quando a música termina, a pontuação final é calculada combinando captação de microfone e votos da plateia, mas o DJ tem controle absoluto:</p>
         <ul>
             <li><span class="destaque">Atalhos de Teclado (6 a 0):</span> Aperte <strong>6</strong> a <strong>0</strong> para forçar notas instantaneamente.</li>
@@ -167,14 +139,13 @@
         <button onclick="fecharManual()" style="width: 100%; margin-top: 30px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
     </div>
 
-    <!-- Modal de Configurações Unificado -->
+    <!-- Modal de Configurações Unificado (Sem Login) -->
     <div id="fundo-modal-config" onclick="fecharModalConfig()"></div>
     <div id="modal-config">
         <h2>⚙️ Configurações do Sistema</h2>
         
         <div class="abas-config">
             <button class="btn-aba ativo" onclick="mudarAba('canais', event)">⭐ Canais Favoritos</button>
-            <button class="btn-aba" onclick="mudarAba('usuarios', event)">👥 Usuários</button>
             <button class="btn-aba" onclick="mudarAba('transicao', event)">⏳ Transição / Pausa</button>
         </div>
 
@@ -196,32 +167,6 @@
                 <strong>Adicionar Canal:</strong>
                 <input type="text" id="novo-canal-nome" placeholder="Nome do canal (ex: Muramatsu Karaoke)">
                 <button onclick="adicionarNovoCanal()" style="width: 100%; padding: 8px; background: #28a745; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px;">Adicionar Canal</button>
-            </div>
-        </div>
-
-        <!-- Conteúdo da Aba Usuários -->
-        <div id="aba-usuarios" class="conteudo-aba">
-            <div style="max-height: 150px; overflow-y: auto;">
-                <table class="tabela-usuarios">
-                    <thead>
-                        <tr>
-                            <th>Usuário</th>
-                            <th>Tipo</th>
-                            <th style="text-align: right;">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabela-corpo-usuarios"></tbody>
-                </table>
-            </div>
-            <div class="form-novo-usuario">
-                <strong>Adicionar Usuário:</strong>
-                <input type="text" id="novo-user-nome" placeholder="Nome de usuário">
-                <input type="password" id="novo-user-senha" placeholder="Senha">
-                <select id="novo-user-tipo">
-                    <option value="comum">Operador Comum</option>
-                    <option value="admin">Administrador</option>
-                </select>
-                <button onclick="adicionarNovoUsuario()" style="width: 100%; padding: 8px; background: #28a745; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px;">Adicionar Usuário</button>
             </div>
         </div>
 
@@ -263,7 +208,6 @@
             <div class="topo-botoes-acao">
                 <button id="btn-reset-tudo" class="btn-topo-acao" onclick="resetarTudo()" title="Zerar Fila, Ranking e Histórico">⚠️ Resetar Tudo</button>
                 <button id="btn-config" class="btn-topo-acao" onclick="abrirModalConfig()" title="Configurações do Sistema">⚙️ Configurações</button>
-                <button id="btn-sair" class="btn-topo-acao" onclick="fazerLogout()">🚪 Sair</button>
                 <button id="btn-manual" class="btn-topo-acao" onclick="abrirManual()">📖 Manual</button>
             </div>
         </div>
@@ -273,9 +217,7 @@
             <button id="botaoMic" class="btn-topo btn-mic" onclick="toggleMicrofone()">🎙️ 2. AVALIADOR (INICIANDO...)</button>
         </div>
 
-        <div class="canais-preferidos" id="container-chips-canais">
-            <!-- Renderizado dinamicamente via JS de forma bem discreta -->
-        </div>
+        <div class="canais-preferidos" id="container-chips-canais"></div>
 
         <div class="area-busca">
             <input type="text" id="campoBusca" placeholder="Cole o link do YouTube ou busque o nome...">
@@ -327,18 +269,10 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.40</span>
+        <span>v1.41</span>
     </div>
 
     <script>
-        // Limpeza preventiva automática de credenciais corrompidas anteriores
-        if (localStorage.getItem('versaoLogin') !== '1.40') {
-            localStorage.removeItem('usuarioLogado');
-            localStorage.removeItem('tipoUsuario');
-            localStorage.removeItem('usuariosAutorizados');
-            localStorage.setItem('versaoLogin', '1.40');
-        }
-
         let canaisFavoritos = JSON.parse(localStorage.getItem('canaisFavoritos')) || [
             "Muramatsu Karaoke",
             "Tequila Karaoke",
@@ -379,7 +313,6 @@
 
         function abrirModalConfig() {
             renderizarTabelaCanais();
-            renderizarTabelaUsuarios();
             document.getElementById('input-tempo-pausa').value = tempoPausaSegundos;
             document.getElementById('fundo-modal-config').style.display = 'block';
             document.getElementById('modal-config').style.display = 'block';
@@ -453,126 +386,9 @@
             }
         }
 
-        let usuariosAutorizados = JSON.parse(localStorage.getItem('usuariosAutorizados')) || [
-            { usuario: "leonard", senha: "123", tipo: "admin" },
-            { usuario: "operador", senha: "123", tipo: "comum" }
-        ];
-
-        function renderizarTabelaUsuarios() {
-            const tbody = document.getElementById('tabela-corpo-usuarios');
-            tbody.innerHTML = usuariosAutorizados.map((u, index) => `
-                <tr>
-                    <td><strong>${u.usuario}</strong></td>
-                    <td><span style="padding: 2px 6px; border-radius: 4px; font-size: 11px; background: ${u.tipo === 'admin' ? '#007bff' : '#333'}">${u.tipo.toUpperCase()}</span></td>
-                    <td style="text-align: right;">
-                        <button onclick="editarUsuario(${index})" style="background:transparent; border:none; cursor:pointer; font-size:14px;" title="Editar Usuário/Senha">✏️</button>
-                        ${usuariosAutorizados.length > 1 ? `<button onclick="excluirUsuario(${index})" style="background:transparent; border:none; cursor:pointer; font-size:14px;" title="Excluir">❌</button>` : ''}
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function adicionarNovoUsuario() {
-            const nome = document.getElementById('novo-user-nome').value.trim().toLowerCase();
-            const senha = document.getElementById('novo-user-senha').value;
-            const tipo = document.getElementById('novo-user-tipo').value;
-
-            if (!nome || !senha) return alert("Preencha o nome e a senha do novo usuário!");
-            if (usuariosAutorizados.some(u => u.usuario === nome)) return alert("Já existe um usuário com esse nome!");
-
-            usuariosAutorizados.push({ usuario: nome, senha: senha, tipo: tipo });
-            localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
-            document.getElementById('novo-user-nome').value = '';
-            document.getElementById('novo-user-senha').value = '';
-            renderizarTabelaUsuarios();
-            alert("Usuário adicionado com sucesso!");
-        }
-
-        function editarUsuario(index) {
-            const user = usuariosAutorizados[index];
-            const novoNome = prompt("Editar nome de usuário:", user.usuario);
-            if (novoNome === null) return;
-            const nomeLimpo = novoNome.trim().toLowerCase();
-            if (!nomeLimpo) return alert("O nome não pode vazio!");
-
-            const novaSenha = prompt(`Editar senha para "${nomeLimpo}":`, user.senha);
-            if (novaSenha === null) return;
-
-            usuariosAutorizados[index].usuario = nomeLimpo;
-            usuariosAutorizados[index].senha = novaSenha.trim();
-            localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
-            renderizarTabelaUsuarios();
-            alert("Usuário atualizado com sucesso!");
-        }
-
-        function excluirUsuario(index) {
-            if (confirm(`Excluir usuário "${usuariosAutorizados[index].usuario}"?`)) {
-                usuariosAutorizados.splice(index, 1);
-                localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
-                renderizarTabelaUsuarios();
-            }
-        }
-
         window.addEventListener('DOMContentLoaded', () => {
             renderizarChipsCanaisDiscretos();
-            const usuarioLogado = localStorage.getItem('usuarioLogado');
-            const tipoUsuario = localStorage.getItem('tipoUsuario');
-            
-            if (usuarioLogado) {
-                document.getElementById('tela-login').style.display = 'none';
-                if (tipoUsuario === 'admin') {
-                    document.getElementById('btn-config').style.display = 'inline-flex';
-                }
-            } else {
-                document.getElementById('tela-login').style.display = 'flex';
-            }
         });
-
-        function fazerLogin() {
-            const uInput = document.getElementById('login-usuario').value.trim().toLowerCase();
-            const sInput = document.getElementById('login-senha').value.trim();
-            
-            if (!uInput || !sInput) {
-                alert("Preencha usuário e senha!");
-                return;
-            }
-
-            // Regra universal blindada e absoluta para aceitar o acesso
-            if ((uInput === "leonard" || uInput === "admin") && (sInput === "123" || sInput === "leonard")) {
-                localStorage.setItem('usuarioLogado', 'leonard');
-                localStorage.setItem('tipoUsuario', 'admin');
-                document.getElementById('tela-login').style.display = 'none';
-                document.getElementById('btn-config').style.display = 'inline-flex';
-                return;
-            }
-
-            if (uInput === "operador" && (sInput === "123" || sInput === "operador")) {
-                localStorage.setItem('usuarioLogado', 'operador');
-                localStorage.setItem('tipoUsuario', 'comum');
-                document.getElementById('tela-login').style.display = 'none';
-                return;
-            }
-
-            let match = usuariosAutorizados.find(item => item.usuario === uInput && item.senha === sInput);
-            if (match) {
-                localStorage.setItem('usuarioLogado', match.usuario);
-                localStorage.setItem('tipoUsuario', match.tipo);
-                document.getElementById('tela-login').style.display = 'none';
-                if (match.tipo === 'admin') {
-                    document.getElementById('btn-config').style.display = 'inline-flex';
-                }
-            } else {
-                alert("Usuário ou senha incorretos! Utilize 'leonard' e senha '123'.");
-            }
-        }
-
-        function fazerLogout() {
-            if(confirm("Deseja sair do painel?")) {
-                localStorage.removeItem('usuarioLogado');
-                localStorage.removeItem('tipoUsuario');
-                location.reload();
-            }
-        }
 
         function limparFila() { if (confirm("Esvaziar a Fila?")) { filaDeReproducao = []; atualizarTelaFila(); } }
         function limparRanking() { if (confirm("Zerar o Ranking?")) { ranking = []; atualizarTelaRanking(); } }
@@ -879,7 +695,6 @@
                     #cantor-overlay .aviso { font-size: 12px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
                     #cantor-overlay .nome { font-size: 22px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; line-height: 1.1; word-wrap: break-word;}
                     
-                    /* TELA DE AGUARDANDO / PROPAGANDA QUANDO A FILA ESTIVER VAZIA */
                     #tela-aguardando { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #0b0b0b, #1a0000); z-index: 90; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
                     #tela-aguardando img.logo-centro { width: 220px; height: auto; border-radius: 50%; box-shadow: 0 0 40px rgba(229,45,39,0.5); margin-bottom: 25px; animation: pulsar 2s infinite; }
                     @keyframes pulsar { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
@@ -907,7 +722,6 @@
 
                     <div id="cantor-overlay"></div>
 
-                    <!-- TELA DE ESPERA / PROPAGANDA -->
                     <div id="tela-aguardando">
                         <img src="logop.png" class="logo-centro" alt="Logo Bar">
                         <h1>🍻 AGUARDANDO PRÓXIMA MÚSICA 🍻</h1>
