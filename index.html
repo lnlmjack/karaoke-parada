@@ -33,11 +33,8 @@
         input { flex: 1; padding: 12px; border-radius: 5px; border: none; font-size: 16px; }
         .btn-buscar { padding: 12px 25px; background: #e52d27; color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer;}
         
-        /* Barra de canais discreta */
         .canais-preferidos { display: flex; gap: 5px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; font-size: 11px; color: #777; background: #161616; padding: 6px 10px; border-radius: 4px; border: 1px solid #282828; }
         .chip-canal { background: #222; border: 1px solid #444; padding: 2px 7px; border-radius: 10px; cursor: pointer; color: #ccc; transition: 0.2s; display: inline-flex; align-items: center; gap: 3px; font-size: 10px; }
-        .chip-canal:hover { background: #333; border-color: #00d2ff; color: #fff; }
-        .chip-canal.ativo { background: #007bff; border-color: #007bff; color: #fff; font-weight: bold; }
         .chip-canal .ordem-badge { background: rgba(0,0,0,0.5); padding: 1px 3px; border-radius: 6px; font-size: 8px; color: #ffeb3b; }
 
         .paineis { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
@@ -47,6 +44,9 @@
         .item-resultado { cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px; position: relative; } 
         .item-resultado:hover { background: #e52d27; }
         .item-resultado img { width: 70px; height: 50px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
+        .info-resultado { flex: 1; display: flex; flex-direction: column; }
+        .info-resultado .titulo-video { font-size: 13px; font-weight: bold; line-height: 1.2; }
+        .info-resultado .nome-canal { font-size: 11px; color: #00d2ff; margin-top: 3px; font-weight: bold; }
         .badge-canal-favorito { position: absolute; top: 5px; right: 5px; background: #ffc107; color: #000; font-size: 9px; font-weight: bold; padding: 2px 6px; border-radius: 10px; }
         
         .item-fila { border-left: 5px solid #e52d27; display: flex; justify-content: space-between; align-items: center; }
@@ -139,9 +139,9 @@
         <h3>1. Acesso e Controle de Contas (Login)</h3>
         <p>O sistema possui controle de acesso com dois perfis de usuários:</p>
         <ul>
-            <li><span class="destaque">Administrador:</span> Possui acesso completo ao painel, incluindo a gestão de contas (botão 👥) e de canais favoritos (botão ⭐).</li>
-            <li><span class="destaque">Operador Comum:</span> Gerencia as músicas, fila e pedidos.</li>
-            <li><span class="destaque">Painel de Usuários e Canais (Exclusivo Admin):</span> Gerencie operadores e cadastre os canais de karaokê favoritos para ordenar automaticamente as buscas.</li>
+            <li><span class="destaque">Administrador:</span> Possui acesso completo ao painel, incluindo a gestão de contas (botão 👥), de canais favoritos (botão ⭐) e acesso total às configurações.</li>
+            <li><span class="destaque">Operador Comum:</span> Gerencia as músicas, fila, histórico e pedidos em tempo real.</li>
+            <li><span class="destaque">Painel de Usuários e Canais (Exclusivo Admin):</span> Gerencie operadores (adicionando, editando ou excluindo senhas) e cadastre os canais de karaokê favoritos em ordem de preferência (1º, 2º, 3º...) para ordenar automaticamente as buscas do YouTube.</li>
         </ul>
 
         <h3>2. Iniciando o Sistema</h3>
@@ -153,10 +153,18 @@
 
         <h3>3. Gerenciando Músicas e Pedidos (DJ e Clientes)</h3>
         <ul>
-            <li><span class="destaque">Busca Inteligente com Ordenação de Canais:</span> Digite a música na barra de pesquisa. O sistema busca no YouTube e organiza automaticamente os resultados exibindo primeiro os canais cadastrados na sua lista de favoritos (em ordem de 1º, 2º, 3º...) e depois os demais.</li>
-            <li><span class="destaque">Seleção de Cantores (Modal Flutuante):</span> Ao clicar em qualquer música buscada, selecione rapidamente o cantor (solo, dupla ou trio) com salvamento automático.</li>
-            <li><span class="destaque">📩 Pedidos dos Clientes:</span> Pedidos via QR Code chegam em tempo real na caixa de "Pedidos" (com opção de Auto-Aprovar).</li>
-            <li><span class="destaque">🧹 Limpeza e Reset de Dados:</span> Use o botão <span class="destaque">⚠️ Resetar Tudo</span> no topo ou os botões individuais de cada painel (<span class="destaque">🗑️ Limpar Fila</span>, <span class="destaque">🗑️ Limpar Ranking</span>, <span class="destaque">🗑️ Limpar Histórico</span>) para iniciar um novo dia com segurança.</li>
+            <li><span class="destaque">Busca Inteligente com Ordenação de Canais e Miniaturas:</span> Digite a música na barra de pesquisa. O sistema busca no YouTube, exibe a miniatura (thumbnail) de cada versão, o nome do canal correspondente e organiza automaticamente os resultados priorizando os canais cadastrados na sua lista de favoritos.</li>
+            <li><span class="destaque">Seleção de Cantores (Modal Flutuante):</span> Ao clicar em qualquer música buscada, selecione rapidamente o cantor (solo, dupla ou trio) com salvamento automático de nomes frequentes.</li>
+            <li><span class="destaque">📩 Pedidos dos Clientes:</span> Pedidos via QR Code na TV chegam em tempo real na caixa de "Pedidos" (com opção de Auto-Aprovar).</li>
+            <li><span class="destaque">🧹 Limpeza e Reset de Dados:</span> Use o botão <span class="destaque">⚠️ Resetar Tudo</span> no topo para limpar tudo de uma vez ou os botões individuais de cada painel (<span class="destaque">🗑️ Limpar Fila</span>, <span class="destaque">🗑️ Limpar Ranking</span>, <span class="destaque">🗑️ Limpar Histórico</span>).</li>
+        </ul>
+
+        <h3>4. Sistema de Votação e Notas Manuais/Atalhos</h3>
+        <p>Quando a música termina, a pontuação final é calculada combinando captação de microfone e votos da plateia, mas o DJ tem controle absoluto:</p>
+        <ul>
+            <li><span class="destaque">Atalhos de Teclado (6 a 0):</span> Aperte <strong>6</strong> (nota 60-69), <strong>7</strong> (nota 70-79), <strong>8</strong> (nota 80-89), <strong>9</strong> (nota 90-99) ou <strong>0</strong> (nota 100) para forçar notas instantaneamente.</li>
+            <li><span class="destaque">Nota Manual (⚙️ Engrenagem):</span> Clicando no ícone de engrenagem no rodapé esquerdo, você define uma nota exata de 0 a 100. A nota escolhida aparece instantaneamente em tempo real ao lado da engrenagem para confirmação visual.</li>
+            <li><span class="destaque">Detalhes e Votos da Plateia:</span> Clicando no contador superior esquerdo do ranking (<span class="destaque">📊 X votos ao vivo</span>), você visualiza a contagem exata de reações (Excelente, Muito Bom, Bom, Regular, Ruim).</li>
         </ul>
 
         <button onclick="fecharManual()" style="width: 100%; margin-top: 30px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
@@ -312,8 +320,11 @@
         </div>
     </div>
 
-    <div class="versao-app">v1.28</div>
-    <div onclick="definirNotaManual()" style="position: fixed; bottom: 4px; right: 35px; font-size: 13px; color: #fff; opacity: 0.3; z-index: 9999; cursor: pointer; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</div>
+    <div class="versao-app">v1.29</div>
+    <div style="position: fixed; bottom: 4px; right: 35px; display: flex; align-items: center; gap: 5px; z-index: 9999;">
+        <span id="display-nota-forcada" style="font-size: 11px; color: #ffeb3b; font-weight: bold; background: rgba(0,0,0,0.7); padding: 2px 6px; border-radius: 4px; display: none;">Nota: --</span>
+        <div onclick="definirNotaManual()" style="font-size: 13px; color: #fff; opacity: 0.3; cursor: pointer; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</div>
+    </div>
 
     <script>
         // GERENCIAMENTO DE USUÁRIOS E CANAIS FAVORITOS NO LOCALSTORAGE
@@ -339,6 +350,16 @@
                 html += `<div class="chip-canal"><span class="ordem-badge">${idx+1}º</span> ${canal}</div>`;
             });
             container.innerHTML = html;
+        }
+
+        function atualizarDisplayNotaForcada() {
+            const disp = document.getElementById('display-nota-forcada');
+            if (notaForcadaPeloDJ !== null) {
+                disp.innerText = `Nota: ${notaForcadaPeloDJ}`;
+                disp.style.display = 'inline-block';
+            } else {
+                disp.style.display = 'none';
+            }
         }
 
         // Modal de Canais Favoritos
@@ -843,6 +864,7 @@
             if (event.key === '8') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 80; } 
             if (event.key === '9') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 90; } 
             if (event.key === '0') { notaForcadaPeloDJ = 100; } 
+            atualizarDisplayNotaForcada();
         });
 
         function definirNotaManual() {
@@ -851,6 +873,7 @@
                 let valor = parseInt(nota, 10);
                 if (!isNaN(valor) && valor >= 0 && valor <= 100) {
                     notaForcadaPeloDJ = valor;
+                    atualizarDisplayNotaForcada();
                 } else {
                     alert("Nota inválida. Digite um número de 0 a 100.");
                 }
@@ -952,6 +975,7 @@
 
             if (notaForcadaPeloDJ !== null) {
                 notaFinal = notaForcadaPeloDJ; notaForcadaPeloDJ = null; 
+                atualizarDisplayNotaForcada();
             } else {
                 let notaBase;
                 if (qtdLeituras > 0 && micAtivo) {
@@ -995,7 +1019,7 @@
                     let valorEl = telaTV.document.getElementById('nota-valor');
                     valorEl.innerText = notaFinal;
                     valorEl.style.color = notaFinal >= 90 ? '#28a745' : notaFinal >= 75 ? '#ffeb3b' : '#e52d27';
-                    telaTV.document.getElementById('tela-resultado').style.display = 'flex';
+                    telaTV.document.getElementById('nota-resultado').style.display = 'flex';
                 }, 4000); 
             }
 
@@ -1063,7 +1087,14 @@
 
                     const d = document.createElement('div'); 
                     d.className = 'item-resultado'; 
-                    d.innerHTML = `<img src="${thumbnail}" alt="Thumbnail"> <span>${tituloVid}</span> ${badgeHtml}`; 
+                    d.innerHTML = `
+                        <img src="${thumbnail}" alt="Thumbnail"> 
+                        <div class="info-resultado">
+                            <span class="titulo-video">${tituloVid}</span>
+                            <span class="nome-canal">📺 ${nomeCanalVid}</span>
+                        </div>
+                        ${badgeHtml}
+                    `; 
                     
                     d.onclick = () => {
                         if (musicaAtual && erroNoPlayer) {
@@ -1103,7 +1134,9 @@
                 telaTV.document.getElementById('cantor-overlay').style.top = '-200px'; 
                 setTimeout(() => telaTV.document.getElementById('cantor-overlay').style.top = '20px', 100);
             }
-            captando = true; somaEnergia = 0; qtdLeituras = 0; notaForcadaPeloDJ = null; erroNoPlayer = false;
+            captando = true; somaEnergia = 0; qtdLeituras = 0; notaForcadaPeloDJ = null; 
+            atualizarDisplayNotaForcada();
+            erroNoPlayer = false;
             player.loadVideoById(m.videoId); player.playVideo(); 
         }
 
