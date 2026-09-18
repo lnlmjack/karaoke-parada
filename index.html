@@ -19,10 +19,15 @@
         
         .btn-tocar { background: #28a745; width: 100%; padding: 15px; font-size: 16px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 20px;}
 
-        .area-busca { display: flex; gap: 10px; margin-bottom: 15px; }
+        .area-busca { display: flex; gap: 10px; margin-bottom: 10px; }
         input { flex: 1; padding: 12px; border-radius: 5px; border: none; font-size: 16px; }
         .btn-buscar { padding: 12px 25px; background: #e52d27; color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer;}
         
+        .canais-preferidos { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; align-items: center; font-size: 13px; color: #aaa; }
+        .chip-canal { background: #222; border: 1px solid #444; padding: 5px 10px; border-radius: 15px; cursor: pointer; color: #fff; transition: 0.2s; }
+        .chip-canal:hover { background: #333; border-color: #00d2ff; }
+        .chip-canal.ativo { background: #007bff; border-color: #007bff; font-weight: bold; }
+
         .paineis { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
         .painel { background: #1e1e1e; padding: 15px; border-radius: 8px; height: 450px; overflow-y: auto; position: relative;}
         
@@ -146,14 +151,14 @@
 
         <h3>3. Gerenciando Músicas e Pedidos (DJ e Clientes)</h3>
         <ul>
-            <li><span class="destaque">Busca do DJ:</span> Digite o nome da música ou cole o link direto do YouTube na barra de pesquisa e clique em "Buscar Música (DJ)". Agora os resultados exibem as miniaturas (thumbnails) do YouTube para facilitar a identificação visual da versão ideal.</li>
+            <li><span class="destaque">Busca e Filtro de Canais Favoritos:</span> Digite o nome da música na barra de pesquisa. Você pode clicar nos chips de canais favoritos (ex: Karaoke Club, Tequila Karaoke, etc.) para forçar a busca a priorizar canais específicos do YouTube. Os resultados exibem as miniaturas (thumbnails).</li>
             <li><span class="destaque">Seleção de Cantores (Modal Flutuante):</span> Ao clicar em qualquer música buscada, abrirá uma janela perguntando "Quem vai cantar?". Nela, você pode digitar um nome novo (solo, dupla ou trio) ou selecionar rapidamente por chips em formato de acesso rápido. Os nomes digitados são salvos automaticamente para o próximo uso.</li>
             <li><span class="destaque">📩 Pedidos dos Clientes:</span> Os clientes escaneiam o QR Code na TV para pedir músicas pelo celular. Os pedidos chegam em tempo real na caixa de "Pedidos". Você pode aprová-los individualmente ou ativar a caixa <span class="destaque">Auto-Aprovar</span> para que entrem direto na fila.</li>
             <li><span class="destaque">🧹 Limpeza e Reset de Dados:</span> Para iniciar um novo dia de trabalho, você pode usar o botão geral <span class="destaque">⚠️ Resetar Tudo</span> no topo para zerar todas as listas de uma vez, ou usar os botões de limpeza individuais localizados diretamente no cabeçalho de cada painel (<span class="destaque">🗑️ Limpar Fila</span>, <span class="destaque">🗑️ Limpar Ranking</span>, <span class="destaque">🗑️ Limpar Histórico</span>). O sistema preserva a estabilidade das atualizações automáticas de tela com total segurança.</li>
         </ul>
 
         <h3>4. Sistema de Votação ao Fim da Música e Ranking</h3>
-        <p>Quando a música termina, a pontuação final é calculada automaticamente combinando o volume captado pelo microfone e os votos enviados ao vivo pelos celulares do público.</p>
+        <p>Quando a música termina, a pontuação final é calculada automaticamente combinando o volume captado pelo microfone e os votos enviados ao vivo pelos celulares du público.</p>
         <ul>
             <li><span class="destaque">Detalhes dos Votos:</span> Clicando no contador superior esquerdo do ranking (<span class="destaque">📊 X votos ao vivo</span>), você visualiza a contagem exata de reações da plateia (Excelente, Muito Bom, Bom, Regular, Ruim).</li>
             <li><span class="destaque">Ranking:</span> Exibe as melhores apresentações da noite em ordem decrescente de pontuação. Clicando em cima de qualquer item do ranking, você abre o registro detalhado dos votos que aquele cantor recebeu.</li>
@@ -238,6 +243,14 @@
             <button id="botaoMic" class="btn-topo btn-mic" onclick="toggleMicrofone()">🎙️ 2. AVALIADOR (INICIANDO...)</button>
         </div>
 
+        <div class="canais-preferidos">
+            <span>⭐ Priorizar Canal:</span>
+            <div class="chip-canal ativo" onclick="selecionarCanalFavorito(this, '')">Todos</div>
+            <div class="chip-canal" onclick="selecionarCanalFavorito(this, 'Karaoke Club')">Karaoke Club</div>
+            <div class="chip-canal" onclick="selecionarCanalFavorito(this, 'Tequila Karaoke')">Tequila Karaoke</div>
+            <div class="chip-canal" onclick="selecionarCanalFavorito(this, 'Versão Karaokê')">Versão Karaokê</div>
+        </div>
+
         <div class="area-busca">
             <input type="text" id="campoBusca" placeholder="Cole o link do YouTube ou busque o nome...">
             <button class="btn-buscar" onclick="buscarNoYouTube()">Buscar Música (DJ)</button>
@@ -285,7 +298,7 @@
         </div>
     </div>
 
-    <div class="versao-app">v1.23</div>
+    <div class="versao-app">v1.24</div>
     <div onclick="definirNotaManual()" style="position: fixed; bottom: 4px; right: 35px; font-size: 13px; color: #fff; opacity: 0.3; z-index: 9999; cursor: pointer; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</div>
 
     <script>
@@ -297,6 +310,14 @@
 
         if (!localStorage.getItem('usuariosAutorizados')) {
             localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
+        }
+
+        let canalSelecionadoFavorito = "";
+
+        function selecionarCanalFavorito(elemento, nomeCanal) {
+            document.querySelectorAll('.chip-canal').forEach(c => c.classList.remove('ativo'));
+            elemento.classList.add('ativo');
+            canalSelecionadoFavorito = nomeCanal;
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -899,10 +920,10 @@
         }
 
         async function buscarNoYouTube() {
-            const termo = document.getElementById('campoBusca').value; if (!termo) return;
+            const termoOriginal = document.getElementById('campoBusca').value; if (!termoOriginal) return;
             const div = document.getElementById('resultados'); div.innerHTML = ''; 
 
-            const videoId = extrairVideoId(termo);
+            const videoId = extrairVideoId(termoOriginal);
             if (videoId) {
                 if (musicaAtual && erroNoPlayer) {
                     if (confirm("⚠️ Substituir a música que falhou por este link e tocar agora? (Mantendo o cantor atual)")) {
@@ -919,7 +940,13 @@
                 return;
             }
 
-            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(termo + " karaoke -oficial -clipe -live")}&type=video&key=${API_KEY}`;
+            // Aplica o canal favorito selecionado na busca se houver
+            let termoBusca = termoOriginal + " karaoke -oficial -clipe -live";
+            if (canalSelecionadoFavorito !== "") {
+                termoBusca = `${termoOriginal} ${canalSelecionadoFavorito} karaoke`;
+            }
+
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(termoBusca)}&type=video&key=${API_KEY}`;
             try {
                 const res = await fetch(url); const dados = await res.json();
                 dados.items.forEach(v => {
