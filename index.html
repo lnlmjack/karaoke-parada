@@ -56,6 +56,8 @@
         .item-ranking { border-left: 5px solid #ffeb3b; background: #222; font-size: 14px; display: flex; flex-direction: column; align-items: stretch; transition: 0.2s; }
         .item-ranking:hover { background: #2a2a2a; }
         .info-ranking { flex: 1; } .pontuacao { font-size: 26px; color: #ffeb3b; font-weight: 900; margin-left: 10px; }
+        
+        .item-tocando-agora { border-left: 5px solid #00d2ff; background: #1a2634; font-size: 14px; display: flex; flex-direction: column; align-items: stretch; margin: 10px 0; padding: 12px; border-radius: 5px; }
 
         #contador-votos { background: #e52d27; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 11px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.5); display: inline-block; }
         #contador-votos:hover { transform: scale(1.05); background: #c21a15; }
@@ -270,7 +272,6 @@
             <button id="botaoMic" class="btn-topo btn-mic" onclick="toggleMicrofone()">🎙️ 2. AVALIADOR (INICIANDO...)</button>
         </div>
 
-        <!-- BARRA DE CANAIS FAVORITOS NO LUGAR ORIGINAL -->
         <div class="canais-preferidos" id="container-chips-canais"></div>
 
         <div class="area-busca">
@@ -303,7 +304,7 @@
             
             <div class="painel" style="position: relative;">
                 <h3 style="margin-top: 0; color: #ffeb3b; display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px;">
-                    <span>🏆 Ranking:</span>
+                    <span>🏆 Ranking e Execução:</span>
                     <button class="btn-limpar-painel" onclick="limparRanking()">🗑️ Limpar Ranking</button>
                 </h3>
                 <div id="contador-votos" onclick="abrirDetalhesVotos()">📊 0 votos ao vivo</div>
@@ -323,7 +324,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.43</span>
+        <span>v1.44</span>
     </div>
 
     <script>
@@ -855,12 +856,13 @@
                     #cantor-overlay .aviso { font-size: 12px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
                     #cantor-overlay .nome { font-size: 22px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; line-height: 1.1; word-wrap: break-word;}
                     
-                    /* TELA DE ESPERA COM QR CODE E FRASE ATUALIZADA */
+                    /* TELA DE ESPERA COM QR CODE E FRASE CORRETA */
                     #tela-aguardando { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #0b0b0b, #1a0000); z-index: 90; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
                     #tela-aguardando img.logo-centro { width: 220px; height: auto; border-radius: 50%; box-shadow: 0 0 40px rgba(229,45,39,0.5); margin-bottom: 25px; animation: pulsar 2s infinite; }
                     @keyframes pulsar { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
                     #tela-aguardando h1 { font-size: 48px; color: #ffeb3b; margin: 0 0 10px 0; text-shadow: 2px 2px 10px #000; }
-                    #tela-aguardando p { font-size: 22px; color: #fff; margin: 0; text-shadow: 1px 1px 5px #000; }
+                    #tela-aguardando p { font-size: 22px; color: #fff; margin: 0 0 20px 0; text-shadow: 1px 1px 5px #000; }
+                    #tela-aguardando img.qr-centro { width: 150px; height: 150px; background: white; padding: 8px; border-radius: 12px; box-shadow: 0 0 20px rgba(0,210,255,0.4); display: block; }
 
                     #tela-transicao { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: #0a0a0a; z-index: 95; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px; box-sizing: border-box;}
                     #contador-regressivo { font-size: 180px; font-weight: 900; color: #ffeb3b; text-shadow: 0 0 30px rgba(255,235,59,0.5); line-height: 1; margin-top: 15px;}
@@ -883,12 +885,12 @@
 
                     <div id="cantor-overlay"></div>
 
-                    <!-- TELA DE ESPERA COM QR CODE E TEXTO SOLICITADO -->
+                    <!-- TELA DE ESPERA COM QR CODE E FRASE PEDIDA -->
                     <div id="tela-aguardando">
                         <img src="logop.png" class="logo-centro" alt="Logo Bar">
                         <h1>🍻 AGUARDANDO PRÓXIMA MÚSICA 🍻</h1>
-                        <p style="margin-bottom: 20px;">Aponte a câmera para o QR Code, escolha seu som ou peça ao DJ!</p>
-                        <img src="qrcode.png" alt="QR Code" style="width: 150px; height: 150px; background: white; padding: 8px; border-radius: 12px; box-shadow: 0 0 20px rgba(0,210,255,0.4);">
+                        <p>Aponte a câmera para o QR Code, escolha seu som ou peça ao DJ!</p>
+                        <img src="qrcode.png" class="qr-centro" alt="QR Code">
                     </div>
                     
                     <div id="tela-transicao">
@@ -1085,6 +1087,24 @@
         function removerMusica(i) { filaDeReproducao.splice(i, 1); atualizarTelaFila(); }
         function moverMusica(i, d) { const t = filaDeReproducao[i]; filaDeReproducao[i] = filaDeReproducao[i+d]; filaDeReproducao[i+d] = t; atualizarTelaFila(); }
 
+        function pausarMusicaAtual() {
+            if (player && typeof player.getPlayerState === 'function') {
+                const state = player.getPlayerState();
+                if (state === 1) { // 1 = Playing
+                    player.pauseVideo();
+                } else if (state === 2) { // 2 = Paused
+                    player.playVideo();
+                }
+            }
+        }
+
+        function retrocederMusicaAtual() {
+            if (player && typeof player.seekTo === 'function') {
+                let tempoAtual = player.getCurrentTime();
+                player.seekTo(Math.max(0, tempoAtual - 10), true);
+            }
+        }
+
         function executarInicioMusica(m) {
             clearTimeout(timerNota);
             if (telaTV && !telaTV.closed) {
@@ -1096,7 +1116,7 @@
             database.ref('statusAtual').set({ cantor: m.cantor, titulo: m.titulo, id: Date.now() });
 
             musicaAtual = m; historicoDeReproducao.push(m);
-            atualizarTelaFila(); atualizarTelaHistorico();
+            atualizarTelaFila(); atualizarTelaHistorico(); atualizarTelaRanking();
             
             if (telaTV && !telaTV.closed && m.cantor !== "Convidados") {
                 telaTV.document.getElementById('cantor-overlay').innerHTML = `<div style="display:inline-block; vertical-align:middle;"><span class="aviso">Com a Voz</span><p class="nome">${m.cantor}</p></div>`;
@@ -1152,6 +1172,8 @@
             if(filaDeReproducao.length > 0) {
                 iniciarMusica(filaDeReproducao.shift()); 
             } else {
+                musicaAtual = null;
+                atualizarTelaRanking();
                 if(telaTV && !telaTV.closed) {
                     telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
                     telaTV.document.getElementById('tela-aguardando').style.display = 'flex';
@@ -1186,7 +1208,28 @@
         
         function atualizarTelaRanking() {
             localStorage.setItem('ranking', JSON.stringify(ranking));
-            document.getElementById('ranking').innerHTML = [...ranking].sort((a,b) => b.nota - a.nota).map((item, i) => `
+            
+            let htmlTocando = "";
+            if (musicaAtual) {
+                htmlTocando = `
+                    <div class="item-tocando-agora">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div class="info-ranking">
+                                ▶️ <strong>Tocando Agora</strong> <br> 
+                                🎤 ${musicaAtual.cantor} <br> 
+                                <span style="font-size:11px;">🎵 ${musicaAtual.titulo}</span><br>
+                                <span style="font-size:10px; color:#00d2ff; font-weight: bold;">(Aguardando final para pontuação)</span>
+                            </div>
+                            <div style="display: flex; gap: 5px;">
+                                <button class="btn-acao" onclick="retrocederMusicaAtual()" title="Retroceder 10 segundos" style="font-size:18px;">⏪</button>
+                                <button class="btn-acao" onclick="pausarMusicaAtual()" title="Pausar / Retomar" style="font-size:18px;">⏯️</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            let htmlRanking = [...ranking].sort((a,b) => b.nota - a.nota).map((item, i) => `
                 <div class="item-ranking" onclick="document.getElementById('votos-rank-${i}').style.display = document.getElementById('votos-rank-${i}').style.display === 'none' ? 'block' : 'none'" style="cursor:pointer;" title="Clique para ver os votos!">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="info-ranking">
@@ -1207,6 +1250,8 @@
                     </div>
                 </div>
             `).join('');
+
+            document.getElementById('ranking').innerHTML = htmlTocando + htmlRanking;
         }
 
         atualizarTelaFila();
