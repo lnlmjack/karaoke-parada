@@ -2,75 +2,169 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedir Música e Votar - Parada 10.95</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Bloqueio rigoroso de cache -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    
+    <title>Menu - Karaokê Parada 10.95</title>
+    <!-- Mantive os scripts originais para segurança, mas as conexões agora são feitas por REST -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    
     <style>
-        body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; padding: 15px; margin: 0; text-align: center; }
-        .container { max-width: 500px; margin: 0 auto; }
+        body { font-family: 'Arial', sans-serif; background-color: #121212; color: #fff; margin: 0; padding: 0; text-align: center; }
+        .header { background-color: #e52d27; padding: 15px; font-size: 22px; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.5); text-transform: uppercase; letter-spacing: 1px;}
         
-        .secao { background: #1e1e1e; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        h1, h2 { color: #e52d27; font-size: 22px; }
-        
-        input { width: 100%; padding: 12px; border-radius: 6px; border: none; font-size: 16px; margin-bottom: 12px; box-sizing: border-box; background: #333; color: #fff; }
-        .btn { width: 100%; padding: 12px; background: #e52d27; color: white; border: none; font-weight: bold; font-size: 16px; border-radius: 6px; cursor: pointer; }
-        .btn:hover { background: #c21a15; }
+        /* ESTILOS DO MENU PRINCIPAL */
+        #menu-principal { padding: 30px 20px; }
+        .btn-menu-grande { width: 100%; padding: 30px 20px; margin-bottom: 20px; border: none; border-radius: 15px; font-size: 24px; font-weight: 900; cursor: pointer; transition: 0.2s; box-shadow: 0 8px 15px rgba(0,0,0,0.5); text-transform: uppercase;}
+        .btn-menu-grande:active { transform: scale(0.95); }
+        .btn-pedir { background: linear-gradient(135deg, #e52d27, #b31217); color: white; border: 2px solid #ff5252;}
+        .btn-votar { background: linear-gradient(135deg, #007bff, #0056b3); color: white; border: 2px solid #3399ff;}
+        .icone-grande { font-size: 50px; margin-bottom: 10px; display: block;}
 
-        .item-resultado { display: flex; align-items: center; gap: 10px; background: #333; padding: 10px; margin: 8px 0; border-radius: 6px; text-align: left; cursor: pointer; transition: 0.2s; }
-        .item-resultado:hover { background: #e52d27; }
+        .card { background: #1e1e1e; margin: 15px; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .card h2 { margin-top: 15px; color: #00d2ff; font-size: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        
+        .btn-voltar { background: #333; color: #fff; border: 1px solid #555; padding: 10px 15px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; display: inline-block; margin-bottom: 10px; width: 100%;}
+        
+        .btn-catalogo { background: #00d2ff; color: #000; width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .btn-catalogo:active { transform: scale(0.95); }
+
+        /* CARROSSEL DO ALFABETO */
+        .alfabeto-container { display: flex; overflow-x: auto; gap: 8px; margin-bottom: 15px; padding-bottom: 10px; }
+        .alfabeto-container::-webkit-scrollbar { height: 6px; }
+        .alfabeto-container::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
+        .btn-letra { flex: 0 0 auto; background: #333; color: #fff; border: 1px solid #555; border-radius: 8px; padding: 10px 15px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-letra.ativo { background: #00d2ff; color: #000; border-color: #00d2ff; }
+
+        /* Area de Votação */
+        #cantor-atual { color: #ffeb3b; font-size: 24px; font-weight: bold; margin: 10px 0; }
+        #status-musica { color: #aaa; font-size: 14px; font-style: italic; margin-bottom: 20px; }
+        
+        .btn-voto { width: 100%; padding: 16px; margin: 6px 0; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .btn-voto:active { transform: scale(0.95); }
+        .v-exc { background: #00d2ff; color: #000; }
+        .v-mb { background: #28a745; color: #fff; }
+        .v-bom { background: #ffeb3b; color: #000; }
+        .v-reg { background: #fd7e14; color: #fff; }
+        .v-ruim { background: #e52d27; color: #fff; }
+
+        /* Area de Confirmação de Voto */
+        #confirmacao-voto { display: none; background: #222; padding: 20px; border-radius: 8px; border: 2px solid #ffeb3b; margin-top: 10px; }
+        .btn-confirmar { width: 48%; padding: 15px; background: #28a745; border: none; border-radius: 8px; color: white; font-weight: bold; font-size: 16px; cursor: pointer;}
+        .btn-cancelar { width: 48%; padding: 15px; background: #e52d27; border: none; border-radius: 8px; color: white; font-weight: bold; font-size: 16px; cursor: pointer;}
+
+        /* Area de Busca */
+        input { width: 100%; box-sizing: border-box; padding: 15px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-size: 16px; margin-bottom: 15px; }
+        .btn-busca { background: #e52d27; color: #fff; width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .btn-busca:active { background: #c21a15; }
+        
+        #resultados { margin-top: 20px; text-align: left; }
+        .item-resultado { background: #2a2a2a; padding: 12px; margin-bottom: 10px; border-radius: 8px; border-left: 5px solid #00d2ff; font-size: 15px; line-height: 1.4; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px; }
+        .item-resultado:active { background: #333; }
         .item-resultado img { width: 70px; height: 50px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
         .info-resultado { flex: 1; display: flex; flex-direction: column; }
-        .info-resultado .titulo-video { font-size: 13px; font-weight: bold; line-height: 1.2; }
+        .info-resultado .titulo-video { font-size: 14px; font-weight: bold; line-height: 1.2; }
         .info-resultado .nome-canal { font-size: 11px; color: #00d2ff; margin-top: 4px; font-weight: bold; }
+        
+        #notificacao { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #28a745; color: white; padding: 15px 25px; border-radius: 30px; font-weight: bold; font-size: 16px; z-index: 1000; box-shadow: 0 5px 15px rgba(0,0,0,0.6); }
 
-        /* Estilos dos botões de voto */
-        .grid-votos { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 15px; }
-        .btn-voto { padding: 15px; font-size: 16px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; color: white; transition: transform 0.1s; }
-        .btn-voto:active { transform: scale(0.95); }
-        .v-excelente { background: #00d2ff; color: #000; }
-        .v-muitobom { background: #28a745; }
-        .v-bom { background: #ffeb3b; color: #000; }
-        .v-regular { background: #fd7e14; }
-        .v-ruim { background: #e52d27; }
-
-        #painel-votacao { display: none; }
-        #status-musica-atual { font-size: 18px; color: #ffeb3b; margin: 15px 0; font-weight: bold; }
+        .versao-app { position: fixed; bottom: 5px; right: 5px; font-size: 10px; color: rgba(255, 255, 255, 0.3); z-index: 9999; pointer-events: none; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>🎤 Parada 10.95 Bar</h1>
+    <div class="header">
+        🍻 Parada 10.95 Bar
+    </div>
+
+    <!-- TELA 1: MENU PRINCIPAL -->
+    <div id="menu-principal">
+        <h2 style="color: #fff; margin-bottom: 30px; font-size: 20px;">O que você quer fazer?</h2>
         
-        <!-- SEÇÃO DE PEDIR MÚSICA -->
-        <div class="secao" id="painel-pedido">
-            <h2>Pedir Música</h2>
-            <input type="text" id="nomeCantorPedido" placeholder="Seu Nome ou Dupla...">
-            <input type="text" id="termoBuscaCliente" placeholder="Nome da música ou artista..." onkeypress="if(event.key === 'Enter') buscarMusicaCliente()">
-            <button class="btn" onclick="buscarMusicaCliente()">Buscar no YouTube</button>
-            <div id="resultadosCliente" style="margin-top: 15px; max-height: 350px; overflow-y: auto;"></div>
+        <button class="btn-menu-grande btn-pedir" onclick="mostrarAba('pedir')">
+            <span class="icone-grande">📩</span>
+            Pedir Música
+        </button>
+        
+        <button class="btn-menu-grande btn-votar" onclick="mostrarAba('votar')">
+            <span class="icone-grande">⭐</span>
+            Votar no Cantor
+        </button>
+    </div>
+
+    <!-- TELA 2: PEDIR MÚSICA -->
+    <div class="card" id="aba-pedir" style="display: none;">
+        <button class="btn-voltar" onclick="mostrarAba('menu')">⬅️ Voltar ao Menu</button>
+        
+        <h2 style="color: #ffeb3b;">📩 Escolha sua Música</h2>
+        
+        <button class="btn-catalogo" onclick="mostrarAba('catalogo')">🗂️ Explorar Catálogo de Músicas</button>
+        
+        <p style="font-size: 14px; color: #ccc; margin-bottom: 15px;">Ou pesquise livremente no YouTube:</p>
+        
+        <input type="text" id="campoBusca" placeholder="Ex: Evidências Chitãozinho...">
+        <button class="btn-busca" onclick="buscarMusica()">🔍 Buscar no YouTube</button>
+        
+        <div id="resultados"></div>
+    </div>
+
+    <!-- TELA 3: CATÁLOGO DE MÚSICAS -->
+    <div class="card" id="aba-catalogo" style="display: none;">
+        <button class="btn-voltar" onclick="mostrarAba('pedir')">⬅️ Voltar para a Busca</button>
+        
+        <h2 style="color: #00d2ff;">🗂️ Catálogo Completo</h2>
+        <p style="font-size: 14px; color: #ccc; margin-bottom: 15px;">Toque na letra inicial do artista ou digite na barra abaixo:</p>
+        
+        <!-- ALFABETO DE BUSCA RÁPIDA -->
+        <div id="filtro-alfabeto" class="alfabeto-container">
+            <!-- Botões gerados no Javascript -->
         </div>
 
-        <!-- SEÇÃO DE VOTAÇÃO AO VIVO -->
-        <div class="secao" id="painel-votacao">
-            <h2>⭐ Votar na Apresentação</h2>
-            <div id="status-musica-atual">Aguardando a próxima música...</div>
-            <div id="botoes-voto-container" style="display:none;">
-                <p style="font-size: 14px; color: #aaa;">O que achou desta performance?</p>
-                <div class="grid-votos">
-                    <button class="btn-voto v-excelente" onclick="enviarVoto('excelente')">🤯 Excelente!</button>
-                    <button class="btn-voto v-muitobom" onclick="enviarVoto('muitobom')">🤩 Muito Bom!</button>
-                    <button class="btn-voto v-bom" onclick="enviarVoto('bom')">🙂 Bom</button>
-                    <button class="btn-voto v-regular" onclick="enviarVoto('regular')">😕 Regular</button>
-                    <button class="btn-voto v-ruim" onclick="enviarVoto('ruim')">😖 Ruim</button>
-                </div>
-            </div>
-            <div id="mensagem-votado" style="display:none; color: #28a745; font-weight: bold; margin-top: 15px; font-size: 18px;">
-                ✅ Voto registrado com sucesso! Obrigado!
-            </div>
+        <input type="text" id="buscaCatalogo" placeholder="🔎 Digite aqui o cantor ou a música..." onkeyup="filtrarCatalogo()">
+        
+        <div id="lista-catalogo" style="height: 400px; overflow-y: auto; text-align: left; padding-right: 5px;">
+            <p style="text-align: center; color: #aaa;">Carregando músicas...</p>
         </div>
     </div>
+
+    <!-- TELA 4: QUEM ESTÁ CANTANDO E VOTAÇÃO -->
+    <div class="card" id="aba-votar" style="display: none;">
+        <button class="btn-voltar" onclick="mostrarAba('menu')">⬅️ Voltar ao Menu</button>
+        
+        <h2>🎤 No Palco Agora</h2>
+        <div id="status-palco">
+            <div id="cantor-atual">Aguardando...</div>
+            <div id="status-musica">Preste atenção na TV!</div>
+        </div>
+
+        <div id="lista-botoes" style="display: none;">
+            <p style="margin-bottom: 10px; font-size: 14px; color: #ccc;">O que você achou da apresentação?</p>
+            <button class="btn-voto v-exc" onclick="prepararVoto('excelente', '🤯 Excelente')">🤯 Excelente</button>
+            <button class="btn-voto v-mb" onclick="prepararVoto('muitobom', '🤩 Muito Bom')">🤩 Muito Bom</button>
+            <button class="btn-voto v-bom" onclick="prepararVoto('bom', '🙂 Bom')">🙂 Bom</button>
+            <button class="btn-voto v-reg" onclick="prepararVoto('regular', '😕 Regular')">😕 Regular</button>
+            <button class="btn-voto v-ruim" onclick="prepararVoto('ruim', '😖 Ruim')">😖 Ruim</button>
+        </div>
+
+        <div id="confirmacao-voto">
+            <p style="margin-top: 0; font-size: 18px; color: #fff;">Confirmar voto:<br><strong id="texto-voto-escolhido" style="font-size: 26px; display: block; margin-top: 10px;"></strong></p>
+            <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                <button class="btn-cancelar" onclick="cancelarVoto()">❌ Cancelar</button>
+                <button class="btn-confirmar" onclick="confirmarVoto()">✅ Votar!</button>
+            </div>
+        </div>
+
+        <div id="msg-agradecimento" style="display: none; color: #28a745; font-weight: bold; font-size: 18px; margin-top: 20px;">
+            ✅ Voto registrado!
+        </div>
+    </div>
+
+    <div id="notificacao">✅ Pedido enviado ao DJ!</div>
+    <div class="versao-app">v1.9</div>
 
     <script>
         const firebaseConfig = {
@@ -80,142 +174,357 @@
             projectId: "karaoke-parada",
             storageBucket: "karaoke-parada.firebasestorage.app",
             messagingSenderId: "379214932685",
-            appId: "1:379214932685:web:936382160fc3ec07751784"
+            appId: "1:379214932685:web:873e8b5b7d882a4f751784"
         };
         firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4';
+        const DB_URL = firebaseConfig.databaseURL;
+        const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4'; 
+        
+        let idCantorAtual = null;
+        let votoPendente = null;
+        let musicasCatalogo = [];
 
-        // Puxa os canais favoritos salvos (ou usa o padrão)
+        // Recupera os canais favoritos configurados no painel para manter a mesma ordem de preferência
         let canaisFavoritos = JSON.parse(localStorage.getItem('canaisFavoritos')) || [
             "Muramatsu Karaoke",
             "Tequila Karaoke",
             "Versão Karaokê"
         ];
 
-        let idVotacaoAtual = null;
-        let ja VotadoNestaMusica = false;
+        function mostrarAba(aba) {
+            document.getElementById('menu-principal').style.display = 'none';
+            document.getElementById('aba-pedir').style.display = 'none';
+            document.getElementById('aba-votar').style.display = 'none';
+            document.getElementById('aba-catalogo').style.display = 'none';
 
-        // Monitora qual música está tocando para liberar a votação ao vivo
-        database.ref('statusAtual').on('value', (snapshot) => {
-            const status = snapshot.val();
-            const painelVotacao = document.getElementById('painel-votacao');
-            const statusMusica = document.getElementById('status-musica-atual');
-            const btnVotosContainer = document.getElementById('botoes-voto-container');
-            const msgVotado = document.getElementById('mensagem-votado');
+            if (aba === 'menu') document.getElementById('menu-principal').style.display = 'block';
+            if (aba === 'pedir') document.getElementById('aba-pedir').style.display = 'block';
+            if (aba === 'votar') document.getElementById('aba-votar').style.display = 'block';
+            if (aba === 'catalogo') document.getElementById('aba-catalogo').style.display = 'block';
+        }
 
-            painelVotacao.style.display = 'block';
+        function gerarBotoesAlfabeto() {
+            const div = document.getElementById('filtro-alfabeto');
+            const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+            let html = `<button class="btn-letra ativo" id="btn-letra-TODOS" onclick="filtrarPorLetra('TODOS')">TUDO</button>`;
+            
+            alfabeto.forEach(letra => {
+                html += `<button class="btn-letra" id="btn-letra-${letra}" onclick="filtrarPorLetra('${letra}')">${letra}</button>`;
+            });
+            div.innerHTML = html;
+        }
 
-            if (status && status.id) {
-                if (idVotacaoAtual !== status.id) {
-                    idVotacaoAtual = status.id;
-                    jaVotadoNestaMusica = false;
-                    msgVotado.style.display = 'none';
-                    btnVotosContainer.style.display = 'block';
-                }
-                statusMusica.innerHTML = `Cantando agora:<br><span style="color:#fff;">${status.cantor}</span><br><span style="font-size:14px; color:#aaa;">${status.titulo}</span>`;
-            } else {
-                idVotacaoAtual = null;
-                statusMusica.innerHTML = "Aguardando a próxima música começar...";
-                btnVotosContainer.style.display = 'none';
-                msgVotado.style.display = 'none';
+        function filtrarPorLetra(letra) {
+            document.querySelectorAll('.btn-letra').forEach(b => b.classList.remove('ativo'));
+            document.getElementById('btn-letra-' + letra).classList.add('ativo');
+            document.getElementById('buscaCatalogo').value = ''; 
+
+            if (letra === 'TODOS') {
+                renderizarCatalogo(musicasCatalogo.slice(0, 150));
+                return;
             }
+
+            const filtrados = musicasCatalogo.filter(m => m.cantor.toUpperCase().startsWith(letra)).slice(0, 150);
+            renderizarCatalogo(filtrados);
+        }
+
+        async function carregarCatalogo() {
+            gerarBotoesAlfabeto(); 
+            try {
+                const response = await fetch('catalogo.csv?v=' + new Date().getTime());
+                const text = await response.text();
+                
+                const delimitador = text.split('\n')[0].includes(';') ? ';' : ',';
+                let linhas = text.split('\n');
+
+                let headers = [];
+                let celulaH = ''; let aspasH = false;
+                let linhaH = linhas[0].trim();
+                for(let j = 0; j < linhaH.length; j++) {
+                    let char = linhaH[j];
+                    if(char === '"') aspasH = !aspasH;
+                    else if (char === delimitador && !aspasH) { headers.push(celulaH.trim().toUpperCase()); celulaH = ''; }
+                    else celulaH += char;
+                }
+                headers.push(celulaH.trim().toUpperCase());
+
+                let idxCantor = 0, idxTitulo = 2, idxInicio = 3;
+                headers.forEach((h, i) => {
+                    if (h.includes('CANTOR')) idxCantor = i;
+                    if (h.includes('TÍTULO') || h.includes('TITULO') || h === 'MUSICA' || h === 'MÚSICA') idxTitulo = i;
+                    if (h.includes('INÍCIO') || h.includes('INICIO') || h.includes('LETRA')) idxInicio = i;
+                });
+                
+                for (let i = 1; i < linhas.length; i++) {
+                    let linha = linhas[i].trim();
+                    if (!linha) continue;
+                    
+                    let colunas = [];
+                    let celula = '';
+                    let aspas = false;
+                    for(let j = 0; j < linha.length; j++) {
+                        let char = linha[j];
+                        if(char === '"') aspas = !aspas;
+                        else if (char === delimitador && !aspas) {
+                            colunas.push(celula.trim()); celula = '';
+                        } else celula += char;
+                    }
+                    colunas.push(celula.trim());
+
+                    if (colunas.length > Math.max(idxCantor, idxTitulo)) {
+                        let cantor = colunas[idxCantor] ? colunas[idxCantor].replace(/^"|"$/g, '').trim() : '';
+                        let titulo = colunas[idxTitulo] ? colunas[idxTitulo].replace(/^"|"$/g, '').trim() : '';
+                        let inicio = colunas[idxInicio] ? colunas[idxInicio].replace(/^"|"$/g, '').trim() : '';
+                        
+                        if(cantor && titulo) {
+                            musicasCatalogo.push({ 
+                                cantor: cantor, 
+                                titulo: titulo, 
+                                inicio: inicio,
+                                filtro: (cantor + " " + titulo + " " + inicio).toLowerCase() 
+                            });
+                        }
+                    }
+                }
+                
+                musicasCatalogo.sort((a, b) => a.cantor.localeCompare(b.cantor, 'pt-BR'));
+                renderizarCatalogo(musicasCatalogo.slice(0, 150)); 
+            } catch(e) {
+                document.getElementById('lista-catalogo').innerHTML = '<p style="color:#e52d27; text-align:center;">Catálogo offline. Peça digitando na busca principal.</p>';
+            }
+        }
+
+        function renderizarCatalogo(lista) {
+            const div = document.getElementById('lista-catalogo');
+            div.innerHTML = '';
+            if(lista.length === 0) {
+                div.innerHTML = '<p style="text-align:center; color:#aaa;">Nenhuma música encontrada.</p>';
+                return;
+            }
+            let html = '';
+            lista.forEach(m => {
+                let tituloEscapado = m.titulo.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                let cantorEscapado = m.cantor.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                
+                html += `
+                <div class="item-resultado" onclick="selecionarDoCatalogo('${tituloEscapado}', '${cantorEscapado}')">
+                    <div class="info-resultado">
+                        <strong style="font-size: 16px; display: block; margin-bottom: 3px;">🎤 ${m.cantor}</strong>
+                        <span style="font-size: 15px; color: #fff; display: block; margin-bottom: 3px;">🎵 ${m.titulo}</span>
+                        ${m.inicio ? `<span style="font-size: 13px; color: #aaa; display: block; font-style: italic;">📝 ${m.inicio}</span>` : ''}
+                    </div>
+                </div>`;
+            });
+            div.innerHTML = html;
+        }
+
+        function filtrarCatalogo() {
+            document.querySelectorAll('.btn-letra').forEach(b => b.classList.remove('ativo'));
+            
+            const termo = document.getElementById('buscaCatalogo').value.toLowerCase();
+            if (!termo) {
+                document.getElementById('btn-letra-TODOS').classList.add('ativo');
+                renderizarCatalogo(musicasCatalogo.slice(0, 150));
+                return;
+            }
+            const filtrados = musicasCatalogo.filter(m => m.filtro.includes(termo)).slice(0, 150);
+            renderizarCatalogo(filtrados);
+        }
+
+        function selecionarDoCatalogo(titulo, cantor) {
+            mostrarAba('pedir');
+            document.getElementById('campoBusca').value = titulo + " " + cantor;
+            buscarMusica(); 
+        }
+
+        window.onload = () => { carregarCatalogo(); };
+
+        async function monitorarStatus() {
+            try {
+                const res = await fetch(DB_URL + "/statusAtual.json");
+                const status = await res.json();
+                
+                if (status && status.id !== "avaliando") {
+                    document.getElementById('cantor-atual').innerText = "Voz: " + status.cantor;
+                    document.getElementById('status-musica').innerText = "🎵 " + status.titulo;
+                    
+                    if (idCantorAtual !== status.id) {
+                        idCantorAtual = status.id;
+                        if (localStorage.getItem('voto_' + idCantorAtual)) {
+                            bloquearVoto();
+                        } else {
+                            liberarVoto();
+                        }
+                    }
+                } else if (status && status.id === "avaliando") {
+                    if (idCantorAtual !== "avaliando") {
+                        idCantorAtual = "avaliando";
+                        document.getElementById('cantor-atual').innerText = "Calculando as Notas...";
+                        document.getElementById('status-musica').innerText = "Olhe para a tela da TV!";
+                        esconderVoto();
+                    }
+                } else {
+                    if (idCantorAtual !== null) {
+                        idCantorAtual = null;
+                        document.getElementById('cantor-atual').innerText = "Palco Livre!";
+                        document.getElementById('status-musica').innerText = "Nenhuma música tocando no momento.";
+                        esconderVoto();
+                    }
+                }
+            } catch (e) {}
+        }
+        
+        setInterval(monitorarStatus, 3000);
+        monitorarStatus();
+
+        function liberarVoto() {
+            document.getElementById('lista-botoes').style.display = 'block';
+            document.getElementById('confirmacao-voto').style.display = 'none';
+            document.getElementById('msg-agradecimento').style.display = 'none';
+            votoPendente = null;
+        }
+
+        function esconderVoto() {
+            document.getElementById('lista-botoes').style.display = 'none';
+            document.getElementById('confirmacao-voto').style.display = 'none';
+            document.getElementById('msg-agradecimento').style.display = 'none';
+            votoPendente = null;
+        }
+
+        function bloquearVoto() {
+            document.getElementById('lista-botoes').style.display = 'none';
+            document.getElementById('confirmacao-voto').style.display = 'none';
+            document.getElementById('msg-agradecimento').style.display = 'block';
+            votoPendente = null;
+        }
+
+        function prepararVoto(tipo, texto) {
+            votoPendente = tipo;
+            document.getElementById('texto-voto-escolhido').innerText = texto;
+            document.getElementById('lista-botoes').style.display = 'none';
+            document.getElementById('confirmacao-voto').style.display = 'block';
+        }
+
+        function cancelarVoto() {
+            votoPendente = null;
+            document.getElementById('confirmacao-voto').style.display = 'none';
+            document.getElementById('lista-botoes').style.display = 'block';
+        }
+
+        function confirmarVoto() {
+            if (!votoPendente || !idCantorAtual) return;
+            
+            fetch(DB_URL + "/votosAtual.json", {
+                method: 'POST',
+                body: JSON.stringify({ tipo: votoPendente })
+            });
+            
+            localStorage.setItem('voto_' + idCantorAtual, 'sim');
+            bloquearVoto();
+        }
+
+        document.getElementById('campoBusca').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') buscarMusica();
         });
 
-        async function buscarMusicaCliente() {
-            const cantor = document.getElementById('nomeCantorPedido').value.trim();
-            const termo = document.getElementById('termoBuscaCliente').value.trim();
-            const divResultados = document.getElementById('resultadosCliente');
+        async function buscarMusica() {
+            const termo = document.getElementById('campoBusca').value;
+            if (!termo) return alert("Digite o nome de uma música!");
+            
+            const div = document.getElementById('resultados');
+            div.innerHTML = '<p style="text-align:center; color:#00d2ff;">Buscando no acervo...</p>'; 
 
-            if (!cantor) return alert("Por favor, digite o seu nome antes de buscar!");
-            if (!termo) return alert("Digite o nome da música que deseja buscar!");
+            const query = encodeURIComponent(termo + " karaoke -oficial -clipe -live");
+            const cacheKey = 'yt_busca_' + query;
+            const cacheData = localStorage.getItem(cacheKey);
+            
+            if (cacheData) {
+                exibirResultadosBusca(JSON.parse(cacheData));
+                return;
+            }
 
-            divResultados.innerHTML = "<p style='color:#aaa;'>Buscando versões de karaokê...</p>";
-
-            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(termo + " karaoke -oficial -clipe -live")}&type=video&key=${API_KEY}`;
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${query}&type=video&key=${API_KEY}`;
+            
             try {
-                const res = await fetch(url);
+                const res = await fetch(url); 
                 const dados = await res.json();
-                divResultados.innerHTML = "";
-
-                if (!dados.items || dados.items.length === 0) {
-                    divResultados.innerHTML = "<p style='color:#e52d27;'>Nenhuma música encontrada.</p>";
+                
+                if (dados.error) throw new Error("Erro de Cota");
+                
+                if(!dados.items || dados.items.length === 0) {
+                    div.innerHTML = '<p style="color:#e52d27;">Música não encontrada. Tente outro nome.</p>';
                     return;
                 }
 
-                // ORDENAÇÃO INTELIGENTE POR CANAIS FAVORITOS (Mesma regra do painel)
-                let itensOrdenados = [...dados.items].sort((a, b) => {
-                    let tituloA = a.snippet.title.toLowerCase();
-                    let canalA = a.snippet.channelTitle.toLowerCase();
-                    let indexA = canaisFavoritos.findIndex(c => tituloA.includes(c.toLowerCase()) || canalA.includes(c.toLowerCase()));
+                localStorage.setItem(cacheKey, JSON.stringify(dados.items));
+                exibirResultadosBusca(dados.items);
 
-                    let tituloB = b.snippet.title.toLowerCase();
-                    let canalB = b.snippet.channelTitle.toLowerCase();
-                    let indexB = canaisFavoritos.findIndex(c => tituloB.includes(c.toLowerCase()) || canalB.includes(c.toLowerCase()));
-
-                    if (indexA !== -1 && indexB !== -1) return indexA - indexB;
-                    if (indexA !== -1) return -1;
-                    if (indexB !== -1) return 1;
-                    return 0;
-                });
-
-                itensOrdenados.forEach(v => {
-                    const thumbnail = v.snippet.thumbnails.default.url;
-                    const tituloVid = v.snippet.title;
-                    const nomeCanalVid = v.snippet.channelTitle;
-                    const videoId = v.id.videoId;
-
-                    const item = document.createElement('div');
-                    item.className = 'item-resultado';
-                    item.innerHTML = `
-                        <img src="${thumbnail}" alt="Thumbnail">
-                        <div class="info-resultado">
-                            <span class="titulo-video">${tituloVid}</span>
-                            <span class="nome-canal">📺 ${nomeCanalVid}</span>
-                        </div>
-                    `;
-                    item.onclick = () => enviarPedido(videoId, tituloVid, cantor);
-                    divResultados.appendChild(item);
-                });
-
-            } catch (err) {
-                divResultados.innerHTML = "<p style='color:#e52d27;'>Erro ao buscar. Tente novamente.</p>";
+            } catch (err) { 
+                div.innerHTML = "<p style='color:#e52d27'>Sistema de busca sobrecarregado no momento. Tente novamente em instantes ou chame o DJ.</p>"; 
             }
         }
 
-        function enviarPedido(videoId, titulo, cantor) {
-            if (confirm(`Deseja pedir a música:\n\n"${titulo}"\npara ${cantor}?`)) {
-                database.ref('pedidos').push({
-                    videoId: videoId,
-                    titulo: titulo,
-                    cantor: cantor,
-                    timestamp: Date.now()
-                });
-                alert("🎵 Pedido enviado com sucesso para o DJ!");
-                document.getElementById('termoBuscaCliente').value = "";
-                document.getElementById('resultadosCliente').innerHTML = "";
-            }
-        }
+        function exibirResultadosBusca(items) {
+            const div = document.getElementById('resultados');
+            div.innerHTML = '';
 
-        function enviarVoto(tipoVoto) {
-            if (!idVotacaoAtual) return alert("Nenhuma música ativa para votação no momento!");
-            if (jaVotadoNestaMusica) return alert("Você já votou nesta apresentação!");
+            // ORDENAÇÃO INTELIGENTE POR CANAIS FAVORITOS (Mesma regra exata do painel do DJ)
+            let itensOrdenados = [...items].sort((a, b) => {
+                let tituloA = a.snippet.title.toLowerCase();
+                let canalA = a.snippet.channelTitle.toLowerCase();
+                let indexA = canaisFavoritos.findIndex(c => tituloA.includes(c.toLowerCase()) || canalA.includes(c.toLowerCase()));
 
-            // Gera um ID único simples por dispositivo/voto para evitar duplicidade rápida
-            let meuTokenVoto = localStorage.getItem('tokenVotoCliente');
-            if (!meuTokenVoto) {
-                meuTokenVoto = 'voto_' + Math.random().toString(36.substring(2));
-                localStorage.setItem('tokenVotoCliente', meuTokenVoto);
-            }
+                let tituloB = b.snippet.title.toLowerCase();
+                let canalB = b.snippet.channelTitle.toLowerCase();
+                let indexB = canaisFavoritos.findIndex(c => tituloB.includes(c.toLowerCase()) || canalB.includes(c.toLowerCase()));
 
-            database.ref('votosAtual').child(idVotacaoAtual).child(meuTokenVoto).set({
-                tipo: tipoVoto,
-                timestamp: Date.now()
-            }).then(() => {
-                jaVotadoNestaMusica = true;
-                document.getElementById('botoes-voto-container').style.display = 'none';
-                document.getElementById('mensagem-votado').style.display = 'block';
+                if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                if (indexA !== -1) return -1;
+                if (indexB !== -1) return 1;
+                return 0;
             });
+
+            itensOrdenados.forEach(v => {
+                const thumbnail = v.snippet.thumbnails.default.url;
+                const tituloVid = v.snippet.title;
+                const nomeCanalVid = v.snippet.channelTitle;
+
+                const btn = document.createElement('div');
+                btn.className = 'item-resultado';
+                btn.innerHTML = `
+                    <img src="${thumbnail}" alt="Thumbnail">
+                    <div class="info-resultado">
+                        <span class="titulo-video">${tituloVid}</span>
+                        <span class="nome-canal">📺 ${nomeCanalVid}</span>
+                    </div>
+                `; 
+                
+                btn.onclick = () => fazerPedido(v.id.videoId, v.snippet.title);
+                div.appendChild(btn);
+            });
+        }
+
+        function fazerPedido(videoId, titulo) {
+            const nomeCantor = prompt("Música selecionada! Qual o seu nome (Voz)?");
+            
+            if (nomeCantor !== null && nomeCantor.trim() !== "") {
+                fetch(DB_URL + "/pedidos.json", {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        videoId: videoId,
+                        titulo: titulo,
+                        cantor: nomeCantor.trim()
+                    })
+                }).then(() => {
+                    document.getElementById('campoBusca').value = "";
+                    document.getElementById('resultados').innerHTML = "";
+                    
+                    mostrarAba('menu'); 
+                    const notif = document.getElementById('notificacao');
+                    notif.style.display = 'block';
+                    setTimeout(() => notif.style.display = 'none', 4000);
+                });
+            }
         }
     </script>
 </body>
