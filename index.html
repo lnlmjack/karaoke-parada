@@ -11,7 +11,17 @@
         body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; padding: 20px; margin: 0; }
         .container { max-width: 1600px; margin: 0 auto; position: relative; }
         
-        .area-botoes-topo { display: flex; gap: 15px; margin-bottom: 25px; }
+        .topo-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
+        .topo-botoes-acao { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        
+        .btn-topo-acao { padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; border: 1px solid #555; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px; }
+        #btn-reset-tudo { background: #b31217; color: #fff; border-color: #ff5252; } #btn-reset-tudo:hover { background: #e52d27; }
+        #btn-sair { background: transparent; color: #aaa; } #btn-sair:hover { color: #fff; background: #e52d27; border-color: #e52d27; }
+        #btn-usuarios { background: #007bff; color: #fff; border-color: #0056b3; display: none; } #btn-usuarios:hover { background: #0056b3; }
+        #btn-canais { background: #ffc107; color: #000; border-color: #e0a800; display: none; } #btn-canais:hover { background: #e0a800; }
+        #btn-manual { background: #333; color: #fff; } #btn-manual:hover { background: #444; border-color: #00d2ff; }
+
+        .area-botoes-topo { display: flex; gap: 15px; margin-bottom: 20px; }
         .btn-topo { flex: 1; padding: 15px; font-size: 16px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s;}
         .btn-tv { background: #007bff; } .btn-tv:hover { background: #0056b3; } .btn-tv.conectado { background: #17a2b8; pointer-events: none; }
         .btn-mic { background: #e52d27; text-align: center; display: flex; align-items: center; justify-content: center; } 
@@ -23,11 +33,11 @@
         input { flex: 1; padding: 12px; border-radius: 5px; border: none; font-size: 16px; }
         .btn-buscar { padding: 12px 25px; background: #e52d27; color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer;}
         
-        .canais-preferidos { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; align-items: center; font-size: 13px; color: #aaa; }
-        .chip-canal { background: #222; border: 1px solid #444; padding: 5px 12px; border-radius: 15px; cursor: pointer; color: #fff; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
+        .canais-preferidos { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; font-size: 12px; color: #aaa; background: #181818; padding: 8px 12px; border-radius: 6px; border: 1px solid #333; }
+        .chip-canal { background: #222; border: 1px solid #444; padding: 3px 8px; border-radius: 12px; cursor: pointer; color: #fff; transition: 0.2s; display: inline-flex; align-items: center; gap: 4px; font-size: 11px; }
         .chip-canal:hover { background: #333; border-color: #00d2ff; }
         .chip-canal.ativo { background: #007bff; border-color: #007bff; font-weight: bold; }
-        .chip-canal .ordem-badge { background: rgba(0,0,0,0.4); padding: 1px 5px; border-radius: 10px; font-size: 10px; color: #ffeb3b; }
+        .chip-canal .ordem-badge { background: rgba(0,0,0,0.5); padding: 1px 4px; border-radius: 8px; font-size: 9px; color: #ffeb3b; }
 
         .paineis { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
         .painel { background: #1e1e1e; padding: 15px; border-radius: 8px; height: 450px; overflow-y: auto; position: relative;}
@@ -54,21 +64,6 @@
         .linha-voto { display: flex; justify-content: space-between; font-size: 20px; margin: 12px 0; border-bottom: 1px dashed #333; padding-bottom: 5px; }
         #fundo-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 199; }
 
-        #btn-manual { position: absolute; top: 20px; right: 20px; background: #333; color: #fff; border: 1px solid #555; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
-        #btn-manual:hover { background: #444; border-color: #00d2ff; transform: scale(1.05); }
-
-        #btn-usuarios { display: none; position: absolute; top: 20px; right: 180px; background: #007bff; color: #fff; border: 1px solid #0056b3; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
-        #btn-usuarios:hover { background: #0056b3; transform: scale(1.05); }
-
-        #btn-canais { display: none; position: absolute; top: 20px; right: 135px; background: #ffc107; color: #000; border: 1px solid #e0a800; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
-        #btn-canais:hover { background: #e0a800; transform: scale(1.05); }
-
-        #btn-sair { position: absolute; top: 20px; right: 235px; background: transparent; color: #aaa; border: 1px solid #555; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; }
-        #btn-sair:hover { color: #fff; background: #e52d27; border-color: #e52d27; }
-
-        #btn-reset-tudo { position: absolute; top: 20px; right: 330px; background: #b31217; color: #fff; border: 1px solid #ff5252; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; z-index: 100; transition: 0.2s; }
-        #btn-reset-tudo:hover { background: #e52d27; transform: scale(1.05); }
-
         .btn-limpar-painel { background: #333; color: #aaa; border: none; font-size: 11px; padding: 3px 8px; border-radius: 4px; cursor: pointer; transition: 0.2s; }
         .btn-limpar-painel:hover { background: #e52d27; color: #fff; }
 
@@ -83,20 +78,21 @@
         
         .versao-app { position: fixed; bottom: 5px; right: 5px; font-size: 10px; color: rgba(255, 255, 255, 0.3); z-index: 200005; pointer-events: none; }
 
-        /* Estilos do Modal de Canais Favoritos */
-        #fundo-modal-canais { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 550; }
-        #modal-canais { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 551; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #ffc107; width: 90%; max-width: 500px; color: #fff; }
-        #modal-canais h2 { margin-top: 0; color: #ffc107; border-bottom: 1px solid #333; padding-bottom: 10px; font-size: 20px; text-align: center; }
-        .tabela-canais { width: 100%; margin-bottom: 20px; border-collapse: collapse; text-align: left; font-size: 14px; }
-        .tabela-canais th, .tabela-canais td { padding: 8px; border-bottom: 1px solid #333; }
-        .tabela-canais th { color: #ffc107; }
-        .form-novo-canal { background: #222; padding: 15px; border-radius: 8px; margin-top: 15px; }
-        .form-novo-canal input { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #555; background: #111; color: #fff; box-sizing: border-box; font-size: 14px; }
-
-        /* Estilos do Modal de Cantores */
-        #fundo-modal-cantor { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 400; }
-        #modal-cantor { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 401; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #00d2ff; width: 90%; max-width: 400px; color: #fff; text-align: center; }
-        #modal-cantor h2 { margin-top: 0; color: #00d2ff; border-bottom: 1px solid #333; padding-bottom: 10px; font-size: 20px;}
+        /* Estilos dos Modais */
+        #fundo-modal-canais, #fundo-modal-usuarios, #fundo-modal-cantor { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 500; }
+        #modal-canais, #modal-usuarios, #modal-cantor { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 501; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 500px; color: #fff; }
+        #modal-canais { border: 2px solid #ffc107; } #modal-usuarios { border: 2px solid #007bff; } #modal-cantor { border: 2px solid #00d2ff; text-align: center; }
+        #modal-canais h2 { color: #ffc107; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; font-size: 20px; text-align: center; }
+        #modal-usuarios h2 { color: #007bff; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; font-size: 20px; text-align: center; }
+        #modal-cantor h2 { color: #00d2ff; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; font-size: 20px; }
+        
+        .tabela-canais, .tabela-usuarios { width: 100%; margin-bottom: 20px; border-collapse: collapse; text-align: left; font-size: 14px; }
+        .tabela-canais th, .tabela-canais td, .tabela-usuarios th, .tabela-usuarios td { padding: 8px; border-bottom: 1px solid #333; }
+        .tabela-canais th { color: #ffc107; } .tabela-usuarios th { color: #007bff; }
+        
+        .form-novo-canal, .form-novo-usuario { background: #222; padding: 15px; border-radius: 8px; margin-top: 15px; }
+        .form-novo-canal input, .form-novo-usuario input, .form-novo-usuario select { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #555; background: #111; color: #fff; box-sizing: border-box; font-size: 14px; }
+        
         #input-nome-cantor { width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #555; background: #222; color: #fff; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; }
         #lista-cantores-salvos { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; max-height: 150px; overflow-y: auto; justify-content: center; }
         .chip-cantor { background: #333; border: 1px solid #555; padding: 6px 12px; border-radius: 20px; font-size: 14px; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
@@ -108,16 +104,6 @@
         .btn-confirmar { flex: 2; padding: 12px; background: #28a745; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px;}
         .btn-cancelar { flex: 1; padding: 12px; background: #e52d27; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px;}
         .btn-limpar-cantores { margin-top: 15px; background: transparent; border: none; color: #aaa; text-decoration: underline; cursor: pointer; font-size: 12px; width: 100%; text-align: center;}
-
-        /* Estilos do Modal de Gerenciamento de Usuários (Admin) */
-        #fundo-modal-usuarios { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 500; }
-        #modal-usuarios { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 501; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #007bff; width: 90%; max-width: 500px; color: #fff; }
-        #modal-usuarios h2 { margin-top: 0; color: #007bff; border-bottom: 1px solid #333; padding-bottom: 10px; font-size: 20px; text-align: center; }
-        .tabela-usuarios { width: 100%; margin-bottom: 20px; border-collapse: collapse; text-align: left; font-size: 14px; }
-        .tabela-usuarios th, .tabela-usuarios td { padding: 8px; border-bottom: 1px solid #333; }
-        .tabela-usuarios th { color: #007bff; }
-        .form-novo-usuario { background: #222; padding: 15px; border-radius: 8px; margin-top: 15px; }
-        .form-novo-usuario input, .form-novo-usuario select { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #555; background: #111; color: #fff; box-sizing: border-box; font-size: 14px; }
 
         /* Estilos da Tela de Login */
         #tela-login { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #1a1a1a; z-index: 200000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
@@ -168,7 +154,7 @@
             <li><span class="destaque">Busca com Canais Favoritos:</span> Digite a música e clique nos canais cadastrados na barra de prioridade para filtrar exatamente quais fontes você quer ver primeiro nas miniaturas.</li>
             <li><span class="destaque">Seleção de Cantores (Modal Flutuante):</span> Ao clicar em qualquer música buscada, selecione rapidamente o cantor (solo, dupla ou trio) com salvamento automático.</li>
             <li><span class="destaque">📩 Pedidos dos Clientes:</span> Pedidos via QR Code chegam em tempo real na caixa de "Pedidos" (com opção de Auto-Aprovar).</li>
-            <li><span class="destaque">🧹 Limpeza e Reset de Dados:</span> Use o botão <span class="destaque">⚠️ Resetar Tudo</span> ou os botões individuais de cada painel (<span class="destaque">🗑️ Limpar Fila</span>, <span class="destaque">🗑️ Limpar Ranking</span>, <span class="destaque">🗑️ Limpar Histórico</span>) para iniciar um novo dia com segurança.</li>
+            <li><span class="destaque">🧹 Limpeza e Reset de Dados:</span> Use o botão <span class="destaque">⚠️ Resetar Tudo</span> no topo ou os botões individuais de cada painel (<span class="destaque">🗑️ Limpar Fila</span>, <span class="destaque">🗑️ Limpar Ranking</span>, <span class="destaque">🗑️ Limpar Histórico</span>) para iniciar um novo dia com segurança.</li>
         </ul>
 
         <button onclick="fecharManual()" style="width: 100%; margin-top: 30px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
@@ -255,14 +241,18 @@
         <button onclick="limparCantores()" class="btn-limpar-cantores">🗑️ Limpar Lista Salva</button>
     </div>
 
-    <button id="btn-reset-tudo" onclick="resetarTudo()" title="Zerar Fila, Ranking e Histórico">⚠️ Resetar Tudo</button>
-    <button id="btn-sair" onclick="fazerLogout()">🚪 Sair</button>
-    <button id="btn-usuarios" onclick="abrirModalUsuarios()" title="Gerenciar Usuários">👥</button>
-    <button id="btn-canais" onclick="abrirModalCanais()" title="Gerenciar Canais Favoritos">⭐ Canais</button>
-    <button id="btn-manual" onclick="abrirManual()">📖 Manual do Sistema</button>
-
     <div class="container">
-        <h1 style="margin-top: 0; padding-top: 10px;">🎛️ Painel de Controle - Karaokê</h1>
+        <!-- TOPO ORGANIZADO SEM ENCAVALAR -->
+        <div class="topo-header">
+            <h1 style="margin: 0; padding: 0;">🎛️ Painel de Controle - Karaokê</h1>
+            <div class="topo-botoes-acao">
+                <button id="btn-reset-tudo" class="btn-topo-acao" onclick="resetarTudo()" title="Zerar Fila, Ranking e Histórico">⚠️ Resetar Tudo</button>
+                <button id="btn-usuarios" class="btn-topo-acao" onclick="abrirModalUsuarios()" title="Gerenciar Usuários">👥 Usuários</button>
+                <button id="btn-canais" class="btn-topo-acao" onclick="abrirModalCanais()" title="Gerenciar Canais Favoritos">⭐ Canais</button>
+                <button id="btn-sair" class="btn-topo-acao" onclick="fazerLogout()">🚪 Sair</button>
+                <button id="btn-manual" class="btn-topo-acao" onclick="abrirManual()">📖 Manual</button>
+            </div>
+        </div>
         
         <div class="area-botoes-topo">
             <button id="botaoTV" class="btn-topo btn-tv" onclick="iniciarSistema()">🚀 1. INICIAR SISTEMA E TV</button>
@@ -320,7 +310,7 @@
         </div>
     </div>
 
-    <div class="versao-app">v1.25</div>
+    <div class="versao-app">v1.26</div>
     <div onclick="definirNotaManual()" style="position: fixed; bottom: 4px; right: 35px; font-size: 13px; color: #fff; opacity: 0.3; z-index: 9999; cursor: pointer; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</div>
 
     <script>
@@ -331,7 +321,7 @@
         ];
 
         let canaisFavoritos = JSON.parse(localStorage.getItem('canaisFavoritos')) || [
-            "Karaoke Club",
+            "Muramatsu Karaoke",
             "Tequila Karaoke",
             "Versão Karaokê"
         ];
@@ -344,7 +334,7 @@
 
         function renderizarChipsCanais() {
             const container = document.getElementById('container-chips-canais');
-            let html = `<span>⭐ Priorizar Canal:</span> <div class="chip-canal ${canalSelecionadoFavorito === '' ? 'ativo' : ''}" onclick="selecionarCanalFavorito(this, '')">Todos</div>`;
+            let html = `<span style="font-size:11px; font-weight:bold;">⭐ Priorizar Canal:</span> <div class="chip-canal ${canalSelecionadoFavorito === '' ? 'ativo' : ''}" onclick="selecionarCanalFavorito(this, '')">Todos</div>`;
             
             canaisFavoritos.forEach((canal, idx) => {
                 let ativo = canalSelecionadoFavorito === canal ? 'ativo' : '';
@@ -434,8 +424,8 @@
             if (usuarioLogado) {
                 document.getElementById('tela-login').style.display = 'none';
                 if (tipoUsuario === 'admin') {
-                    document.getElementById('btn-usuarios').style.display = 'block';
-                    document.getElementById('btn-canais').style.display = 'block';
+                    document.getElementById('btn-usuarios').style.display = 'inline-flex';
+                    document.getElementById('btn-canais').style.display = 'inline-flex';
                 } else {
                     document.getElementById('btn-usuarios').style.display = 'none';
                     document.getElementById('btn-canais').style.display = 'none';
@@ -460,8 +450,8 @@
                 document.getElementById('login-senha').value = '';
                 
                 if (encontrado.tipo === 'admin') {
-                    document.getElementById('btn-usuarios').style.display = 'block';
-                    document.getElementById('btn-canais').style.display = 'block';
+                    document.getElementById('btn-usuarios').style.display = 'inline-flex';
+                    document.getElementById('btn-canais').style.display = 'inline-flex';
                 } else {
                     document.getElementById('btn-usuarios').style.display = 'none';
                     document.getElementById('btn-canais').style.display = 'none';
