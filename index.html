@@ -256,7 +256,7 @@
 
     <div class="container">
         <div class="topo-header">
-            <h1 style="margin: 0; padding: 0;">🎛️ Painel de Controle - Karaokê</h1>
+            <h1 style="margin: 0; padding: 0;">🎛️ Painel de Controle - Karaokê <span id="info-operador" style="font-size: 14px; color: #00d2ff; font-weight: normal; margin-left: 15px; background: #222; padding: 4px 10px; border-radius: 6px; border: 1px solid #444;">👤 Operador: --</span></h1>
             <div class="topo-botoes-acao">
                 <button id="btn-reset-tudo" class="btn-topo-acao" onclick="resetarTudo()" title="Zerar Fila, Ranking e Histórico">⚠️ Resetar Tudo</button>
                 <button id="btn-config" class="btn-topo-acao" onclick="abrirModalConfig()" title="Configurações do Sistema">⚙️ Configurações</button>
@@ -320,7 +320,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.52</span>
+        <span>v1.53</span>
     </div>
 
     <script>
@@ -498,6 +498,14 @@
             }
         }
 
+        function atualizarHeaderOperador() {
+            const usuarioLogado = localStorage.getItem('usuarioLogado') || "Convidado";
+            const elOp = document.getElementById('info-operador');
+            if (elOp) {
+                elOp.innerText = `👤 Operador: ${usuarioLogado.toUpperCase()}`;
+            }
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             renderizarChipsCanaisDiscretos();
             const usuarioLogado = localStorage.getItem('usuarioLogado');
@@ -508,6 +516,7 @@
                 if (tipoUsuario === 'admin') {
                     document.getElementById('btn-config').style.display = 'inline-flex';
                 }
+                atualizarHeaderOperador();
             } else {
                 document.getElementById('tela-login').style.display = 'flex';
             }
@@ -531,6 +540,7 @@
                 localStorage.setItem('tipoUsuario', encontrado.tipo);
                 document.getElementById('tela-login').style.display = 'none';
                 document.getElementById('login-senha').value = '';
+                atualizarHeaderOperador();
                 if (encontrado.tipo === 'admin') {
                     document.getElementById('btn-config').style.display = 'inline-flex';
                 }
@@ -873,9 +883,8 @@
 
                     #tela-nota { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #121212, #3a0000); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
                     @keyframes piscar { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
-                    #btn-liberar { z-index: 200; position: fixed; top: 15px; left: 50%; transform: translateX(-50%); padding: 8px 20px; font-size: 14px; font-weight: bold; background: rgba(0,0,0,0.7); color: #ffeb3b; border: 1px solid #ffeb3b; border-radius: 20px; cursor: pointer; pointer-events: none; }
                 </style></head>
-                <body onclick="document.getElementById('btn-liberar').style.display='none';">
+                <body onclick="this.style.cursor='default';">
                     <div id="logo-bar">
                         <img src="logop.png" alt="Logo">
                         <span>PARADA 10.95 BAR</span>
@@ -913,7 +922,6 @@
                             <div id="nota-valor" style="font-size: 160px; font-weight: 900; line-height: 1.1;">100</div>
                         </div>
                     </div>
-                    <button id="btn-liberar">👆 Clique em qualquer lugar para liberar o som (F11)</button>
                     <div id="player"></div>
                     <script> function onYouTubeIframeAPIReady() { if(window.opener) window.opener.iniciarPlayer(YT); } <\/script>
                     <script src="https://www.youtube.com/iframe_api"><\/script>
