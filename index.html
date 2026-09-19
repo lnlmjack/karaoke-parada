@@ -320,7 +320,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.54</span>
+        <span>v1.55</span>
     </div>
 
     <script>
@@ -883,8 +883,10 @@
 
                     #tela-nota { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #121212, #3a0000); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
                     @keyframes piscar { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
+                    
+                    #btn-liberar { z-index: 200; position: fixed; top: 15px; left: 50%; transform: translateX(-50%); padding: 8px 20px; font-size: 14px; font-weight: bold; background: rgba(0,0,0,0.8); color: #ffeb3b; border: 1px solid #ffeb3b; border-radius: 20px; cursor: pointer; }
                 </style></head>
-                <body onclick="this.style.cursor='default';">
+                <body onclick="document.getElementById('btn-liberar').style.display='none';">
                     <div id="logo-bar">
                         <img src="logop.png" alt="Logo">
                         <span>PARADA 10.95 BAR</span>
@@ -922,6 +924,7 @@
                             <div id="nota-valor" style="font-size: 160px; font-weight: 900; line-height: 1.1;">100</div>
                         </div>
                     </div>
+                    <button id="btn-liberar" onclick="this.style.display='none';">👆 Clique aqui para liberar o som (F11)</button>
                     <div id="player"></div>
                     <script> function onYouTubeIframeAPIReady() { if(window.opener) window.opener.iniciarPlayer(YT); } <\/script>
                     <script src="https://www.youtube.com/iframe_api"><\/script>
