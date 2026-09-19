@@ -119,6 +119,23 @@
         .login-input { width: 100%; padding: 15px; margin-bottom: 15px; background: #333; border: 1px solid #444; border-radius: 6px; color: white; font-size: 16px; box-sizing: border-box; }
         .login-btn { width: 100%; padding: 15px; background: #e52d27; color: white; font-size: 18px; font-weight: bold; border: 2px solid #fff; border-radius: 6px; cursor: pointer; transition: 0.2s; margin-top: 5px; }
         .login-btn:hover { background: #c21a15; }
+
+        /* Estilos da Interface Mobile do Cliente (QR Code) */
+        #tela-cliente { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #121212; z-index: 150000; overflow-y: auto; box-sizing: border-box; padding: 15px; }
+        .cliente-header { text-align: center; border-bottom: 2px solid #e52d27; padding-bottom: 15px; margin-bottom: 15px; }
+        .cliente-header img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid #ffeb3b; }
+        .cliente-header h2 { margin: 8px 0 0 0; color: #ffeb3b; font-size: 20px; }
+        .abas-cliente { display: flex; gap: 5px; margin-bottom: 15px; justify-content: center; }
+        .btn-aba-cliente { flex: 1; padding: 10px; background: #222; border: 1px solid #444; color: #aaa; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; text-align: center; }
+        .btn-aba-cliente.ativo { background: #e52d27; color: #fff; border-color: #e52d27; }
+        .conteudo-cliente { display: none; } .conteudo-cliente.ativo { display: block; }
+        
+        .card-foto { background: #1e1e1e; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px; border: 1px solid #333; }
+        .galeria-fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 15px; }
+        .item-foto-galeria { background: #222; border-radius: 8px; overflow: hidden; border: 1px solid #444; text-align: center; padding-bottom: 8px; }
+        .item-foto-galeria img { width: 100%; height: 110px; object-fit: cover; }
+        .item-foto-galeria p { font-size: 11px; margin: 5px 0; color: #ffeb3b; font-weight: bold; }
+        .btn-baixar-foto { display: inline-block; padding: 5px 10px; background: #28a745; color: #fff; text-decoration: none; border-radius: 4px; font-size: 11px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -131,6 +148,74 @@
             <input type="text" id="login-usuario" class="login-input" placeholder="Usuário">
             <input type="password" id="login-senha" class="login-input" placeholder="Senha" onkeypress="if(event.key === 'Enter') fazerLogin()">
             <button class="login-btn" onclick="fazerLogin()">Entrar</button>
+        </div>
+    </div>
+
+    <!-- Interface Mobile do Cliente (Acessada via URL com parâmetro ?cliente=1 ou similar, ou alternável para teste) -->
+    <div id="tela-cliente">
+        <div class="cliente-header">
+            <img src="logop.png" alt="Logo Parada">
+            <h2>Karaokê do Parada 10.95</h2>
+            <p style="font-size: 12px; color: #aaa; margin: 4px 0 0 0;">Escolha seu som, vote ou tire sua foto lembrança!</p>
+        </div>
+
+        <div class="abas-cliente">
+            <button class="btn-aba-cliente ativo" onclick="mudarAbaCliente('pedir', event)">🎵 Pedir / Fila</button>
+            <button class="btn-aba-cliente" onclick="mudarAbaCliente('votar', event)">⭐ Votar</button>
+            <button class="btn-aba-cliente" onclick="mudarAbaCliente('fotos', event)">📸 Fotos do Dia</button>
+        </div>
+
+        <!-- Aba Pedir / Fila -->
+        <div id="aba-cli-pedir" class="conteudo-cliente ativo">
+            <div class="card-foto">
+                <h3 style="margin-top:0; color:#00d2ff; font-size:16px;">Pedir Música</h3>
+                <input type="text" id="cli-input-cantor" placeholder="Seu Nome / Dupla" style="width:100%; padding:10px; margin-bottom:10px; background:#111; color:#fff; border:1px solid #444; border-radius:4px; box-sizing:border-box;">
+                <input type="text" id="cli-input-busca" placeholder="Nome da música ou link do YouTube" style="width:100%; padding:10px; margin-bottom:10px; background:#111; color:#fff; border:1px solid #444; border-radius:4px; box-sizing:border-box;">
+                <button onclick="clienteFazerPedido()" style="width:100%; padding:10px; background:#e52d27; color:#fff; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">Enviar Pedido ao DJ</button>
+            </div>
+            <div class="card-foto">
+                <h4 style="margin-top:0; color:#ffeb3b; font-size:14px;">Status Atual na TV:</h4>
+                <div id="cli-status-atual" style="font-size:13px; color:#aaa;">Nenhuma música tocando no momento.</div>
+            </div>
+        </div>
+
+        <!-- Aba Votar -->
+        <div id="aba-cli-votar" class="conteudo-cliente">
+            <div class="card-foto">
+                <h3 style="margin-top:0; color:#ffeb3b; font-size:16px;">Votação Ao Vivo</h3>
+                <p id="cli-musica-votacao" style="font-size:13px; color:#aaa; margin-bottom:15px;">Aguardando música iniciar para votar...</p>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    <button onclick="clienteVotar('excelente')" style="padding:10px; background:#00d2ff; color:#000; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">🤯 Excelente (Nota Máxima)</button>
+                    <button onclick="clienteVotar('muitobom')" style="padding:10px; background:#28a745; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">🤩 Muito Bom</button>
+                    <button onclick="clienteVotar('bom')" style="padding:10px; background:#ffeb3b; color:#000; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">🙂 Bom</button>
+                    <button onclick="clienteVotar('regular')" style="padding:10px; background:#fd7e14; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">😕 Regular</button>
+                    <button onclick="clienteVotar('ruim')" style="padding:10px; background:#e52d27; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">😖 Ruim</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aba Fotos do Dia -->
+        <div id="aba-cli-fotos" class="conteudo-cliente">
+            <div class="card-foto">
+                <h3 style="margin-top:0; color:#28a745; font-size:16px;">📸 Tirar Foto Lembrança</h3>
+                <p style="font-size:12px; color:#aaa; margin-bottom:10px;">Tire sua foto com a moldura oficial do bar para aparecer na TV e baixar!</p>
+                <input type="text" id="cli-foto-cantor" placeholder="Nome do Cantor / Dupla" style="width:100%; padding:10px; margin-bottom:10px; background:#111; color:#fff; border:1px solid #444; border-radius:4px; box-sizing:border-box;">
+                
+                <div id="container-camera" style="margin-bottom: 10px; position:relative;">
+                    <video id="webcam-video" autoplay playsinline style="width:100%; max-height:250px; background:#000; border-radius:8px; display:none;"></video>
+                    <canvas id="canvas-foto" style="display:none;"></canvas>
+                </div>
+
+                <button id="btn-ligar-camera" onclick="iniciarCameraCliente()" style="width:100%; padding:10px; background:#007bff; color:#fff; border:none; border-radius:4px; font-weight:bold; cursor:pointer; margin-bottom:5px;">📷 Abrir Câmera</button>
+                <button id="btn-tirar-foto" onclick="capturarFotoCliente()" style="width:100%; padding:10px; background:#28a745; color:#fff; border:none; border-radius:4px; font-weight:bold; cursor:pointer; display:none;">✨ Tirar Foto com Moldura</button>
+            </div>
+
+            <div class="card-foto">
+                <h4 style="margin-top:0; font-size:14px; color:#ffeb3b;">Galeria de Fotos do Dia</h4>
+                <div id="galeria-fotos-dia" class="galeria-fotos">
+                    <span style="color:#777; font-size:12px; grid-column: 1/-1;">Nenhuma foto tirada ainda hoje.</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -320,10 +405,18 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.56</span>
+        <span>v1.57</span>
     </div>
 
     <script>
+        // Detecção se o usuário abriu como cliente (ex: index.html?cliente=1)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('cliente')) {
+            document.getElementById('tela-login').style.display = 'none';
+            document.querySelector('.container').style.display = 'none';
+            document.getElementById('tela-cliente').style.display = 'block';
+        }
+
         let usuariosAutorizados = JSON.parse(localStorage.getItem('usuariosAutorizados')) || [
             { usuario: "leonard", senha: "123", tipo: "admin" },
             { usuario: "operador", senha: "123", tipo: "comum" }
@@ -343,6 +436,7 @@
 
         function renderizarChipsCanaisDiscretos() {
             const container = document.getElementById('container-chips-canais');
+            if(!container) return;
             let html = `<span style="font-weight:bold;">⭐ Preferência:</span>`;
             canaisFavoritos.forEach((canal, idx) => {
                 html += `<div class="chip-canal"><span class="ordem-badge">${idx+1}º</span> ${canal}</div>`;
@@ -354,6 +448,13 @@
             document.querySelectorAll('.conteudo-aba').forEach(el => el.classList.remove('ativo'));
             document.querySelectorAll('.btn-aba').forEach(el => el.classList.remove('ativo'));
             document.getElementById('aba-' + aba).classList.add('ativo');
+            evento.currentTarget.classList.add('ativo');
+        }
+
+        function mudarAbaCliente(aba, evento) {
+            document.querySelectorAll('.conteudo-cliente').forEach(el => el.classList.remove('ativo'));
+            document.querySelectorAll('.btn-aba-cliente').forEach(el => el.classList.remove('ativo'));
+            document.getElementById('aba-cli-' + aba).classList.add('ativo');
             evento.currentTarget.classList.add('ativo');
         }
 
@@ -508,17 +609,19 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             renderizarChipsCanaisDiscretos();
-            const usuarioLogado = localStorage.getItem('usuarioLogado');
-            const tipoUsuario = localStorage.getItem('tipoUsuario');
-            
-            if (usuarioLogado) {
-                document.getElementById('tela-login').style.display = 'none';
-                if (tipoUsuario === 'admin') {
-                    document.getElementById('btn-config').style.display = 'inline-flex';
+            if (!urlParams.has('cliente')) {
+                const usuarioLogado = localStorage.getItem('usuarioLogado');
+                const tipoUsuario = localStorage.getItem('tipoUsuario');
+                
+                if (usuarioLogado) {
+                    document.getElementById('tela-login').style.display = 'none';
+                    if (tipoUsuario === 'admin') {
+                        document.getElementById('btn-config').style.display = 'inline-flex';
+                    }
+                    atualizarHeaderOperador();
+                } else {
+                    document.getElementById('tela-login').style.display = 'flex';
                 }
-                atualizarHeaderOperador();
-            } else {
-                document.getElementById('tela-login').style.display = 'flex';
             }
         });
 
@@ -606,6 +709,7 @@
 
         async function toggleMicrofone() {
             const btn = document.getElementById('botaoMic');
+            if(!btn) return;
             if (micAtivo) {
                 if (streamMic) streamMic.getTracks().forEach(track => track.stop());
                 if (audioCtx && audioCtx.state !== 'closed') await audioCtx.close();
@@ -651,6 +755,129 @@
         database.ref('statusAtual').set(null);
         database.ref('votosAtual').remove();
 
+        // Sincronização e monitoramento para a interface do cliente
+        database.ref('statusAtual').on('value', (snapshot) => {
+            const st = snapshot.val();
+            const statusCli = document.getElementById('cli-status-atual');
+            const votacaoCli = document.getElementById('cli-musica-votacao');
+            if(st && st.id) {
+                if(statusCli) statusCli.innerHTML = `🎵 <strong>${st.titulo}</strong> <br>🎤 Voz: <strong>${st.cantor}</strong>`;
+                if(votacaoCli) votacaoCli.innerHTML = `Cantando Agora: <strong style="color:#00d2ff">${st.cantor}</strong> - ${st.titulo}`;
+            } else {
+                if(statusCli) statusCli.innerText = "Nenhuma música tocando no momento.";
+                if(votacaoCli) votacaoCli.innerText = "Aguardando música iniciar para votar...";
+            }
+        });
+
+        // Sincronização de fotos do dia para a galeria do cliente
+        database.ref('fotosDia').on('value', (snapshot) => {
+            const galeria = document.getElementById('galeria-fotos-dia');
+            if(!galeria) return;
+            let html = "";
+            snapshot.forEach(child => {
+                let f = child.val();
+                html += `
+                    <div class="item-foto-galeria">
+                        <img src="${f.imagemBase64}" alt="Foto Lembrança">
+                        <p>${f.cantor}</p>
+                        <a href="${f.imagemBase64}" download="Parada1095_${f.cantor}.png" class="btn-baixar-foto">Baixar Foto</a>
+                    </div>
+                `;
+            });
+            if(html === "") {
+                galeria.innerHTML = '<span style="color:#777; font-size:12px; grid-column: 1/-1;">Nenhuma foto tirada ainda hoje.</span>';
+            } else {
+                galeria.innerHTML = html;
+            }
+        });
+
+        function clienteFazerPedido() {
+            const cantor = document.getElementById('cli-input-cantor').value.trim();
+            const busca = document.getElementById('cli-input-busca').value.trim();
+            if(!cantor || !busca) return alert("Preencha seu nome e a música desejada!");
+
+            const videoId = extrairVideoId(busca);
+            const tituloFinal = videoId ? "Música via Link" : busca;
+            const idFinal = videoId || "busca_" + Date.now();
+
+            database.ref('pedidos').push({
+                videoId: idFinal,
+                titulo: tituloFinal,
+                cantor: cantor
+            });
+
+            alert("Pedido enviado com sucesso para o DJ!");
+            document.getElementById('cli-input-busca').value = "";
+        }
+
+        function clienteVotar(tipo) {
+            database.ref('votosAtual').push({ tipo: tipo });
+            alert("Voto computado com sucesso! Obrigado!");
+        }
+
+        // Funções de Câmera e Moldura no Celular do Cliente
+        let streamCamera = null;
+        async function iniciarCameraCliente() {
+            const video = document.getElementById('webcam-video');
+            const btnTirar = document.getElementById('btn-tirar-foto');
+            const btnLigar = document.getElementById('btn-ligar-camera');
+            try {
+                streamCamera = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+                video.srcObject = streamCamera;
+                video.style.display = 'block';
+                btnTirar.style.display = 'block';
+                btnLigar.style.display = 'none';
+            } catch (err) {
+                alert("Não foi possível acessar a câmera do celular. Verifique as permissões do navegador.");
+            }
+        }
+
+        function capturarFotoCliente() {
+            const cantor = document.getElementById('cli-foto-cantor').value.trim() || "Visitante Parada";
+            const video = document.getElementById('webcam-video');
+            const canvas = document.getElementById('canvas-foto');
+            
+            if(!video.srcObject) return alert("Ligue a câmera primeiro!");
+
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+            const ctx = canvas.getContext('2d');
+
+            // Desenhar foto da câmera
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Aplicar Moldura Personalizada do Bar
+            ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+            ctx.fillRect(0, canvas.height - 70, canvas.width, 70);
+
+            ctx.fillStyle = "#ffeb3b";
+            ctx.font = "bold 22px Arial";
+            ctx.fillText("🍻 Karaokê do Parada 10.95", 20, canvas.height - 38);
+
+            ctx.fillStyle = "#fff";
+            ctx.font = "16px Arial";
+            ctx.fillText(`Voz: ${cantor}`, 20, canvas.height - 14);
+
+            // Converter para Base64 comprimido
+            const imagemBase64 = canvas.toDataURL('image/jpeg', 0.8);
+
+            // Enviar para o Firebase Realtime Database (Gratuito)
+            database.ref('fotosDia').push({
+                cantor: cantor,
+                imagemBase64: imagemBase64,
+                timestamp: Date.now()
+            });
+
+            // Parar câmera
+            streamCamera.getTracks().forEach(t => t.stop());
+            video.style.display = 'none';
+            document.getElementById('btn-tirar-foto').style.display = 'none';
+            document.getElementById('btn-ligar-camera').style.display = 'block';
+
+            alert("Foto tirada e salva com sucesso! Vá até a aba 'Fotos do Dia' para baixar ou veja na TV!");
+            mudarAbaCliente('fotos', { currentTarget: document.querySelectorAll('.btn-aba-cliente')[2] });
+        }
+
         let pedidosPendentes = [];
         let autoAprovar = false;
 
@@ -692,6 +919,7 @@
 
         function renderizarPedidos() {
             const divPedidos = document.getElementById('pedidos-lista');
+            if(!divPedidos) return;
             if(pedidosPendentes.length === 0) {
                 divPedidos.innerHTML = "<p style='color:#aaa; font-size:13px; text-align:center;'>Nenhum pedido no momento.</p>";
                 return;
@@ -729,8 +957,9 @@
                     if (contagemVotos[voto.tipo] !== undefined) { contagemVotos[voto.tipo]++; totalVotosPublico++; }
                 });
             }
-            document.getElementById('contador-votos').innerText = `📊 ${totalVotosPublico} votos ao vivo`;
-            if(document.getElementById('modal-votos').style.display === 'block') renderizarDetalhesVotos();
+            const elContador = document.getElementById('contador-votos');
+            if(elContador) elContador.innerText = `📊 ${totalVotosPublico} votos ao vivo`;
+            if(document.getElementById('modal-votos') && document.getElementById('modal-votos').style.display === 'block') renderizarDetalhesVotos();
         });
 
         function abrirDetalhesVotos() { renderizarDetalhesVotos(); document.getElementById('fundo-modal').style.display = 'block'; document.getElementById('modal-votos').style.display = 'block'; }
@@ -801,6 +1030,7 @@
 
         function renderizarCantoresSalvos() {
             const div = document.getElementById('lista-cantores-salvos');
+            if(!div) return;
             if (cantoresSalvos.length === 0) {
                 div.innerHTML = "<span style='color:#777; font-size:13px;'>Nenhum cantor salvo.</span>";
                 return;
@@ -822,7 +1052,8 @@
             }
         }
 
-        document.getElementById('input-nome-cantor').addEventListener('keypress', e => { if(e.key === 'Enter') confirmarCantor(); });
+        const inputCantorEl = document.getElementById('input-nome-cantor');
+        if(inputCantorEl) inputCantorEl.addEventListener('keypress', e => { if(e.key === 'Enter') confirmarCantor(); });
 
         document.addEventListener('keydown', function(event) {
             if (event.key === '6') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 60; } 
@@ -846,7 +1077,8 @@
             }
         }
 
-        document.getElementById('campoBusca').addEventListener('keypress', e => { if(e.key === 'Enter') buscarNoYouTube(); });
+        const campoBuscaEl = document.getElementById('campoBusca');
+        if(campoBuscaEl) campoBuscaEl.addEventListener('keypress', e => { if(e.key === 'Enter') buscarNoYouTube(); });
 
         function abrirTV() {
             telaTV = window.open("", "TelaTV", "width=800,height=600,toolbar=0,location=0,status=0,menubar=0,scrollbars=0,resizable=1");
@@ -871,7 +1103,6 @@
                     #cantor-overlay .aviso { font-size: 12px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
                     #cantor-overlay .nome { font-size: 22px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; line-height: 1.1; word-wrap: break-word;}
                     
-                    /* TELA DE ESPERA IMEDIATA COM QR CODE E FRASE CORRETA */
                     #tela-aguardando { display: flex; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #0b0b0b, #1a0000); z-index: 90; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
                     #tela-aguardando img.logo-centro { width: 220px; height: auto; border-radius: 50%; box-shadow: 0 0 40px rgba(229,45,39,0.5); margin-bottom: 25px; animation: pulsar 2s infinite; }
                     @keyframes pulsar { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
@@ -901,7 +1132,6 @@
 
                     <div id="cantor-overlay"></div>
 
-                    <!-- TELA DE ESPERA IMEDIATA COM QR CODE E FRASE PEDIDA -->
                     <div id="tela-aguardando">
                         <img src="logop.png" class="logo-centro" alt="Logo Bar">
                         <h1>🍻 AGUARDANDO PRÓXIMA MÚSICA 🍻</h1>
@@ -917,15 +1147,15 @@
                     </div>
 
                     <div id="tela-nota">
-                        <h1 style="font-size: 50px; color: #ffeb3b; margin-bottom: 10px;">🍻 PARADA 10.95 BAR</h1>
-                        <h2 style="font-size: 40px; margin-bottom: 30px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
-                        <div id="nota-loading" style="font-size: 30px; animation: piscar 1s infinite;">Calculando energia e votos do público... 🥁</div>
-                        <div id="nota-resultado" style="display:none; flex-direction:column; align-items:center; gap: 15px;">
+                        <h1 style="font-size: 40px; color: #ffeb3b; margin-bottom: 5px;">🍻 PARADA 10.95 BAR</h1>
+                        <h2 style="font-size: 30px; margin-bottom: 20px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
+                        <div id="nota-loading" style="font-size: 26px; animation: piscar 1s infinite;">Calculando energia e votos do público... 🥁</div>
+                        <div id="nota-resultado" style="display:none; flex-direction:column; align-items:center; gap: 10px;">
                             <div id="tv-foto-container" style="display:none;">
-                                <img id="tv-foto-img" style="width: 220px; height: 165px; object-fit: cover; border-radius: 10px; border: 3px solid #ffeb3b; box-shadow: 0 0 20px rgba(255,235,59,0.5);" alt="Foto do Cantor">
+                                <img id="tv-foto-img" style="width: 200px; height: 150px; object-fit: cover; border-radius: 10px; border: 3px solid #ffeb3b; box-shadow: 0 0 20px rgba(255,235,59,0.5);" alt="Foto do Cantor">
                             </div>
-                            <div style="font-size: 20px; color: #aaa;">Pontuação Final:</div>
-                            <div id="nota-valor" style="font-size: 130px; font-weight: 900; line-height: 1;">100</div>
+                            <div style="font-size: 18px; color: #aaa;">Pontuação Final:</div>
+                            <div id="nota-valor" style="font-size: 120px; font-weight: 900; line-height: 1;">100</div>
                         </div>
                     </div>
                     <button id="btn-liberar" onclick="this.style.display='none';">👆 Clique aqui para liberar o som (F11)</button>
@@ -938,8 +1168,11 @@
             monitorTV = setInterval(() => {
                 if (telaTV && telaTV.closed) {
                     clearInterval(monitorTV);
-                    document.getElementById('botaoTV').innerHTML = "📺 TELA FECHADA! REABRIR";
-                    document.getElementById('botaoTV').style.background = "#e52d27"; 
+                    const bTv = document.getElementById('botaoTV');
+                    if(bTv) {
+                        bTv.innerHTML = "📺 TELA FECHADA! REABRIR";
+                        bTv.style.background = "#e52d27";
+                    }
                 }
             }, 1000);
         }
@@ -955,8 +1188,11 @@
                     } 
                 }
             });
-            document.getElementById('botaoTV').innerHTML = "✅ TELA CONECTADA!";
-            document.getElementById('botaoTV').style.background = "#17a2b8";
+            const bTv = document.getElementById('botaoTV');
+            if(bTv) {
+                bTv.innerHTML = "✅ TELA CONECTADA!";
+                bTv.style.background = "#17a2b8";
+            }
             
             if (telaTV && !telaTV.closed) {
                 telaTV.document.getElementById('tela-aguardando').style.display = 'flex';
@@ -995,7 +1231,6 @@
             ranking.push({ nome: musicaAtual.cantor, nota: notaFinal, titulo: musicaAtual.titulo, votos: votosCongelados });
             atualizarTelaRanking();
 
-            // Buscar foto recente do cantor no banco se houver
             database.ref('fotosDia').once('value', (snapshot) => {
                 let fotoEncontrada = null;
                 snapshot.forEach(child => {
@@ -1129,9 +1364,9 @@
         function pausarMusicaAtual() {
             if (player && typeof player.getPlayerState === 'function') {
                 const state = player.getPlayerState();
-                if (state === 1) { // 1 = Playing
+                if (state === 1) { 
                     player.pauseVideo();
-                } else if (state === 2) { // 2 = Paused
+                } else if (state === 2) { 
                     player.playVideo();
                 }
             }
@@ -1223,7 +1458,9 @@
 
         function atualizarTelaFila() {
             localStorage.setItem('filaDeReproducao', JSON.stringify(filaDeReproducao));
-            document.getElementById('fila').innerHTML = filaDeReproducao.map((item, i) => `
+            const divFila = document.getElementById('fila');
+            if(!divFila) return;
+            divFila.innerHTML = filaDeReproducao.map((item, i) => `
                 <div class="item-fila">
                     <span class="titulo-musica"><strong>${i+1}º</strong> - ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span></span>
                     <div class="botoes-acao">
@@ -1242,11 +1479,15 @@
 
         function atualizarTelaHistorico() { 
             localStorage.setItem('historicoDeReproducao', JSON.stringify(historicoDeReproducao));
-            document.getElementById('historico').innerHTML = historicoDeReproducao.slice().reverse().map(item => `<div class="item-historico">✔️ ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span></div>`).join(''); 
+            const divHist = document.getElementById('historico');
+            if(!divHist) return;
+            divHist.innerHTML = historicoDeReproducao.slice().reverse().map(item => `<div class="item-historico">✔️ ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span></div>`).join(''); 
         }
         
         function atualizarTelaRanking() {
             localStorage.setItem('ranking', JSON.stringify(ranking));
+            const divRank = document.getElementById('ranking');
+            if(!divRank) return;
             
             let htmlTocando = "";
             if (musicaAtual) {
@@ -1290,7 +1531,7 @@
                 </div>
             `).join('');
 
-            document.getElementById('ranking').innerHTML = htmlTocando + htmlRanking;
+            divRank.innerHTML = htmlTocando + htmlRanking;
         }
 
         atualizarTelaFila();
