@@ -90,9 +90,9 @@
         #fundo-modal-central-fotos { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 600; }
         #modal-central-fotos { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 601; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 600px; color: #fff; max-height: 85vh; overflow-y: auto; border: 2px solid #28a745; }
 
-        /* Modal Visualizar Foto (Z-Index 800 - Fica acima de tudo) */
-        #fundo-modal-visualizar { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 800; }
-        #modal-visualizar { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 801; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 550px; color: #fff; max-height: 90vh; overflow-y: auto; border: 2px solid #ffeb3b; text-align: center; }
+        /* Modal Visualizar Foto (Z-Index 99990 - Garantido acima da tela do cliente que está em 150000? Não, cliente está em 150000, então colocamos modal em 200000) */
+        #fundo-modal-visualizar { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 250000; }
+        #modal-visualizar { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 20px; border-radius: 12px; z-index: 250001; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 500px; color: #fff; max-height: 90vh; overflow-y: auto; border: 2px solid #ffeb3b; text-align: center; box-sizing: border-box; }
 
         .abas-config { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; flex-wrap: wrap; }
         .btn-aba { background: #222; border: 1px solid #444; color: #aaa; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
@@ -232,7 +232,7 @@
 
     <datalist id="lista-cantores-datalist"></datalist>
 
-    <!-- Modal de Visualização de Foto (Z-Index Ajustado) -->
+    <!-- Modal de Visualização de Foto (Disponível Globalmente com z-index alto) -->
     <div id="fundo-modal-visualizar" onclick="fecharModalVisualizar()"></div>
     <div id="modal-visualizar">
         <h3 id="modal-vis-titulo" style="color:#ffeb3b; margin-top:0;">Foto Lembrança</h3>
@@ -397,7 +397,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.60</span>
+        <span>v1.61</span>
     </div>
 
     <script>
