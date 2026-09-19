@@ -81,12 +81,18 @@
         .versao-app span { color: #fff; }
         .versao-app:hover { opacity: 1; }
 
-        /* Modais */
-        #fundo-modal-config, #fundo-modal-cantor, #fundo-modal-central-fotos, #fundo-modal-visualizar { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 500; }
-        #modal-config, #modal-cantor, #modal-central-fotos, #modal-visualizar { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 501; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 600px; color: #fff; max-height: 85vh; overflow-y: auto; }
+        /* Modais com Z-Index Organizados */
+        #fundo-modal-config, #fundo-modal-cantor { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 500; }
+        #modal-config, #modal-cantor { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 501; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 550px; color: #fff; max-height: 85vh; overflow-y: auto; }
         #modal-config { border: 2px solid #ffc107; } #modal-cantor { border: 2px solid #00d2ff; text-align: center; }
-        #modal-central-fotos { border: 2px solid #28a745; }
-        #modal-visualizar { border: 2px solid #ffeb3b; text-align: center; }
+
+        /* Central de Fotos (Z-Index 600) */
+        #fundo-modal-central-fotos { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 600; }
+        #modal-central-fotos { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 601; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 600px; color: #fff; max-height: 85vh; overflow-y: auto; border: 2px solid #28a745; }
+
+        /* Modal Visualizar Foto (Z-Index 800 - Fica acima de tudo) */
+        #fundo-modal-visualizar { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 800; }
+        #modal-visualizar { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 801; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 550px; color: #fff; max-height: 90vh; overflow-y: auto; border: 2px solid #ffeb3b; text-align: center; }
 
         .abas-config { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; flex-wrap: wrap; }
         .btn-aba { background: #222; border: 1px solid #444; color: #aaa; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
@@ -106,7 +112,6 @@
         .chip-cantor:hover { background: #444; border-color: #00d2ff; }
         .chip-cantor span { cursor: pointer; flex: 1; }
         .btn-acao-chip { background: transparent; border: none; cursor: pointer; font-size: 12px; color: #aaa; padding: 0; margin: 0;}
-        .btn-acao-chip:hover { color: #fff; transform: scale(1.1); }
         .botoes-modal-cantor { display: flex; gap: 10px; }
         .btn-confirmar { flex: 2; padding: 12px; background: #28a745; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px;}
         .btn-cancelar { flex: 1; padding: 12px; background: #e52d27; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px;}
@@ -121,7 +126,7 @@
         .login-btn { width: 100%; padding: 15px; background: #e52d27; color: white; font-size: 18px; font-weight: bold; border: 2px solid #fff; border-radius: 6px; cursor: pointer; transition: 0.2s; margin-top: 5px; }
         .login-btn:hover { background: #c21a15; }
 
-        /* Interface Mobile do Cliente (Vertical Exata) */
+        /* Interface Mobile do Cliente */
         #tela-cliente { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #121212; z-index: 150000; overflow-y: auto; box-sizing: border-box; }
         .cliente-topo-vermelho { background: #b31217; color: #fff; padding: 18px; text-align: center; font-size: 20px; font-weight: 900; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; gap: 8px; }
         .cliente-corpo { padding: 20px; max-width: 450px; margin: 0 auto; text-align: center; }
@@ -159,7 +164,7 @@
         </div>
     </div>
 
-    <!-- Interface Mobile do Cliente (Vertical Exata) -->
+    <!-- Interface Mobile do Cliente -->
     <div id="tela-cliente">
         <div class="cliente-topo-vermelho">
             <span>🍻 PARADA 10.95 BAR</span>
@@ -209,7 +214,6 @@
                 
                 <input type="text" id="cli-foto-cantor" list="lista-cantores-datalist" placeholder="Nome do Cantor / Dupla" style="width:100%; padding:12px; margin-bottom:12px; background:#111; color:#fff; border:1px solid #444; border-radius:6px; box-sizing:border-box; font-size:15px;">
                 
-                <!-- Input de arquivo invisível ativado nativamente em tela cheia -->
                 <input type="file" id="input-camera-nativa" accept="image/*" capture="environment" style="display:none;" onchange="processarFotoNativa(this)">
                 
                 <button onclick="document.getElementById('input-camera-nativa').click()" style="width:100%; padding:14px; background:#28a745; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer; margin-bottom:12px; font-size:16px;">📷 Tirar Foto (Câmera Nativa)</button>
@@ -226,10 +230,9 @@
         </div>
     </div>
 
-    <!-- Datalist para autocompletar nomes de cantores salvos -->
     <datalist id="lista-cantores-datalist"></datalist>
 
-    <!-- Modal de Visualização de Foto -->
+    <!-- Modal de Visualização de Foto (Z-Index Ajustado) -->
     <div id="fundo-modal-visualizar" onclick="fecharModalVisualizar()"></div>
     <div id="modal-visualizar">
         <h3 id="modal-vis-titulo" style="color:#ffeb3b; margin-top:0;">Foto Lembrança</h3>
@@ -245,9 +248,7 @@
     <div id="modal-central-fotos">
         <h2 style="color:#28a745; margin-top:0; border-bottom:1px solid #333; padding-bottom:10px;">📸 Central de Gerenciamento de Fotos</h2>
         <p style="font-size:13px; color:#aaa;">Aqui você pode visualizar ou excluir fotos enviadas pelos clientes durante o evento.</p>
-        <div id="lista-admin-fotos" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap:10px; max-height:50vh; overflow-y:auto; margin-bottom:15px;">
-            <!-- Preenchido via JS -->
-        </div>
+        <div id="lista-admin-fotos" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap:10px; max-height:50vh; overflow-y:auto; margin-bottom:15px;"></div>
         <button onclick="fecharCentralFotos()" style="width:100%; padding:10px; background:#333; color:#fff; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">Fechar Central</button>
     </div>
 
@@ -256,13 +257,7 @@
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
     <div id="modal-manual-conteudo">
         <h2>📖 Manual Completo do Operador - Parada 10.95 Bar</h2>
-        
-        <h3>1. Acesso e Controle de Contas (Login)</h3>
-        <p>O sistema possui controle de acesso com dois perfis de usuários:</p>
-        <ul>
-            <li><span class="destaque">Administrador:</span> Possui acesso completo ao painel, gestão de canais e controle de fotos através da nova central.</li>
-            <li><span class="destaque">Operador Comum:</span> Gerencia as músicas, fila, histórico e pedidos em tempo real.</li>
-        </ul>
+        <p>O sistema possui controle de acesso com dois perfis de usuários...</p>
         <button onclick="fecharManual()" style="width: 100%; margin-top: 30px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
     </div>
 
@@ -275,7 +270,6 @@
             <button class="btn-aba" onclick="mudarAba('usuarios', event)">👥 Usuários</button>
             <button class="btn-aba" onclick="mudarAba('transicao', event)">⏳ Transição / Pausa</button>
         </div>
-
         <div id="aba-canais" class="conteudo-aba ativo">
             <div style="max-height: 150px; overflow-y: auto;">
                 <table class="tabela-canais">
@@ -289,7 +283,6 @@
                 <button onclick="adicionarNovoCanal()" style="width: 100%; padding: 8px; background: #28a745; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Adicionar Canal</button>
             </div>
         </div>
-
         <div id="aba-usuarios" class="conteudo-aba">
             <div style="max-height: 150px; overflow-y: auto;">
                 <table class="tabela-usuarios">
@@ -308,7 +301,6 @@
                 <button onclick="adicionarNovoUsuario()" style="width: 100%; padding: 8px; background: #28a745; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Adicionar Usuário</button>
             </div>
         </div>
-
         <div id="aba-transicao" class="conteudo-aba">
             <div class="form-novo-canal">
                 <strong>Tempo de Pausa entre Músicas (Segundos):</strong>
@@ -405,7 +397,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.59</span>
+        <span>v1.60</span>
     </div>
 
     <script>
@@ -485,12 +477,14 @@
                 snapshot.forEach(child => {
                     let key = child.key;
                     let f = child.val();
+                    let safeBase64 = f.imagemBase64.replace(/'/g, "\\'");
+                    let safeCantor = f.cantor.replace(/'/g, "\\'");
                     html += `
                         <div style="background:#222; border:1px solid #444; border-radius:6px; padding:6px; text-align:center;">
                             <img src="${f.imagemBase64}" style="width:100%; height:90px; object-fit:cover; border-radius:4px;" alt="Foto">
                             <p style="font-size:11px; margin:4px 0; color:#ffeb3b; font-weight:bold;">${f.cantor}</p>
                             <div style="display:flex; gap:4px; justify-content:center;">
-                                <button onclick="visualizarFotoModal('${f.imagemBase64}', '${f.cantor}')" style="background:#007bff; color:#fff; border:none; padding:3px 6px; border-radius:3px; font-size:10px; cursor:pointer;">Ver</button>
+                                <button onclick="visualizarFotoModal('${safeBase64}', '${safeCantor}')" style="background:#007bff; color:#fff; border:none; padding:3px 6px; border-radius:3px; font-size:10px; cursor:pointer;">Ver</button>
                                 <button onclick="excluirFotoAdmin('${key}')" style="background:#b31217; color:#fff; border:none; padding:3px 6px; border-radius:3px; font-size:10px; cursor:pointer;">Excluir</button>
                             </div>
                         </div>
@@ -661,10 +655,6 @@
             const tipo = localStorage.getItem('tipoUsuario');
             const elOp = document.getElementById('info-operador');
             if (elOp) elOp.innerText = `👤 Operador: ${usuarioLogado.toUpperCase()}`;
-            const btnCentral = document.getElementById('btn-central-fotos');
-            if (btnCentral) {
-                btnCentral.style.display = (tipo === 'admin') ? 'inline-flex' : 'inline-flex'; // Admin ou operador gerenciam
-            }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -815,12 +805,14 @@
             let html = "";
             snapshot.forEach(child => {
                 let f = child.val();
+                let safeBase64 = f.imagemBase64.replace(/'/g, "\\'");
+                let safeCantor = f.cantor.replace(/'/g, "\\'");
                 html += `
                     <div class="item-foto-galeria">
                         <img src="${f.imagemBase64}" alt="Foto Lembrança">
                         <p>${f.cantor}</p>
                         <div class="acoes-foto-card">
-                            <button onclick="visualizarFotoModal('${f.imagemBase64}', '${f.cantor}')" class="btn-ver-foto">Ver</button>
+                            <button onclick="visualizarFotoModal('${safeBase64}', '${safeCantor}')" class="btn-ver-foto">Ver</button>
                             <a href="${f.imagemBase64}" download="Parada1095_${f.cantor}.png" class="btn-baixar-foto">Baixar</a>
                         </div>
                     </div>
@@ -848,7 +840,6 @@
             alert("Voto computado com sucesso! Obrigado!");
         }
 
-        // Processar Foto Nativa em Tela Cheia com Nova Moldura Bonita
         function processarFotoNativa(input) {
             if (!input.files || !input.files[0]) return;
             const cantor = document.getElementById('cli-foto-cantor').value.trim() || "Visitante Parada";
@@ -862,10 +853,8 @@
                     canvas.height = img.height;
                     const ctx = canvas.getContext('2d');
 
-                    // Desenhar foto original
                     ctx.drawImage(img, 0, 0);
 
-                    // Moldura Estilizada e Profissional
                     const grad = ctx.createLinearGradient(0, canvas.height - 120, 0, canvas.height);
                     grad.addColorStop(0, "rgba(0, 0, 0, 0)");
                     grad.addColorStop(0.3, "rgba(0, 0, 0, 0.85)");
@@ -873,12 +862,10 @@
                     ctx.fillStyle = grad;
                     ctx.fillRect(0, canvas.height - 120, canvas.width, 120);
 
-                    // Borda interna decorativa dourada/amarela
                     ctx.strokeStyle = "#ffeb3b";
                     ctx.lineWidth = 6;
                     ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
 
-                    // Textos da Moldura
                     ctx.fillStyle = "#ffeb3b";
                     ctx.font = "bold 32px Arial";
                     ctx.fillText("🍻 KARAOKÊ DO PARADA 10.95", 40, canvas.height - 70);
@@ -895,13 +882,13 @@
                         timestamp: Date.now()
                     });
 
-                    // Salvar cantor na lista local
                     if (cantor !== "Visitante Parada" && !cantoresSalvos.includes(cantor)) {
                         cantoresSalvos.push(cantor);
                         localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
+                        atualizarDatalistCantores();
                     }
 
-                    alert("Foto tirada e moldura aplicada com sucesso! Veja na galeria abaixo ou na TV!");
+                    alert("Foto tirada e moldura aplicada com sucesso!");
                     input.value = "";
                 }
                 img.src = e.target.result;
