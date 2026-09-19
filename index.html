@@ -19,6 +19,7 @@
         #btn-sair { background: transparent; color: #aaa; } #btn-sair:hover { color: #fff; background: #e52d27; border-color: #e52d27; }
         #btn-config { background: #ffc107; color: #000; border-color: #e0a800; display: none; } #btn-config:hover { background: #e0a800; }
         #btn-manual { background: #333; color: #fff; } #btn-manual:hover { background: #444; border-color: #00d2ff; }
+        #btn-central-fotos { background: #28a745; color: #fff; border-color: #218838; } #btn-central-fotos:hover { background: #218838; }
 
         .area-botoes-topo { display: flex; gap: 15px; margin-bottom: 15px; }
         .btn-topo { flex: 1; padding: 15px; font-size: 16px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s;}
@@ -80,13 +81,13 @@
         .versao-app span { color: #fff; }
         .versao-app:hover { opacity: 1; }
 
-        /* Estilos dos Modais */
-        #fundo-modal-config, #fundo-modal-cantor { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 500; }
-        #modal-config, #modal-cantor { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 501; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 550px; color: #fff; }
+        /* Modais */
+        #fundo-modal-config, #fundo-modal-cantor, #fundo-modal-central-fotos, #fundo-modal-visualizar { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 500; }
+        #modal-config, #modal-cantor, #modal-central-fotos, #modal-visualizar { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 501; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 600px; color: #fff; max-height: 85vh; overflow-y: auto; }
         #modal-config { border: 2px solid #ffc107; } #modal-cantor { border: 2px solid #00d2ff; text-align: center; }
-        #modal-config h2 { color: #ffc107; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; font-size: 20px; text-align: center; }
-        #modal-cantor h2 { color: #00d2ff; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; font-size: 20px; }
-        
+        #modal-central-fotos { border: 2px solid #28a745; }
+        #modal-visualizar { border: 2px solid #ffeb3b; text-align: center; }
+
         .abas-config { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; flex-wrap: wrap; }
         .btn-aba { background: #222; border: 1px solid #444; color: #aaa; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
         .btn-aba.ativo { background: #ffc107; color: #000; border-color: #ffc107; }
@@ -111,7 +112,7 @@
         .btn-cancelar { flex: 1; padding: 12px; background: #e52d27; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px;}
         .btn-limpar-cantores { margin-top: 15px; background: transparent; border: none; color: #aaa; text-decoration: underline; cursor: pointer; font-size: 12px; width: 100%; text-align: center;}
 
-        /* Estilos da Tela de Login */
+        /* Tela de Login */
         #tela-login { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #1a1a1a; z-index: 200000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
         .login-box { background: #222; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); text-align: center; width: 100%; max-width: 350px; }
         .login-box img { width: 140px; margin-bottom: 20px; border-radius: 50%; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
@@ -120,7 +121,7 @@
         .login-btn { width: 100%; padding: 15px; background: #e52d27; color: white; font-size: 18px; font-weight: bold; border: 2px solid #fff; border-radius: 6px; cursor: pointer; transition: 0.2s; margin-top: 5px; }
         .login-btn:hover { background: #c21a15; }
 
-        /* Estilos da Interface Mobile do Cliente (Layout Vertical Exato ao Modelo) */
+        /* Interface Mobile do Cliente (Vertical Exata) */
         #tela-cliente { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #121212; z-index: 150000; overflow-y: auto; box-sizing: border-box; }
         .cliente-topo-vermelho { background: #b31217; color: #fff; padding: 18px; text-align: center; font-size: 20px; font-weight: 900; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; gap: 8px; }
         .cliente-corpo { padding: 20px; max-width: 450px; margin: 0 auto; text-align: center; }
@@ -139,7 +140,10 @@
         .item-foto-galeria { background: #222; border-radius: 8px; overflow: hidden; border: 1px solid #444; text-align: center; padding-bottom: 8px; }
         .item-foto-galeria img { width: 100%; height: 110px; object-fit: cover; }
         .item-foto-galeria p { font-size: 11px; margin: 5px 0; color: #ffeb3b; font-weight: bold; }
-        .btn-baixar-foto { display: inline-block; padding: 5px 10px; background: #28a745; color: #fff; text-decoration: none; border-radius: 4px; font-size: 11px; font-weight: bold; }
+        .acoes-foto-card { display: flex; gap: 4px; justify-content: center; padding: 0 5px; }
+        .btn-baixar-foto, .btn-ver-foto { display: inline-block; padding: 4px 8px; color: #fff; text-decoration: none; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; border: none; }
+        .btn-baixar-foto { background: #28a745; }
+        .btn-ver-foto { background: #007bff; }
     </style>
 </head>
 <body>
@@ -155,35 +159,25 @@
         </div>
     </div>
 
-    <!-- Interface Mobile do Cliente (Layout Vertical Exato) -->
+    <!-- Interface Mobile do Cliente (Vertical Exata) -->
     <div id="tela-cliente">
         <div class="cliente-topo-vermelho">
             <span>🍻 PARADA 10.95 BAR</span>
         </div>
 
         <div class="cliente-corpo">
-            <!-- Menu Principal Vertical -->
             <div id="menu-principal-cliente">
                 <div class="cliente-pergunta">O que você quer fazer?</div>
-                
-                <button class="btn-menu-cliente btn-pedir" onclick="abrirSubtela('pedir')">
-                    📩 Pedir Música
-                </button>
-                
-                <button class="btn-menu-cliente btn-votar" onclick="abrirSubtela('votar')">
-                    ⭐ Votar no Cantor
-                </button>
-
-                <button class="btn-menu-cliente btn-fotos" onclick="abrirSubtela('fotos')">
-                    📸 Tirar Foto & Baixar
-                </button>
+                <button class="btn-menu-cliente btn-pedir" onclick="abrirSubtela('pedir')">📩 Pedir Música</button>
+                <button class="btn-menu-cliente btn-votar" onclick="abrirSubtela('votar')">⭐ Votar no Cantor</button>
+                <button class="btn-menu-cliente btn-fotos" onclick="abrirSubtela('fotos')">📸 Tirar Foto & Baixar</button>
             </div>
 
             <!-- Subtela: Pedir Música -->
             <div id="sub-pedir" class="subtela-cliente">
                 <button class="btn-voltar-menu" onclick="voltarMenuCliente()">⬅️ Voltar</button>
                 <h3 style="margin-top:0; color:#e52d27;">Pedir Música</h3>
-                <input type="text" id="cli-input-cantor" placeholder="Seu Nome / Dupla" style="width:100%; padding:12px; margin-bottom:12px; background:#111; color:#fff; border:1px solid #444; border-radius:6px; box-sizing:border-box; font-size:15px;">
+                <input type="text" id="cli-input-cantor" list="lista-cantores-datalist" placeholder="Seu Nome / Dupla" style="width:100%; padding:12px; margin-bottom:12px; background:#111; color:#fff; border:1px solid #444; border-radius:6px; box-sizing:border-box; font-size:15px;">
                 <input type="text" id="cli-input-busca" placeholder="Nome da música ou link do YouTube" style="width:100%; padding:12px; margin-bottom:12px; background:#111; color:#fff; border:1px solid #444; border-radius:6px; box-sizing:border-box; font-size:15px;">
                 <button onclick="clienteFazerPedido()" style="width:100%; padding:14px; background:#e52d27; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:16px;">Enviar Pedido ao DJ</button>
                 
@@ -193,7 +187,7 @@
                 </div>
             </div>
 
-            <!-- Subtela: Votar no Cantor -->
+            <!-- Subtela: Votar -->
             <div id="sub-votar" class="subtela-cliente">
                 <button class="btn-voltar-menu" onclick="voltarMenuCliente()">⬅️ Voltar</button>
                 <h3 style="margin-top:0; color:#007bff;">Votação Ao Vivo</h3>
@@ -213,25 +207,48 @@
                 <h3 style="margin-top:0; color:#28a745;">📸 Foto Lembrança com Moldura</h3>
                 <p style="font-size:12px; color:#aaa; margin-bottom:12px;">Tire sua foto, saia na TV e baixe para postar!</p>
                 
-                <input type="text" id="cli-foto-cantor" placeholder="Nome do Cantor / Dupla" style="width:100%; padding:12px; margin-bottom:12px; background:#111; color:#fff; border:1px solid #444; border-radius:6px; box-sizing:border-box; font-size:15px;">
+                <input type="text" id="cli-foto-cantor" list="lista-cantores-datalist" placeholder="Nome do Cantor / Dupla" style="width:100%; padding:12px; margin-bottom:12px; background:#111; color:#fff; border:1px solid #444; border-radius:6px; box-sizing:border-box; font-size:15px;">
                 
-                <div style="margin-bottom: 12px; position:relative;">
-                    <video id="webcam-video" autoplay playsinline style="width:100%; max-height:260px; background:#000; border-radius:8px; display:none; object-fit:cover;"></video>
-                    <canvas id="canvas-foto" style="display:none;"></canvas>
-                </div>
+                <!-- Input de arquivo invisível ativado nativamente em tela cheia -->
+                <input type="file" id="input-camera-nativa" accept="image/*" capture="environment" style="display:none;" onchange="processarFotoNativa(this)">
+                
+                <button onclick="document.getElementById('input-camera-nativa').click()" style="width:100%; padding:14px; background:#28a745; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer; margin-bottom:12px; font-size:16px;">📷 Tirar Foto (Câmera Nativa)</button>
+                
+                <canvas id="canvas-foto" style="display:none;"></canvas>
 
-                <button id="btn-ligar-camera" onclick="iniciarCameraCliente()" style="width:100%; padding:14px; background:#007bff; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer; margin-bottom:8px; font-size:15px;">📷 Abrir Câmera</button>
-                <button id="btn-virar-camera" onclick="alternarCameraCliente()" style="width:100%; padding:10px; background:#333; color:#ffeb3b; border:1px solid #555; border-radius:6px; font-weight:bold; cursor:pointer; margin-bottom:8px; display:none; font-size:14px;">🔄 Alternar Câmera (Frontal / Traseira)</button>
-                <button id="btn-tirar-foto" onclick="capturarFotoCliente()" style="width:100%; padding:14px; background:#28a745; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer; display:none; font-size:15px;">✨ Tirar Foto com Moldura</button>
-
-                <div style="margin-top: 25px; border-top: 1px solid #333; padding-top: 15px;">
-                    <h4 style="margin:0 0 10px 0; font-size:14px; color:#ffeb3b;">Galeria de Fotos do Dia (Download)</h4>
+                <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 15px;">
+                    <h4 style="margin:0 0 10px 0; font-size:14px; color:#ffeb3b;">Galeria de Fotos do Dia</h4>
                     <div id="galeria-fotos-dia" class="galeria-fotos">
                         <span style="color:#777; font-size:12px; grid-column: 1/-1;">Nenhuma foto tirada ainda hoje.</span>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Datalist para autocompletar nomes de cantores salvos -->
+    <datalist id="lista-cantores-datalist"></datalist>
+
+    <!-- Modal de Visualização de Foto -->
+    <div id="fundo-modal-visualizar" onclick="fecharModalVisualizar()"></div>
+    <div id="modal-visualizar">
+        <h3 id="modal-vis-titulo" style="color:#ffeb3b; margin-top:0;">Foto Lembrança</h3>
+        <img id="modal-vis-img" style="max-width:100%; max-height:60vh; border-radius:8px; border:2px solid #555; object-fit:contain;" alt="Foto Ampliada">
+        <div style="margin-top:15px; display:flex; gap:10px; justify-content:center;">
+            <a id="modal-vis-link-baixar" href="#" download="Parada1095_Foto.png" style="padding:10px 20px; background:#28a745; color:#fff; border-radius:6px; text-decoration:none; font-weight:bold;">Baixar Foto</a>
+            <button onclick="fecharModalVisualizar()" style="padding:10px 20px; background:#444; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">Fechar</button>
+        </div>
+    </div>
+
+    <!-- Central de Gerenciamento de Fotos para o Administrador -->
+    <div id="fundo-modal-central-fotos" onclick="fecharCentralFotos()"></div>
+    <div id="modal-central-fotos">
+        <h2 style="color:#28a745; margin-top:0; border-bottom:1px solid #333; padding-bottom:10px;">📸 Central de Gerenciamento de Fotos</h2>
+        <p style="font-size:13px; color:#aaa;">Aqui você pode visualizar ou excluir fotos enviadas pelos clientes durante o evento.</p>
+        <div id="lista-admin-fotos" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap:10px; max-height:50vh; overflow-y:auto; margin-bottom:15px;">
+            <!-- Preenchido via JS -->
+        </div>
+        <button onclick="fecharCentralFotos()" style="width:100%; padding:10px; background:#333; color:#fff; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">Fechar Central</button>
     </div>
 
     <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
@@ -243,24 +260,9 @@
         <h3>1. Acesso e Controle de Contas (Login)</h3>
         <p>O sistema possui controle de acesso com dois perfis de usuários:</p>
         <ul>
-            <li><span class="destaque">Administrador:</span> Possui acesso completo ao painel, incluindo a gestão de contas e canais através do botão unificado de <span class="destaque">⚙️ Configurações</span>.</li>
+            <li><span class="destaque">Administrador:</span> Possui acesso completo ao painel, gestão de canais e controle de fotos através da nova central.</li>
             <li><span class="destaque">Operador Comum:</span> Gerencia as músicas, fila, histórico e pedidos em tempo real.</li>
         </ul>
-
-        <h3>2. Iniciando o Sistema</h3>
-        <p>Ao abrir o painel e fazer login, siga a ordem correta no topo da tela:</p>
-        <ul>
-            <li>Clique em <span class="destaque">🚀 1. INICIAR SISTEMA E TV</span>. O navegador abrirá a janela limpa do telão. Arraste a janela para a TV do bar e aperte <span class="destaque">F11</span> para habilitar a tela cheia.</li>
-            <li>Clique em <span class="destaque">🎙️ 2. AVALIADOR</span> para ativar o microfone e permitir a captação de energia e barulho da plateia.</li>
-        </ul>
-
-        <h3>3. Sistema de Votação e Notas Manuais/Atalhos</h3>
-        <p>Quando a música termina, a pontuação final é calculada combinando captação de microfone e votos da plateia, mas o DJ tem controle absoluto:</p>
-        <ul>
-            <li><span class="destaque">Atalhos de Teclado (6 a 0):</span> Aperte <strong>6</strong> a <strong>0</strong> para forçar notas instantaneamente.</li>
-            <li><span class="destaque">Nota Manual (⚙️ Engrenagem):</span> Clicando no ícone de engrenagem no rodapé esquerdo, você define uma nota exata de 0 a 100.</li>
-        </ul>
-
         <button onclick="fecharManual()" style="width: 100%; margin-top: 30px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
     </div>
 
@@ -268,45 +270,30 @@
     <div id="fundo-modal-config" onclick="fecharModalConfig()"></div>
     <div id="modal-config">
         <h2>⚙️ Configurações do Sistema</h2>
-        
         <div class="abas-config">
             <button class="btn-aba ativo" onclick="mudarAba('canais', event)">⭐ Canais Favoritos</button>
             <button class="btn-aba" onclick="mudarAba('usuarios', event)">👥 Usuários</button>
             <button class="btn-aba" onclick="mudarAba('transicao', event)">⏳ Transição / Pausa</button>
         </div>
 
-        <!-- Conteúdo da Aba Canais -->
         <div id="aba-canais" class="conteudo-aba ativo">
             <div style="max-height: 150px; overflow-y: auto;">
                 <table class="tabela-canais">
-                    <thead>
-                        <tr>
-                            <th>Ordem</th>
-                            <th>Nome do Canal</th>
-                            <th style="text-align: right;">Ações</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Ordem</th><th>Nome do Canal</th><th style="text-align: right;">Ações</th></tr></thead>
                     <tbody id="tabela-corpo-canais"></tbody>
                 </table>
             </div>
             <div class="form-novo-canal">
                 <strong>Adicionar Canal:</strong>
-                <input type="text" id="novo-canal-nome" placeholder="Nome do canal (ex: Muramatsu Karaoke)">
-                <button onclick="adicionarNovoCanal()" style="width: 100%; padding: 8px; background: #28a745; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px;">Adicionar Canal</button>
+                <input type="text" id="novo-canal-nome" placeholder="Nome do canal">
+                <button onclick="adicionarNovoCanal()" style="width: 100%; padding: 8px; background: #28a745; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Adicionar Canal</button>
             </div>
         </div>
 
-        <!-- Conteúdo da Aba Usuários -->
         <div id="aba-usuarios" class="conteudo-aba">
             <div style="max-height: 150px; overflow-y: auto;">
                 <table class="tabela-usuarios">
-                    <thead>
-                        <tr>
-                            <th>Usuário</th>
-                            <th>Tipo</th>
-                            <th style="text-align: right;">Ações</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Usuário</th><th>Tipo</th><th style="text-align: right;">Ações</th></tr></thead>
                     <tbody id="tabela-corpo-usuarios"></tbody>
                 </table>
             </div>
@@ -318,20 +305,17 @@
                     <option value="comum">Operador Comum</option>
                     <option value="admin">Administrador</option>
                 </select>
-                <button onclick="adicionarNovoUsuario()" style="width: 100%; padding: 8px; background: #28a745; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px;">Adicionar Usuário</button>
+                <button onclick="adicionarNovoUsuario()" style="width: 100%; padding: 8px; background: #28a745; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Adicionar Usuário</button>
             </div>
         </div>
 
-        <!-- Conteúdo da Aba Transição -->
         <div id="aba-transicao" class="conteudo-aba">
             <div class="form-novo-canal">
                 <strong>Tempo de Pausa entre Músicas (Segundos):</strong>
-                <p style="font-size: 12px; color: #aaa; margin: 5px 0 10px 0;">Defina quantos segundos de contagem regressiva devem aparecer antes de iniciar a próxima música (0 para ir direto).</p>
                 <input type="number" id="input-tempo-pausa" min="0" max="60" value="5">
-                <button onclick="salvarTempoPausa()" style="width: 100%; padding: 8px; background: #007bff; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px;">Salvar Tempo</button>
+                <button onclick="salvarTempoPausa()" style="width: 100%; padding: 8px; background: #007bff; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Salvar Tempo</button>
             </div>
         </div>
-
         <button onclick="fecharModalConfig()" style="width: 100%; margin-top: 15px; padding: 10px; background: #333; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Fechar</button>
     </div>
 
@@ -345,7 +329,7 @@
     <div id="fundo-modal-cantor" onclick="fecharModalCantor()"></div>
     <div id="modal-cantor">
         <h2>🎤 Quem vai cantar?</h2>
-        <input type="text" id="input-nome-cantor" placeholder="Digite o nome (ex: João e Maria)...">
+        <input type="text" id="input-nome-cantor" list="lista-cantores-datalist" placeholder="Digite o nome...">
         <div id="lista-cantores-salvos"></div>
         <div class="botoes-modal-cantor">
             <button onclick="confirmarCantor()" class="btn-confirmar">Confirmar</button>
@@ -358,8 +342,9 @@
         <div class="topo-header">
             <h1 style="margin: 0; padding: 0;">🎛️ Painel de Controle - Karaokê <span id="info-operador" style="font-size: 14px; color: #00d2ff; font-weight: normal; margin-left: 15px; background: #222; padding: 4px 10px; border-radius: 6px; border: 1px solid #444;">👤 Operador: --</span></h1>
             <div class="topo-botoes-acao">
+                <button id="btn-central-fotos" class="btn-topo-acao" onclick="abrirCentralFotos()" title="Central de Gerenciamento de Fotos">📸 Gerenciar Fotos</button>
                 <button id="btn-reset-tudo" class="btn-topo-acao" onclick="resetarTudo()" title="Zerar Fila, Ranking, Histórico e Fotos">⚠️ Resetar Tudo</button>
-                <button id="btn-config" class="btn-topo-acao" onclick="abrirModalConfig()" title="Configurações do Sistema">⚙️ Configurações</button>
+                <button id="btn-config" class="btn-topo-acao" onclick="abrirModalConfig()" title="Configurações">⚙️ Configurações</button>
                 <button id="btn-sair" class="btn-topo-acao" onclick="fazerLogout()">🚪 Sair</button>
                 <button id="btn-manual" class="btn-topo-acao" onclick="abrirManual()">📖 Manual</button>
             </div>
@@ -420,7 +405,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.58</span>
+        <span>v1.59</span>
     </div>
 
     <script>
@@ -444,9 +429,12 @@
         ];
 
         let tempoPausaSegundos = parseInt(localStorage.getItem('tempoPausaSegundos')) || 5;
+        let cantoresSalvos = JSON.parse(localStorage.getItem('cantoresSalvos')) || [];
 
-        if (!localStorage.getItem('canaisFavoritos')) {
-            localStorage.setItem('canaisFavoritos', JSON.stringify(canaisFavoritos));
+        function atualizarDatalistCantores() {
+            const dl = document.getElementById('lista-cantores-datalist');
+            if(!dl) return;
+            dl.innerHTML = cantoresSalvos.map(c => `<option value="${c}">`).join('');
         }
 
         function renderizarChipsCanaisDiscretos() {
@@ -466,20 +454,72 @@
             evento.currentTarget.classList.add('ativo');
         }
 
-        // Navegação Vertical do Cliente
         function abrirSubtela(tipo) {
             document.getElementById('menu-principal-cliente').style.display = 'none';
             document.querySelectorAll('.subtela-cliente').forEach(el => el.style.display = 'none');
             document.getElementById('sub-' + tipo).style.display = 'block';
+            atualizarDatalistCantores();
         }
 
         function voltarMenuCliente() {
-            if (streamCamera) {
-                streamCamera.getTracks().forEach(t => t.stop());
-                streamCamera = null;
-            }
             document.querySelectorAll('.subtela-cliente').forEach(el => el.style.display = 'none');
             document.getElementById('menu-principal-cliente').style.display = 'block';
+        }
+
+        function abrirCentralFotos() {
+            document.getElementById('fundo-modal-central-fotos').style.display = 'block';
+            document.getElementById('modal-central-fotos').style.display = 'block';
+            carregarFotosAdmin();
+        }
+
+        function fecharCentralFotos() {
+            document.getElementById('fundo-modal-central-fotos').style.display = 'none';
+            document.getElementById('modal-central-fotos').style.display = 'none';
+        }
+
+        function carregarFotosAdmin() {
+            database.ref('fotosDia').once('value', (snapshot) => {
+                const div = document.getElementById('lista-admin-fotos');
+                if(!div) return;
+                let html = "";
+                snapshot.forEach(child => {
+                    let key = child.key;
+                    let f = child.val();
+                    html += `
+                        <div style="background:#222; border:1px solid #444; border-radius:6px; padding:6px; text-align:center;">
+                            <img src="${f.imagemBase64}" style="width:100%; height:90px; object-fit:cover; border-radius:4px;" alt="Foto">
+                            <p style="font-size:11px; margin:4px 0; color:#ffeb3b; font-weight:bold;">${f.cantor}</p>
+                            <div style="display:flex; gap:4px; justify-content:center;">
+                                <button onclick="visualizarFotoModal('${f.imagemBase64}', '${f.cantor}')" style="background:#007bff; color:#fff; border:none; padding:3px 6px; border-radius:3px; font-size:10px; cursor:pointer;">Ver</button>
+                                <button onclick="excluirFotoAdmin('${key}')" style="background:#b31217; color:#fff; border:none; padding:3px 6px; border-radius:3px; font-size:10px; cursor:pointer;">Excluir</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                div.innerHTML = html || "<p style='color:#777; grid-column:1/-1; text-align:center;'>Nenhuma foto enviada hoje.</p>";
+            });
+        }
+
+        function excluirFotoAdmin(key) {
+            if(confirm("Deseja realmente excluir esta foto?")) {
+                database.ref('fotosDia').child(key).remove().then(() => {
+                    carregarFotosAdmin();
+                });
+            }
+        }
+
+        function visualizarFotoModal(base64, cantor) {
+            document.getElementById('modal-vis-titulo').innerText = `Foto: ${cantor}`;
+            document.getElementById('modal-vis-img').src = base64;
+            document.getElementById('modal-vis-link-baixar').href = base64;
+            document.getElementById('modal-vis-link-baixar').download = `Parada1095_${cantor}.png`;
+            document.getElementById('fundo-modal-visualizar').style.display = 'block';
+            document.getElementById('modal-visualizar').style.display = 'block';
+        }
+
+        function fecharModalVisualizar() {
+            document.getElementById('fundo-modal-visualizar').style.display = 'none';
+            document.getElementById('modal-visualizar').style.display = 'none';
         }
 
         function atualizarDisplayNotaForcada() {
@@ -522,9 +562,9 @@
                     <td><strong>${index + 1}º</strong></td>
                     <td>${canal}</td>
                     <td style="text-align: right;">
-                        <button onclick="subirCanal(${index})" style="background:transparent; border:none; cursor:pointer; font-size:14px;" title="Mover para cima">⬆️</button>
-                        <button onclick="descerCanal(${index})" style="background:transparent; border:none; cursor:pointer; font-size:14px;" title="Mover para baixo">⬇️</button>
-                        <button onclick="excluirCanal(${index})" style="background:transparent; border:none; cursor:pointer; font-size:14px;" title="Excluir">❌</button>
+                        <button onclick="subirCanal(${index})" style="background:transparent; border:none; cursor:pointer;" title="Subir">⬆️</button>
+                        <button onclick="descerCanal(${index})" style="background:transparent; border:none; cursor:pointer;" title="Descer">⬇️</button>
+                        <button onclick="excluirCanal(${index})" style="background:transparent; border:none; cursor:pointer;" title="Excluir">❌</button>
                     </td>
                 </tr>
             `).join('');
@@ -534,7 +574,6 @@
             const nome = document.getElementById('novo-canal-nome').value.trim();
             if (!nome) return alert("Digite o nome do canal!");
             if (canaisFavoritos.includes(nome)) return alert("Este canal já está cadastrado!");
-
             canaisFavoritos.push(nome);
             localStorage.setItem('canaisFavoritos', JSON.stringify(canaisFavoritos));
             document.getElementById('novo-canal-nome').value = '';
@@ -577,8 +616,8 @@
                     <td><strong>${u.usuario}</strong></td>
                     <td><span style="padding: 2px 6px; border-radius: 4px; font-size: 11px; background: ${u.tipo === 'admin' ? '#007bff' : '#333'}">${u.tipo.toUpperCase()}</span></td>
                     <td style="text-align: right;">
-                        <button onclick="editarUsuario(${index})" style="background:transparent; border:none; cursor:pointer; font-size:14px;" title="Editar Usuário/Senha">✏️</button>
-                        ${usuariosAutorizados.length > 1 ? `<button onclick="excluirUsuario(${index})" style="background:transparent; border:none; cursor:pointer; font-size:14px;" title="Excluir">❌</button>` : ''}
+                        <button onclick="editarUsuario(${index})" style="background:transparent; border:none; cursor:pointer;" title="Editar">✏️</button>
+                        ${usuariosAutorizados.length > 1 ? `<button onclick="excluirUsuario(${index})" style="background:transparent; border:none; cursor:pointer;" title="Excluir">❌</button>` : ''}
                     </td>
                 </tr>
             `).join('');
@@ -588,37 +627,29 @@
             const nome = document.getElementById('novo-user-nome').value.trim().toLowerCase();
             const senha = document.getElementById('novo-user-senha').value;
             const tipo = document.getElementById('novo-user-tipo').value;
-
-            if (!nome || !senha) return alert("Preencha o nome e a senha do novo usuário!");
-            if (usuariosAutorizados.some(u => u.usuario === nome)) return alert("Já existe um usuário com esse nome!");
-
+            if (!nome || !senha) return alert("Preencha nome e senha!");
+            if (usuariosAutorizados.some(u => u.usuario === nome)) return alert("Usuário já existe!");
             usuariosAutorizados.push({ usuario: nome, senha: senha, tipo: tipo });
             localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
             document.getElementById('novo-user-nome').value = '';
             document.getElementById('novo-user-senha').value = '';
             renderizarTabelaUsuarios();
-            alert("Usuário adicionado com sucesso!");
         }
 
         function editarUsuario(index) {
             const user = usuariosAutorizados[index];
-            const novoNome = prompt("Editar nome de usuário:", user.usuario);
-            if (novoNome === null) return;
-            const nomeLimpo = novoNome.trim().toLowerCase();
-            if (!nomeLimpo) return alert("O nome não pode vazio!");
-
-            const novaSenha = prompt(`Editar senha para "${nomeLimpo}":`, user.senha);
-            if (novaSenha === null) return;
-
-            usuariosAutorizados[index].usuario = nomeLimpo;
+            const novoNome = prompt("Novo nome:", user.usuario);
+            if(novoNome === null) return;
+            const novaSenha = prompt("Nova senha:", user.senha);
+            if(novaSenha === null) return;
+            usuariosAutorizados[index].usuario = novoNome.trim().toLowerCase();
             usuariosAutorizados[index].senha = novaSenha.trim();
             localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
             renderizarTabelaUsuarios();
-            alert("Usuário atualizado com sucesso!");
         }
 
         function excluirUsuario(index) {
-            if (confirm(`Excluir usuário "${usuariosAutorizados[index].usuario}"?`)) {
+            if(confirm("Excluir usuário?")) {
                 usuariosAutorizados.splice(index, 1);
                 localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
                 renderizarTabelaUsuarios();
@@ -627,23 +658,24 @@
 
         function atualizarHeaderOperador() {
             const usuarioLogado = localStorage.getItem('usuarioLogado') || "Convidado";
+            const tipo = localStorage.getItem('tipoUsuario');
             const elOp = document.getElementById('info-operador');
-            if (elOp) {
-                elOp.innerText = `👤 Operador: ${usuarioLogado.toUpperCase()}`;
+            if (elOp) elOp.innerText = `👤 Operador: ${usuarioLogado.toUpperCase()}`;
+            const btnCentral = document.getElementById('btn-central-fotos');
+            if (btnCentral) {
+                btnCentral.style.display = (tipo === 'admin') ? 'inline-flex' : 'inline-flex'; // Admin ou operador gerenciam
             }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
             renderizarChipsCanaisDiscretos();
+            atualizarDatalistCantores();
             if (!urlParams.has('cliente')) {
                 const usuarioLogado = localStorage.getItem('usuarioLogado');
                 const tipoUsuario = localStorage.getItem('tipoUsuario');
-                
                 if (usuarioLogado) {
                     document.getElementById('tela-login').style.display = 'none';
-                    if (tipoUsuario === 'admin') {
-                        document.getElementById('btn-config').style.display = 'inline-flex';
-                    }
+                    if (tipoUsuario === 'admin') document.getElementById('btn-config').style.display = 'inline-flex';
                     atualizarHeaderOperador();
                 } else {
                     document.getElementById('tela-login').style.display = 'flex';
@@ -655,14 +687,9 @@
             const uInput = document.getElementById('login-usuario').value.trim().toLowerCase();
             const sInput = document.getElementById('login-senha').value.trim();
             if(!uInput || !sInput) return alert("Preencha usuário e senha!");
-
             let encontrado = usuariosAutorizados.find(item => item.usuario === uInput && item.senha === sInput);
-            
-            if (!encontrado && uInput === "leonard" && sInput === "123") {
-                encontrado = { usuario: "leonard", tipo: "admin" };
-            } else if (!encontrado && uInput === "operador" && sInput === "123") {
-                encontrado = { usuario: "operador", tipo: "comum" };
-            }
+            if (!encontrado && uInput === "leonard" && sInput === "123") encontrado = { usuario: "leonard", tipo: "admin" };
+            else if (!encontrado && uInput === "operador" && sInput === "123") encontrado = { usuario: "operador", tipo: "comum" };
 
             if (encontrado) {
                 localStorage.setItem('usuarioLogado', encontrado.usuario);
@@ -670,40 +697,30 @@
                 document.getElementById('tela-login').style.display = 'none';
                 document.getElementById('login-senha').value = '';
                 atualizarHeaderOperador();
-                if (encontrado.tipo === 'admin') {
-                    document.getElementById('btn-config').style.display = 'inline-flex';
-                }
+                if (encontrado.tipo === 'admin') document.getElementById('btn-config').style.display = 'inline-flex';
             } else {
                 alert("Usuário ou senha incorretos!");
             }
         }
 
         function fazerLogout() {
-            if(confirm("Deseja sair do painel?")) {
+            if(confirm("Deseja sair?")) {
                 localStorage.removeItem('usuarioLogado');
                 localStorage.removeItem('tipoUsuario');
                 location.reload();
             }
         }
 
-        function limparFila() { if (confirm("Esvaziar a Fila?")) { filaDeReproducao = []; atualizarTelaFila(); } }
-        
-        function limparRanking() { 
-            if (confirm("Zerar o Ranking e limpar música atual travada?")) { 
-                ranking = []; 
-                musicaAtual = null; 
-                atualizarTelaRanking(); 
-            } 
-        }
-
-        function limparHistorico() { if (confirm("Apagar o Histórico?")) { historicoDeReproducao = []; atualizarTelaHistorico(); } }
+        function limparFila() { if (confirm("Esvaziar Fila?")) { filaDeReproducao = []; atualizarTelaFila(); } }
+        function limparRanking() { if (confirm("Zerar Ranking?")) { ranking = []; musicaAtual = null; atualizarTelaRanking(); } }
+        function limparHistorico() { if (confirm("Apagar Histórico?")) { historicoDeReproducao = []; atualizarTelaHistorico(); } }
 
         function resetarTudo() {
-            if (confirm("⚠️ Deseja realmente RESETAR TUDO (incluindo as fotos do dia)?")) {
+            if (confirm("⚠️ Deseja RESETAR TUDO (incluindo fotos do dia)?")) {
                 filaDeReproducao = []; ranking = []; historicoDeReproducao = []; musicaAtual = null;
                 database.ref('fotosDia').remove();
                 atualizarTelaFila(); atualizarTelaRanking(); atualizarTelaHistorico();
-                alert("Sistema resetado com sucesso!");
+                alert("Resetado com sucesso!");
             }
         }
 
@@ -721,7 +738,6 @@
         const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4'; 
 
         let streamMic = null; let micAtivo = false; let intervaloMic = null;
-
         function abrirManual() { document.getElementById('fundo-modal-manual').style.display = 'block'; document.getElementById('modal-manual-conteudo').style.display = 'block'; }
         function fecharManual() { document.getElementById('fundo-modal-manual').style.display = 'none'; document.getElementById('modal-manual-conteudo').style.display = 'none'; }
 
@@ -767,7 +783,6 @@
         let filaDeReproducao = JSON.parse(localStorage.getItem('filaDeReproducao')) || []; 
         let historicoDeReproducao = JSON.parse(localStorage.getItem('historicoDeReproducao')) || []; 
         let ranking = JSON.parse(localStorage.getItem('ranking')) || [];
-        let cantoresSalvos = JSON.parse(localStorage.getItem('cantoresSalvos')) || [];
         let musicaPendente = null; 
 
         let player; let telaTV; let monitorTV; let musicaAtual = null; let timerNota;
@@ -804,15 +819,14 @@
                     <div class="item-foto-galeria">
                         <img src="${f.imagemBase64}" alt="Foto Lembrança">
                         <p>${f.cantor}</p>
-                        <a href="${f.imagemBase64}" download="Parada1095_${f.cantor}.png" class="btn-baixar-foto">Baixar Foto</a>
+                        <div class="acoes-foto-card">
+                            <button onclick="visualizarFotoModal('${f.imagemBase64}', '${f.cantor}')" class="btn-ver-foto">Ver</button>
+                            <a href="${f.imagemBase64}" download="Parada1095_${f.cantor}.png" class="btn-baixar-foto">Baixar</a>
+                        </div>
                     </div>
                 `;
             });
-            if(html === "") {
-                galeria.innerHTML = '<span style="color:#777; font-size:12px; grid-column: 1/-1;">Nenhuma foto tirada ainda hoje.</span>';
-            } else {
-                galeria.innerHTML = html;
-            }
+            galeria.innerHTML = html || '<span style="color:#777; font-size:12px; grid-column: 1/-1;">Nenhuma foto tirada ainda hoje.</span>';
         });
 
         function clienteFazerPedido() {
@@ -824,12 +838,7 @@
             const tituloFinal = videoId ? "Música via Link" : busca;
             const idFinal = videoId || "busca_" + Date.now();
 
-            database.ref('pedidos').push({
-                videoId: idFinal,
-                titulo: tituloFinal,
-                cantor: cantor
-            });
-
+            database.ref('pedidos').push({ videoId: idFinal, titulo: tituloFinal, cantor: cantor });
             alert("Pedido enviado com sucesso para o DJ!");
             document.getElementById('cli-input-busca').value = "";
         }
@@ -839,94 +848,65 @@
             alert("Voto computado com sucesso! Obrigado!");
         }
 
-        // Gestão da Câmera do Cliente com Alternador Frontal/Traseira
-        let streamCamera = null;
-        let usarCameraTraseira = false;
-
-        async function iniciarCameraCliente() {
-            const video = document.getElementById('webcam-video');
-            const btnTirar = document.getElementById('btn-tirar-foto');
-            const btnLigar = document.getElementById('btn-ligar-camera');
-            const btnVirar = document.getElementById('btn-virar-camera');
-            
-            if (streamCamera) {
-                streamCamera.getTracks().forEach(t => t.stop());
-            }
-
-            try {
-                const constraints = {
-                    video: { facingMode: usarCameraTraseira ? { exact: "environment" } : "user" },
-                    audio: false
-                };
-                streamCamera = await navigator.mediaDevices.getUserMedia(constraints);
-                video.srcObject = streamCamera;
-                video.style.display = 'block';
-                btnTirar.style.display = 'block';
-                btnVirar.style.display = 'block';
-                btnLigar.style.display = 'none';
-            } catch (err) {
-                // Fallback caso o exact falhe em alguns dispositivos móveis
-                try {
-                    streamCamera = await navigator.mediaDevices.getUserMedia({ video: { facingMode: usarCameraTraseira ? "environment" : "user" }, audio: false });
-                    video.srcObject = streamCamera;
-                    video.style.display = 'block';
-                    btnTirar.style.display = 'block';
-                    btnVirar.style.display = 'block';
-                    btnLigar.style.display = 'none';
-                } catch (e) {
-                    alert("Não foi possível acessar a câmera. Verifique as permissões do navegador.");
-                }
-            }
-        }
-
-        function alternarCameraCliente() {
-            usarCameraTraseira = !usarCameraTraseira;
-            iniciarCameraCliente();
-        }
-
-        function capturarFotoCliente() {
+        // Processar Foto Nativa em Tela Cheia com Nova Moldura Bonita
+        function processarFotoNativa(input) {
+            if (!input.files || !input.files[0]) return;
             const cantor = document.getElementById('cli-foto-cantor').value.trim() || "Visitante Parada";
-            const video = document.getElementById('webcam-video');
-            const canvas = document.getElementById('canvas-foto');
             
-            if(!video.srcObject) return alert("Ligue a câmera primeiro!");
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.getElementById('canvas-foto');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
 
-            canvas.width = video.videoWidth || 640;
-            canvas.height = video.videoHeight || 480;
-            const ctx = canvas.getContext('2d');
+                    // Desenhar foto original
+                    ctx.drawImage(img, 0, 0);
 
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    // Moldura Estilizada e Profissional
+                    const grad = ctx.createLinearGradient(0, canvas.height - 120, 0, canvas.height);
+                    grad.addColorStop(0, "rgba(0, 0, 0, 0)");
+                    grad.addColorStop(0.3, "rgba(0, 0, 0, 0.85)");
+                    grad.addColorStop(1, "rgba(15, 15, 15, 0.95)");
+                    ctx.fillStyle = grad;
+                    ctx.fillRect(0, canvas.height - 120, canvas.width, 120);
 
-            // Moldura Personalizada do Bar
-            ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-            ctx.fillRect(0, canvas.height - 70, canvas.width, 70);
+                    // Borda interna decorativa dourada/amarela
+                    ctx.strokeStyle = "#ffeb3b";
+                    ctx.lineWidth = 6;
+                    ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
 
-            ctx.fillStyle = "#ffeb3b";
-            ctx.font = "bold 22px Arial";
-            ctx.fillText("🍻 Karaokê do Parada 10.95", 20, canvas.height - 38);
+                    // Textos da Moldura
+                    ctx.fillStyle = "#ffeb3b";
+                    ctx.font = "bold 32px Arial";
+                    ctx.fillText("🍻 KARAOKÊ DO PARADA 10.95", 40, canvas.height - 70);
 
-            ctx.fillStyle = "#fff";
-            ctx.font = "16px Arial";
-            ctx.fillText(`Voz: ${cantor}`, 20, canvas.height - 14);
+                    ctx.fillStyle = "#ffffff";
+                    ctx.font = "bold 24px Arial";
+                    ctx.fillText(`🎤 Cantor(a): ${cantor}`, 40, canvas.height - 30);
 
-            const imagemBase64 = canvas.toDataURL('image/jpeg', 0.8);
+                    const imagemBase64 = canvas.toDataURL('image/jpeg', 0.85);
 
-            database.ref('fotosDia').push({
-                cantor: cantor,
-                imagemBase64: imagemBase64,
-                timestamp: Date.now()
-            });
+                    database.ref('fotosDia').push({
+                        cantor: cantor,
+                        imagemBase64: imagemBase64,
+                        timestamp: Date.now()
+                    });
 
-            if (streamCamera) {
-                streamCamera.getTracks().forEach(t => t.stop());
-                streamCamera = null;
+                    // Salvar cantor na lista local
+                    if (cantor !== "Visitante Parada" && !cantoresSalvos.includes(cantor)) {
+                        cantoresSalvos.push(cantor);
+                        localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
+                    }
+
+                    alert("Foto tirada e moldura aplicada com sucesso! Veja na galeria abaixo ou na TV!");
+                    input.value = "";
+                }
+                img.src = e.target.result;
             }
-            video.style.display = 'none';
-            document.getElementById('btn-tirar-foto').style.display = 'none';
-            document.getElementById('btn-virar-camera').style.display = 'none';
-            document.getElementById('btn-ligar-camera').style.display = 'block';
-
-            alert("Foto tirada e salva com sucesso! Role para baixo para baixar ou veja na TV!");
+            reader.readAsDataURL(input.files[0]);
         }
 
         let pedidosPendentes = [];
@@ -938,6 +918,7 @@
             if (!cantoresSalvos.includes(nomeFormatado)) {
                 cantoresSalvos.push(nomeFormatado);
                 localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
+                atualizarDatalistCantores();
             }
         }
 
@@ -981,8 +962,8 @@
                 <div class="item-fila" style="border-left: 5px solid #00d2ff; margin-bottom: 8px;">
                     <span class="titulo-musica">🎵 ${p.titulo} <br> <span class="nome-cantor">🎤 Voz: ${p.cantor}</span></span>
                     <div class="botoes-acao">
-                        <button class="btn-acao" onclick="aprovarPedido(${index})" title="Aceitar e enviar pra Fila">✅</button>
-                        <button class="btn-acao" onclick="rejeitarPedido('${p.key}')" title="Apagar pedido">❌</button>
+                        <button class="btn-acao" onclick="aprovarPedido(${index})" title="Aceitar">✅</button>
+                        <button class="btn-acao" onclick="rejeitarPedido('${p.key}')" title="Recusar">❌</button>
                     </div>
                 </div>
             `).join('');
@@ -997,9 +978,7 @@
         }
 
         function rejeitarPedido(key) {
-            if (confirm("Quer mesmo RECUSAR essa música e excluir o pedido?")) {
-                database.ref('pedidos').child(key).remove();
-            }
+            if (confirm("Recusar música?")) database.ref('pedidos').child(key).remove();
         }
 
         database.ref('votosAtual').on('value', (snapshot) => {
@@ -1046,10 +1025,7 @@
         function confirmarCantor() {
             let cantor = document.getElementById('input-nome-cantor').value.trim();
             if (cantor === "") cantor = "Convidados";
-            if (cantor !== "Convidados" && !cantoresSalvos.includes(cantor)) {
-                cantoresSalvos.push(cantor);
-                localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
-            }
+            salvarCantorAutomaticamente(cantor);
             if (musicaPendente) {
                 filaDeReproducao.push({ videoId: musicaPendente.videoId, titulo: musicaPendente.titulo, cantor: cantor });
                 atualizarTelaFila();
@@ -1067,6 +1043,7 @@
                 cantoresSalvos = cantoresSalvos.filter(c => c !== nome);
                 localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
                 renderizarCantoresSalvos();
+                atualizarDatalistCantores();
             }
         }
 
@@ -1079,6 +1056,7 @@
                     cantoresSalvos[index] = novoNome.trim();
                     localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
                     renderizarCantoresSalvos();
+                    atualizarDatalistCantores();
                 }
             }
         }
@@ -1104,6 +1082,7 @@
                 cantoresSalvos = [];
                 localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
                 renderizarCantoresSalvos();
+                atualizarDatalistCantores();
             }
         }
 
@@ -1127,7 +1106,7 @@
                     notaForcadaPeloDJ = valor;
                     atualizarDisplayNotaForcada();
                 } else {
-                    alert("Nota inválida. Digite de 0 a 100.");
+                    alert("Nota inválida.");
                 }
             }
         }
@@ -1180,7 +1159,7 @@
                     </div>
                     
                     <div id="qr-code">
-                        <img src="qrcode.png" alt="Escaneie para Pedir e Votar">
+                        <img src="qrcode.png" alt="Escaneie">
                         <p>APONTE O CELULAR</p>
                         <span>Peça e Vote!</span>
                     </div>
@@ -1207,7 +1186,7 @@
                         <div id="nota-loading" style="font-size: 26px; animation: piscar 1s infinite;">Calculando energia e votos do público... 🥁</div>
                         <div id="nota-resultado" style="display:none; flex-direction:column; align-items:center; gap: 10px;">
                             <div id="tv-foto-container" style="display:none;">
-                                <img id="tv-foto-img" style="width: 200px; height: 150px; object-fit: cover; border-radius: 10px; border: 3px solid #ffeb3b; box-shadow: 0 0 20px rgba(255,235,59,0.5);" alt="Foto do Cantor">
+                                <img id="tv-foto-img" style="width: 200px; height: 150px; object-fit: cover; border-radius: 10px; border: 3px solid #ffeb3b; box-shadow: 0 0 20px rgba(255,235,59,0.5);" alt="Foto">
                             </div>
                             <div style="font-size: 18px; color: #aaa;">Pontuação Final:</div>
                             <div id="nota-valor" style="font-size: 120px; font-weight: 900; line-height: 1;">100</div>
@@ -1224,10 +1203,7 @@
                 if (telaTV && telaTV.closed) {
                     clearInterval(monitorTV);
                     const bTv = document.getElementById('botaoTV');
-                    if(bTv) {
-                        bTv.innerHTML = "📺 TELA FECHADA! REABRIR";
-                        bTv.style.background = "#e52d27";
-                    }
+                    if(bTv) { bTv.innerHTML = "📺 TELA FECHADA! REABRIR"; bTv.style.background = "#e52d27"; }
                 }
             }, 1000);
         }
@@ -1237,21 +1213,12 @@
                 videoId: '', playerVars: { 'autoplay': 1, 'controls': 1, 'fs': 0 }, 
                 events: { 
                     'onStateChange': e => { if (e.data === 0) (musicaAtual && musicaAtual.cantor !== "Convidados") ? gerarNotaFinal() : tocarProxima(true); }, 
-                    'onError': e => {
-                        erroNoPlayer = true;
-                        alert("⚠️ O YouTube bloqueou este vídeo!");
-                    } 
+                    'onError': e => { erroNoPlayer = true; alert("⚠️ O YouTube bloqueou este vídeo!"); } 
                 }
             });
             const bTv = document.getElementById('botaoTV');
-            if(bTv) {
-                bTv.innerHTML = "✅ TELA CONECTADA!";
-                bTv.style.background = "#17a2b8";
-            }
-            
-            if (telaTV && !telaTV.closed) {
-                telaTV.document.getElementById('tela-aguardando').style.display = 'flex';
-            }
+            if(bTv) { bTv.innerHTML = "✅ TELA CONECTADA!"; bTv.style.background = "#17a2b8"; }
+            if (telaTV && !telaTV.closed) telaTV.document.getElementById('tela-aguardando').style.display = 'flex';
         }
 
         function gerarNotaFinal() {
@@ -1272,12 +1239,10 @@
                     notaBase = Math.floor(Math.random() * 21) + 65; 
                 }
                 if (notaBase > 85) notaBase = 85;
-                
                 let bonusPublico = 0;
                 if(totalVotosPublico > 0) {
                     bonusPublico = (votosCongelados.excelente * 4) + (votosCongelados.muitobom * 2) + (votosCongelados.bom * 1) - (votosCongelados.regular * 1) - (votosCongelados.ruim * 3);
-                    if (bonusPublico > 15) bonusPublico = 15; 
-                    if (bonusPublico < -15) bonusPublico = -15; 
+                    if (bonusPublico > 15) bonusPublico = 15; if (bonusPublico < -15) bonusPublico = -15; 
                 }
                 notaFinal = notaBase + bonusPublico;
                 if (notaFinal > 100) notaFinal = 100; if (notaFinal < 50) notaFinal = 50; 
@@ -1290,9 +1255,7 @@
                 let fotoEncontrada = null;
                 snapshot.forEach(child => {
                     let f = child.val();
-                    if (f.cantor && f.cantor.toLowerCase() === musicaAtual.cantor.toLowerCase()) {
-                        fotoEncontrada = f.imagemBase64;
-                    }
+                    if (f.cantor && f.cantor.toLowerCase() === musicaAtual.cantor.toLowerCase()) fotoEncontrada = f.imagemBase64;
                 });
 
                 if (telaTV && !telaTV.closed) {
@@ -1315,13 +1278,8 @@
                         
                         let fotoContainer = tvDoc.getElementById('tv-foto-container');
                         let fotoImg = tvDoc.getElementById('tv-foto-img');
-                        if (fotoEncontrada) {
-                            fotoImg.src = fotoEncontrada;
-                            fotoContainer.style.display = 'block';
-                        } else {
-                            fotoContainer.style.display = 'none';
-                        }
-
+                        if (fotoEncontrada) { fotoImg.src = fotoEncontrada; fotoContainer.style.display = 'block'; }
+                        else { fotoContainer.style.display = 'none'; }
                         tvDoc.getElementById('nota-resultado').style.display = 'flex';
                     }, 4000); 
                 }
@@ -1343,18 +1301,13 @@
         async function buscarNoYouTube() {
             const termoOriginal = document.getElementById('campoBusca').value; if (!termoOriginal) return;
             const div = document.getElementById('resultados'); div.innerHTML = ''; 
-
             const videoId = extrairVideoId(termoOriginal);
             if (videoId) {
                 if (musicaAtual && erroNoPlayer) {
-                    if (confirm("⚠️ Substituir a música que falhou?")) {
-                        musicaAtual.videoId = videoId;
-                        musicaAtual.titulo = "Música via Link";
-                        erroNoPlayer = false;
-                        player.loadVideoById(musicaAtual.videoId);
-                        player.playVideo();
-                        document.getElementById('campoBusca').value = "";
-                        return;
+                    if (confirm("⚠️ Substituir música?")) {
+                        musicaAtual.videoId = videoId; musicaAtual.titulo = "Música via Link";
+                        erroNoPlayer = false; player.loadVideoById(videoId); player.playVideo();
+                        document.getElementById('campoBusca').value = ""; return;
                     }
                 }
                 abrirModalCantor(videoId, "Música via Link");
@@ -1364,16 +1317,11 @@
             const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(termoOriginal + " karaoke -oficial -clipe -live")}&type=video&key=${API_KEY}`;
             try {
                 const res = await fetch(url); const dados = await res.json();
-                
                 let itensOrdenados = [...dados.items].sort((a, b) => {
-                    let tituloA = a.snippet.title.toLowerCase();
-                    let canalA = a.snippet.channelTitle.toLowerCase();
+                    let tituloA = a.snippet.title.toLowerCase(); let canalA = a.snippet.channelTitle.toLowerCase();
                     let indexA = canaisFavoritos.findIndex(c => tituloA.includes(c.toLowerCase()) || canalA.includes(c.toLowerCase()));
-
-                    let tituloB = b.snippet.title.toLowerCase();
-                    let canalB = b.snippet.channelTitle.toLowerCase();
+                    let tituloB = b.snippet.title.toLowerCase(); let canalB = b.snippet.channelTitle.toLowerCase();
                     let indexB = canaisFavoritos.findIndex(c => tituloB.includes(c.toLowerCase()) || canalB.includes(c.toLowerCase()));
-
                     if (indexA !== -1 && indexB !== -1) return indexA - indexB;
                     if (indexA !== -1) return -1;
                     if (indexB !== -1) return 1;
@@ -1382,35 +1330,14 @@
 
                 itensOrdenados.forEach(v => {
                     const thumbnail = v.snippet.thumbnails.default.url;
-                    const tituloVid = v.snippet.title;
-                    const nomeCanalVid = v.snippet.channelTitle;
-
+                    const tituloVid = v.snippet.title; const nomeCanalVid = v.snippet.channelTitle;
                     const d = document.createElement('div'); 
                     d.className = 'item-resultado'; 
-                    d.innerHTML = `
-                        <img src="${thumbnail}" alt="Thumbnail"> 
-                        <div class="info-resultado">
-                            <span class="titulo-video">${tituloVid}</span>
-                            <span class="nome-canal">${nomeCanalVid}</span>
-                        </div>
-                    `; 
-                    
-                    d.onclick = () => {
-                        if (musicaAtual && erroNoPlayer) {
-                            if (confirm("⚠️ Substituir a música que falhou?")) {
-                                musicaAtual.videoId = v.id.videoId;
-                                musicaAtual.titulo = v.snippet.title;
-                                erroNoPlayer = false;
-                                player.loadVideoById(musicaAtual.videoId);
-                                player.playVideo();
-                                return;
-                            }
-                        }
-                        abrirModalCantor(v.id.videoId, v.snippet.title);
-                    };
+                    d.innerHTML = `<img src="${thumbnail}" alt="Thumb"><div class="info-resultado"><span class="titulo-video">${tituloVid}</span><span class="nome-canal">${nomeCanalVid}</span></div>`; 
+                    d.onclick = () => abrirModalCantor(v.id.videoId, v.snippet.title);
                     div.appendChild(d);
                 });
-            } catch (err) { div.innerHTML = "<p style='color:#e52d27'>Limite de busca atingido.</p>"; }
+            } catch (err) { div.innerHTML = "<p style='color:#e52d27'>Limite atingido.</p>"; }
         }
 
         function removerMusica(i) { filaDeReproducao.splice(i, 1); atualizarTelaFila(); }
@@ -1418,20 +1345,13 @@
 
         function pausarMusicaAtual() {
             if (player && typeof player.getPlayerState === 'function') {
-                const state = player.getPlayerState();
-                if (state === 1) { 
-                    player.pauseVideo();
-                } else if (state === 2) { 
-                    player.playVideo();
-                }
+                if (player.getPlayerState() === 1) player.pauseVideo();
+                else if (player.getPlayerState() === 2) player.playVideo();
             }
         }
 
         function retrocederMusicaAtual() {
-            if (player && typeof player.seekTo === 'function') {
-                let tempoAtual = player.getCurrentTime();
-                player.seekTo(Math.max(0, tempoAtual - 10), true);
-            }
+            if (player && typeof player.seekTo === 'function') player.seekTo(Math.max(0, player.getCurrentTime() - 10), true);
         }
 
         function executarInicioMusica(m) {
@@ -1440,10 +1360,8 @@
                 telaTV.document.getElementById('tela-nota').style.display = 'none';
                 telaTV.document.getElementById('tela-aguardando').style.display = 'none';
             }
-            
             database.ref('votosAtual').remove();
             database.ref('statusAtual').set({ cantor: m.cantor, titulo: m.titulo, id: Date.now() });
-
             musicaAtual = m; historicoDeReproducao.push(m);
             atualizarTelaFila(); atualizarTelaHistorico(); atualizarTelaRanking();
             
@@ -1453,8 +1371,7 @@
                 setTimeout(() => telaTV.document.getElementById('cantor-overlay').style.top = '20px', 100);
             }
             captando = true; somaEnergia = 0; qtdLeituras = 0; notaForcadaPeloDJ = null; 
-            atualizarDisplayNotaForcada();
-            erroNoPlayer = false;
+            atualizarDisplayNotaForcada(); erroNoPlayer = false;
             player.loadVideoById(m.videoId); player.playVideo(); 
         }
 
@@ -1465,44 +1382,29 @@
                 let cantorEl = telaTV.document.getElementById('transicao-cantor-nome');
                 let musicaEl = telaTV.document.getElementById('transicao-musica-titulo');
                 let contadorEl = telaTV.document.getElementById('contador-regressivo');
-                
-                cantorEl.innerText = m.cantor;
-                musicaEl.innerText = `🎵 ${m.titulo}`;
-                contadorEl.innerText = tempoRestante;
+                cantorEl.innerText = m.cantor; musicaEl.innerText = `🎵 ${m.titulo}`; contadorEl.innerText = tempoRestante;
                 transicaoEl.style.display = 'flex';
                 telaTV.document.getElementById('tela-aguardando').style.display = 'none';
                 telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
 
                 let timerRegressivo = setInterval(() => {
                     tempoRestante--;
-                    if (tempoRestante > 0) {
-                        contadorEl.innerText = tempoRestante;
-                    } else {
-                        clearInterval(timerRegressivo);
-                        transicaoEl.style.display = 'none';
-                        executarInicioMusica(m);
-                    }
+                    if (tempoRestante > 0) contadorEl.innerText = tempoRestante;
+                    else { clearInterval(timerRegressivo); transicaoEl.style.display = 'none'; executarInicioMusica(m); }
                 }, 1000);
-            } else {
-                executarInicioMusica(m);
-            }
+            } else { executarInicioMusica(m); }
         }
 
         function tocarMusicaEspecifica(i) { 
-            if(!telaTV || telaTV.closed) return alert("⚠️ A Tela da TV está fechada!"); 
+            if(!telaTV || telaTV.closed) return alert("⚠️ TV fechada!"); 
             iniciarMusica(filaDeReproducao.splice(i, 1)[0]); 
         }
         
         function tocarProxima(auto = false) {
-            if(!telaTV || telaTV.closed) {
-                if (!auto) alert("⚠️ A Tela da TV está fechada!");
-                return;
-            }
-            if(filaDeReproducao.length > 0) {
-                iniciarMusica(filaDeReproducao.shift()); 
-            } else {
-                musicaAtual = null;
-                atualizarTelaRanking();
+            if(!telaTV || telaTV.closed) { if (!auto) alert("⚠️ TV fechada!"); return; }
+            if(filaDeReproducao.length > 0) { iniciarMusica(filaDeReproducao.shift()); } 
+            else {
+                musicaAtual = null; atualizarTelaRanking();
                 if(telaTV && !telaTV.closed) {
                     telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
                     telaTV.document.getElementById('tela-aguardando').style.display = 'flex';
@@ -1526,7 +1428,6 @@
                     </div>
                 </div>
             `).join('');
-
             if (filaDeReproducao.length === 0 && !musicaAtual && telaTV && !telaTV.closed) {
                 telaTV.document.getElementById('tela-aguardando').style.display = 'flex';
             }
@@ -1543,55 +1444,37 @@
             localStorage.setItem('ranking', JSON.stringify(ranking));
             const divRank = document.getElementById('ranking');
             if(!divRank) return;
-            
             let htmlTocando = "";
             if (musicaAtual) {
                 htmlTocando = `
                     <div class="item-tocando-agora">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div class="info-ranking">
-                                ▶️ <strong>Tocando Agora</strong> <br> 
-                                🎤 ${musicaAtual.cantor} <br> 
-                                <span style="font-size:11px;">🎵 ${musicaAtual.titulo}</span><br>
-                                <span style="font-size:10px; color:#00d2ff; font-weight: bold;">(Aguardando final para pontuação)</span>
+                                ▶️ <strong>Tocando Agora</strong> <br>🎤 ${musicaAtual.cantor} <br><span style="font-size:11px;">🎵 ${musicaAtual.titulo}</span>
                             </div>
                             <div style="display: flex; gap: 5px;">
-                                <button class="btn-acao" onclick="retrocederMusicaAtual()" title="Retroceder 10 segundos" style="font-size:18px;">⏪</button>
-                                <button class="btn-acao" onclick="pausarMusicaAtual()" title="Pausar / Retomar" style="font-size:18px;">⏯️</button>
+                                <button class="btn-acao" onclick="retrocederMusicaAtual()" style="font-size:18px;">⏪</button>
+                                <button class="btn-acao" onclick="pausarMusicaAtual()" style="font-size:18px;">⏯️</button>
                             </div>
                         </div>
                     </div>
                 `;
             }
-
             let htmlRanking = [...ranking].sort((a,b) => b.nota - a.nota).map((item, i) => `
-                <div class="item-ranking" onclick="document.getElementById('votos-rank-${i}').style.display = document.getElementById('votos-rank-${i}').style.display === 'none' ? 'block' : 'none'" style="cursor:pointer;" title="Clique para ver os votos!">
+                <div class="item-ranking" onclick="document.getElementById('votos-rank-${i}').style.display = document.getElementById('votos-rank-${i}').style.display === 'none' ? 'block' : 'none'" style="cursor:pointer;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div class="info-ranking">
-                            ${i === 0 ? '👑' : '⭐'} <strong>${i+1}º Lugar</strong> <br> 
-                            🎤 ${item.nome} <br> 
-                            <span style="font-size:11px;">🎵 ${item.titulo}</span><br>
-                            <span style="font-size:10px; color:#aaa; font-style:italic;">(Clique para ver votos)</span>
-                        </div>
+                        <div class="info-ranking">${i === 0 ? '👑' : '⭐'} <strong>${i+1}º Lugar</strong> <br>🎤 ${item.nome} <br><span style="font-size:11px;">🎵 ${item.titulo}</span></div>
                         <div class="pontuacao">${item.nota}</div>
                     </div>
                     <div id="votos-rank-${i}" style="display:none; margin-top: 15px; background: #111; padding: 10px; border-radius: 5px; font-size: 13px; text-align: center;">
-                        <strong>Registro da Plateia:</strong><br><br>
-                        <span style="color:#00d2ff">🤯 ${item.votos.excelente}</span> &nbsp;|&nbsp; 
-                        <span style="color:#28a745">🤩 ${item.votos.muitobom}</span> &nbsp;|&nbsp; 
-                        <span style="color:#ffeb3b">🙂 ${item.votos.bom}</span> &nbsp;|&nbsp; 
-                        <span style="color:#fd7e14">😕 ${item.votos.regular}</span> &nbsp;|&nbsp; 
-                        <span style="color:#e52d27">😖 ${item.votos.ruim}</span>
+                        <span style="color:#00d2ff">🤯 ${item.votos.excelente}</span> | <span style="color:#28a745">🤩 ${item.votos.muitobom}</span> | <span style="color:#ffeb3b">🙂 ${item.votos.bom}</span> | <span style="color:#fd7e14">😕 ${item.votos.regular}</span> | <span style="color:#e52d27">😖 ${item.votos.ruim}</span>
                     </div>
                 </div>
             `).join('');
-
             divRank.innerHTML = htmlTocando + htmlRanking;
         }
 
-        atualizarTelaFila();
-        atualizarTelaHistorico();
-        atualizarTelaRanking();
+        atualizarTelaFila(); atualizarTelaHistorico(); atualizarTelaRanking();
     </script>
 </body>
 </html>
