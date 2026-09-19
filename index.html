@@ -207,8 +207,8 @@
             <!-- Subtela: Fotos e Galeria -->
             <div id="sub-fotos" class="subtela-cliente">
                 <button class="btn-voltar-menu" onclick="voltarMenuCliente()">⬅️ Voltar</button>
-                <h3 style="margin-top:0; color:#28a745;">📸 Foto Lembrança com Moldura</h3>
-                <p style="font-size:12px; color:#aaa; margin-bottom:12px;">Tire sua foto com moldura estilo quadro, saia na TV e baixe!</p>
+                <h3 style="margin-top:0; color:#28a745;">📸 Foto Lembrança com Moldura Neon</h3>
+                <p style="font-size:12px; color:#aaa; margin-bottom:12px;">Tire sua foto com moldura artística de Karaokê!</p>
                 
                 <input type="text" id="cli-foto-cantor" list="lista-cantores-datalist" placeholder="Nome do Cantor / Dupla" style="width:100%; padding:12px; margin-bottom:12px; background:#111; color:#fff; border:1px solid #444; border-radius:6px; box-sizing:border-box; font-size:15px;">
                 
@@ -395,7 +395,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.62</span>
+        <span>v1.63</span>
     </div>
 
     <script>
@@ -838,7 +838,7 @@
             alert("Voto computado com sucesso! Obrigado!");
         }
 
-        // Processar Foto com Moldura Real Estilo Quadro (Margens nas 4 Lado + Faixa Rodapé)
+        // Processar Foto com Moldura Neon Artística Estilo Quadro Profissional
         function processarFotoNativa(input) {
             if (!input.files || !input.files[0]) return;
             const cantor = document.getElementById('cli-foto-cantor').value.trim() || "Visitante Parada";
@@ -851,43 +851,64 @@
                     const larguraFoto = img.width;
                     const alturaFoto = img.height;
                     
-                    // Definir margens da moldura (ex: 40px de borda nas laterais/topo e 140px embaixo para o texto)
-                    const margemBorda = Math.floor(larguraFoto * 0.05);
-                    const alturaRodape = Math.floor(alturaFoto * 0.18);
+                    // Margens da moldura artística e espaço inferior seguro para o texto
+                    const margemBorda = Math.floor(larguraFoto * 0.06);
+                    const alturaRodape = Math.floor(alturaFoto * 0.22);
 
                     canvas.width = larguraFoto + (margemBorda * 2);
-                    canvas.height = alturaFoto + margemBorda + alturaRodape;
+                    canvas.height = alturaFoto + (margemBorda * 2) + alturaRodape;
                     const ctx = canvas.getContext('2d');
 
-                    // 1. Fundo da moldura (Cor sólida elegante, ex: preto fosco/chumbo ou branco clássico de quadro)
-                    ctx.fillStyle = "#161616";
+                    // 1. Fundo artístico escuro com efeito palco
+                    ctx.fillStyle = "#0a0a12";
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                    // 2. Borda interna decorativa (estilo quadro/polaroid)
-                    ctx.fillStyle = "#222222";
-                    ctx.fillRect(margemBorda / 2, margemBorda / 2, canvas.width - margemBorda, canvas.height - margemBorda);
-
-                    // 3. Desenhar a foto centralizada dentro da moldura
+                    // 2. Desenhar a foto centralizada dentro da moldura
                     ctx.drawImage(img, margemBorda, margemBorda, larguraFoto, alturaFoto);
 
-                    // 4. Linha divisória elegante dourada/amarela
+                    // 3. Moldura Neon Brilhante Artística (Estilo Neon Azul/Rosa)
+                    ctx.shadowColor = "#00d2ff";
+                    ctx.shadowBlur = 25;
+                    ctx.strokeStyle = "#00d2ff";
+                    ctx.lineWidth = 10;
+                    ctx.strokeRect(margemBorda - 4, margemBorda - 4, larguraFoto + 8, alturaFoto + 8);
+
+                    // Segunda linha de brilho neon interno
+                    ctx.shadowColor = "#ff007f";
+                    ctx.shadowBlur = 15;
                     ctx.strokeStyle = "#ffeb3b";
                     ctx.lineWidth = 4;
-                    ctx.strokeRect(margemBorda, margemBorda, larguraFoto, alturaFoto);
+                    ctx.strokeRect(margemBorda + 4, margemBorda + 4, larguraFoto - 8, alturaFoto - 8);
 
-                    // 5. Faixa inferior (Rodapé do Quadro)
-                    const yRodape = margemBorda + alturaFoto;
-                    ctx.fillStyle = "#101010";
-                    ctx.fillRect(margemBorda, yRodape, larguraFoto, alturaRodape);
+                    // Desativar sombra para os textos ficarem limpos e nítidos
+                    ctx.shadowBlur = 0;
 
-                    // 6. Textos estilizados na moldura inferior
+                    // 4. Faixa de Rodapé Inferior Sofisticada para o Texto (Com folga para não cortar nada)
+                    const yRodape = (margemBorda * 2) + alturaFoto;
+                    const larguraRodapeTotal = larguraFoto + (margemBorda * 2);
+
+                    ctx.fillStyle = "rgba(10, 10, 15, 0.95)";
+                    ctx.fillRect(0, yRodape, larguraRodapeTotal, alturaRodape);
+
+                    // Borda superior da faixa de rodapé
+                    ctx.strokeStyle = "#00d2ff";
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(0, yRodape);
+                    ctx.lineTo(larguraRodapeTotal, yRodape);
+                    ctx.stroke();
+
+                    // 5. Textos perfeitamente dimensionados e centralizados/alinhados
+                    const tamanhoFonteTitulo = Math.max(22, Math.floor(larguraFoto * 0.045));
+                    const tamanhoFonteCantor = Math.max(18, Math.floor(larguraFoto * 0.038));
+
                     ctx.fillStyle = "#ffeb3b";
-                    ctx.font = `bold ${Math.floor(alturaRodape * 0.32)}px Arial`;
-                    ctx.fillText("🍻 KARAOKÊ DO PARADA 10.95", margemBorda + 30, yRodape + (alturaRodape * 0.42));
+                    ctx.font = `bold ${tamanhoFonteTitulo}px Arial`;
+                    ctx.fillText("🍻 KARAOKÊ DO PARADA 10.95", margemBorda + 15, yRodape + (alturaRodape * 0.42));
 
                     ctx.fillStyle = "#ffffff";
-                    ctx.font = `${Math.floor(alturaRodape * 0.26)}px Arial`;
-                    ctx.fillText(`🎤 Cantor(a): ${cantor}`, margemBorda + 30, yRodape + (alturaRodape * 0.78));
+                    ctx.font = `bold ${tamanhoFonteCantor}px Arial`;
+                    ctx.fillText(`🎤 Cantor(a): ${cantor}`, margemBorda + 15, yRodape + (alturaRodape * 0.80));
 
                     const imagemBase64 = canvas.toDataURL('image/jpeg', 0.9);
 
@@ -903,7 +924,7 @@
                         atualizarDatalistCantores();
                     }
 
-                    alert("Foto tirada com moldura estilo quadro com sucesso!");
+                    alert("Foto tirada com moldura artística neon aplicada com sucesso!");
                     input.value = "";
                 }
                 img.src = e.target.result;
