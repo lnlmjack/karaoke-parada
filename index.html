@@ -81,16 +81,14 @@
         .versao-app span { color: #fff; }
         .versao-app:hover { opacity: 1; }
 
-        /* Modais com Z-Index Organizados */
+        /* Modais */
         #fundo-modal-config, #fundo-modal-cantor { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 500; }
         #modal-config, #modal-cantor { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 501; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 550px; color: #fff; max-height: 85vh; overflow-y: auto; }
         #modal-config { border: 2px solid #ffc107; } #modal-cantor { border: 2px solid #00d2ff; text-align: center; }
 
-        /* Central de Fotos (Z-Index 600) */
         #fundo-modal-central-fotos { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 600; }
         #modal-central-fotos { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 601; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 600px; color: #fff; max-height: 85vh; overflow-y: auto; border: 2px solid #28a745; }
 
-        /* Modal Visualizar Foto (Z-Index 99990 - Garantido acima da tela do cliente que está em 150000? Não, cliente está em 150000, então colocamos modal em 200000) */
         #fundo-modal-visualizar { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 250000; }
         #modal-visualizar { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 20px; border-radius: 12px; z-index: 250001; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 500px; color: #fff; max-height: 90vh; overflow-y: auto; border: 2px solid #ffeb3b; text-align: center; box-sizing: border-box; }
 
@@ -210,7 +208,7 @@
             <div id="sub-fotos" class="subtela-cliente">
                 <button class="btn-voltar-menu" onclick="voltarMenuCliente()">⬅️ Voltar</button>
                 <h3 style="margin-top:0; color:#28a745;">📸 Foto Lembrança com Moldura</h3>
-                <p style="font-size:12px; color:#aaa; margin-bottom:12px;">Tire sua foto, saia na TV e baixe para postar!</p>
+                <p style="font-size:12px; color:#aaa; margin-bottom:12px;">Tire sua foto com moldura estilo quadro, saia na TV e baixe!</p>
                 
                 <input type="text" id="cli-foto-cantor" list="lista-cantores-datalist" placeholder="Nome do Cantor / Dupla" style="width:100%; padding:12px; margin-bottom:12px; background:#111; color:#fff; border:1px solid #444; border-radius:6px; box-sizing:border-box; font-size:15px;">
                 
@@ -232,7 +230,7 @@
 
     <datalist id="lista-cantores-datalist"></datalist>
 
-    <!-- Modal de Visualização de Foto (Disponível Globalmente com z-index alto) -->
+    <!-- Modal de Visualização de Foto -->
     <div id="fundo-modal-visualizar" onclick="fecharModalVisualizar()"></div>
     <div id="modal-visualizar">
         <h3 id="modal-vis-titulo" style="color:#ffeb3b; margin-top:0;">Foto Lembrança</h3>
@@ -397,7 +395,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.61</span>
+        <span>v1.62</span>
     </div>
 
     <script>
@@ -840,6 +838,7 @@
             alert("Voto computado com sucesso! Obrigado!");
         }
 
+        // Processar Foto com Moldura Real Estilo Quadro (Margens nas 4 Lado + Faixa Rodapé)
         function processarFotoNativa(input) {
             if (!input.files || !input.files[0]) return;
             const cantor = document.getElementById('cli-foto-cantor').value.trim() || "Visitante Parada";
@@ -849,32 +848,48 @@
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.getElementById('canvas-foto');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
+                    const larguraFoto = img.width;
+                    const alturaFoto = img.height;
+                    
+                    // Definir margens da moldura (ex: 40px de borda nas laterais/topo e 140px embaixo para o texto)
+                    const margemBorda = Math.floor(larguraFoto * 0.05);
+                    const alturaRodape = Math.floor(alturaFoto * 0.18);
+
+                    canvas.width = larguraFoto + (margemBorda * 2);
+                    canvas.height = alturaFoto + margemBorda + alturaRodape;
                     const ctx = canvas.getContext('2d');
 
-                    ctx.drawImage(img, 0, 0);
+                    // 1. Fundo da moldura (Cor sólida elegante, ex: preto fosco/chumbo ou branco clássico de quadro)
+                    ctx.fillStyle = "#161616";
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                    const grad = ctx.createLinearGradient(0, canvas.height - 120, 0, canvas.height);
-                    grad.addColorStop(0, "rgba(0, 0, 0, 0)");
-                    grad.addColorStop(0.3, "rgba(0, 0, 0, 0.85)");
-                    grad.addColorStop(1, "rgba(15, 15, 15, 0.95)");
-                    ctx.fillStyle = grad;
-                    ctx.fillRect(0, canvas.height - 120, canvas.width, 120);
+                    // 2. Borda interna decorativa (estilo quadro/polaroid)
+                    ctx.fillStyle = "#222222";
+                    ctx.fillRect(margemBorda / 2, margemBorda / 2, canvas.width - margemBorda, canvas.height - margemBorda);
 
+                    // 3. Desenhar a foto centralizada dentro da moldura
+                    ctx.drawImage(img, margemBorda, margemBorda, larguraFoto, alturaFoto);
+
+                    // 4. Linha divisória elegante dourada/amarela
                     ctx.strokeStyle = "#ffeb3b";
-                    ctx.lineWidth = 6;
-                    ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
+                    ctx.lineWidth = 4;
+                    ctx.strokeRect(margemBorda, margemBorda, larguraFoto, alturaFoto);
 
+                    // 5. Faixa inferior (Rodapé do Quadro)
+                    const yRodape = margemBorda + alturaFoto;
+                    ctx.fillStyle = "#101010";
+                    ctx.fillRect(margemBorda, yRodape, larguraFoto, alturaRodape);
+
+                    // 6. Textos estilizados na moldura inferior
                     ctx.fillStyle = "#ffeb3b";
-                    ctx.font = "bold 32px Arial";
-                    ctx.fillText("🍻 KARAOKÊ DO PARADA 10.95", 40, canvas.height - 70);
+                    ctx.font = `bold ${Math.floor(alturaRodape * 0.32)}px Arial`;
+                    ctx.fillText("🍻 KARAOKÊ DO PARADA 10.95", margemBorda + 30, yRodape + (alturaRodape * 0.42));
 
                     ctx.fillStyle = "#ffffff";
-                    ctx.font = "bold 24px Arial";
-                    ctx.fillText(`🎤 Cantor(a): ${cantor}`, 40, canvas.height - 30);
+                    ctx.font = `${Math.floor(alturaRodape * 0.26)}px Arial`;
+                    ctx.fillText(`🎤 Cantor(a): ${cantor}`, margemBorda + 30, yRodape + (alturaRodape * 0.78));
 
-                    const imagemBase64 = canvas.toDataURL('image/jpeg', 0.85);
+                    const imagemBase64 = canvas.toDataURL('image/jpeg', 0.9);
 
                     database.ref('fotosDia').push({
                         cantor: cantor,
@@ -888,7 +903,7 @@
                         atualizarDatalistCantores();
                     }
 
-                    alert("Foto tirada e moldura aplicada com sucesso!");
+                    alert("Foto tirada com moldura estilo quadro com sucesso!");
                     input.value = "";
                 }
                 img.src = e.target.result;
