@@ -320,7 +320,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.49</span>
+        <span>v1.50</span>
     </div>
 
     <script>
@@ -548,12 +548,20 @@
         }
 
         function limparFila() { if (confirm("Esvaziar a Fila?")) { filaDeReproducao = []; atualizarTelaFila(); } }
-        function limparRanking() { if (confirm("Zerar o Ranking?")) { ranking = []; atualizarTelaRanking(); } }
+        
+        function limparRanking() { 
+            if (confirm("Zerar o Ranking e limpar música atual travada?")) { 
+                ranking = []; 
+                musicaAtual = null; // Remove qualquer música travada no "Tocando Agora"
+                atualizarTelaRanking(); 
+            } 
+        }
+
         function limparHistorico() { if (confirm("Apagar o Histórico?")) { historicoDeReproducao = []; atualizarTelaHistorico(); } }
 
         function resetarTudo() {
             if (confirm("⚠️ Deseja realmente RESETAR TUDO?")) {
-                filaDeReproducao = []; ranking = []; historicoDeReproducao = [];
+                filaDeReproducao = []; ranking = []; historicoDeReproducao = []; musicaAtual = null;
                 atualizarTelaFila(); atualizarTelaRanking(); atualizarTelaHistorico();
                 alert("Sistema resetado com sucesso!");
             }
