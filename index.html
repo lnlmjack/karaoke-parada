@@ -258,7 +258,7 @@
         <div class="topo-header">
             <h1 style="margin: 0; padding: 0;">🎛️ Painel de Controle - Karaokê <span id="info-operador" style="font-size: 14px; color: #00d2ff; font-weight: normal; margin-left: 15px; background: #222; padding: 4px 10px; border-radius: 6px; border: 1px solid #444;">👤 Operador: --</span></h1>
             <div class="topo-botoes-acao">
-                <button id="btn-reset-tudo" class="btn-topo-acao" onclick="resetarTudo()" title="Zerar Fila, Ranking e Histórico">⚠️ Resetar Tudo</button>
+                <button id="btn-reset-tudo" class="btn-topo-acao" onclick="resetarTudo()" title="Zerar Fila, Ranking, Histórico e Fotos">⚠️ Resetar Tudo</button>
                 <button id="btn-config" class="btn-topo-acao" onclick="abrirModalConfig()" title="Configurações do Sistema">⚙️ Configurações</button>
                 <button id="btn-sair" class="btn-topo-acao" onclick="fazerLogout()">🚪 Sair</button>
                 <button id="btn-manual" class="btn-topo-acao" onclick="abrirManual()">📖 Manual</button>
@@ -320,7 +320,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.55</span>
+        <span>v1.56</span>
     </div>
 
     <script>
@@ -570,8 +570,9 @@
         function limparHistorico() { if (confirm("Apagar o Histórico?")) { historicoDeReproducao = []; atualizarTelaHistorico(); } }
 
         function resetarTudo() {
-            if (confirm("⚠️ Deseja realmente RESETAR TUDO?")) {
+            if (confirm("⚠️ Deseja realmente RESETAR TUDO (incluindo as fotos do dia)?")) {
                 filaDeReproducao = []; ranking = []; historicoDeReproducao = []; musicaAtual = null;
+                database.ref('fotosDia').remove();
                 atualizarTelaFila(); atualizarTelaRanking(); atualizarTelaHistorico();
                 alert("Sistema resetado com sucesso!");
             }
@@ -919,9 +920,12 @@
                         <h1 style="font-size: 50px; color: #ffeb3b; margin-bottom: 10px;">🍻 PARADA 10.95 BAR</h1>
                         <h2 style="font-size: 40px; margin-bottom: 30px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
                         <div id="nota-loading" style="font-size: 30px; animation: piscar 1s infinite;">Calculando energia e votos do público... 🥁</div>
-                        <div id="nota-resultado" style="display:none; flex-direction:column; align-items:center;">
-                            <div style="font-size: 25px; color: #aaa;">Pontuação Final:</div>
-                            <div id="nota-valor" style="font-size: 160px; font-weight: 900; line-height: 1.1;">100</div>
+                        <div id="nota-resultado" style="display:none; flex-direction:column; align-items:center; gap: 15px;">
+                            <div id="tv-foto-container" style="display:none;">
+                                <img id="tv-foto-img" style="width: 220px; height: 165px; object-fit: cover; border-radius: 10px; border: 3px solid #ffeb3b; box-shadow: 0 0 20px rgba(255,235,59,0.5);" alt="Foto do Cantor">
+                            </div>
+                            <div style="font-size: 20px; color: #aaa;">Pontuação Final:</div>
+                            <div id="nota-valor" style="font-size: 130px; font-weight: 900; line-height: 1;">100</div>
                         </div>
                     </div>
                     <button id="btn-liberar" onclick="this.style.display='none';">👆 Clique aqui para liberar o som (F11)</button>
@@ -991,26 +995,47 @@
             ranking.push({ nome: musicaAtual.cantor, nota: notaFinal, titulo: musicaAtual.titulo, votos: votosCongelados });
             atualizarTelaRanking();
 
-            if (telaTV && !telaTV.closed) {
-                let tvDoc = telaTV.document;
-                tvDoc.getElementById('nota-cantor-nome').innerText = musicaAtual.cantor;
-                tvDoc.getElementById('nota-loading').style.display = 'block';
-                tvDoc.getElementById('nota-resultado').style.display = 'none';
-                tvDoc.getElementById('tela-nota').style.display = 'flex';
-                tvDoc.getElementById('cantor-overlay').style.top = '-200px';
+            // Buscar foto recente do cantor no banco se houver
+            database.ref('fotosDia').once('value', (snapshot) => {
+                let fotoEncontrada = null;
+                snapshot.forEach(child => {
+                    let f = child.val();
+                    if (f.cantor && f.cantor.toLowerCase() === musicaAtual.cantor.toLowerCase()) {
+                        fotoEncontrada = f.imagemBase64;
+                    }
+                });
 
-                const som = document.getElementById('audio-tambores');
-                som.currentTime = 0;
-                som.play().catch(e => {});
+                if (telaTV && !telaTV.closed) {
+                    let tvDoc = telaTV.document;
+                    tvDoc.getElementById('nota-cantor-nome').innerText = musicaAtual.cantor;
+                    tvDoc.getElementById('nota-loading').style.display = 'block';
+                    tvDoc.getElementById('nota-resultado').style.display = 'none';
+                    tvDoc.getElementById('tela-nota').style.display = 'flex';
+                    tvDoc.getElementById('cantor-overlay').style.top = '-200px';
 
-                setTimeout(() => {
-                    tvDoc.getElementById('nota-loading').style.display = 'none';
-                    let valorEl = tvDoc.getElementById('nota-valor');
-                    valorEl.innerText = notaFinal;
-                    valorEl.style.color = notaFinal >= 90 ? '#28a745' : notaFinal >= 75 ? '#ffeb3b' : '#e52d27';
-                    tvDoc.getElementById('nota-resultado').style.display = 'flex';
-                }, 4000); 
-            }
+                    const som = document.getElementById('audio-tambores');
+                    som.currentTime = 0;
+                    som.play().catch(e => {});
+
+                    setTimeout(() => {
+                        tvDoc.getElementById('nota-loading').style.display = 'none';
+                        let valorEl = tvDoc.getElementById('nota-valor');
+                        valorEl.innerText = notaFinal;
+                        valorEl.style.color = notaFinal >= 90 ? '#28a745' : notaFinal >= 75 ? '#ffeb3b' : '#e52d27';
+                        
+                        let fotoContainer = tvDoc.getElementById('tv-foto-container');
+                        let fotoImg = tvDoc.getElementById('tv-foto-img');
+                        if (fotoEncontrada) {
+                            fotoImg.src = fotoEncontrada;
+                            fotoContainer.style.display = 'block';
+                        } else {
+                            fotoContainer.style.display = 'none';
+                        }
+
+                        tvDoc.getElementById('nota-resultado').style.display = 'flex';
+                    }, 4000); 
+                }
+            });
 
             clearTimeout(timerNota);
             timerNota = setTimeout(() => {
