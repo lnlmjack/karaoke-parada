@@ -120,18 +120,22 @@
         .login-btn { width: 100%; padding: 15px; background: #e52d27; color: white; font-size: 18px; font-weight: bold; border: 2px solid #fff; border-radius: 6px; cursor: pointer; transition: 0.2s; margin-top: 5px; }
         .login-btn:hover { background: #c21a15; }
 
-        /* Estilos da Interface Mobile do Cliente (QR Code) */
-        #tela-cliente { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #121212; z-index: 150000; overflow-y: auto; box-sizing: border-box; padding: 15px; }
-        .cliente-header { text-align: center; border-bottom: 2px solid #e52d27; padding-bottom: 15px; margin-bottom: 15px; }
-        .cliente-header img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid #ffeb3b; }
-        .cliente-header h2 { margin: 8px 0 0 0; color: #ffeb3b; font-size: 20px; }
-        .abas-cliente { display: flex; gap: 5px; margin-bottom: 15px; justify-content: center; }
-        .btn-aba-cliente { flex: 1; padding: 10px; background: #222; border: 1px solid #444; color: #aaa; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; text-align: center; }
-        .btn-aba-cliente.ativo { background: #e52d27; color: #fff; border-color: #e52d27; }
-        .conteudo-cliente { display: none; } .conteudo-cliente.ativo { display: block; }
+        /* Estilos da Interface Mobile do Cliente (Layout Vertical Exato ao Modelo) */
+        #tela-cliente { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #121212; z-index: 150000; overflow-y: auto; box-sizing: border-box; }
+        .cliente-topo-vermelho { background: #b31217; color: #fff; padding: 18px; text-align: center; font-size: 20px; font-weight: 900; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .cliente-corpo { padding: 20px; max-width: 450px; margin: 0 auto; text-align: center; }
+        .cliente-pergunta { font-size: 18px; color: #ddd; margin: 25px 0; font-weight: bold; }
         
-        .card-foto { background: #1e1e1e; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px; border: 1px solid #333; }
-        .galeria-fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 15px; }
+        .btn-menu-cliente { width: 100%; padding: 24px; margin-bottom: 20px; border: none; border-radius: 12px; font-size: 20px; font-weight: 900; color: #fff; cursor: pointer; box-shadow: 0 6px 15px rgba(0,0,0,0.4); transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 12px; text-transform: uppercase; }
+        .btn-menu-cliente:active { transform: scale(0.98); }
+        .btn-pedir { background: #e52d27; }
+        .btn-votar { background: #007bff; }
+        .btn-fotos { background: #28a745; }
+
+        .subtela-cliente { display: none; text-align: left; background: #1e1e1e; padding: 20px; border-radius: 12px; border: 1px solid #333; margin-top: 10px; }
+        .btn-voltar-menu { background: #444; color: #fff; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-bottom: 15px; font-size: 13px; }
+
+        .galeria-fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-top: 15px; }
         .item-foto-galeria { background: #222; border-radius: 8px; overflow: hidden; border: 1px solid #444; text-align: center; padding-bottom: 8px; }
         .item-foto-galeria img { width: 100%; height: 110px; object-fit: cover; }
         .item-foto-galeria p { font-size: 11px; margin: 5px 0; color: #ffeb3b; font-weight: bold; }
@@ -151,69 +155,80 @@
         </div>
     </div>
 
-    <!-- Interface Mobile do Cliente (Acessada via URL com parâmetro ?cliente=1 ou similar, ou alternável para teste) -->
+    <!-- Interface Mobile do Cliente (Layout Vertical Exato) -->
     <div id="tela-cliente">
-        <div class="cliente-header">
-            <img src="logop.png" alt="Logo Parada">
-            <h2>Karaokê do Parada 10.95</h2>
-            <p style="font-size: 12px; color: #aaa; margin: 4px 0 0 0;">Escolha seu som, vote ou tire sua foto lembrança!</p>
+        <div class="cliente-topo-vermelho">
+            <span>🍻 PARADA 10.95 BAR</span>
         </div>
 
-        <div class="abas-cliente">
-            <button class="btn-aba-cliente ativo" onclick="mudarAbaCliente('pedir', event)">🎵 Pedir / Fila</button>
-            <button class="btn-aba-cliente" onclick="mudarAbaCliente('votar', event)">⭐ Votar</button>
-            <button class="btn-aba-cliente" onclick="mudarAbaCliente('fotos', event)">📸 Fotos do Dia</button>
-        </div>
+        <div class="cliente-corpo">
+            <!-- Menu Principal Vertical -->
+            <div id="menu-principal-cliente">
+                <div class="cliente-pergunta">O que você quer fazer?</div>
+                
+                <button class="btn-menu-cliente btn-pedir" onclick="abrirSubtela('pedir')">
+                    📩 Pedir Música
+                </button>
+                
+                <button class="btn-menu-cliente btn-votar" onclick="abrirSubtela('votar')">
+                    ⭐ Votar no Cantor
+                </button>
 
-        <!-- Aba Pedir / Fila -->
-        <div id="aba-cli-pedir" class="conteudo-cliente ativo">
-            <div class="card-foto">
-                <h3 style="margin-top:0; color:#00d2ff; font-size:16px;">Pedir Música</h3>
-                <input type="text" id="cli-input-cantor" placeholder="Seu Nome / Dupla" style="width:100%; padding:10px; margin-bottom:10px; background:#111; color:#fff; border:1px solid #444; border-radius:4px; box-sizing:border-box;">
-                <input type="text" id="cli-input-busca" placeholder="Nome da música ou link do YouTube" style="width:100%; padding:10px; margin-bottom:10px; background:#111; color:#fff; border:1px solid #444; border-radius:4px; box-sizing:border-box;">
-                <button onclick="clienteFazerPedido()" style="width:100%; padding:10px; background:#e52d27; color:#fff; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">Enviar Pedido ao DJ</button>
+                <button class="btn-menu-cliente btn-fotos" onclick="abrirSubtela('fotos')">
+                    📸 Tirar Foto & Baixar
+                </button>
             </div>
-            <div class="card-foto">
-                <h4 style="margin-top:0; color:#ffeb3b; font-size:14px;">Status Atual na TV:</h4>
-                <div id="cli-status-atual" style="font-size:13px; color:#aaa;">Nenhuma música tocando no momento.</div>
-            </div>
-        </div>
 
-        <!-- Aba Votar -->
-        <div id="aba-cli-votar" class="conteudo-cliente">
-            <div class="card-foto">
-                <h3 style="margin-top:0; color:#ffeb3b; font-size:16px;">Votação Ao Vivo</h3>
-                <p id="cli-musica-votacao" style="font-size:13px; color:#aaa; margin-bottom:15px;">Aguardando música iniciar para votar...</p>
-                <div style="display:flex; flex-direction:column; gap:8px;">
-                    <button onclick="clienteVotar('excelente')" style="padding:10px; background:#00d2ff; color:#000; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">🤯 Excelente (Nota Máxima)</button>
-                    <button onclick="clienteVotar('muitobom')" style="padding:10px; background:#28a745; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">🤩 Muito Bom</button>
-                    <button onclick="clienteVotar('bom')" style="padding:10px; background:#ffeb3b; color:#000; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">🙂 Bom</button>
-                    <button onclick="clienteVotar('regular')" style="padding:10px; background:#fd7e14; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">😕 Regular</button>
-                    <button onclick="clienteVotar('ruim')" style="padding:10px; background:#e52d27; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">😖 Ruim</button>
+            <!-- Subtela: Pedir Música -->
+            <div id="sub-pedir" class="subtela-cliente">
+                <button class="btn-voltar-menu" onclick="voltarMenuCliente()">⬅️ Voltar</button>
+                <h3 style="margin-top:0; color:#e52d27;">Pedir Música</h3>
+                <input type="text" id="cli-input-cantor" placeholder="Seu Nome / Dupla" style="width:100%; padding:12px; margin-bottom:12px; background:#111; color:#fff; border:1px solid #444; border-radius:6px; box-sizing:border-box; font-size:15px;">
+                <input type="text" id="cli-input-busca" placeholder="Nome da música ou link do YouTube" style="width:100%; padding:12px; margin-bottom:12px; background:#111; color:#fff; border:1px solid #444; border-radius:6px; box-sizing:border-box; font-size:15px;">
+                <button onclick="clienteFazerPedido()" style="width:100%; padding:14px; background:#e52d27; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:16px;">Enviar Pedido ao DJ</button>
+                
+                <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 15px;">
+                    <h4 style="margin:0 0 5px 0; font-size:13px; color:#ffeb3b;">Status na TV:</h4>
+                    <div id="cli-status-atual" style="font-size:13px; color:#aaa;">Nenhuma música tocando no momento.</div>
                 </div>
             </div>
-        </div>
 
-        <!-- Aba Fotos do Dia -->
-        <div id="aba-cli-fotos" class="conteudo-cliente">
-            <div class="card-foto">
-                <h3 style="margin-top:0; color:#28a745; font-size:16px;">📸 Tirar Foto Lembrança</h3>
-                <p style="font-size:12px; color:#aaa; margin-bottom:10px;">Tire sua foto com a moldura oficial do bar para aparecer na TV e baixar!</p>
-                <input type="text" id="cli-foto-cantor" placeholder="Nome do Cantor / Dupla" style="width:100%; padding:10px; margin-bottom:10px; background:#111; color:#fff; border:1px solid #444; border-radius:4px; box-sizing:border-box;">
+            <!-- Subtela: Votar no Cantor -->
+            <div id="sub-votar" class="subtela-cliente">
+                <button class="btn-voltar-menu" onclick="voltarMenuCliente()">⬅️ Voltar</button>
+                <h3 style="margin-top:0; color:#007bff;">Votação Ao Vivo</h3>
+                <p id="cli-musica-votacao" style="font-size:13px; color:#aaa; margin-bottom:15px;">Aguardando música iniciar para votar...</p>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <button onclick="clienteVotar('excelente')" style="padding:14px; background:#00d2ff; color:#000; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:15px;">🤯 Excelente (Nota Máxima)</button>
+                    <button onclick="clienteVotar('muitobom')" style="padding:14px; background:#28a745; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:15px;">🤩 Muito Bom</button>
+                    <button onclick="clienteVotar('bom')" style="padding:14px; background:#ffeb3b; color:#000; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:15px;">🙂 Bom</button>
+                    <button onclick="clienteVotar('regular')" style="padding:14px; background:#fd7e14; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:15px;">😕 Regular</button>
+                    <button onclick="clienteVotar('ruim')" style="padding:14px; background:#e52d27; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:15px;">😖 Ruim</button>
+                </div>
+            </div>
+
+            <!-- Subtela: Fotos e Galeria -->
+            <div id="sub-fotos" class="subtela-cliente">
+                <button class="btn-voltar-menu" onclick="voltarMenuCliente()">⬅️ Voltar</button>
+                <h3 style="margin-top:0; color:#28a745;">📸 Foto Lembrança com Moldura</h3>
+                <p style="font-size:12px; color:#aaa; margin-bottom:12px;">Tire sua foto, saia na TV e baixe para postar!</p>
                 
-                <div id="container-camera" style="margin-bottom: 10px; position:relative;">
-                    <video id="webcam-video" autoplay playsinline style="width:100%; max-height:250px; background:#000; border-radius:8px; display:none;"></video>
+                <input type="text" id="cli-foto-cantor" placeholder="Nome do Cantor / Dupla" style="width:100%; padding:12px; margin-bottom:12px; background:#111; color:#fff; border:1px solid #444; border-radius:6px; box-sizing:border-box; font-size:15px;">
+                
+                <div style="margin-bottom: 12px; position:relative;">
+                    <video id="webcam-video" autoplay playsinline style="width:100%; max-height:260px; background:#000; border-radius:8px; display:none; object-fit:cover;"></video>
                     <canvas id="canvas-foto" style="display:none;"></canvas>
                 </div>
 
-                <button id="btn-ligar-camera" onclick="iniciarCameraCliente()" style="width:100%; padding:10px; background:#007bff; color:#fff; border:none; border-radius:4px; font-weight:bold; cursor:pointer; margin-bottom:5px;">📷 Abrir Câmera</button>
-                <button id="btn-tirar-foto" onclick="capturarFotoCliente()" style="width:100%; padding:10px; background:#28a745; color:#fff; border:none; border-radius:4px; font-weight:bold; cursor:pointer; display:none;">✨ Tirar Foto com Moldura</button>
-            </div>
+                <button id="btn-ligar-camera" onclick="iniciarCameraCliente()" style="width:100%; padding:14px; background:#007bff; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer; margin-bottom:8px; font-size:15px;">📷 Abrir Câmera</button>
+                <button id="btn-virar-camera" onclick="alternarCameraCliente()" style="width:100%; padding:10px; background:#333; color:#ffeb3b; border:1px solid #555; border-radius:6px; font-weight:bold; cursor:pointer; margin-bottom:8px; display:none; font-size:14px;">🔄 Alternar Câmera (Frontal / Traseira)</button>
+                <button id="btn-tirar-foto" onclick="capturarFotoCliente()" style="width:100%; padding:14px; background:#28a745; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer; display:none; font-size:15px;">✨ Tirar Foto com Moldura</button>
 
-            <div class="card-foto">
-                <h4 style="margin-top:0; font-size:14px; color:#ffeb3b;">Galeria de Fotos do Dia</h4>
-                <div id="galeria-fotos-dia" class="galeria-fotos">
-                    <span style="color:#777; font-size:12px; grid-column: 1/-1;">Nenhuma foto tirada ainda hoje.</span>
+                <div style="margin-top: 25px; border-top: 1px solid #333; padding-top: 15px;">
+                    <h4 style="margin:0 0 10px 0; font-size:14px; color:#ffeb3b;">Galeria de Fotos do Dia (Download)</h4>
+                    <div id="galeria-fotos-dia" class="galeria-fotos">
+                        <span style="color:#777; font-size:12px; grid-column: 1/-1;">Nenhuma foto tirada ainda hoje.</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -405,15 +420,15 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.57</span>
+        <span>v1.58</span>
     </div>
 
     <script>
-        // Detecção se o usuário abriu como cliente (ex: index.html?cliente=1)
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('cliente')) {
             document.getElementById('tela-login').style.display = 'none';
-            document.querySelector('.container').style.display = 'none';
+            const containerDJ = document.querySelector('.container');
+            if(containerDJ) containerDJ.style.display = 'none';
             document.getElementById('tela-cliente').style.display = 'block';
         }
 
@@ -451,11 +466,20 @@
             evento.currentTarget.classList.add('ativo');
         }
 
-        function mudarAbaCliente(aba, evento) {
-            document.querySelectorAll('.conteudo-cliente').forEach(el => el.classList.remove('ativo'));
-            document.querySelectorAll('.btn-aba-cliente').forEach(el => el.classList.remove('ativo'));
-            document.getElementById('aba-cli-' + aba).classList.add('ativo');
-            evento.currentTarget.classList.add('ativo');
+        // Navegação Vertical do Cliente
+        function abrirSubtela(tipo) {
+            document.getElementById('menu-principal-cliente').style.display = 'none';
+            document.querySelectorAll('.subtela-cliente').forEach(el => el.style.display = 'none');
+            document.getElementById('sub-' + tipo).style.display = 'block';
+        }
+
+        function voltarMenuCliente() {
+            if (streamCamera) {
+                streamCamera.getTracks().forEach(t => t.stop());
+                streamCamera = null;
+            }
+            document.querySelectorAll('.subtela-cliente').forEach(el => el.style.display = 'none');
+            document.getElementById('menu-principal-cliente').style.display = 'block';
         }
 
         function atualizarDisplayNotaForcada() {
@@ -492,6 +516,7 @@
 
         function renderizarTabelaCanais() {
             const tbody = document.getElementById('tabela-corpo-canais');
+            if(!tbody) return;
             tbody.innerHTML = canaisFavoritos.map((canal, index) => `
                 <tr>
                     <td><strong>${index + 1}º</strong></td>
@@ -546,6 +571,7 @@
 
         function renderizarTabelaUsuarios() {
             const tbody = document.getElementById('tabela-corpo-usuarios');
+            if(!tbody) return;
             tbody.innerHTML = usuariosAutorizados.map((u, index) => `
                 <tr>
                     <td><strong>${u.usuario}</strong></td>
@@ -755,7 +781,6 @@
         database.ref('statusAtual').set(null);
         database.ref('votosAtual').remove();
 
-        // Sincronização e monitoramento para a interface do cliente
         database.ref('statusAtual').on('value', (snapshot) => {
             const st = snapshot.val();
             const statusCli = document.getElementById('cli-status-atual');
@@ -769,7 +794,6 @@
             }
         });
 
-        // Sincronização de fotos do dia para a galeria do cliente
         database.ref('fotosDia').on('value', (snapshot) => {
             const galeria = document.getElementById('galeria-fotos-dia');
             if(!galeria) return;
@@ -815,21 +839,49 @@
             alert("Voto computado com sucesso! Obrigado!");
         }
 
-        // Funções de Câmera e Moldura no Celular do Cliente
+        // Gestão da Câmera do Cliente com Alternador Frontal/Traseira
         let streamCamera = null;
+        let usarCameraTraseira = false;
+
         async function iniciarCameraCliente() {
             const video = document.getElementById('webcam-video');
             const btnTirar = document.getElementById('btn-tirar-foto');
             const btnLigar = document.getElementById('btn-ligar-camera');
+            const btnVirar = document.getElementById('btn-virar-camera');
+            
+            if (streamCamera) {
+                streamCamera.getTracks().forEach(t => t.stop());
+            }
+
             try {
-                streamCamera = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+                const constraints = {
+                    video: { facingMode: usarCameraTraseira ? { exact: "environment" } : "user" },
+                    audio: false
+                };
+                streamCamera = await navigator.mediaDevices.getUserMedia(constraints);
                 video.srcObject = streamCamera;
                 video.style.display = 'block';
                 btnTirar.style.display = 'block';
+                btnVirar.style.display = 'block';
                 btnLigar.style.display = 'none';
             } catch (err) {
-                alert("Não foi possível acessar a câmera do celular. Verifique as permissões do navegador.");
+                // Fallback caso o exact falhe em alguns dispositivos móveis
+                try {
+                    streamCamera = await navigator.mediaDevices.getUserMedia({ video: { facingMode: usarCameraTraseira ? "environment" : "user" }, audio: false });
+                    video.srcObject = streamCamera;
+                    video.style.display = 'block';
+                    btnTirar.style.display = 'block';
+                    btnVirar.style.display = 'block';
+                    btnLigar.style.display = 'none';
+                } catch (e) {
+                    alert("Não foi possível acessar a câmera. Verifique as permissões do navegador.");
+                }
             }
+        }
+
+        function alternarCameraCliente() {
+            usarCameraTraseira = !usarCameraTraseira;
+            iniciarCameraCliente();
         }
 
         function capturarFotoCliente() {
@@ -843,10 +895,9 @@
             canvas.height = video.videoHeight || 480;
             const ctx = canvas.getContext('2d');
 
-            // Desenhar foto da câmera
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            // Aplicar Moldura Personalizada do Bar
+            // Moldura Personalizada do Bar
             ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
             ctx.fillRect(0, canvas.height - 70, canvas.width, 70);
 
@@ -858,24 +909,24 @@
             ctx.font = "16px Arial";
             ctx.fillText(`Voz: ${cantor}`, 20, canvas.height - 14);
 
-            // Converter para Base64 comprimido
             const imagemBase64 = canvas.toDataURL('image/jpeg', 0.8);
 
-            // Enviar para o Firebase Realtime Database (Gratuito)
             database.ref('fotosDia').push({
                 cantor: cantor,
                 imagemBase64: imagemBase64,
                 timestamp: Date.now()
             });
 
-            // Parar câmera
-            streamCamera.getTracks().forEach(t => t.stop());
+            if (streamCamera) {
+                streamCamera.getTracks().forEach(t => t.stop());
+                streamCamera = null;
+            }
             video.style.display = 'none';
             document.getElementById('btn-tirar-foto').style.display = 'none';
+            document.getElementById('btn-virar-camera').style.display = 'none';
             document.getElementById('btn-ligar-camera').style.display = 'block';
 
-            alert("Foto tirada e salva com sucesso! Vá até a aba 'Fotos do Dia' para baixar ou veja na TV!");
-            mudarAbaCliente('fotos', { currentTarget: document.querySelectorAll('.btn-aba-cliente')[2] });
+            alert("Foto tirada e salva com sucesso! Role para baixo para baixar ou veja na TV!");
         }
 
         let pedidosPendentes = [];
@@ -891,7 +942,9 @@
         }
 
         function toggleAutoAprovar() {
-            autoAprovar = document.getElementById('chkAutoAprovar').checked;
+            const chkAuto = document.getElementById('chkAutoAprovar');
+            if(!chkAuto) return;
+            autoAprovar = chkAuto.checked;
             if (autoAprovar && pedidosPendentes.length > 0) {
                 pedidosPendentes.forEach(p => {
                     filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
@@ -976,11 +1029,12 @@
 
         function abrirModalCantor(videoId, titulo) {
             musicaPendente = { videoId, titulo };
-            document.getElementById('input-nome-cantor').value = '';
+            const inputCantor = document.getElementById('input-nome-cantor');
+            if(inputCantor) inputCantor.value = '';
             renderizarCantoresSalvos();
             document.getElementById('fundo-modal-cantor').style.display = 'block';
             document.getElementById('modal-cantor').style.display = 'block';
-            document.getElementById('input-nome-cantor').focus();
+            if(inputCantor) inputCantor.focus();
         }
 
         function fecharModalCantor() {
@@ -999,7 +1053,8 @@
             if (musicaPendente) {
                 filaDeReproducao.push({ videoId: musicaPendente.videoId, titulo: musicaPendente.titulo, cantor: cantor });
                 atualizarTelaFila();
-                document.getElementById('campoBusca').value = ""; 
+                const campoBusca = document.getElementById('campoBusca');
+                if(campoBusca) campoBusca.value = ""; 
             }
             fecharModalCantor();
         }
