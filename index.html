@@ -395,7 +395,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.63</span>
+        <span>v1.64</span>
     </div>
 
     <script>
@@ -784,13 +784,21 @@
         database.ref('statusAtual').set(null);
         database.ref('votosAtual').remove();
 
+        // Sincronização automática do nome do cantor atual para a aba de fotos do cliente
         database.ref('statusAtual').on('value', (snapshot) => {
             const st = snapshot.val();
             const statusCli = document.getElementById('cli-status-atual');
             const votacaoCli = document.getElementById('cli-musica-votacao');
-            if(st && st.id) {
+            const inputFotoCantor = document.getElementById('cli-foto-cantor');
+
+            if(st && st.id && st.cantor && st.cantor !== "Avaliando...") {
                 if(statusCli) statusCli.innerHTML = `🎵 <strong>${st.titulo}</strong> <br>🎤 Voz: <strong>${st.cantor}</strong>`;
                 if(votacaoCli) votacaoCli.innerHTML = `Cantando Agora: <strong style="color:#00d2ff">${st.cantor}</strong> - ${st.titulo}`;
+                
+                // Puxa automaticamente o nome de quem está cantando para o campo da foto se estiver vazio
+                if(inputFotoCantor && (!inputFotoCantor.value || inputFotoCantor.value === "Visitante Parada")) {
+                    inputFotoCantor.value = st.cantor;
+                }
             } else {
                 if(statusCli) statusCli.innerText = "Nenhuma música tocando no momento.";
                 if(votacaoCli) votacaoCli.innerText = "Aguardando música iniciar para votar...";
@@ -851,7 +859,6 @@
                     const larguraFoto = img.width;
                     const alturaFoto = img.height;
                     
-                    // Margens da moldura artística e espaço inferior seguro para o texto
                     const margemBorda = Math.floor(larguraFoto * 0.06);
                     const alturaRodape = Math.floor(alturaFoto * 0.22);
 
@@ -866,31 +873,28 @@
                     // 2. Desenhar a foto centralizada dentro da moldura
                     ctx.drawImage(img, margemBorda, margemBorda, larguraFoto, alturaFoto);
 
-                    // 3. Moldura Neon Brilhante Artística (Estilo Neon Azul/Rosa)
+                    // 3. Moldura Neon Brilhante Artística
                     ctx.shadowColor = "#00d2ff";
                     ctx.shadowBlur = 25;
                     ctx.strokeStyle = "#00d2ff";
                     ctx.lineWidth = 10;
                     ctx.strokeRect(margemBorda - 4, margemBorda - 4, larguraFoto + 8, alturaFoto + 8);
 
-                    // Segunda linha de brilho neon interno
                     ctx.shadowColor = "#ff007f";
                     ctx.shadowBlur = 15;
                     ctx.strokeStyle = "#ffeb3b";
                     ctx.lineWidth = 4;
                     ctx.strokeRect(margemBorda + 4, margemBorda + 4, larguraFoto - 8, alturaFoto - 8);
 
-                    // Desativar sombra para os textos ficarem limpos e nítidos
                     ctx.shadowBlur = 0;
 
-                    // 4. Faixa de Rodapé Inferior Sofisticada para o Texto (Com folga para não cortar nada)
+                    // 4. Faixa de Rodapé Inferior Sofisticada para o Texto
                     const yRodape = (margemBorda * 2) + alturaFoto;
                     const larguraRodapeTotal = larguraFoto + (margemBorda * 2);
 
                     ctx.fillStyle = "rgba(10, 10, 15, 0.95)";
                     ctx.fillRect(0, yRodape, larguraRodapeTotal, alturaRodape);
 
-                    // Borda superior da faixa de rodapé
                     ctx.strokeStyle = "#00d2ff";
                     ctx.lineWidth = 3;
                     ctx.beginPath();
@@ -898,7 +902,7 @@
                     ctx.lineTo(larguraRodapeTotal, yRodape);
                     ctx.stroke();
 
-                    // 5. Textos perfeitamente dimensionados e centralizados/alinhados
+                    // 5. Textos perfeitamente dimensionados
                     const tamanhoFonteTitulo = Math.max(22, Math.floor(larguraFoto * 0.045));
                     const tamanhoFonteCantor = Math.max(18, Math.floor(larguraFoto * 0.038));
 
