@@ -69,12 +69,11 @@
         .btn-limpar-painel { background: #333; color: #aaa; border: none; font-size: 11px; padding: 3px 8px; border-radius: 4px; cursor: pointer; transition: 0.2s; }
         .btn-limpar-painel:hover { background: #e52d27; color: #fff; }
 
-        #modal-manual-conteudo { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 300; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #00d2ff; width: 90%; max-width: 850px; max-height: 85vh; overflow-y: auto; color: #ddd; }
-        #modal-manual-conteudo h2 { color: #00d2ff; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; font-size: 24px; text-align: center;}
-        #modal-manual-conteudo h3 { color: #ffeb3b; margin-top: 25px; margin-bottom: 10px; font-size: 18px; border-left: 4px solid #e52d27; padding-left: 10px; }
-        #modal-manual-conteudo p, #modal-manual-conteudo li { line-height: 1.6; font-size: 15px; }
-        #modal-manual-conteudo ul { margin-top: 5px; margin-bottom: 15px; }
-        #modal-manual-conteudo .destaque { font-weight: bold; color: #fff; }
+        #modal-manual-conteudo { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 300; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #00d2ff; width: 90%; max-width: 850px; max-height: 85vh; overflow-y: auto; color: #ddd; text-align: left; }
+        #modal-manual-conteudo h2 { color: #00d2ff; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; font-size: 22px; text-align: center;}
+        #modal-manual-conteudo h3 { color: #ffeb3b; margin-top: 20px; margin-bottom: 8px; font-size: 16px; border-left: 4px solid #e52d27; padding-left: 10px; }
+        #modal-manual-conteudo p, #modal-manual-conteudo li { line-height: 1.5; font-size: 14px; }
+        #modal-manual-conteudo ul { margin-top: 5px; margin-bottom: 12px; padding-left: 20px; }
         #fundo-modal-manual { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 299; }
         
         .versao-app { position: fixed; bottom: 4px; right: 8px; font-size: 12px; color: #fff; opacity: 0.3; z-index: 200005; display: flex; align-items: center; gap: 6px; }
@@ -124,7 +123,7 @@
         .login-btn { width: 100%; padding: 15px; background: #e52d27; color: white; font-size: 18px; font-weight: bold; border: 2px solid #fff; border-radius: 6px; cursor: pointer; transition: 0.2s; margin-top: 5px; }
         .login-btn:hover { background: #c21a15; }
 
-        /* Interface Mobile do Cliente - Fontes Gigantes (3x Maiores) e Espaçamento Confortável */
+        /* Interface Mobile do Cliente */
         #tela-cliente { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #121212; z-index: 150000; overflow-y: auto; box-sizing: border-box; }
         .cliente-topo-vermelho { background: #b31217; color: #fff; padding: 32px 20px; text-align: center; font-size: 36px; font-weight: 900; letter-spacing: 2px; box-shadow: 0 6px 15px rgba(0,0,0,0.6); width: 100%; box-sizing: border-box; }
         .cliente-corpo { padding: 60px 25px; width: 100%; max-width: 100%; box-sizing: border-box; text-align: center; }
@@ -141,7 +140,6 @@
         .subtela-cliente p, .subtela-cliente div { font-size: 26px !important; }
         .btn-voltar-menu { background: #444; color: #fff; border: none; padding: 16px 28px; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 25px; font-size: 22px; }
 
-        /* Campos de texto e botões internos gigantes */
         .subtela-cliente input[type="text"] { width: 100%; padding: 26px !important; font-size: 28px !important; margin-bottom: 25px !important; background: #111 !important; color: #fff !important; border: 2px solid #666 !important; border-radius: 12px !important; box-sizing: border-box; }
         .subtela-cliente button { font-size: 28px !important; padding: 26px !important; border-radius: 12px !important; }
 
@@ -149,7 +147,6 @@
         .item-foto-galeria { background: #222; border-radius: 12px; overflow: hidden; border: 2px solid #555; text-align: center; padding-bottom: 12px; }
         .item-foto-galeria img { width: 100%; height: 180px; object-fit: cover; }
         .item-foto-galeria p { font-size: 18px; margin: 12px 0; color: #ffeb3b; font-weight: bold; }
-        .acoes-foto-card { display: flex; gap: 8px; justify-content: center; padding: 0 10px; }
         .btn-baixar-foto, .btn-ver-foto { display: inline-block; padding: 12px 18px; color: #fff; text-decoration: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; border: none; }
         .btn-baixar-foto { background: #28a745; }
         .btn-ver-foto { background: #007bff; }
@@ -168,7 +165,7 @@
         </div>
     </div>
 
-    <!-- Interface Mobile do Cliente - Fontes Gigantes 3x -->
+    <!-- Interface Mobile do Cliente -->
     <div id="tela-cliente">
         <div class="cliente-topo-vermelho">
             <span>🍻 PARADA 10.95 BAR</span>
@@ -182,7 +179,6 @@
                 <button class="btn-menu-cliente btn-fotos" onclick="abrirSubtela('fotos')">📸 TIRAR FOTO & BAIXAR</button>
             </div>
 
-            <!-- Subtela: Pedir Música -->
             <div id="sub-pedir" class="subtela-cliente">
                 <button class="btn-voltar-menu" onclick="voltarMenuCliente()">⬅️ Voltar</button>
                 <h3 style="margin-top:0; color:#e52d27;">Pedir Música</h3>
@@ -196,7 +192,6 @@
                 </div>
             </div>
 
-            <!-- Subtela: Votar -->
             <div id="sub-votar" class="subtela-cliente">
                 <button class="btn-voltar-menu" onclick="voltarMenuCliente()">⬅️ Voltar</button>
                 <h3 style="margin-top:0; color:#007bff;">Votação Ao Vivo</h3>
@@ -210,18 +205,14 @@
                 </div>
             </div>
 
-            <!-- Subtela: Fotos e Galeria -->
             <div id="sub-fotos" class="subtela-cliente">
                 <button class="btn-voltar-menu" onclick="voltarMenuCliente()">⬅️ Voltar</button>
                 <h3 style="margin-top:0; color:#28a745;">📸 Foto Lembrança com Moldura Neon</h3>
                 <p style="color:#ccc; margin-bottom:20px;">Tire sua foto com moldura artística de Karaokê!</p>
                 
                 <input type="text" id="cli-foto-cantor" list="lista-cantores-datalist" placeholder="Nome do Cantor / Dupla">
-                
                 <input type="file" id="input-camera-nativa" accept="image/*" capture="environment" style="display:none;" onchange="processarFotoNativa(this)">
-                
                 <button onclick="document.getElementById('input-camera-nativa').click()" style="width:100%; background:#28a745; color:#fff; border:none; font-weight:bold; cursor:pointer; margin-bottom:20px;">📷 Tirar Foto (Câmera Nativa)</button>
-                
                 <canvas id="canvas-foto" style="display:none;"></canvas>
 
                 <div style="margin-top: 35px; border-top: 2px solid #444; padding-top: 25px;">
@@ -236,7 +227,6 @@
 
     <datalist id="lista-cantores-datalist"></datalist>
 
-    <!-- Modal de Visualização de Foto -->
     <div id="fundo-modal-visualizar" onclick="fecharModalVisualizar()"></div>
     <div id="modal-visualizar">
         <h3 id="modal-vis-titulo" style="color:#ffeb3b; margin-top:0;">Foto Lembrança</h3>
@@ -247,29 +237,50 @@
         </div>
     </div>
 
-    <!-- Central de Gerenciamento de Fotos para o Administrador -->
     <div id="fundo-modal-central-fotos" onclick="fecharCentralFotos()"></div>
     <div id="modal-central-fotos">
         <h2 style="color:#28a745; margin-top:0; border-bottom:1px solid #333; padding-bottom:10px;">📸 Central de Gerenciamento de Fotos</h2>
         <p style="font-size:13px; color:#aaa;">Selecione as fotos que deseja apagar ou use os botões de ação rápida abaixo:</p>
-        
         <div style="display:flex; gap:10px; margin-bottom:15px;">
             <button onclick="excluirSelecionadasAdmin()" style="flex:1; padding:10px; background:#e52d27; color:#fff; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">🗑️ Excluir Selecionadas</button>
             <button onclick="excluirTodasAdmin()" style="flex:1; padding:10px; background:#b31217; color:#fff; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">⚠️ Excluir Todas</button>
         </div>
-
         <div id="lista-admin-fotos" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap:10px; max-height:45vh; overflow-y:auto; margin-bottom:15px; border:1px solid #333; padding:10px; border-radius:6px; background:#111;"></div>
-        
         <button onclick="fecharCentralFotos()" style="width:100%; padding:10px; background:#333; color:#fff; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">Fechar Central</button>
     </div>
 
     <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
 
+    <!-- MANUAL DO SISTEMA COMPLETAMENTE REFEITO E DETALHADO -->
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
     <div id="modal-manual-conteudo">
-        <h2>📖 Manual Completo do Operador - Parada 10.95 Bar</h2>
-        <p>O sistema possui controle de acesso com dois perfis de usuários...</p>
-        <button onclick="fecharManual()" style="width: 100%; margin-top: 30px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
+        <h2>📖 Manual Completo do Sistema - Karaokê Parada 10.95</h2>
+        
+        <p>Bem-vindo ao manual oficial do sistema de Karaokê do Parada 10.95 Bar. Este guia foi elaborado para orientar tanto o operador (Painel do DJ) quanto os clientes (Painel Mobile de Votação e Fotos) sobre todas as funcionalidades disponíveis.</p>
+
+        <h3>🎛️ 1. Painel do DJ (Controle Administrativo)</h3>
+        <ul>
+            <li><strong>Login e Segurança:</strong> O painel possui perfis de acesso distintos (Administrador e Operador Comum) com senhas configuradas para proteger o sistema contra acessos não autorizados.</li>
+            <li><strong>1. Iniciar Sistema e TV:</strong> Botão principal que abre automaticamente a janela de exibição em tela cheia (para conectar na TV do bar) e liga o captador de áudio do ambiente.</li>
+            <li><strong>2. Avaliador (Microfone):</strong> Sistema inteligente que capta o som do ambiente via microfone e calcula a pontuação base da apresentação do cantor em tempo real.</li>
+            <li><strong>Busca de Músicas:</strong> Permite buscar músicas diretamente no YouTube (filtrando versões ideais para karaokê) ou colar links diretos. O sistema prioriza automaticamente os canais favoritos cadastrados.</li>
+            <li><strong>Painel de Pedidos:</strong> Exibe em tempo real os pedidos enviados pelos clientes através do QR Code. O operador pode aceitar, recusar ou ativar a opção de <em>Auto-Aprovar</em>.</li>
+            <li><strong>Fila de Reprodução:</strong> Gerencia a ordem dos cantores. É possível tocar imediatamente, subir/descer na fila ou remover itens.</li>
+            <li><strong>Ranking e Execução:</strong> Exibe a música tocando no momento (com controles para pausar ou retroceder 10 segundos) e o ranking com as maiores notas do dia, incluindo o detalhamento dos votos do público.</li>
+            <li><strong>Central de Gerenciamento de Fotos:</strong> Permite ao operador visualizar, selecionar e excluir fotos enviadas pelos clientes ao longo do dia, além de contar com a opção de resetar todo o sistema.</li>
+            <li><strong>Configurações (Painel Admin):</strong> Permite gerenciar canais favoritos do YouTube, cadastrar novos usuários/operadores e definir o tempo de pausa (transição) entre as músicas.</li>
+        </ul>
+
+        <h3>📱 2. Painel do Cliente (Acessado via QR Code)</h3>
+        <ul>
+            <li><strong>Menu Principal:</strong> Ao escanear o QR Code nas mesas do bar, o cliente tem acesso a uma interface limpa e otimizada com três opções principais: <em>Pedir Música</em>, <em>Votar no Cantor</em> e <em>Tirar Foto & Baixar</em>.</li>
+            <li><strong>Pedir Música:</strong> O cliente digita seu nome/dupla, busca músicas livremente ou navega pelo catálogo completo (organizado por ordem alfabética de A a Z). O pedido vai direto para a tela de aprovação do DJ.</li>
+            <li><strong>Votação Ao Vivo:</strong> Quando uma música inicia na TV, a tela do cliente se transforma em um painel de votação interativo com notas de <em>Excelente</em> a <em>Ruim</em>. O voto é computado na hora e somado à nota final do cantor.</li>
+            <li><strong>Tirar Foto & Baixar:</strong> Permite que o cliente use a câmera nativa do celular para tirar uma foto. O sistema aplica automaticamente uma moldura artística neon com a marca do bar ("PARADA 10.95 BAR"), o nome do cantor e a data atual impressos diretamente no rodapé externo da imagem.</li>
+            <li><strong>Galeria de Fotos:</strong> Todas as fotos tiradas pelos clientes no dia ficam visíveis em uma galeria interativa. O cliente pode clicar em "Ver" para ampliar a foto e salvá-la facilmente na galeria do seu próprio smartphone (iPhone ou Android).</li>
+        </ul>
+
+        <button onclick="fecharManual()" style="width: 100%; margin-top: 25px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
     </div>
 
     <!-- Modal de Configurações Unificado -->
@@ -1217,7 +1228,7 @@
                     </div>
                     
                     <div id="qr-code">
-                        <img src="qrcode.png" alt="Escaneie">
+                        <img src="qrcode.png?v=2" alt="Escaneie">
                         <p>APONTE O CELULAR</p>
                         <span>Peça e Vote!</span>
                     </div>
@@ -1228,7 +1239,7 @@
                         <img src="logop.png" class="logo-centro" alt="Logo Bar">
                         <h1>🍻 AGUARDANDO PRÓXIMA MÚSICA 🍻</h1>
                         <p>Aponte a câmera para o QR Code, escolha seu som ou peça ao DJ!</p>
-                        <img src="qrcode.png" class="qr-centro" alt="QR Code">
+                        <img src="qrcode.png?v=2" class="qr-centro" alt="QR Code">
                     </div>
                     
                     <div id="tela-transicao">
