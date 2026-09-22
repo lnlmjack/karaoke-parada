@@ -81,10 +81,8 @@
         .item-foto-galeria { background: #222; border-radius: 8px; overflow: hidden; border: 1px solid #444; text-align: center; padding-bottom: 8px; }
         .item-foto-galeria img { width: 100%; height: 120px; object-fit: cover; }
         .item-foto-galeria p { font-size: 13px; margin: 6px 0; color: #ffeb3b; font-weight: bold; }
+        .btn-baixar-foto { display: inline-block; padding: 6px 10px; color: #fff; text-decoration: none; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; border: none; background: #28a745; }
         .btn-ver-foto { display: inline-block; padding: 6px 10px; color: #fff; text-decoration: none; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; border: none; background: #007bff; }
-
-        /* Versão no Rodapé */
-        .versao-app-cliente { position: fixed; bottom: 4px; right: 8px; font-size: 11px; color: #fff; opacity: 0.4; z-index: 200000; pointer-events: none; }
 
         #notificacao { display: none; position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: #28a745; color: white; padding: 16px 28px; border-radius: 30px; font-weight: bold; font-size: 16px; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
     </style>
@@ -202,12 +200,12 @@
         </div>
     </div>
 
-    <!-- MODAL DE VISUALIZAÇÃO DE FOTO -->
+    <!-- MODAL DE VISUALIZAÇÃO DE FOTO COM INSTRUÇÃO CLARA PARA CELULAR -->
     <div id="fundo-modal-visualizar" onclick="fecharModalVisualizar()" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.9); z-index:250000;"></div>
     <div id="modal-visualizar" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#1a1a1a; padding:20px; border-radius:12px; z-index:250001; box-shadow:0 10px 40px rgba(0,0,0,0.9); width:90%; max-width:450px; color:#fff; border:2px solid #ffeb3b; text-align:center; box-sizing:border-box;">
         <h3 id="modal-vis-titulo" style="color:#ffeb3b; margin-top:0; font-size:18px;">Foto Lembrança</h3>
-        <p style="font-size:13px; color:#aaa; margin:5px 0 15px 0;">Segure o dedo na imagem e escolha <strong>"Salvar Imagem"</strong>:</p>
-        <img id="modal-vis-img" style="width:100%; max-height:45vh; border-radius:8px; border:2px solid #555; object-fit:contain; margin-bottom:15px;" alt="Foto Ampliada">
+        <p style="font-size:13px; color:#aaa; margin:5px 0 15px 0;">Segure o dedo na imagem abaixo e selecione <strong>"Adicionar às Fotos"</strong> ou <strong>"Salvar Imagem"</strong>:</p>
+        <img id="modal-vis-img" style="width:100%; max-height:45vh; border-radius:8px; border:2px solid #555; object-fit:contain; margin-bottom:15px;-webkit-touch-callout: default;" alt="Foto Ampliada">
         <div style="display:flex; gap:10px; justify-content:center;">
             <button onclick="fecharModalVisualizar()" style="width:100%; padding:12px; background:#444; color:#fff; border:none; border-radius:6px; font-weight:bold; font-size:15px; cursor:pointer;">Fechar</button>
         </div>
@@ -227,7 +225,6 @@
 
     <datalist id="lista-cantores-datalist"></datalist>
 
-    <div class="versao-app-cliente">v1.75</div>
     <div id="notificacao">✅ Pedido enviado ao DJ!</div>
 
     <script>
@@ -544,56 +541,36 @@
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.getElementById('canvas-foto');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
+                    const larguraFoto = img.width; const alturaFoto = img.height;
+                    const margemBorda = Math.floor(larguraFoto * 0.06);
+                    const alturaRodape = Math.floor(alturaFoto * 0.22);
+
+                    canvas.width = larguraFoto + (margemBorda * 2);
+                    canvas.height = alturaFoto + (margemBorda * 2) + alturaRodape;
                     const ctx = canvas.getContext('2d');
 
-                    // Desenha a foto original preenchendo todo o canvas
-                    ctx.drawImage(img, 0, 0);
+                    ctx.fillStyle = "#0a0a12"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, margemBorda, margemBorda, larguraFoto, alturaFoto);
 
-                    // Adiciona a moldura artística neon interna por cima da foto
-                    ctx.shadowColor = "#00d2ff"; ctx.shadowBlur = 25; ctx.strokeStyle = "#00d2ff"; ctx.lineWidth = Math.max(8, Math.floor(img.width * 0.015));
-                    ctx.strokeRect(10, 10, img.width - 20, img.height - 20);
-                    ctx.shadowColor = "#ff007f"; ctx.shadowBlur = 15; ctx.strokeStyle = "#ffeb3b"; ctx.lineWidth = Math.max(3, Math.floor(img.width * 0.005));
-                    ctx.strokeRect(20, 20, img.width - 40, img.height - 40);
+                    ctx.shadowColor = "#00d2ff"; ctx.shadowBlur = 25; ctx.strokeStyle = "#00d2ff"; ctx.lineWidth = 10;
+                    ctx.strokeRect(margemBorda - 4, margemBorda - 4, larguraFoto + 8, alturaFoto + 8);
+                    ctx.shadowColor = "#ff007f"; ctx.shadowBlur = 15; ctx.strokeStyle = "#ffeb3b"; ctx.lineWidth = 4;
+                    ctx.strokeRect(margemBorda + 4, margemBorda + 4, larguraFoto - 8, alturaFoto - 8);
                     ctx.shadowBlur = 0;
 
-                    // Criação da tarja de propaganda/informações diretamente DENTRO da foto (no rodapé inferior interno)
-                    const alturaTarja = Math.floor(img.height * 0.16);
-                    const yTarja = img.height - alturaTarja - 15;
-                    const xTarja = 25;
-                    const larguraTarja = img.width - 50;
+                    const yRodape = (margemBorda * 2) + alturaFoto;
+                    ctx.fillStyle = "rgba(10, 10, 15, 0.95)";
+                    ctx.fillRect(0, yRodape, larguraFoto + (margemBorda * 2), alturaRodape);
 
-                    ctx.fillStyle = "rgba(10, 10, 15, 0.85)";
-                    ctx.roundRect ? ctx.roundRect(xTarja, yTarja, larguraTarja, alturaTarja, 10) : ctx.fillRect(xTarja, yTarja, larguraTarja, alturaTarja);
-                    ctx.fill();
-
-                    // Formatação da Data Atual (ex: 22/09/2026)
-                    const hoje = new Date();
-                    const dataFormatada = hoje.toLocaleDateString('pt-BR');
-
-                    // Textos impressos dentro da foto
-                    const tamanhoFonteTitulo = Math.max(18, Math.floor(img.width * 0.038));
-                    const tamanhoFonteDetalhes = Math.max(14, Math.floor(img.width * 0.030));
-
-                    ctx.fillStyle = "#ffeb3b"; 
-                    ctx.font = `bold ${tamanhoFonteTitulo}px Arial`;
-                    ctx.fillText("🍻 PARADA 10.95 BAR", xTarja + 20, yTarja + (alturaTarja * 0.40));
-
-                    ctx.fillStyle = "#ffffff"; 
-                    ctx.font = `bold ${tamanhoFonteDetalhes}px Arial`;
-                    ctx.fillText(`🎤 Cantor(a): ${cantor}`, xTarja + 20, yTarja + (alturaTarja * 0.78));
-
-                    ctx.fillStyle = "#00d2ff"; 
-                    ctx.font = `bold ${tamanhoFonteDetalhes}px Arial`;
-                    ctx.textAlign = "right";
-                    ctx.fillText(`📅 ${dataFormatada}`, xTarja + larguraTarja - 20, yTarja + (alturaTarja * 0.78));
-                    ctx.textAlign = "left"; // Reseta o alinhamento
+                    ctx.fillStyle = "#ffeb3b"; ctx.font = `bold ${Math.max(18, Math.floor(larguraFoto * 0.04))}px Arial`;
+                    ctx.fillText("🍻 KARAOKÊ DO PARADA 10.95", margemBorda + 15, yRodape + (alturaRodape * 0.42));
+                    ctx.fillStyle = "#ffffff"; ctx.font = `bold ${Math.max(15, Math.floor(larguraFoto * 0.033))}px Arial`;
+                    ctx.fillText(`🎤 Cantor(a): ${cantor}`, margemBorda + 15, yRodape + (alturaRodape * 0.80));
 
                     const imagemBase64 = canvas.toDataURL('image/jpeg', 0.9);
                     database.ref('fotosDia').push({ cantor, imagemBase64, timestamp: Date.now() });
 
-                    alert("Foto tirada e informações embutidas com sucesso!");
+                    alert("Foto tirada e moldura aplicada com sucesso!");
                     input.value = "";
                 }
                 img.src = e.target.result;
