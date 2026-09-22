@@ -200,14 +200,14 @@
         </div>
     </div>
 
-    <!-- MODAL DE VISUALIZAÇÃO DE FOTO -->
+    <!-- MODAL DE VISUALIZAÇÃO DE FOTO COM INSTRUÇÃO CLARA PARA CELULAR -->
     <div id="fundo-modal-visualizar" onclick="fecharModalVisualizar()" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.9); z-index:250000;"></div>
     <div id="modal-visualizar" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#1a1a1a; padding:20px; border-radius:12px; z-index:250001; box-shadow:0 10px 40px rgba(0,0,0,0.9); width:90%; max-width:450px; color:#fff; border:2px solid #ffeb3b; text-align:center; box-sizing:border-box;">
         <h3 id="modal-vis-titulo" style="color:#ffeb3b; margin-top:0; font-size:18px;">Foto Lembrança</h3>
-        <img id="modal-vis-img" style="width:100%; max-height:50vh; border-radius:8px; border:2px solid #555; object-fit:contain; margin-bottom:15px;" alt="Foto Ampliada">
+        <p style="font-size:13px; color:#aaa; margin:5px 0 15px 0;">Segure o dedo na imagem abaixo e selecione <strong>"Adicionar às Fotos"</strong> ou <strong>"Salvar Imagem"</strong>:</p>
+        <img id="modal-vis-img" style="width:100%; max-height:45vh; border-radius:8px; border:2px solid #555; object-fit:contain; margin-bottom:15px;-webkit-touch-callout: default;" alt="Foto Ampliada">
         <div style="display:flex; gap:10px; justify-content:center;">
-            <a id="modal-vis-link-baixar" href="#" download="Parada1095_Foto.png" style="flex:1; padding:12px; background:#28a745; color:#fff; border-radius:6px; text-decoration:none; font-weight:bold; font-size:15px;">Baixar</a>
-            <button onclick="fecharModalVisualizar()" style="flex:1; padding:12px; background:#444; color:#fff; border:none; border-radius:6px; font-weight:bold; font-size:15px; cursor:pointer;">Fechar</button>
+            <button onclick="fecharModalVisualizar()" style="width:100%; padding:12px; background:#444; color:#fff; border:none; border-radius:6px; font-weight:bold; font-size:15px; cursor:pointer;">Fechar</button>
         </div>
     </div>
 
@@ -317,8 +317,7 @@
                         <img src="${f.imagemBase64}" alt="Foto">
                         <p>${f.cantor}</p>
                         <div style="display:flex; gap:5px; justify-content:center; padding-bottom:6px;">
-                            <button onclick="visualizarFotoModal('${safeBase64}', '${safeCantor}')" class="btn-ver-foto">Ver</button>
-                            <a href="${f.imagemBase64}" download="Parada1095_${f.cantor}.png" class="btn-baixar-foto">Baixar</a>
+                            <button onclick="visualizarFotoModal('${safeBase64}', '${safeCantor}')" class="btn-ver-foto">Ver / Salvar</button>
                         </div>
                     </div>
                 `;
@@ -329,8 +328,6 @@
         function visualizarFotoModal(base64, cantor) {
             document.getElementById('modal-vis-titulo').innerText = `Foto: ${cantor}`;
             document.getElementById('modal-vis-img').src = base64;
-            document.getElementById('modal-vis-link-baixar').href = base64;
-            document.getElementById('modal-vis-link-baixar').download = `Parada1095_${cantor}.png`;
             document.getElementById('fundo-modal-visualizar').style.display = 'block';
             document.getElementById('modal-visualizar').style.display = 'block';
         }
