@@ -124,27 +124,33 @@
         .login-btn { width: 100%; padding: 15px; background: #e52d27; color: white; font-size: 18px; font-weight: bold; border: 2px solid #fff; border-radius: 6px; cursor: pointer; transition: 0.2s; margin-top: 5px; }
         .login-btn:hover { background: #c21a15; }
 
-        /* Interface Mobile do Cliente - Fontes Grandes de Ponta a Ponta */
+        /* Interface Mobile do Cliente - Textos e Botões Extra Grandes de Ponta a Ponta */
         #tela-cliente { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #121212; z-index: 150000; overflow-y: auto; box-sizing: border-box; }
-        .cliente-topo-vermelho { background: #b31217; color: #fff; padding: 22px 15px; text-align: center; font-size: 24px; font-weight: 900; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); width: 100%; box-sizing: border-box; }
-        .cliente-corpo { padding: 40px 18px; width: 100%; max-width: 100%; box-sizing: border-box; text-align: center; }
-        .cliente-pergunta { font-size: 22px; color: #ddd; margin-bottom: 35px; font-weight: bold; }
+        .cliente-topo-vermelho { background: #b31217; color: #fff; padding: 26px 15px; text-align: center; font-size: 26px; font-weight: 900; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); width: 100%; box-sizing: border-box; }
+        .cliente-corpo { padding: 45px 20px; width: 100%; max-width: 100%; box-sizing: border-box; text-align: center; }
+        .cliente-pergunta { font-size: 24px; color: #eee; margin-bottom: 40px; font-weight: bold; }
         
-        .btn-menu-cliente { width: 100%; max-width: 100%; padding: 32px 15px; margin-bottom: 24px; border: none; border-radius: 14px; font-size: 24px; font-weight: 900; color: #fff; cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.5); transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 15px; text-transform: uppercase; box-sizing: border-box; }
+        .btn-menu-cliente { width: 100%; max-width: 100%; padding: 36px 20px; margin-bottom: 28px; border: none; border-radius: 16px; font-size: 26px; font-weight: 900; color: #fff; cursor: pointer; box-shadow: 0 8px 22px rgba(0,0,0,0.5); transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 18px; text-transform: uppercase; box-sizing: border-box; }
         .btn-menu-cliente:active { transform: scale(0.98); }
         .btn-pedir { background: #e52d27; }
         .btn-votar { background: #007bff; }
         .btn-fotos { background: #28a745; }
 
-        .subtela-cliente { display: none; text-align: left; background: #1e1e1e; padding: 20px; border-radius: 12px; border: 1px solid #333; margin-top: 10px; width: 100%; box-sizing: border-box; }
-        .btn-voltar-menu { background: #444; color: #fff; border: none; padding: 10px 18px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-bottom: 15px; font-size: 15px; }
+        .subtela-cliente { display: none; text-align: left; background: #1e1e1e; padding: 25px; border-radius: 14px; border: 1px solid #333; margin-top: 10px; width: 100%; box-sizing: border-box; }
+        .subtela-cliente h3 { font-size: 24px !important; }
+        .subtela-cliente p, .subtela-cliente div { font-size: 18px !important; }
+        .btn-voltar-menu { background: #444; color: #fff; border: none; padding: 12px 22px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 20px; font-size: 16px; }
 
-        .galeria-fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-top: 15px; }
-        .item-foto-galeria { background: #222; border-radius: 8px; overflow: hidden; border: 1px solid #444; text-align: center; padding-bottom: 8px; }
-        .item-foto-galeria img { width: 100%; height: 110px; object-fit: cover; }
-        .item-foto-galeria p { font-size: 11px; margin: 5px 0; color: #ffeb3b; font-weight: bold; }
-        .acoes-foto-card { display: flex; gap: 4px; justify-content: center; padding: 0 5px; }
-        .btn-baixar-foto, .btn-ver-foto { display: inline-block; padding: 4px 8px; color: #fff; text-decoration: none; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; border: none; }
+        /* Campos de texto e botões internos grandes */
+        .subtela-cliente input[type="text"] { width: 100%; padding: 18px !important; font-size: 18px !important; margin-bottom: 16px !important; background: #111 !important; color: #fff !important; border: 1px solid #555 !important; border-radius: 8px !important; box-sizing: border-box; }
+        .subtela-cliente button { font-size: 18px !important; padding: 18px !important; border-radius: 8px !important; }
+
+        .galeria-fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 20px; }
+        .item-foto-galeria { background: #222; border-radius: 10px; overflow: hidden; border: 1px solid #444; text-align: center; padding-bottom: 10px; }
+        .item-foto-galeria img { width: 100%; height: 130px; object-fit: cover; }
+        .item-foto-galeria p { font-size: 13px; margin: 8px 0; color: #ffeb3b; font-weight: bold; }
+        .acoes-foto-card { display: flex; gap: 6px; justify-content: center; padding: 0 8px; }
+        .btn-baixar-foto, .btn-ver-foto { display: inline-block; padding: 8px 12px; color: #fff; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; border: none; }
         .btn-baixar-foto { background: #28a745; }
         .btn-ver-foto { background: #007bff; }
     </style>
@@ -162,7 +168,7 @@
         </div>
     </div>
 
-    <!-- Interface Mobile do Cliente (Com fontes grandes e imponentes) -->
+    <!-- Interface Mobile do Cliente (Visual Gigante e Confortável) -->
     <div id="tela-cliente">
         <div class="cliente-topo-vermelho">
             <span>🍻 PARADA 10.95 BAR</span>
@@ -179,49 +185,49 @@
             <!-- Subtela: Pedir Música -->
             <div id="sub-pedir" class="subtela-cliente">
                 <button class="btn-voltar-menu" onclick="voltarMenuCliente()">⬅️ Voltar</button>
-                <h3 style="margin-top:0; color:#e52d27; font-size:20px;">Pedir Música</h3>
-                <input type="text" id="cli-input-cantor" list="lista-cantores-datalist" placeholder="Seu Nome / Dupla" style="width:100%; padding:14px; margin-bottom:12px; background:#111; color:#fff; border:1px solid #444; border-radius:6px; box-sizing:border-box; font-size:16px;">
-                <input type="text" id="cli-input-busca" placeholder="Nome da música ou link do YouTube" style="width:100%; padding:14px; margin-bottom:12px; background:#111; color:#fff; border:1px solid #444; border-radius:6px; box-sizing:border-box; font-size:16px;">
-                <button onclick="clienteFazerPedido()" style="width:100%; padding:16px; background:#e52d27; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:18px;">Enviar Pedido ao DJ</button>
+                <h3 style="margin-top:0; color:#e52d27;">Pedir Música</h3>
+                <input type="text" id="cli-input-cantor" list="lista-cantores-datalist" placeholder="Seu Nome / Dupla">
+                <input type="text" id="cli-input-busca" placeholder="Nome da música ou link do YouTube">
+                <button onclick="clienteFazerPedido()" style="width:100%; background:#e52d27; color:#fff; border:none; font-weight:bold; cursor:pointer;">Enviar Pedido ao DJ</button>
                 
-                <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 15px;">
-                    <h4 style="margin:0 0 5px 0; font-size:15px; color:#ffeb3b;">Status na TV:</h4>
-                    <div id="cli-status-atual" style="font-size:15px; color:#aaa;">Nenhuma música tocando no momento.</div>
+                <div style="margin-top: 25px; border-top: 1px solid #444; padding-top: 18px;">
+                    <h4 style="margin:0 0 8px 0; font-size:16px; color:#ffeb3b;">Status na TV:</h4>
+                    <div id="cli-status-atual" style="color:#ccc;">Nenhuma música tocando no momento.</div>
                 </div>
             </div>
 
             <!-- Subtela: Votar -->
             <div id="sub-votar" class="subtela-cliente">
                 <button class="btn-voltar-menu" onclick="voltarMenuCliente()">⬅️ Voltar</button>
-                <h3 style="margin-top:0; color:#007bff; font-size:20px;">Votação Ao Vivo</h3>
-                <p id="cli-musica-votacao" style="font-size:15px; color:#aaa; margin-bottom:15px;">Aguardando música iniciar para votar...</p>
-                <div style="display:flex; flex-direction:column; gap:12px;">
-                    <button onclick="clienteVotar('excelente')" style="padding:16px; background:#00d2ff; color:#000; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:16px;">🤯 Excelente (Nota Máxima)</button>
-                    <button onclick="clienteVotar('muitobom')" style="padding:16px; background:#28a745; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:16px;">🤩 Muito Bom</button>
-                    <button onclick="clienteVotar('bom')" style="padding:16px; background:#ffeb3b; color:#000; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:16px;">🙂 Bom</button>
-                    <button onclick="clienteVotar('regular')" style="padding:16px; background:#fd7e14; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:16px;">😕 Regular</button>
-                    <button onclick="clienteVotar('ruim')" style="padding:16px; background:#e52d27; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:16px;">😖 Ruim</button>
+                <h3 style="margin-top:0; color:#007bff;">Votação Ao Vivo</h3>
+                <p id="cli-musica-votacao" style="color:#ccc; margin-bottom:20px;">Aguardando música iniciar para votar...</p>
+                <div style="display:flex; flex-direction:column; gap:15px;">
+                    <button onclick="clienteVotar('excelente')" style="background:#00d2ff; color:#000; border:none; font-weight:bold; cursor:pointer;">🤯 Excelente (Nota Máxima)</button>
+                    <button onclick="clienteVotar('muitobom')" style="background:#28a745; color:#fff; border:none; font-weight:bold; cursor:pointer;">🤩 Muito Bom</button>
+                    <button onclick="clienteVotar('bom')" style="background:#ffeb3b; color:#000; border:none; font-weight:bold; cursor:pointer;">🙂 Bom</button>
+                    <button onclick="clienteVotar('regular')" style="background:#fd7e14; color:#fff; border:none; font-weight:bold; cursor:pointer;">😕 Regular</button>
+                    <button onclick="clienteVotar('ruim')" style="background:#e52d27; color:#fff; border:none; font-weight:bold; cursor:pointer;">😖 Ruim</button>
                 </div>
             </div>
 
             <!-- Subtela: Fotos e Galeria -->
             <div id="sub-fotos" class="subtela-cliente">
                 <button class="btn-voltar-menu" onclick="voltarMenuCliente()">⬅️ Voltar</button>
-                <h3 style="margin-top:0; color:#28a745; font-size:20px;">📸 Foto Lembrança com Moldura Neon</h3>
-                <p style="font-size:14px; color:#aaa; margin-bottom:12px;">Tire sua foto com moldura artística de Karaokê!</p>
+                <h3 style="margin-top:0; color:#28a745;">📸 Foto Lembrança com Moldura Neon</h3>
+                <p style="color:#ccc; margin-bottom:15px;">Tire sua foto com moldura artística de Karaokê!</p>
                 
-                <input type="text" id="cli-foto-cantor" list="lista-cantores-datalist" placeholder="Nome do Cantor / Dupla" style="width:100%; padding:14px; margin-bottom:12px; background:#111; color:#fff; border:1px solid #444; border-radius:6px; box-sizing:border-box; font-size:16px;">
+                <input type="text" id="cli-foto-cantor" list="lista-cantores-datalist" placeholder="Nome do Cantor / Dupla">
                 
                 <input type="file" id="input-camera-nativa" accept="image/*" capture="environment" style="display:none;" onchange="processarFotoNativa(this)">
                 
-                <button onclick="document.getElementById('input-camera-nativa').click()" style="width:100%; padding:18px; background:#28a745; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-bottom:12px; font-size:18px;">📷 Tirar Foto (Câmera Nativa)</button>
+                <button onclick="document.getElementById('input-camera-nativa').click()" style="width:100%; background:#28a745; color:#fff; border:none; font-weight:bold; cursor:pointer; margin-bottom:15px;">📷 Tirar Foto (Câmera Nativa)</button>
                 
                 <canvas id="canvas-foto" style="display:none;"></canvas>
 
-                <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 15px;">
-                    <h4 style="margin:0 0 10px 0; font-size:15px; color:#ffeb3b;">Galeria de Fotos do Dia</h4>
+                <div style="margin-top: 25px; border-top: 1px solid #444; padding-top: 18px;">
+                    <h4 style="margin:0 0 12px 0; font-size:16px; color:#ffeb3b;">Galeria de Fotos do Dia</h4>
                     <div id="galeria-fotos-dia" class="galeria-fotos">
-                        <span style="color:#777; font-size:12px; grid-column: 1/-1;">Nenhuma foto tirada ainda hoje.</span>
+                        <span style="color:#777; font-size:14px; grid-column: 1/-1;">Nenhuma foto tirada ainda hoje.</span>
                     </div>
                 </div>
             </div>
@@ -402,7 +408,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.71</span>
+        <span>v1.72</span>
     </div>
 
     <script>
