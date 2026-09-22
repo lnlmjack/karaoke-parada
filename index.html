@@ -124,19 +124,19 @@
         .login-btn { width: 100%; padding: 15px; background: #e52d27; color: white; font-size: 18px; font-weight: bold; border: 2px solid #fff; border-radius: 6px; cursor: pointer; transition: 0.2s; margin-top: 5px; }
         .login-btn:hover { background: #c21a15; }
 
-        /* Interface Mobile do Cliente - Botões Grandes Originais Restaurados */
+        /* Interface Mobile do Cliente - Botões Grandes e Largos Restaurados Exatamente Como na Imagem 2 */
         #tela-cliente { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #121212; z-index: 150000; overflow-y: auto; box-sizing: border-box; }
-        .cliente-topo-vermelho { background: #b31217; color: #fff; padding: 18px; text-align: center; font-size: 20px; font-weight: 900; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .cliente-corpo { padding: 20px; max-width: 450px; margin: 0 auto; text-align: center; }
-        .cliente-pergunta { font-size: 18px; color: #ddd; margin: 25px 0; font-weight: bold; }
+        .cliente-topo-vermelho { background: #b31217; color: #fff; padding: 22px 15px; text-align: center; font-size: 20px; font-weight: 900; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); width: 100%; box-sizing: border-box; }
+        .cliente-corpo { padding: 35px 20px; width: 100%; max-width: 100%; box-sizing: border-box; text-align: center; }
+        .cliente-pergunta { font-size: 18px; color: #ddd; margin-bottom: 30px; font-weight: bold; }
         
-        .btn-menu-cliente { width: 100%; padding: 24px; margin-bottom: 20px; border: none; border-radius: 12px; font-size: 20px; font-weight: 900; color: #fff; cursor: pointer; box-shadow: 0 6px 15px rgba(0,0,0,0.4); transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 12px; text-transform: uppercase; }
+        .btn-menu-cliente { width: 100%; max-width: 100%; padding: 26px 15px; margin-bottom: 20px; border: none; border-radius: 12px; font-size: 19px; font-weight: 900; color: #fff; cursor: pointer; box-shadow: 0 6px 15px rgba(0,0,0,0.4); transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 12px; text-transform: uppercase; box-sizing: border-box; }
         .btn-menu-cliente:active { transform: scale(0.98); }
         .btn-pedir { background: #e52d27; }
         .btn-votar { background: #007bff; }
         .btn-fotos { background: #28a745; }
 
-        .subtela-cliente { display: none; text-align: left; background: #1e1e1e; padding: 20px; border-radius: 12px; border: 1px solid #333; margin-top: 10px; }
+        .subtela-cliente { display: none; text-align: left; background: #1e1e1e; padding: 20px; border-radius: 12px; border: 1px solid #333; margin-top: 10px; width: 100%; box-sizing: border-box; }
         .btn-voltar-menu { background: #444; color: #fff; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-bottom: 15px; font-size: 13px; }
 
         .galeria-fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-top: 15px; }
@@ -162,7 +162,7 @@
         </div>
     </div>
 
-    <!-- Interface Mobile do Cliente -->
+    <!-- Interface Mobile do Cliente (Layout Imagem 2 Exato) -->
     <div id="tela-cliente">
         <div class="cliente-topo-vermelho">
             <span>🍻 PARADA 10.95 BAR</span>
@@ -171,9 +171,9 @@
         <div class="cliente-corpo">
             <div id="menu-principal-cliente">
                 <div class="cliente-pergunta">O que você quer fazer?</div>
-                <button class="btn-menu-cliente btn-pedir" onclick="abrirSubtela('pedir')">📩 Pedir Música</button>
-                <button class="btn-menu-cliente btn-votar" onclick="abrirSubtela('votar')">⭐ Votar no Cantor</button>
-                <button class="btn-menu-cliente btn-fotos" onclick="abrirSubtela('fotos')">📸 Tirar Foto & Baixar</button>
+                <button class="btn-menu-cliente btn-pedir" onclick="abrirSubtela('pedir')">📩 PEDIR MÚSICA</button>
+                <button class="btn-menu-cliente btn-votar" onclick="abrirSubtela('votar')">⭐ VOTAR NO CANTOR</button>
+                <button class="btn-menu-cliente btn-fotos" onclick="abrirSubtela('fotos')">📸 TIRAR FOTO & BAIXAR</button>
             </div>
 
             <!-- Subtela: Pedir Música -->
@@ -402,7 +402,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.68</span>
+        <span>v1.69</span>
     </div>
 
     <script>
