@@ -265,10 +265,8 @@
             }
         }
 
-        // Sincronização automática do nome do cantor atual para a foto
         database.ref('statusAtual').on('value', (snapshot) => {
             const st = snapshot.val();
-            const statusPalcoDiv = document.getElementById('status-palco');
             const inputFotoCantor = document.getElementById('cli-foto-cantor');
 
             if(st && st.id && st.cantor && st.cantor !== "Avaliando...") {
@@ -296,7 +294,6 @@
             }
         });
 
-        // Galeria de fotos do dia
         database.ref('fotosDia').on('value', (snapshot) => {
             const galeria = document.getElementById('galeria-fotos-dia');
             if(!galeria) return;
@@ -420,12 +417,8 @@
         }
 
         function selecionarDoCatalogo(titulo, cantor) {
-            mostrarAba('pedir');
-            document.getElementById('campoBusca').value = titulo + " " + cantor;
-            buscarMusica(); 
+            abrirModalCantor("catalogo_" + Date.now(), titulo + " - " + cantor);
         }
-
-        window.onload = () => { carregarCatalogo(); };
 
         function liberarVoto() { document.getElementById('lista-botoes').style.display = 'block'; document.getElementById('confirmacao-voto').style.display = 'none'; document.getElementById('msg-agradecimento').style.display = 'none'; votoPendente = null; }
         function esconderVoto() { document.getElementById('lista-botoes').style.display = 'none'; document.getElementById('confirmacao-voto').style.display = 'none'; document.getElementById('msg-agradecimento').style.display = 'none'; votoPendente = null; }
