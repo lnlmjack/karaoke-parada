@@ -14,36 +14,36 @@
     
     <style>
         body { font-family: 'Arial', sans-serif; background-color: #121212; color: #fff; margin: 0; padding: 0; text-align: center; }
-        .header { background-color: #b31217; padding: 22px 15px; font-size: 26px; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.5); text-transform: uppercase; letter-spacing: 1px;}
+        .header { background-color: #b31217; padding: 26px 15px; font-size: 30px; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.5); text-transform: uppercase; letter-spacing: 1px;}
         
-        /* ESTILOS DO MENU PRINCIPAL (GIGANTE E IMPORENTE) */
-        #menu-principal { padding: 40px 20px; }
-        .btn-menu-grande { width: 100%; padding: 36px 20px; margin-bottom: 25px; border: none; border-radius: 18px; font-size: 28px; font-weight: 900; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 22px rgba(0,0,0,0.6); text-transform: uppercase;}
+        /* MENU PRINCIPAL COM BOTÕES GIGANTES DE PONTA A PONTA */
+        #menu-principal { padding: 40px 20px; box-sizing: border-box; }
+        .btn-menu-grande { width: 100%; padding: 45px 20px; margin-bottom: 30px; border: none; border-radius: 20px; font-size: 32px; font-weight: 900; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 25px rgba(0,0,0,0.6); text-transform: uppercase; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .btn-menu-grande:active { transform: scale(0.95); }
-        .btn-pedir { background: linear-gradient(135deg, #e52d27, #b31217); color: white; border: 3px solid #ff5252;}
-        .btn-votar { background: linear-gradient(135deg, #007bff, #0056b3); color: white; border: 3px solid #3399ff;}
-        .icone-grande { font-size: 60px; margin-bottom: 12px; display: block;}
+        .btn-pedir { background: linear-gradient(135deg, #e52d27, #b31217); color: white; border: 4px solid #ff5252;}
+        .btn-votar { background: linear-gradient(135deg, #007bff, #0056b3); color: white; border: 4px solid #3399ff;}
+        .icone-grande { font-size: 70px; margin-bottom: 12px; display: block;}
 
-        .card { background: #1e1e1e; margin: 20px; padding: 25px; border-radius: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); text-align: left; }
-        .card h2 { margin-top: 15px; color: #00d2ff; font-size: 26px; border-bottom: 2px solid #333; padding-bottom: 12px; }
+        .card { background: #1e1e1e; margin: 15px; padding: 30px 20px; border-radius: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); text-align: left; box-sizing: border-box; }
+        .card h2 { margin-top: 15px; color: #00d2ff; font-size: 30px; border-bottom: 2px solid #333; padding-bottom: 12px; }
         
-        .btn-voltar { background: #444; color: #fff; border: 1px solid #666; padding: 14px 20px; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; display: inline-block; margin-bottom: 15px; width: 100%; text-align: center;}
+        .btn-voltar { background: #444; color: #fff; border: 1px solid #666; padding: 18px; border-radius: 12px; font-size: 22px; font-weight: bold; cursor: pointer; display: block; margin-bottom: 20px; width: 100%; text-align: center; box-sizing: border-box;}
         
-        .btn-catalogo { background: #00d2ff; color: #000; width: 100%; padding: 20px; border: none; border-radius: 12px; font-size: 20px; font-weight: bold; cursor: pointer; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); text-transform: uppercase; }
+        .btn-catalogo { background: #00d2ff; color: #000; width: 100%; padding: 24px; border: none; border-radius: 14px; font-size: 24px; font-weight: bold; cursor: pointer; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); text-transform: uppercase; box-sizing: border-box; text-align: center; }
         .btn-catalogo:active { transform: scale(0.95); }
 
         /* CARROSSEL DO ALFABETO */
-        .alfabeto-container { display: flex; overflow-x: auto; gap: 10px; margin-bottom: 20px; padding-bottom: 10px; }
-        .alfabeto-container::-webkit-scrollbar { height: 8px; }
-        .alfabeto-container::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
-        .btn-letra { flex: 0 0 auto; background: #333; color: #fff; border: 1px solid #555; border-radius: 10px; padding: 12px 18px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .alfabeto-container { display: flex; overflow-x: auto; gap: 12px; margin-bottom: 25px; padding-bottom: 10px; }
+        .alfabeto-container::-webkit-scrollbar { height: 10px; }
+        .alfabeto-container::-webkit-scrollbar-thumb { background: #555; border-radius: 5px; }
+        .btn-letra { flex: 0 0 auto; background: #333; color: #fff; border: 2px solid #555; border-radius: 12px; padding: 16px 22px; font-size: 24px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn-letra.ativo { background: #00d2ff; color: #000; border-color: #00d2ff; }
 
         /* Area de Votação */
-        #cantor-atual { color: #ffeb3b; font-size: 30px; font-weight: bold; margin: 15px 0; text-align: center; }
-        #status-musica { color: #ccc; font-size: 18px; font-style: italic; margin-bottom: 25px; text-align: center; }
+        #cantor-atual { color: #ffeb3b; font-size: 36px; font-weight: bold; margin: 20px 0; text-align: center; }
+        #status-musica { color: #ccc; font-size: 22px; font-style: italic; margin-bottom: 30px; text-align: center; }
         
-        .btn-voto { width: 100%; padding: 22px; margin: 8px 0; border: none; border-radius: 12px; font-size: 22px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 8px rgba(0,0,0,0.4); text-align: center; }
+        .btn-voto { width: 100%; padding: 28px; margin: 12px 0; border: none; border-radius: 14px; font-size: 26px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 6px 12px rgba(0,0,0,0.4); text-align: center; box-sizing: border-box; }
         .btn-voto:active { transform: scale(0.95); }
         .v-exc { background: #00d2ff; color: #000; }
         .v-mb { background: #28a745; color: #fff; }
@@ -52,20 +52,20 @@
         .v-ruim { background: #e52d27; color: #fff; }
 
         /* Area de Confirmação de Voto */
-        #confirmacao-voto { display: none; background: #222; padding: 25px; border-radius: 12px; border: 2px solid #ffeb3b; margin-top: 15px; text-align: center; }
-        .btn-confirmar { width: 48%; padding: 18px; background: #28a745; border: none; border-radius: 10px; color: white; font-weight: bold; font-size: 18px; cursor: pointer;}
-        .btn-cancelar { width: 48%; padding: 18px; background: #e52d27; border: none; border-radius: 10px; color: white; font-weight: bold; font-size: 18px; cursor: pointer;}
+        #confirmacao-voto { display: none; background: #222; padding: 30px; border-radius: 16px; border: 3px solid #ffeb3b; margin-top: 20px; text-align: center; }
+        .btn-confirmar { width: 48%; padding: 22px; background: #28a745; border: none; border-radius: 12px; color: white; font-weight: bold; font-size: 22px; cursor: pointer;}
+        .btn-cancelar { width: 48%; padding: 22px; background: #e52d27; border: none; border-radius: 12px; color: white; font-weight: bold; font-size: 22px; cursor: pointer;}
 
         /* Area de Busca */
-        input { width: 100%; box-sizing: border-box; padding: 18px; border-radius: 10px; border: 1px solid #444; background: #111; color: #fff; font-size: 18px; margin-bottom: 20px; }
-        .btn-busca { background: #e52d27; color: #fff; width: 100%; padding: 18px; border: none; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; }
+        input { width: 100%; box-sizing: border-box; padding: 22px; border-radius: 12px; border: 2px solid #555; background: #111; color: #fff; font-size: 22px; margin-bottom: 20px; }
+        .btn-busca { background: #e52d27; color: #fff; width: 100%; padding: 22px; border: none; border-radius: 12px; font-size: 24px; font-weight: bold; cursor: pointer; box-sizing: border-box; }
         .btn-busca:active { background: #c21a15; }
         
         #resultados { margin-top: 25px; text-align: left; }
-        .item-resultado { background: #2a2a2a; padding: 20px; margin-bottom: 12px; border-radius: 10px; border-left: 6px solid #00d2ff; font-size: 17px; line-height: 1.4; cursor: pointer; box-shadow: 0 3px 6px rgba(0,0,0,0.3); }
+        .item-resultado { background: #2a2a2a; padding: 22px; margin-bottom: 15px; border-radius: 12px; border-left: 8px solid #00d2ff; font-size: 20px; line-height: 1.5; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.4); }
         .item-resultado:active { background: #333; }
         
-        #notificacao { display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #28a745; color: white; padding: 18px 30px; border-radius: 35px; font-weight: bold; font-size: 18px; z-index: 1000; box-shadow: 0 5px 20px rgba(0,0,0,0.7); }
+        #notificacao { display: none; position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); background: #28a745; color: white; padding: 20px 35px; border-radius: 40px; font-weight: bold; font-size: 20px; z-index: 1000; box-shadow: 0 6px 20px rgba(0,0,0,0.7); }
     </style>
 </head>
 <body>
@@ -76,7 +76,7 @@
 
     <!-- TELA 1: MENU PRINCIPAL -->
     <div id="menu-principal">
-        <h2 style="color: #fff; margin-bottom: 35px; font-size: 24px;">O que você quer fazer?</h2>
+        <h2 style="color: #fff; margin-bottom: 40px; font-size: 28px;">O que você quer fazer?</h2>
         
         <button class="btn-menu-grande btn-pedir" onclick="mostrarAba('pedir')">
             <span class="icone-grande">📩</span>
@@ -97,7 +97,7 @@
         
         <button class="btn-catalogo" onclick="mostrarAba('catalogo')">🗂️ Explorar Catálogo de Músicas</button>
         
-        <p style="font-size: 16px; color: #ccc; margin-bottom: 15px;">Ou pesquise livremente no YouTube:</p>
+        <p style="font-size: 18px; color: #ccc; margin-bottom: 15px;">Ou pesquise livremente no YouTube:</p>
         
         <input type="text" id="campoBusca" placeholder="Ex: Evidências Chitãozinho...">
         <button class="btn-busca" onclick="buscarMusica()">🔍 Buscar no YouTube</button>
@@ -110,7 +110,7 @@
         <button class="btn-voltar" onclick="mostrarAba('pedir')">⬅️ Voltar para a Busca</button>
         
         <h2 style="color: #00d2ff;">🗂️ Catálogo Completo</h2>
-        <p style="font-size: 16px; color: #ccc; margin-bottom: 15px;">Toque na letra inicial do artista ou digite na barra abaixo:</p>
+        <p style="font-size: 18px; color: #ccc; margin-bottom: 15px;">Toque na letra inicial do artista ou digite na barra abaixo:</p>
         
         <!-- ALFABETO DE BUSCA RÁPIDA -->
         <div id="filtro-alfabeto" class="alfabeto-container">
@@ -119,8 +119,8 @@
 
         <input type="text" id="buscaCatalogo" placeholder="🔎 Digite aqui o cantor ou a música..." onkeyup="filtrarCatalogo()">
         
-        <div id="lista-catalogo" style="height: 450px; overflow-y: auto; text-align: left; padding-right: 5px;">
-            <p style="text-align: center; color: #aaa; font-size: 18px;">Carregando músicas...</p>
+        <div id="lista-catalogo" style="height: 500px; overflow-y: auto; text-align: left; padding-right: 5px;">
+            <p style="text-align: center; color: #aaa; font-size: 20px;">Carregando músicas...</p>
         </div>
     </div>
 
@@ -128,14 +128,14 @@
     <div class="card" id="aba-votar" style="display: none;">
         <button class="btn-voltar" onclick="mostrarAba('menu')">⬅️ Voltar ao Menu</button>
         
-        <h2>🎤 No Palco Agora</h2>
+        <h2 style="text-align: center;">🎤 No Palco Agora</h2>
         <div id="status-palco">
             <div id="cantor-atual">Aguardando...</div>
             <div id="status-musica">Preste atenção na TV!</div>
         </div>
 
         <div id="lista-botoes" style="display: none;">
-            <p style="margin-bottom: 15px; font-size: 17px; color: #ccc; text-align: center;">O que você achou da apresentação?</p>
+            <p style="margin-bottom: 20px; font-size: 20px; color: #ccc; text-align: center;">O que você achou da apresentação?</p>
             <button class="btn-voto v-exc" onclick="prepararVoto('excelente', '🤯 Excelente')">🤯 Excelente</button>
             <button class="btn-voto v-mb" onclick="prepararVoto('muitobom', '🤩 Muito Bom')">🤩 Muito Bom</button>
             <button class="btn-voto v-bom" onclick="prepararVoto('bom', '🙂 Bom')">🙂 Bom</button>
@@ -144,14 +144,14 @@
         </div>
 
         <div id="confirmacao-voto">
-            <p style="margin-top: 0; font-size: 20px; color: #fff;">Confirmar voto:<br><strong id="texto-voto-escolhido" style="font-size: 30px; display: block; margin-top: 10px; color: #ffeb3b;"></strong></p>
-            <div style="display: flex; justify-content: space-between; margin-top: 25px;">
+            <p style="margin-top: 0; font-size: 22px; color: #fff;">Confirmar voto:<br><strong id="texto-voto-escolhido" style="font-size: 34px; display: block; margin-top: 15px; color: #ffeb3b;"></strong></p>
+            <div style="display: flex; justify-content: space-between; margin-top: 30px;">
                 <button class="btn-cancelar" onclick="cancelarVoto()">❌ Cancelar</button>
                 <button class="btn-confirmar" onclick="confirmarVoto()">✅ Votar!</button>
             </div>
         </div>
 
-        <div id="msg-agradecimento" style="display: none; color: #28a745; font-weight: bold; font-size: 22px; margin-top: 25px; text-align: center;">
+        <div id="msg-agradecimento" style="display: none; color: #28a745; font-weight: bold; font-size: 26px; margin-top: 30px; text-align: center;">
             ✅ Voto registrado com sucesso!
         </div>
     </div>
@@ -188,7 +188,6 @@
             if (aba === 'catalogo') document.getElementById('aba-catalogo').style.display = 'block';
         }
 
-        // GERA OS BOTÕES DE A a Z
         function gerarBotoesAlfabeto() {
             const div = document.getElementById('filtro-alfabeto');
             const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
@@ -276,7 +275,7 @@
                 musicasCatalogo.sort((a, b) => a.cantor.localeCompare(b.cantor, 'pt-BR'));
                 renderizarCatalogo(musicasCatalogo.slice(0, 150)); 
             } catch(e) {
-                document.getElementById('lista-catalogo').innerHTML = '<p style="color:#e52d27; text-align:center; font-size:18px;">Catálogo offline. Peça digitando na busca principal.</p>';
+                document.getElementById('lista-catalogo').innerHTML = '<p style="color:#e52d27; text-align:center; font-size:20px;">Catálogo offline. Peça digitando na busca principal.</p>';
             }
         }
 
@@ -284,7 +283,7 @@
             const div = document.getElementById('lista-catalogo');
             div.innerHTML = '';
             if(lista.length === 0) {
-                div.innerHTML = '<p style="text-align:center; color:#aaa; font-size:18px;">Nenhuma música encontrada.</p>';
+                div.innerHTML = '<p style="text-align:center; color:#aaa; font-size:20px;">Nenhuma música encontrada.</p>';
                 return;
             }
             let html = '';
@@ -294,9 +293,9 @@
                 
                 html += `
                 <div class="item-resultado" onclick="selecionarDoCatalogo('${tituloEscapado}', '${cantorEscapado}')">
-                    <strong style="font-size: 20px; display: block; margin-bottom: 6px;">🎤 ${m.cantor}</strong>
-                    <span style="font-size: 18px; color: #fff; display: block; margin-bottom: 4px;">🎵 ${m.titulo}</span>
-                    ${m.inicio ? `<span style="font-size: 15px; color: #aaa; display: block; font-style: italic;">📝 ${m.inicio}</span>` : ''}
+                    <strong style="font-size: 22px; display: block; margin-bottom: 8px;">🎤 ${m.cantor}</strong>
+                    <span style="font-size: 20px; color: #fff; display: block; margin-bottom: 6px;">🎵 ${m.titulo}</span>
+                    ${m.inicio ? `<span style="font-size: 16px; color: #aaa; display: block; font-style: italic;">📝 ${m.inicio}</span>` : ''}
                 </div>`;
             });
             div.innerHTML = html;
@@ -397,7 +396,7 @@
             if (!termo) return alert("Digite o nome de uma música!");
             
             const div = document.getElementById('resultados');
-            div.innerHTML = '<p style="text-align:center; color:#00d2ff; font-size:18px;">Buscando no acervo...</p>'; 
+            div.innerHTML = '<p style="text-align:center; color:#00d2ff; font-size:20px;">Buscando no acervo...</p>'; 
 
             const query = encodeURIComponent(termo + " karaoke -oficial -clipe -live");
             const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${query}&type=video&key=${API_KEY}`;
@@ -408,20 +407,20 @@
                 div.innerHTML = '';
                 
                 if(dados.items.length === 0) {
-                    div.innerHTML = '<p style="color:#e52d27; font-size:18px;">Música não encontrada. Tente outro nome.</p>';
+                    div.innerHTML = '<p style="color:#e52d27; font-size:20px;">Música não encontrada. Tente outro nome.</p>';
                     return;
                 }
 
                 dados.items.forEach(v => {
                     const btn = document.createElement('div');
                     btn.className = 'item-resultado';
-                    btn.innerHTML = `<strong style="font-size:18px;">${v.snippet.title}</strong><br><span style="font-size:14px; color:#aaa;">Clique para escolher</span>`; 
+                    btn.innerHTML = `<strong style="font-size:20px;">${v.snippet.title}</strong><br><span style="font-size:16px; color:#aaa;">Clique para escolher</span>`; 
                     
                     btn.onclick = () => fazerPedido(v.id.videoId, v.snippet.title);
                     div.appendChild(btn);
                 });
             } catch (err) { 
-                div.innerHTML = "<p style='color:#e52d27; font-size:18px;'>Erro ao buscar. Chame o DJ.</p>"; 
+                div.innerHTML = "<p style='color:#e52d27; font-size:20px;'>Erro ao buscar. Chame o DJ.</p>"; 
             }
         }
 
