@@ -257,10 +257,10 @@
             <li><strong>Login e Segurança:</strong> Acesso restrito com perfis de Administrador e Operador Comum.</li>
             <li><strong>1. Iniciar Sistema e TV:</strong> Abre a tela de exibição na TV do bar e ativa o captador de áudio.</li>
             <li><strong>2. Avaliador (Microfone):</strong> Captura o som do ambiente para calcular a pontuação base em tempo real.</li>
-            <li><strong>Fila de Reprodução:</strong> Fila 100% blindada (nunca some). Conta com **botão de edição (✏️)** para corrigir nomes e **botão de play (▶️)** para pular e tocar imediatamente qualquer música da fila.</li>
+            <li><strong>Fila de Reprodução:</strong> Fila 100% blindada (nunca some, mesmo ao pular ou dar play antecipado durante a tela de notas). Conta com **botão de edição (✏️)** para corrigir nomes e **botão de play (▶️)** para tocar imediatamente.</li>
             <li><strong>Tratamento de Erro do YouTube:</strong> Permite inserir um link substituto direto no topo da fila.</li>
             <li><strong>Indicador de Próximo na TV:</strong> Aviso discreto no canto inferior esquerdo da TV.</li>
-            <li><strong>Tela de Nota:</strong> Exibe a pontuação final à esquerda e a foto grande do cantor à direita sem cortes.</li>
+            <li><strong>Tela de Nota:</strong> Exibe a pontuação final à esquerda e a foto grande do cantor à direita lado a lado sem falhas.</li>
         </ul>
         <button onclick="fecharManual()" style="width: 100%; margin-top: 25px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
     </div>
@@ -400,7 +400,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.77</span>
+        <span>v1.78</span>
     </div>
 
     <script>
@@ -803,6 +803,7 @@
         let historicoDeReproducao = JSON.parse(localStorage.getItem('historicoDeReproducao')) || []; 
         let ranking = JSON.parse(localStorage.getItem('ranking')) || [];
         let musicaPendente = null; 
+        let bloqueioFilaEmTransacao = false; // TRAVA DE SEGURANÇA PARA A FILA NUNCA SUMIR
 
         let player; let telaTV; let monitorTV; let musicaAtual = null; let timerNota;
         let audioCtx; let analyser; let dataArray; let captando = false; 
@@ -983,7 +984,7 @@
                     database.ref('pedidos').child(p.key).remove();
                 });
                 atualizarTelaFila();
-                if (!musicaAtual && filaDeReproducao.length > 0 && player && typeof player.loadVideoById === 'function') {
+                if (!musicaAtual && filaDeReproducao.length > 0 && player && typeof player.loadVideoById === 'function' && !bloqueioFilaEmTransacao) {
                     tocarProxima(true);
                 }
             }
@@ -999,7 +1000,7 @@
                     database.ref('pedidos').child(p.key).remove();
                 });
                 atualizarTelaFila();
-                if (!musicaAtual && filaDeReproducao.length > 0 && player && typeof player.loadVideoById === 'function') {
+                if (!musicaAtual && filaDeReproducao.length > 0 && player && typeof player.loadVideoById === 'function' && !bloqueioFilaEmTransacao) {
                     tocarProxima(true);
                 }
             } else {
@@ -1319,6 +1320,7 @@
         }
 
         function gerarNotaFinal() {
+            bloqueioFilaEmTransacao = true; // ATIVA A TRAVA DE SEGURANÇA DA FILA
             captando = false; 
             let notaFinal;
             const votosCongelados = { ...contagemVotos };
@@ -1395,7 +1397,9 @@
             clearTimeout(timerNota);
             timerNota = setTimeout(() => {
                 if (telaTV && !telaTV.closed) telaTV.document.getElementById('tela-nota').style.display = 'none';
-                musicaAtual = null; tocarProxima(true); 
+                musicaAtual = null; 
+                bloqueioFilaEmTransacao = false; // LIBERA A TRAVA AO FINALIZAR A NOTA
+                tocarProxima(true); 
             }, 12000);
         }
 
@@ -1447,9 +1451,14 @@
             } catch (err) { div.innerHTML = "<p style='color:#e52d27'>Limite atingido.</p>"; }
         }
 
-        function removerMusica(i) { filaDeReproducao.splice(i, 1); atualizarTelaFila(); }
+        function removerMusica(i) { 
+            if (bloqueioFilaEmTransacao) return;
+            filaDeReproducao.splice(i, 1); 
+            atualizarTelaFila(); 
+        }
         
         function moverMusica(i, d) { 
+            if (bloqueioFilaEmTransacao) return;
             const t = filaDeReproducao[i]; 
             filaDeReproducao[i] = filaDeReproducao[i+d]; 
             filaDeReproducao[i+d] = t; 
@@ -1518,9 +1527,10 @@
             } else { executarInicioMusica(m); }
         }
 
-        // CORREÇÃO: Tocar imediatamente qualquer música da lista sem perder os demais da fila
+        // CORREÇÃO: Tocar música específica da fila com segurança total
         function tocarMusicaEspecifica(i) { 
             if(!telaTV || telaTV.closed) return alert("⚠️ TV fechada!"); 
+            if(bloqueioFilaEmTransacao) return alert("Aguarde a apuração da nota atual para trocar de música!");
             let musicaEscolhida = filaDeReproducao.splice(i, 1)[0];
             iniciarMusica(musicaEscolhida);
             atualizarTelaFila();
@@ -1528,6 +1538,7 @@
         
         function tocarProxima(auto = false) {
             if(!telaTV || telaTV.closed) { if (!auto) alert("⚠️ TV fechada!"); return; }
+            if(bloqueioFilaEmTransacao) return;
             if(filaDeReproducao.length > 0) { iniciarMusica(filaDeReproducao.shift()); } 
             else {
                 musicaAtual = null; atualizarTelaRanking();
