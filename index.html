@@ -80,7 +80,6 @@
         .versao-app span { color: #fff; }
         .versao-app:hover { opacity: 1; }
 
-        /* Modais */
         #fundo-modal-config, #fundo-modal-cantor { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 500; }
         #modal-config, #modal-cantor { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 501; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 550px; color: #fff; max-height: 85vh; overflow-y: auto; }
         #modal-config { border: 2px solid #ffc107; } #modal-cantor { border: 2px solid #00d2ff; text-align: center; }
@@ -154,7 +153,6 @@
 </head>
 <body>
 
-    <!-- Tela de Login Sobreposta -->
     <div id="tela-login">
         <div class="login-box">
             <img src="logop.png" alt="Logo Parada 10.95">
@@ -165,7 +163,6 @@
         </div>
     </div>
 
-    <!-- Interface Mobile do Cliente -->
     <div id="tela-cliente">
         <div class="cliente-topo-vermelho">
             <span>🍻 PARADA 10.95 BAR</span>
@@ -256,28 +253,30 @@
     <div id="modal-manual-conteudo">
         <h2>📖 Manual Completo do Sistema - Karaokê Parada 10.95</h2>
         
-        <p>Bem-vindo ao manual oficial do sistema de Karaokê do Parada 10.95 Bar. Este guia foi elaborado para orientar tanto o operador (Painel do DJ) quanto os clientes (Painel Mobile de Votação e Fotos) sobre todas as funcionalidades disponíveis.</p>
+        <p>Bem-vindo ao manual oficial do sistema de Karaokê do Parada 10.95 Bar. Este guia orienta o operador (Painel do DJ) e os clientes (Painel Mobile de Votação e Fotos) sobre todas as funcionalidades.</p>
 
         <h3>🎛️ 1. Painel do DJ (Controle Administrativo)</h3>
         <ul>
-            <li><strong>Login e Segurança:</strong> O painel possui perfis de acesso distintos (Administrador e Operador Comum) com senhas configuradas para proteger o sistema contra acessos não autorizados.</li>
-            <li><strong>1. Iniciar Sistema e TV:</strong> Botão principal que abre automaticamente a janela de exibição em tela cheia (para conectar na TV do bar) e liga o captador de áudio do ambiente.</li>
-            <li><strong>2. Avaliador (Microfone):</strong> Sistema inteligente que capta o som do ambiente via microfone e calcula a pontuação base da apresentação do cantor em tempo real.</li>
-            <li><strong>Busca de Músicas:</strong> Permite buscar músicas diretamente no YouTube (filtrando versões ideais para karaokê) ou colar links diretos. O sistema prioriza automaticamente os canais favoritos cadastrados.</li>
-            <li><strong>Painel de Pedidos:</strong> Exibe em tempo real os pedidos enviados pelos clientes através do QR Code. O operador pode aceitar, recusar ou ativar a opção de <em>Auto-Aprovar</em>.</li>
-            <li><strong>Fila de Reprodução:</strong> Gerencia a ordem dos cantores. É possível tocar imediatamente, subir/descer na fila ou remover itens.</li>
-            <li><strong>Ranking e Execução:</strong> Exibe a música tocando no momento (com controles para pausar ou retroceder 10 segundos) e o ranking com as maiores notas do dia, incluindo o detalhamento dos votos do público.</li>
-            <li><strong>Central de Gerenciamento de Fotos:</strong> Permite ao operador visualizar, selecionar e excluir fotos enviadas pelos clientes ao longo do dia, além de contar com a opção de resetar todo o sistema.</li>
-            <li><strong>Configurações (Painel Admin):</strong> Permite gerenciar canais favoritos do YouTube, cadastrar novos usuários/operadores e definir o tempo de pausa (transição) entre as músicas.</li>
+            <li><strong>Login e Segurança:</strong> Acesso restrito com perfis de Administrador e Operador Comum protegidos por senha.</li>
+            <li><strong>1. Iniciar Sistema e TV:</strong> Abre a tela de exibição na TV do bar em tela cheia e ativa o captador de áudio.</li>
+            <li><strong>2. Avaliador (Microfone):</strong> Captura o som do ambiente via microfone para calcular a pontuação base da apresentação do cantor em tempo real.</li>
+            <li><strong>Busca de Músicas:</strong> Pesquisa músicas no YouTube com filtros automáticos e prioriza canais favoritos cadastrados.</li>
+            <li><strong>Painel de Pedidos:</strong> Exibe pedidos enviados pelos clientes via QR Code. Permite aceitar, recusar ou ativar o <em>Auto-Aprovar</em>.</li>
+            <li><strong>Fila de Reprodução:</strong> Gerencia a ordem dos cantores de forma persistente (nunca some ao parar uma música). Permite tocar imediatamente, mover para cima/baixo ou remover.</li>
+            <li><strong>Tratamento de Erro do YouTube:</strong> Caso um vídeo falhe ou seja bloqueado, o sistema exibe um alerta rápido para inserir um link substituto que entra direto no topo da fila.</li>
+            <li><strong>Indicador de Próximo na TV:</strong> Mostra um aviso discreto no canto superior da TV informando quem é o próximo cantor da fila.</li>
+            <li><strong>Ranking e Execução:</strong> Exibe a música tocando no momento com comandos de pausa e retrocesso de 10 segundos, além do ranking com as notas e detalhes de votos do público.</li>
+            <li><strong>Central de Gerenciamento de Fotos:</strong> Permite visualizar e excluir fotos enviadas pelos clientes, além de resetar o sistema quando necessário.</li>
+            <li><strong>Configurações:</strong> Gerencia canais favoritos, usuários e o tempo de pausa (transição) entre as músicas.</li>
         </ul>
 
         <h3>📱 2. Painel do Cliente (Acessado via QR Code)</h3>
         <ul>
-            <li><strong>Menu Principal:</strong> Ao escanear o QR Code nas mesas do bar, o cliente tem acesso a uma interface limpa e otimizada com três opções principais: <em>Pedir Música</em>, <em>Votar no Cantor</em> e <em>Tirar Foto & Baixar</em>.</li>
-            <li><strong>Pedir Música:</strong> O cliente digita seu nome/dupla, busca músicas livremente ou navega pelo catálogo completo (organizado por ordem alfabética de A a Z). O pedido vai direto para a tela de aprovação do DJ.</li>
-            <li><strong>Votação Ao Vivo:</strong> Quando uma música inicia na TV, a tela do cliente se transforma em um painel de votação interativo com notas de <em>Excelente</em> a <em>Ruim</em>. O voto é computado na hora e somado à nota final do cantor.</li>
-            <li><strong>Tirar Foto & Baixar:</strong> Permite que o cliente use a câmera nativa do celular para tirar uma foto. O sistema aplica automaticamente uma moldura artística neon com a marca do bar ("PARADA 10.95 BAR"), o nome do cantor e a data atual impressos diretamente no rodapé externo da imagem.</li>
-            <li><strong>Galeria de Fotos:</strong> Todas as fotos tiradas pelos clientes no dia ficam visíveis em uma galeria interativa. O cliente pode clicar em "Ver" para ampliar a foto e salvá-la facilmente na galeria do seu próprio smartphone (iPhone ou Android).</li>
+            <li><strong>Menu Principal:</strong> Opções rápidas para <em>Pedir Música</em>, <em>Votar no Cantor</em> e <em>Tirar Foto & Baixar</em>.</li>
+            <li><strong>Pedir Música:</strong> Permite digitar o nome do cantor, buscar músicas no YouTube ou navegar pelo catálogo completo de A a Z.</li>
+            <li><strong>Votação Ao Vivo:</strong> Painel interativo com notas de Excelente a Ruim que aparece na tela do cliente assim que a música começa a tocar na TV.</li>
+            <li><strong>Tirar Foto & Baixar:</strong> Utiliza a câmera nativa do aparelho aplicando uma moldura artística neon com a marca do bar, o nome correto do cantor daquela rodada e a data atual embutidos.</li>
+            <li><strong>Galeria de Fotos:</strong> Exibe as fotos tiradas no dia para visualização e salvamento direto na galeria do smartphone.</li>
         </ul>
 
         <button onclick="fecharManual()" style="width: 100%; margin-top: 25px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
@@ -419,7 +418,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.73</span>
+        <span>v1.74</span>
     </div>
 
     <script>
@@ -1002,6 +1001,10 @@
                     database.ref('pedidos').child(p.key).remove();
                 });
                 atualizarTelaFila();
+                // CORREÇÃO ITEM 3: Se o palco estiver livre, toca imediatamente o primeiro da fila
+                if (!musicaAtual && filaDeReproducao.length > 0 && player && typeof player.loadVideoById === 'function') {
+                    tocarProxima(true);
+                }
             }
         }
 
@@ -1015,6 +1018,10 @@
                     database.ref('pedidos').child(p.key).remove();
                 });
                 atualizarTelaFila();
+                // CORREÇÃO ITEM 3: Toca imediatamente se auto-aprovar e o palco estiver livre
+                if (!musicaAtual && filaDeReproducao.length > 0 && player && typeof player.loadVideoById === 'function') {
+                    tocarProxima(true);
+                }
             } else {
                 renderizarPedidos();
             }
@@ -1202,6 +1209,11 @@
                     #qr-code p { margin: 8px 0 0 0; color: #fff; font-size: 12px; font-weight: bold; text-transform: uppercase;}
                     #qr-code span { color: #ffeb3b; font-size: 11px; }
 
+                    /* CORREÇÃO ITEM 6: Próximo na fila discreto na TV */
+                    #proximo-overlay { position: absolute !important; top: 20px !important; right: 160px !important; z-index: 25; background: rgba(10,10,15,0.75); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(0,210,255,0.4); text-align: right; pointer-events: none; display: none; backdrop-filter: blur(4px); }
+                    #proximo-overlay .prox-titulo { font-size: 10px; color: #00d2ff; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
+                    #proximo-overlay .prox-nome { font-size: 14px; color: #fff; font-weight: bold; margin: 2px 0 0 0; text-shadow: 1px 1px 3px #000; }
+
                     #cantor-overlay { position: absolute; top: -200px; right: 170px; background: linear-gradient(90deg, rgba(20,20,20,0.95), rgba(229,45,39,0.85)); padding: 10px 20px; border-radius: 15px; z-index: 24; transition: top 0.8s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: -3px 5px 15px rgba(0,0,0,0.5); max-width: 350px; text-align: right; border: 2px solid #e52d27;}
                     #cantor-overlay .aviso { font-size: 12px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
                     #cantor-overlay .nome { font-size: 22px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; line-height: 1.1; word-wrap: break-word;}
@@ -1233,6 +1245,12 @@
                         <span>Peça e Vote!</span>
                     </div>
 
+                    <!-- CORREÇÃO ITEM 6: Elemento do próximo cantor -->
+                    <div id="proximo-overlay">
+                        <p class="prox-titulo">Próximo na Fila</p>
+                        <p id="prox-nome-txt" class="prox-nome">--</p>
+                    </div>
+
                     <div id="cantor-overlay"></div>
 
                     <div id="tela-aguardando">
@@ -1254,8 +1272,9 @@
                         <h2 style="font-size: 30px; margin-bottom: 20px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
                         <div id="nota-loading" style="font-size: 26px; animation: piscar 1s infinite;">Calculando energia e votos do público... 🥁</div>
                         <div id="nota-resultado" style="display:none; flex-direction:column; align-items:center; gap: 10px;">
-                            <div id="tv-foto-container" style="display:none;">
-                                <img id="tv-foto-img" style="width: 200px; height: 150px; object-fit: cover; border-radius: 10px; border: 3px solid #ffeb3b; box-shadow: 0 0 20px rgba(255,235,59,0.5);" alt="Foto">
+                            <!-- CORREÇÃO ITEM 1: object-fit contain para não cortar a foto -->
+                            <div id="tv-foto-container" style="display:none; width: 300px; height: 220px; background: #000; border-radius: 10px; border: 3px solid #ffeb3b; box-shadow: 0 0 20px rgba(255,235,59,0.5); overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                                <img id="tv-foto-img" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;" alt="Foto">
                             </div>
                             <div style="font-size: 18px; color: #aaa;">Pontuação Final:</div>
                             <div id="nota-valor" style="font-size: 120px; font-weight: 900; line-height: 1;">100</div>
@@ -1281,8 +1300,31 @@
             player = new YT_API.Player(telaTV.document.getElementById('player'), {
                 videoId: '', playerVars: { 'autoplay': 1, 'controls': 1, 'fs': 0 }, 
                 events: { 
-                    'onStateChange': e => { if (e.data === 0) (musicaAtual && musicaAtual.cantor !== "Convidados") ? gerarNotaFinal() : tocarProxima(true); }, 
-                    'onError': e => { erroNoPlayer = true; alert("⚠️ O YouTube bloqueou este vídeo!"); } 
+                    'onStateChange': e => { 
+                        if (e.data === 0) {
+                            // CORREÇÃO ITEM 2: Blindagem para garantir chamada correta da nota
+                            if (musicaAtual && musicaAtual.cantor !== "Convidados") {
+                                gerarNotaFinal();
+                            } else {
+                                tocarProxima(true);
+                            }
+                        } 
+                    }, 
+                    'onError': e => { 
+                        erroNoPlayer = true; 
+                        // CORREÇÃO ITEM 7: Tratamento de erro interativo do YouTube
+                        let termoNovo = prompt("⚠️ O YouTube bloqueou este vídeo!\nDigite o nome de outra música ou cole o link correto para tocar imediatamente no topo da fila:");
+                        if (termoNovo && termoNovo.trim() !== "") {
+                            let videoIdNovo = extrairVideoId(termoNovo);
+                            let idFinal = videoIdNovo || "busca_" + Date.now();
+                            let tituloFinal = videoIdNovo ? "Música Substituta" : termoNovo;
+                            
+                            // Insere no topo da fila (posição 0) e executa imediatamente
+                            filaDeReproducao.unshift({ videoId: idFinal, titulo: tituloFinal, cantor: musicaAtual ? musicaAtual.cantor : "Convidados" });
+                            atualizarTelaFila();
+                            tocarProxima(true);
+                        }
+                    } 
                 }
             });
             const bTv = document.getElementById('botaoTV');
@@ -1320,11 +1362,19 @@
             ranking.push({ nome: musicaAtual.cantor, nota: notaFinal, titulo: musicaAtual.titulo, votos: votosCongelados });
             atualizarTelaRanking();
 
+            // CORREÇÃO ITEM 4: Busca a foto exata correspondente ao cantor da música atual
             database.ref('fotosDia').once('value', (snapshot) => {
                 let fotoEncontrada = null;
+                let maiorTimestamp = 0;
                 snapshot.forEach(child => {
                     let f = child.val();
-                    if (f.cantor && f.cantor.toLowerCase() === musicaAtual.cantor.toLowerCase()) fotoEncontrada = f.imagemBase64;
+                    if (f.cantor && f.cantor.toLowerCase() === musicaAtual.cantor.toLowerCase()) {
+                        // Pega a foto mais recente tirada por esse cantor
+                        if (!f.timestamp || f.timestamp >= maiorTimestamp) {
+                            maiorTimestamp = f.timestamp || 0;
+                            fotoEncontrada = f.imagemBase64;
+                        }
+                    }
                 });
 
                 if (telaTV && !telaTV.closed) {
@@ -1347,8 +1397,12 @@
                         
                         let fotoContainer = tvDoc.getElementById('tv-foto-container');
                         let fotoImg = tvDoc.getElementById('tv-foto-img');
-                        if (fotoEncontrada) { fotoImg.src = fotoEncontrada; fotoContainer.style.display = 'block'; }
-                        else { fotoContainer.style.display = 'none'; }
+                        if (fotoEncontrada) { 
+                            fotoImg.src = fotoEncontrada; 
+                            fotoContainer.style.display = 'flex'; 
+                        } else { 
+                            fotoContainer.style.display = 'none'; 
+                        }
                         tvDoc.getElementById('nota-resultado').style.display = 'flex';
                     }, 4000); 
                 }
@@ -1483,6 +1537,7 @@
         }
 
         function atualizarTelaFila() {
+            // CORREÇÃO ITEM 5: Salva obrigatoriamente a fila no localStorage para nunca perder dados
             localStorage.setItem('filaDeReproducao', JSON.stringify(filaDeReproducao));
             const divFila = document.getElementById('fila');
             if(!divFila) return;
@@ -1497,6 +1552,21 @@
                     </div>
                 </div>
             `).join('');
+            
+            // CORREÇÃO ITEM 6: Atualiza o próximo cantor discreto na TV em tempo real (mesmo se adicionado no meio)
+            if (telaTV && !telaTV.closed) {
+                let proxOverlay = telaTV.document.getElementById('proximo-overlay');
+                let proxTxt = telaTV.document.getElementById('prox-nome-txt');
+                if (proxOverlay && proxTxt) {
+                    if (filaDeReproducao.length > 0) {
+                        proxTxt.innerText = `${filaDeReproducao[0].cantor} (${filaDeReproducao[0].titulo})`;
+                        proxOverlay.style.display = 'block';
+                    } else {
+                        proxOverlay.style.display = 'none';
+                    }
+                }
+            }
+
             if (filaDeReproducao.length === 0 && !musicaAtual && telaTV && !telaTV.closed) {
                 telaTV.document.getElementById('tela-aguardando').style.display = 'flex';
             }
