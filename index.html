@@ -260,7 +260,7 @@
             <li><strong>Fila de Reprodução:</strong> Fila 100% blindada contra perdas. Conta com **botão de edição (✏️)** para corrigir nomes e **botão de play (▶️)** para tocar imediatamente.</li>
             <li><strong>Tratamento de Erro do YouTube:</strong> Permite inserir um link substituto direto no topo da fila.</li>
             <li><strong>Indicador de Próximo na TV:</strong> Aviso discreto no canto inferior esquerdo da TV.</li>
-            <li><strong>Tela de Nota:</strong> Exibe a pontuação final à esquerda e a foto **gigante** do cantor à direita lado a lado com carregamento garantido.</li>
+            <li><strong>Tela de Nota:</strong> Exibe a pontuação final à esquerda e a foto **gigante** do cantor à direita. **Regra estrita:** só exibe foto se o cantor exato tirou foto naquele momento; caso contrário, nenhuma foto é exibida.</li>
         </ul>
         <button onclick="fecharManual()" style="width: 100%; margin-top: 25px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
     </div>
@@ -400,7 +400,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.79</span>
+        <span>v1.81</span>
     </div>
 
     <script>
@@ -803,7 +803,7 @@
         let historicoDeReproducao = JSON.parse(localStorage.getItem('historicoDeReproducao')) || []; 
         let ranking = JSON.parse(localStorage.getItem('ranking')) || [];
         let musicaPendente = null; 
-        let bloqueioFilaEmTransacao = false; // TRAVA ABSOLUTA DE SEGURANÇA DA FILA
+        let bloqueioFilaEmTransacao = false;
 
         let player; let telaTV; let monitorTV; let musicaAtual = null; let timerNota;
         let audioCtx; let analyser; let dataArray; let captando = false; 
@@ -1251,7 +1251,7 @@
                         <h2 style="font-size: 26px; margin-bottom: 25px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
                         <div id="nota-loading" style="font-size: 26px; animation: piscar 1s infinite;">Calculando energia e votos do público... 🥁</div>
                         
-                        <!-- Layout Lado a Lado Blindado com Foto Gigante Garantida (550x450px) -->
+                        <!-- Layout Lado a Lado Estrito: Só exibe foto se houver foto daquele cantor exato -->
                         <div id="nota-resultado" style="display:none; flex-direction:row; align-items:center; justify-content:center; gap: 70px; width: 95%; max-width: 1200px;">
                             
                             <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex: 1;">
@@ -1320,7 +1320,7 @@
         }
 
         function gerarNotaFinal() {
-            bloqueioFilaEmTransacao = true; // ATIVA A TRAVA DE SEGURANÇA DA FILA
+            bloqueioFilaEmTransacao = true;
             captando = false; 
             let notaFinal;
             const votosCongelados = { ...contagemVotos };
@@ -1350,18 +1350,18 @@
             ranking.push({ nome: musicaAtual.cantor, nota: notaFinal, titulo: musicaAtual.titulo, votos: votosCongelados });
             atualizarTelaRanking();
 
-            // BUSCA BLINDADA DA FOTO COM FALLBACK AUTOMÁTICO
+            // BUSCA ESTRITA: Exige correspondência exata ou inclusão mútua nos nomes, SEM FALLBACK GENÉRICO
             database.ref('fotosDia').once('value', (snapshot) => {
                 let fotoEncontrada = null;
-                let ultimaFotoGeral = null;
                 let maiorTimestamp = 0;
                 let cantorAtualBusca = musicaAtual ? musicaAtual.cantor.trim().toLowerCase() : "";
 
                 snapshot.forEach(child => {
                     let f = child.val();
-                    if (f && f.imagemBase64) {
-                        ultimaFotoGeral = f.imagemBase64; // Guarda a última foto caso falhe a busca exata
-                        if (f.cantor && f.cantor.trim().toLowerCase() === cantorAtualBusca) {
+                    if (f && f.imagemBase64 && f.cantor) {
+                        let cantorFoto = f.cantor.trim().toLowerCase();
+                        // Garante que o nome da foto pertença ao cantor da rodada atual
+                        if (cantorFoto === cantorAtualBusca || cantorFoto.includes(cantorAtualBusca) || cantorAtualBusca.includes(cantorFoto)) {
                             if (!f.timestamp || f.timestamp >= maiorTimestamp) {
                                 maiorTimestamp = f.timestamp || 0;
                                 fotoEncontrada = f.imagemBase64;
@@ -1369,9 +1369,6 @@
                         }
                     }
                 });
-
-                // Se não achou pelo nome exato, usa a última foto tirada no dia como garantia para nunca ficar sem foto
-                let fotoFinalParaExibir = fotoEncontrada || ultimaFotoGeral;
 
                 if (telaTV && !telaTV.closed) {
                     let tvDoc = telaTV.document;
@@ -1393,8 +1390,10 @@
                         
                         let fotoContainer = tvDoc.getElementById('tv-foto-container');
                         let fotoImg = tvDoc.getElementById('tv-foto-img');
-                        if (fotoFinalParaExibir) { 
-                            fotoImg.src = fotoFinalParaExibir; 
+                        
+                        // SE NÃO HOUVER FOTO EXATA DESTE CANTOR, NENHUMA FOTO É MOSTRADA
+                        if (fotoEncontrada) { 
+                            fotoImg.src = fotoEncontrada; 
                             fotoContainer.style.display = 'flex'; 
                         } else { 
                             fotoContainer.style.display = 'none'; 
@@ -1408,7 +1407,7 @@
             timerNota = setTimeout(() => {
                 if (telaTV && !telaTV.closed) telaTV.document.getElementById('tela-nota').style.display = 'none';
                 musicaAtual = null; 
-                bloqueioFilaEmTransacao = false; // LIBERA A TRAVA AO FINALIZAR A NOTA
+                bloqueioFilaEmTransacao = false;
                 tocarProxima(true); 
             }, 12000);
         }
