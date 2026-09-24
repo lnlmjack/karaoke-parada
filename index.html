@@ -257,8 +257,8 @@
             <li><strong>Login e Segurança:</strong> Acesso restrito com perfis de Administrador e Operador Comum.</li>
             <li><strong>1. Iniciar Sistema e TV:</strong> Abre a tela de exibição na TV do bar e ativa o captador de áudio.</li>
             <li><strong>2. Avaliador (Microfone):</strong> Captura o som do ambiente para calcular a pontuação base em tempo real.</li>
-            <li><strong>Fila de Reprodução:</strong> Gerencia a ordem dos cantores de forma persistente. Agora com **botão de edição (✏️)** para corrigir o nome do cantor caso tenha digitado errado.</li>
-            <li><strong>Tratamento de Erro do YouTube:</strong> Permite inserir um link substituto que entra direto no topo da fila sem desconfigurá-la.</li>
+            <li><strong>Fila de Reprodução:</strong> Gerencia a ordem dos cantores de forma persistente e segura (nunca some). Conta com **botão de edição (✏️)** para corrigir nomes de cantores e **botão de play direto (▶️)** para iniciar qualquer música da fila imediatamente.</li>
+            <li><strong>Tratamento de Erro do YouTube:</strong> Permite inserir um link substituto que entra direto no topo da fila.</li>
             <li><strong>Indicador de Próximo na TV:</strong> Aviso discreto no canto inferior esquerdo da TV.</li>
             <li><strong>Tela de Nota:</strong> Exibe a pontuação final à esquerda e a foto grande do cantor à direita sem cortes.</li>
         </ul>
@@ -400,7 +400,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.75</span>
+        <span>v1.76</span>
     </div>
 
     <script>
@@ -1189,7 +1189,6 @@
                     #qr-code p { margin: 8px 0 0 0; color: #fff; font-size: 12px; font-weight: bold; text-transform: uppercase;}
                     #qr-code span { color: #ffeb3b; font-size: 11px; }
 
-                    /* Próximo na fila no canto inferior esquerdo */
                     #proximo-overlay { position: absolute !important; bottom: 20px !important; left: 20px !important; z-index: 25; background: rgba(10,10,15,0.75); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(0,210,255,0.4); text-align: left; pointer-events: none; display: none; backdrop-filter: blur(4px); max-width: 400px; }
                     #proximo-overlay .prox-titulo { font-size: 10px; color: #00d2ff; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
                     #proximo-overlay .prox-nome { font-size: 13px; color: #fff; font-weight: bold; margin: 2px 0 0 0; text-shadow: 1px 1px 3px #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -1251,15 +1250,15 @@
                         <h2 style="font-size: 26px; margin-bottom: 25px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
                         <div id="nota-loading" style="font-size: 26px; animation: piscar 1s infinite;">Calculando energia e votos do público... 🥁</div>
                         
-                        <!-- Layout Lado a Lado (Esquerda: Nota | Direita: Foto Grande) -->
-                        <div id="nota-resultado" style="display:none; flex-direction:row; align-items:center; justify-content:center; gap: 50px; width: 85%; max-width: 1000px;">
+                        <!-- Layout Lado a Lado Corrigido (Esquerda: Nota | Direita: Foto Grande) -->
+                        <div id="nota-resultado" style="display:none; flex-direction:row; align-items:center; justify-content:center; gap: 60px; width: 90%; max-width: 1100px;">
                             
                             <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex: 1;">
-                                <div style="font-size: 22px; color: #aaa; margin-bottom: 5px;">Pontuação Final:</div>
-                                <div id="nota-valor" style="font-size: 140px; font-weight: 900; line-height: 1;">100</div>
+                                <div style="font-size: 24px; color: #aaa; margin-bottom: 5px;">Pontuação Final:</div>
+                                <div id="nota-valor" style="font-size: 150px; font-weight: 900; line-height: 1;">100</div>
                             </div>
 
-                            <div id="tv-foto-container" style="display:none; flex: 1; max-width: 450px; height: 340px; background: #0a0a0a; border-radius: 14px; border: 4px solid #ffeb3b; box-shadow: 0 0 30px rgba(255,235,59,0.5); overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                            <div id="tv-foto-container" style="display:none; flex: 1; max-width: 480px; height: 360px; background: #0a0a0a; border-radius: 14px; border: 4px solid #ffeb3b; box-shadow: 0 0 30px rgba(255,235,59,0.5); overflow: hidden; align-items: center; justify-content: center;">
                                 <img id="tv-foto-img" style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;" alt="Foto do Cantor">
                             </div>
 
@@ -1449,9 +1448,14 @@
         }
 
         function removerMusica(i) { filaDeReproducao.splice(i, 1); atualizarTelaFila(); }
-        function moverMusica(i, d) { const t = filaDeReproducao[i]; filaDeReproducao[i] = filaDeReproducao[i+d]; filaDeReproducao[i+d] = t; atualizarTelaFila(); }
+        
+        function moverMusica(i, d) { 
+            const t = filaDeReproducao[i]; 
+            filaDeReproducao[i] = filaDeReproducao[i+d]; 
+            filaDeReproducao[i+d] = t; 
+            atualizarTelaFila(); 
+        }
 
-        // Nova função para editar o nome do cantor direto na fila
         function editarCantorFila(i) {
             let item = filaDeReproducao[i];
             let novoNome = prompt("Editar nome do cantor(a):", item.cantor);
@@ -1514,9 +1518,20 @@
             } else { executarInicioMusica(m); }
         }
 
+        // CORREÇÃO: Pular ou dar play em qualquer música da fila sem corromper a fila
         function tocarMusicaEspecifica(i) { 
             if(!telaTV || telaTV.closed) return alert("⚠️ TV fechada!"); 
-            iniciarMusica(filaDeReproducao.splice(i, 1)[0]); 
+            // Retira a música escolhida da posição exata da fila
+            let musicaEscolhida = filaDeReproducao.splice(i, 1)[0];
+            
+            // Se havia uma música tocando, joga ela de volta para o início da fila ou histórico se preferir, 
+            // mas aqui garantimos que a escolhida entre direto no palco sem perder os demais da fila
+            if (musicaAtual) {
+                // Opcional: devolve a anterior para o topo da fila se quiser guardar, ou apenas substitui
+            }
+            
+            iniciarMusica(musicaEscolhida);
+            atualizarTelaFila();
         }
         
         function tocarProxima(auto = false) {
@@ -1541,7 +1556,7 @@
                     <span class="titulo-musica"><strong>${i+1}º</strong> - ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span></span>
                     <div class="botoes-acao">
                         <button class="btn-acao" onclick="editarCantorFila(${i})" title="Editar Cantor">✏️</button>
-                        <button class="btn-acao" onclick="tocarMusicaEspecifica(${i})" title="Tocar">▶️</button>
+                        <button class="btn-acao" onclick="tocarMusicaEspecifica(${i})" title="Tocar Agora">▶️</button>
                         ${i > 0 ? `<button class="btn-acao" onclick="moverMusica(${i}, -1)" title="Subir">⬆️</button>` : ''}
                         ${i < filaDeReproducao.length - 1 ? `<button class="btn-acao" onclick="moverMusica(${i}, 1)" title="Descer">⬇️</button>` : ''}
                         <button class="btn-acao" onclick="removerMusica(${i})" title="Remover">❌</button>
