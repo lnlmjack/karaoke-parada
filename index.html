@@ -248,7 +248,6 @@
 
     <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
 
-    <!-- MANUAL DO SISTEMA COMPLETAMENTE REFEITO E DETALHADO -->
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
     <div id="modal-manual-conteudo">
         <h2>📖 Manual Completo do Sistema - Karaokê Parada 10.95</h2>
@@ -264,7 +263,7 @@
             <li><strong>Painel de Pedidos:</strong> Exibe pedidos enviados pelos clientes via QR Code. Permite aceitar, recusar ou ativar o <em>Auto-Aprovar</em>.</li>
             <li><strong>Fila de Reprodução:</strong> Gerencia a ordem dos cantores de forma persistente (nunca some ao parar uma música). Permite tocar imediatamente, mover para cima/baixo ou remover.</li>
             <li><strong>Tratamento de Erro do YouTube:</strong> Caso um vídeo falhe ou seja bloqueado, o sistema exibe um alerta rápido para inserir um link substituto que entra direto no topo da fila.</li>
-            <li><strong>Indicador de Próximo na TV:</strong> Mostra um aviso discreto no canto superior da TV informando quem é o próximo cantor da fila.</li>
+            <li><strong>Indicador de Próximo na TV:</strong> Mostra um aviso discreto no canto inferior esquerdo da TV informando quem é o próximo cantor da fila.</li>
             <li><strong>Ranking e Execução:</strong> Exibe a música tocando no momento com comandos de pausa e retrocesso de 10 segundos, além do ranking com as notas e detalhes de votos do público.</li>
             <li><strong>Central de Gerenciamento de Fotos:</strong> Permite visualizar e excluir fotos enviadas pelos clientes, além de resetar o sistema quando necessário.</li>
             <li><strong>Configurações:</strong> Gerencia canais favoritos, usuários e o tempo de pausa (transição) entre as músicas.</li>
@@ -282,7 +281,6 @@
         <button onclick="fecharManual()" style="width: 100%; margin-top: 25px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
     </div>
 
-    <!-- Modal de Configurações Unificado -->
     <div id="fundo-modal-config" onclick="fecharModalConfig()"></div>
     <div id="modal-config">
         <h2>⚙️ Configurações do Sistema</h2>
@@ -1001,7 +999,6 @@
                     database.ref('pedidos').child(p.key).remove();
                 });
                 atualizarTelaFila();
-                // CORREÇÃO ITEM 3: Se o palco estiver livre, toca imediatamente o primeiro da fila
                 if (!musicaAtual && filaDeReproducao.length > 0 && player && typeof player.loadVideoById === 'function') {
                     tocarProxima(true);
                 }
@@ -1018,7 +1015,6 @@
                     database.ref('pedidos').child(p.key).remove();
                 });
                 atualizarTelaFila();
-                // CORREÇÃO ITEM 3: Toca imediatamente se auto-aprovar e o palco estiver livre
                 if (!musicaAtual && filaDeReproducao.length > 0 && player && typeof player.loadVideoById === 'function') {
                     tocarProxima(true);
                 }
@@ -1209,10 +1205,10 @@
                     #qr-code p { margin: 8px 0 0 0; color: #fff; font-size: 12px; font-weight: bold; text-transform: uppercase;}
                     #qr-code span { color: #ffeb3b; font-size: 11px; }
 
-                    /* CORREÇÃO ITEM 6: Próximo na fila discreto na TV */
-                    #proximo-overlay { position: absolute !important; top: 20px !important; right: 160px !important; z-index: 25; background: rgba(10,10,15,0.75); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(0,210,255,0.4); text-align: right; pointer-events: none; display: none; backdrop-filter: blur(4px); }
+                    /* CORREÇÃO ITEM 1: Próximo na fila discreto no canto inferior esquerdo da TV */
+                    #proximo-overlay { position: absolute !important; bottom: 20px !important; left: 20px !important; z-index: 25; background: rgba(10,10,15,0.75); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(0,210,255,0.4); text-align: left; pointer-events: none; display: none; backdrop-filter: blur(4px); max-width: 400px; }
                     #proximo-overlay .prox-titulo { font-size: 10px; color: #00d2ff; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
-                    #proximo-overlay .prox-nome { font-size: 14px; color: #fff; font-weight: bold; margin: 2px 0 0 0; text-shadow: 1px 1px 3px #000; }
+                    #proximo-overlay .prox-nome { font-size: 13px; color: #fff; font-weight: bold; margin: 2px 0 0 0; text-shadow: 1px 1px 3px #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
                     #cantor-overlay { position: absolute; top: -200px; right: 170px; background: linear-gradient(90deg, rgba(20,20,20,0.95), rgba(229,45,39,0.85)); padding: 10px 20px; border-radius: 15px; z-index: 24; transition: top 0.8s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: -3px 5px 15px rgba(0,0,0,0.5); max-width: 350px; text-align: right; border: 2px solid #e52d27;}
                     #cantor-overlay .aviso { font-size: 12px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
@@ -1245,7 +1241,7 @@
                         <span>Peça e Vote!</span>
                     </div>
 
-                    <!-- CORREÇÃO ITEM 6: Elemento do próximo cantor -->
+                    <!-- Próximo na fila no canto inferior esquerdo -->
                     <div id="proximo-overlay">
                         <p class="prox-titulo">Próximo na Fila</p>
                         <p id="prox-nome-txt" class="prox-nome">--</p>
@@ -1268,18 +1264,27 @@
                     </div>
 
                     <div id="tela-nota">
-                        <h1 style="font-size: 40px; color: #ffeb3b; margin-bottom: 5px;">🍻 PARADA 10.95 BAR</h1>
-                        <h2 style="font-size: 30px; margin-bottom: 20px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
+                        <h1 style="font-size: 36px; color: #ffeb3b; margin-bottom: 5px;">🍻 PARADA 10.95 BAR</h1>
+                        <h2 style="font-size: 26px; margin-bottom: 25px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
                         <div id="nota-loading" style="font-size: 26px; animation: piscar 1s infinite;">Calculando energia e votos do público... 🥁</div>
-                        <div id="nota-resultado" style="display:none; flex-direction:column; align-items:center; gap: 10px;">
-                            <!-- CORREÇÃO ITEM 1: object-fit contain para não cortar a foto -->
-                            <div id="tv-foto-container" style="display:none; width: 300px; height: 220px; background: #000; border-radius: 10px; border: 3px solid #ffeb3b; box-shadow: 0 0 20px rgba(255,235,59,0.5); overflow: hidden; display: flex; align-items: center; justify-content: center;">
-                                <img id="tv-foto-img" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;" alt="Foto">
+                        
+                        <!-- CORREÇÃO ITEM 2: Layout Lado a Lado (Esquerda: Nota | Direita: Foto Grande) -->
+                        <div id="nota-resultado" style="display:none; flex-direction:row; align-items:center; justify-content:center; gap: 50px; width: 85%; max-width: 1000px;">
+                            
+                            <!-- Coluna Esquerda: Nota Final -->
+                            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex: 1;">
+                                <div style="font-size: 22px; color: #aaa; margin-bottom: 5px;">Pontuação Final:</div>
+                                <div id="nota-valor" style="font-size: 140px; font-weight: 900; line-height: 1;">100</div>
                             </div>
-                            <div style="font-size: 18px; color: #aaa;">Pontuação Final:</div>
-                            <div id="nota-valor" style="font-size: 120px; font-weight: 900; line-height: 1;">100</div>
+
+                            <!-- Coluna Direita: Foto Grande Sem Cortes -->
+                            <div id="tv-foto-container" style="display:none; flex: 1; max-width: 450px; height: 340px; background: #0a0a0a; border-radius: 14px; border: 4px solid #ffeb3b; box-shadow: 0 0 30px rgba(255,235,59,0.5); overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                                <img id="tv-foto-img" style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;" alt="Foto do Cantor">
+                            </div>
+
                         </div>
                     </div>
+
                     <button id="btn-liberar" onclick="this.style.display='none';">👆 Clique aqui para liberar o som (F11)</button>
                     <div id="player"></div>
                     <script> function onYouTubeIframeAPIReady() { if(window.opener) window.opener.iniciarPlayer(YT); } <\/script>
@@ -1302,9 +1307,8 @@
                 events: { 
                     'onStateChange': e => { 
                         if (e.data === 0) {
-                            // CORREÇÃO ITEM 2: Blindagem para garantir chamada correta da nota
                             if (musicaAtual && musicaAtual.cantor !== "Convidados") {
-                                gerarNotaFinal();
+                                gerarnotaFinalDirect();
                             } else {
                                 tocarProxima(true);
                             }
@@ -1312,14 +1316,12 @@
                     }, 
                     'onError': e => { 
                         erroNoPlayer = true; 
-                        // CORREÇÃO ITEM 7: Tratamento de erro interativo do YouTube
                         let termoNovo = prompt("⚠️ O YouTube bloqueou este vídeo!\nDigite o nome de outra música ou cole o link correto para tocar imediatamente no topo da fila:");
                         if (termoNovo && termoNovo.trim() !== "") {
                             let videoIdNovo = extrairVideoId(termoNovo);
                             let idFinal = videoIdNovo || "busca_" + Date.now();
                             let tituloFinal = videoIdNovo ? "Música Substituta" : termoNovo;
                             
-                            // Insere no topo da fila (posição 0) e executa imediatamente
                             filaDeReproducao.unshift({ videoId: idFinal, titulo: tituloFinal, cantor: musicaAtual ? musicaAtual.cantor : "Convidados" });
                             atualizarTelaFila();
                             tocarProxima(true);
@@ -1330,6 +1332,10 @@
             const bTv = document.getElementById('botaoTV');
             if(bTv) { bTv.innerHTML = "✅ TELA CONECTADA!"; bTv.style.background = "#17a2b8"; }
             if (telaTV && !telaTV.closed) telaTV.document.getElementById('tela-aguardando').style.display = 'flex';
+        }
+
+        function gerarnotaFinalDirect() {
+            gerarNotaFinal();
         }
 
         function gerarNotaFinal() {
@@ -1362,14 +1368,12 @@
             ranking.push({ nome: musicaAtual.cantor, nota: notaFinal, titulo: musicaAtual.titulo, votos: votosCongelados });
             atualizarTelaRanking();
 
-            // CORREÇÃO ITEM 4: Busca a foto exata correspondente ao cantor da música atual
             database.ref('fotosDia').once('value', (snapshot) => {
                 let fotoEncontrada = null;
                 let maiorTimestamp = 0;
                 snapshot.forEach(child => {
                     let f = child.val();
                     if (f.cantor && f.cantor.toLowerCase() === musicaAtual.cantor.toLowerCase()) {
-                        // Pega a foto mais recente tirada por esse cantor
                         if (!f.timestamp || f.timestamp >= maiorTimestamp) {
                             maiorTimestamp = f.timestamp || 0;
                             fotoEncontrada = f.imagemBase64;
@@ -1537,7 +1541,6 @@
         }
 
         function atualizarTelaFila() {
-            // CORREÇÃO ITEM 5: Salva obrigatoriamente a fila no localStorage para nunca perder dados
             localStorage.setItem('filaDeReproducao', JSON.stringify(filaDeReproducao));
             const divFila = document.getElementById('fila');
             if(!divFila) return;
@@ -1553,13 +1556,12 @@
                 </div>
             `).join('');
             
-            // CORREÇÃO ITEM 6: Atualiza o próximo cantor discreto na TV em tempo real (mesmo se adicionado no meio)
             if (telaTV && !telaTV.closed) {
                 let proxOverlay = telaTV.document.getElementById('proximo-overlay');
                 let proxTxt = telaTV.document.getElementById('prox-nome-txt');
                 if (proxOverlay && proxTxt) {
                     if (filaDeReproducao.length > 0) {
-                        proxTxt.innerText = `${filaDeReproducao[0].cantor} (${filaDeReproducao[0].titulo})`;
+                        proxTxt.innerText = `${filaDeReproducao[0].cantor} - ${filaDeReproducao[0].titulo}`;
                         proxOverlay.style.display = 'block';
                     } else {
                         proxOverlay.style.display = 'none';
