@@ -86,7 +86,7 @@
         #modal-config { border: 2px solid #ffc107; } #modal-cantor { border: 2px solid #00d2ff; text-align: center; }
 
         #fundo-modal-central-fotos { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 600; }
-        #modal-central-fotos { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 601; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 650px; color: #fff; max-height: 85vh; overflow-y: auto; border: 2px solid #28a745; }
+        #modal-central-fotos { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 601; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 650px; max-height: 85vh; overflow-y: auto; border: 2px solid #28a745; color: #fff; }
 
         #fundo-modal-visualizar { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 250000; }
         #modal-visualizar { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 20px; border-radius: 12px; z-index: 250001; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 500px; color: #fff; max-height: 90vh; overflow-y: auto; border: 2px solid #ffeb3b; text-align: center; box-sizing: border-box; }
@@ -140,9 +140,9 @@
     <div id="modal-config">
         <h2>⚙️ Configurações do Sistema</h2>
         <div class="abas-config">
-            <button class="btn-aba ativo" onclick="mudarAba('canais', this)">⭐ Canais Favoritos</button>
-            <button class="btn-aba" onclick="mudarAba('usuarios', this)">👥 Usuários</button>
-            <button class="btn-aba" onclick="mudarAba('transicao', this)">⏳ Transição / Pausa</button>
+            <button class="btn-aba ativo" onclick="mudarAba('canais', event)">⭐ Canais Favoritos</button>
+            <button class="btn-aba" onclick="mudarAba('usuarios', event)">👥 Usuários</button>
+            <button class="btn-aba" onclick="mudarAba('transicao', event)">⏳ Transição / Pausa</button>
         </div>
         <div id="aba-canais" class="conteudo-aba ativo">
             <div style="max-height: 150px; overflow-y: auto;">
@@ -272,7 +272,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.91</span>
+        <span>v1.92</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
@@ -283,8 +283,9 @@
     </div>
 
     <div id="fundo-modal-central-fotos" onclick="fecharCentralFotos()"></div>
-    <div id="modal-central-fotos" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#1a1a1a; padding:25px; border-radius:12px; z-index:601; width:90%; max-width:650px; max-height:85vh; overflow-y:auto; border:2px solid #28a745; color:#fff;">
+    <div id="modal-central-fotos">
         <h2 style="color:#28a745; margin-top:0; border-bottom:1px solid #333; padding-bottom:10px;">📸 Central de Gerenciamento de Fotos</h2>
+        <p style="font-size:13px; color:#aaa;">Selecione as fotos que deseja apagar ou use os botões de ação rápida abaixo:</p>
         <div style="display:flex; gap:10px; margin-bottom:15px;">
             <button onclick="excluirSelecionadasAdmin()" style="flex:1; padding:10px; background:#e52d27; color:#fff; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">🗑️ Excluir Selecionadas</button>
             <button onclick="excluirTodasAdmin()" style="flex:1; padding:10px; background:#b31217; color:#fff; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">⚠️ Excluir Todas</button>
@@ -294,9 +295,9 @@
     </div>
 
     <div id="fundo-modal-visualizar" onclick="fecharModalVisualizar()"></div>
-    <div id="modal-visualizar" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#1a1a1a; padding:20px; border-radius:12px; z-index:250001; width:90%; max-width:500px; border:2px solid #ffeb3b; text-align:center; color:#fff;">
+    <div id="modal-visualizar">
         <h3 id="modal-vis-titulo" style="color:#ffeb3b; margin-top:0;">Foto Lembrança</h3>
-        <img id="modal-vis-img" style="max-width:100%; max-height:60vh; border-radius:8px; border:2px solid #555; object-fit:contain;" alt="Foto">
+        <img id="modal-vis-img" style="max-width:100%; max-height:60vh; border-radius:8px; border:2px solid #555; object-fit:contain;" alt="Foto Ampliada">
         <div style="margin-top:15px; display:flex; gap:10px; justify-content:center;">
             <a id="modal-vis-link-baixar" href="#" download="Parada1095_Foto.png" style="padding:10px 20px; background:#28a745; color:#fff; border-radius:6px; text-decoration:none; font-weight:bold;">Baixar Foto</a>
             <button onclick="fecharModalVisualizar()" style="padding:10px 20px; background:#444; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">Fechar</button>
@@ -327,18 +328,52 @@
         let tempoPausaSegundos = parseInt(localStorage.getItem('tempoPausaSegundos')) || 5;
         let cantoresSalvos = JSON.parse(localStorage.getItem('cantoresSalvos')) || [];
 
-        function abrirManual() { document.getElementById('fundo-modal-manual').style.display = 'block'; document.getElementById('modal-manual-conteudo').style.display = 'block'; }
-        function fecharManual() { document.getElementById('fundo-modal-manual').style.display = 'none'; document.getElementById('modal-manual-conteudo').style.display = 'none'; }
+        function atualizarDatalistCantores() {
+            const dl = document.getElementById('lista-cantores-datalist');
+            if(!dl) return;
+            dl.innerHTML = cantoresSalvos.map(c => `<option value="${c}">`).join('');
+        }
+
+        function renderizarChipsCanaisDiscretos() {
+            const container = document.getElementById('container-chips-canais');
+            if(!container) return;
+            let html = `<span style="font-weight:bold;">⭐ Preferência:</span>`;
+            canaisFavoritos.forEach((canal, idx) => {
+                html += `<div class="chip-canal"><span class="ordem-badge">${idx+1}º</span> ${canal}</div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function mudarAba(aba, evento) {
+            document.querySelectorAll('.conteudo-aba').forEach(el => el.classList.remove('ativo'));
+            document.querySelectorAll('.btn-aba').forEach(el => el.classList.remove('ativo'));
+            document.getElementById('aba-' + aba).classList.add('ativo');
+            evento.currentTarget.classList.add('ativo');
+        }
+
+        function abrirSubtela(tipo) {
+            document.getElementById('menu-principal-cliente').style.display = 'none';
+            document.querySelectorAll('.subtela-cliente').forEach(el => el.style.display = 'none');
+            document.getElementById('sub-' + tipo).style.display = 'block';
+            atualizarDatalistCantores();
+        }
+
+        function voltarMenuCliente() {
+            document.querySelectorAll('.subtela-cliente').forEach(el => el.style.display = 'none');
+            document.getElementById('menu-principal-cliente').style.display = 'block';
+        }
 
         function abrirCentralFotos() {
             document.getElementById('fundo-modal-central-fotos').style.display = 'block';
             document.getElementById('modal-central-fotos').style.display = 'block';
             carregarFotosAdmin();
         }
+
         function fecharCentralFotos() {
             document.getElementById('fundo-modal-central-fotos').style.display = 'none';
             document.getElementById('modal-central-fotos').style.display = 'none';
         }
+
         function carregarFotosAdmin() {
             database.ref('fotosDia').once('value', (snapshot) => {
                 const div = document.getElementById('lista-admin-fotos');
@@ -364,6 +399,7 @@
                 div.innerHTML = html || "<p style='color:#777; grid-column:1/-1; text-align:center;'>Nenhuma foto enviada hoje.</p>";
             });
         }
+
         function excluirFotoAdmin(key) {
             if(confirm("Deseja realmente excluir esta foto?")) {
                 database.ref('fotosDia').child(key).remove().then(() => {
@@ -371,9 +407,11 @@
                 });
             }
         }
+
         function excluirSelecionadasAdmin() {
             const checkboxes = document.querySelectorAll('.chk-foto-admin:checked');
             if (checkboxes.length === 0) return alert("Selecione ao menos uma foto para excluir!");
+            
             if (confirm(`Deseja realmente excluir as ${checkboxes.length} fotos selecionadas?`)) {
                 let promessas = [];
                 checkboxes.forEach(chk => {
@@ -385,6 +423,7 @@
                 });
             }
         }
+
         function excluirTodasAdmin() {
             if (confirm("⚠️ ATENÇÃO: Deseja realmente excluir TODAS as fotos do dia?")) {
                 database.ref('fotosDia').remove().then(() => {
@@ -643,14 +682,6 @@
             }
         });
 
-        // CORREÇÃO DO BUG DAS ABAS DE CONFIGURAÇÃO USANDO "this" NO LUGAR DE "event"
-        function mudarAba(aba, btnElement) {
-            document.querySelectorAll('.conteudo-aba').forEach(el => el.classList.remove('ativo'));
-            document.querySelectorAll('.btn-aba').forEach(el => el.classList.remove('ativo'));
-            document.getElementById('aba-' + aba).classList.add('ativo');
-            if (btnElement) btnElement.classList.add('ativo');
-        }
-
         let streamMic = null; let micAtivo = false; let intervaloMic = null;
         function abrirManual() { document.getElementById('fundo-modal-manual').style.display = 'block'; document.getElementById('modal-manual-conteudo').style.display = 'block'; }
         function fecharManual() { document.getElementById('fundo-modal-manual').style.display = 'none'; document.getElementById('modal-manual-conteudo').style.display = 'none'; }
@@ -681,7 +712,7 @@
                     audioCtx.createMediaStreamSource(streamMic).connect(analyser);
                     analyser.fftSize = 256; dataArray = new Uint8Array(analyser.frequencyBinCount);
                     micAtivo = true;
-                    btn.innerHTML = "🎙️️ 2. AVALIADOR (LIGADO)"; btn.style.background = "#17a2b8"; 
+                    btn.innerHTML = "🎙️ 2. AVALIADOR (LIGADO)"; btn.style.background = "#17a2b8"; 
                     if (intervaloMic) clearInterval(intervaloMic);
                     intervaloMic = setInterval(() => {
                         if (captando && analyser && micAtivo) {
@@ -769,7 +800,8 @@
                     #tela-nota { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #121212, #3a0000); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
                     @keyframes piscar { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
                     
-                    #btn-liberar { z-index: 200; position: fixed; top: 15px; left: 50%; transform: translateX(-50%); padding: 8px 20px; font-size: 14px; font-weight: bold; background: rgba(0,0,0,0.8); color: #ffeb3b; border: 1px solid #ffeb3b; border-radius: 20px; cursor: pointer; }
+                    /* BOTÃO F11 EM TELA INTEIRA INVISÍVEL APÓS CLIQUE */
+                    #btn-liberar { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); color: #ffeb3b; border: none; font-size: 26px; font-weight: bold; cursor: pointer; z-index: 999999; display: flex; align-items: center; justify-content: center; text-shadow: 2px 2px 10px #000; }
                 </style></head>
                 <body onclick="document.getElementById('btn-liberar').style.display='none';">
                     <div id="logo-bar">
@@ -809,18 +841,22 @@
                         <h2 style="font-size: 26px; margin-bottom: 25px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
                         <div id="nota-loading" style="font-size: 26px; animation: piscar 1s infinite;">Calculando energia e votos do público... 🥁</div>
                         
-                        <!-- CORREÇÃO DA FOTO: Sem amarras de largura fixa que causam corte, exibição lado a lado limpa -->
+                        <!-- LAYOUT LADO A LADO DA NOTA COM FOTO SEM CORTE -->
                         <div id="nota-resultado" style="display:none; flex-direction:row; align-items:center; justify-content:center; gap: 70px; width: 95%; max-width: 1200px;">
+                            
                             <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex: 1;">
                                 <div style="font-size: 26px; color: #aaa; margin-bottom: 5px;">Pontuação Final:</div>
                                 <div id="nota-valor" style="font-size: 160px; font-weight: 900; line-height: 1;">100</div>
                             </div>
+
                             <div id="tv-foto-container" style="display:none; flex: 1.2; align-items: center; justify-content: center;">
                                 <img id="tv-foto-img" style="max-width: 100%; max-height: 450px; object-fit: contain; border-radius: 12px; border: 5px solid #ffeb3b; box-shadow: 0 0 40px rgba(255,235,59,0.7);" alt="Foto do Cantor">
                             </div>
+
                         </div>
                     </div>
-                    <button id="btn-liberar" onclick="this.style.display='none';">👆 Clique aqui para liberar o som (F11)</button>
+
+                    <button id="btn-liberar" onclick="this.style.display='none';">👆 Clique em qualquer lugar desta tela para liberar o som (F11)</button>
                     <div id="player"></div>
                     <script> function onYouTubeIframeAPIReady() { if(window.opener) window.opener.iniciarPlayer(YT); } <\/script>
                     <script src="https://www.youtube.com/iframe_api"><\/script>
@@ -899,7 +935,7 @@
             ranking.push({ nome: musicaAtual.cantor, nota: notaFinal, titulo: musicaAtual.titulo, votos: votosCongelados });
             atualizarTelaRanking();
 
-            // SÓ EXIBE A FOTO SE O NOME DA FOTO BATER COM QUEM CANTOU AGORA
+            // BUSCA PRECISA E ESTRITA PELA FOTO DO CANTOR
             database.ref('fotosDia').once('value', (snapshot) => {
                 let fotoEncontrada = null;
                 let maiorTimestamp = 0;
@@ -938,6 +974,7 @@
                         
                         let fotoContainer = tvDoc.getElementById('tv-foto-container');
                         let fotoImg = tvDoc.getElementById('tv-foto-img');
+                        
                         if (fotoEncontrada) { 
                             fotoImg.src = fotoEncontrada; 
                             fotoContainer.style.display = 'flex'; 
@@ -1086,7 +1123,7 @@
                 <div class="item-fila">
                     <span class="titulo-musica"><strong>${i+1}º</strong> - ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span></span>
                     <div class="botoes-acao">
-                        <button class="btn-acao" onclick="tocarMusicaEspecifica(${i})">▶️</button>
+                        <button class="btn-acao" onclick="tocarMusicaEspecifica(${i})" title="Tocar Agora">▶️</button>
                         ${i > 0 ? `<button class="btn-acao" onclick="moverMusica(${i}, -1)">⬆️</button>` : ''}
                         ${i < filaDeReproducao.length - 1 ? `<button class="btn-acao" onclick="moverMusica(${i}, 1)">⬇️</button>` : ''}
                         <button class="btn-acao" onclick="removerMusica(${i})">❌</button>
