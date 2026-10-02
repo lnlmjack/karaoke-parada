@@ -86,7 +86,7 @@
         #modal-config { border: 2px solid #ffc107; } #modal-cantor { border: 2px solid #00d2ff; text-align: center; }
 
         #fundo-modal-central-fotos { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 600; }
-        #modal-central-fotos { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 601; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 650px; color: #fff; max-height: 85vh; overflow-y: auto; border: 2px solid #28a745; }
+        #modal-central-fotos { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 601; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 650px; max-height: 85vh; overflow-y: auto; border: 2px solid #28a745; color: #fff; }
 
         #fundo-modal-visualizar { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 250000; }
         #modal-visualizar { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 20px; border-radius: 12px; z-index: 250001; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 500px; color: #fff; max-height: 90vh; overflow-y: auto; border: 2px solid #ffeb3b; text-align: center; box-sizing: border-box; }
@@ -208,6 +208,7 @@
         <div class="topo-header">
             <h1 style="margin: 0; padding: 0;">🎛️ Painel de Controle - Karaokê <span id="info-operador" style="font-size: 14px; color: #00d2ff; font-weight: normal; margin-left: 15px; background: #222; padding: 4px 10px; border-radius: 6px; border: 1px solid #444;">👤 Operador: --</span></h1>
             <div class="topo-botoes-acao">
+                <!-- BOTÃO DE BLOQUEIO ADICIONADO AQUI -->
                 <button id="btn-toggle-bloqueio" class="btn-topo-acao" onclick="toggleBloqueioSistema()" title="Bloquear ou Desbloquear Pedidos nos Celulares">🔓 Sistema Liberado</button>
                 <button id="btn-central-fotos" class="btn-topo-acao" onclick="abrirCentralFotos()" title="Central de Gerenciamento de Fotos">📸 Gerenciar Fotos</button>
                 <button id="btn-reset-tudo" class="btn-topo-acao" onclick="resetarTudo()" title="Zerar Fila, Ranking, Histórico e Fotos">⚠️ Resetar Tudo</button>
@@ -272,7 +273,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.91</span>
+        <span>v1.93</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
@@ -344,6 +345,7 @@
             container.innerHTML = html;
         }
 
+        // CORREÇÃO: ABAS DE CONFIGURAÇÃO USANDO REFERÊNCIA DIRETA AO LUGAR DE EVENTO
         function mudarAba(aba, el) {
             document.querySelectorAll('.conteudo-aba').forEach(e => e.classList.remove('ativo'));
             document.querySelectorAll('.btn-aba').forEach(e => e.classList.remove('ativo'));
@@ -488,7 +490,7 @@
                     <td>${canal}</td>
                     <td style="text-align: right;">
                         <button onclick="subirCanal(${index})" style="background:transparent; border:none; cursor:pointer;" title="Subir">⬆️</button>
-                        <button onclick="descerCanal(${index})" style="background:transparent; border:none; cursor:pointer;" title="Descer">⬇️</button>
+                        <button onclick="descerCanal(${index})" style="background:transparent; border:none; cursor:pointer;" title="Descer">⬇️️</button>
                         <button onclick="excluirCanal(${index})" style="background:transparent; border:none; cursor:pointer;" title="Excluir">❌</button>
                     </td>
                 </tr>
@@ -658,7 +660,7 @@
         const database = firebase.database();
         const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4'; 
 
-        // ------------------ CONTROLE DE BLOQUEIO DO SISTEMA (ADIÇÃO SEGURA) ------------------
+        // CONTROLE DE BLOQUEIO DO SISTEMA 
         function toggleBloqueioSistema() {
             database.ref('configSistema/bloqueado').once('value').then(snap => {
                 let atual = !!snap.val();
@@ -681,7 +683,6 @@
                 }
             }
         });
-        // ------------------------------------------------------------------------------------
 
         let streamMic = null; let micAtivo = false; let intervaloMic = null;
         function abrirManual() { document.getElementById('fundo-modal-manual').style.display = 'block'; document.getElementById('modal-manual-conteudo').style.display = 'block'; }
@@ -730,6 +731,7 @@
         let historicoDeReproducao = JSON.parse(localStorage.getItem('historicoDeReproducao')) || []; 
         let ranking = JSON.parse(localStorage.getItem('ranking')) || [];
         let musicaPendente = null; 
+        let bloqueioFilaEmTransacao = false;
 
         let player; let telaTV; let monitorTV; let musicaAtual = null; let timerNota;
         let audioCtx; let analyser; let dataArray; let captando = false; 
@@ -760,6 +762,269 @@
                 if(votacaoCli) votacaoCli.innerText = "Aguardando música iniciar para votar...";
             }
         });
+
+        // BLOCO ORIGINAL DE PEDIDOS RESTAURADO AQUI NA ÍNTEGRA
+        let pedidosPendentes = [];
+        let autoAprovar = false;
+
+        function salvarCantorAutomaticamente(nome) {
+            if (!nome || nome.trim() === "" || nome.trim() === "Convidados") return;
+            const nomeFormatado = nome.trim();
+            if (!cantoresSalvos.includes(nomeFormatado)) {
+                cantoresSalvos.push(nomeFormatado);
+                localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
+                atualizarDatalistCantores();
+                renderizarCantoresSalvos();
+            }
+        }
+
+        function toggleAutoAprovar() {
+            const chkAuto = document.getElementById('chkAutoAprovar');
+            if(!chkAuto) return;
+            autoAprovar = chkAuto.checked;
+            if (autoAprovar && pedidosPendentes.length > 0) {
+                pedidosPendentes.forEach(p => {
+                    filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
+                    salvarCantorAutomaticamente(p.cantor);
+                    database.ref('pedidos').child(p.key).remove();
+                });
+                atualizarTelaFila();
+                if (!musicaAtual && filaDeReproducao.length > 0 && player && typeof player.loadVideoById === 'function' && !bloqueioFilaEmTransacao) {
+                    tocarProxima(true);
+                }
+            }
+        }
+
+        database.ref('pedidos').on('value', (snapshot) => {
+            pedidosPendentes = [];
+            snapshot.forEach(child => { pedidosPendentes.push({ key: child.key, ...child.val() }); });
+            if (autoAprovar && pedidosPendentes.length > 0) {
+                pedidosPendentes.forEach(p => {
+                    filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
+                    salvarCantorAutomaticamente(p.cantor);
+                    database.ref('pedidos').child(p.key).remove();
+                });
+                atualizarTelaFila();
+                if (!musicaAtual && filaDeReproducao.length > 0 && player && typeof player.loadVideoById === 'function' && !bloqueioFilaEmTransacao) {
+                    tocarProxima(true);
+                }
+            } else {
+                renderizarPedidos();
+            }
+        });
+
+        function renderizarPedidos() {
+            const divPedidos = document.getElementById('pedidos-lista');
+            if(!divPedidos) return;
+            if(pedidosPendentes.length === 0) {
+                divPedidos.innerHTML = "<p style='color:#aaa; font-size:13px; text-align:center;'>Nenhum pedido no momento.</p>";
+                return;
+            }
+            divPedidos.innerHTML = pedidosPendentes.map((p, index) => `
+                <div class="item-fila" style="border-left: 5px solid #00d2ff; margin-bottom: 8px;">
+                    <span class="titulo-musica">🎵 ${p.titulo} <br> <span class="nome-cantor">🎤 Voz: ${p.cantor}</span></span>
+                    <div class="botoes-acao">
+                        <button class="btn-acao" onclick="aprovarPedido(${index})" title="Aceitar">✅</button>
+                        <button class="btn-acao" onclick="rejeitarPedido('${p.key}')" title="Recusar">❌</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function aprovarPedido(index) {
+            const p = pedidosPendentes[index];
+            filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
+            salvarCantorAutomaticamente(p.cantor);
+            atualizarTelaFila();
+            database.ref('pedidos').child(p.key).remove(); 
+        }
+
+        function rejeitarPedido(key) {
+            if (confirm("Recusar música?")) database.ref('pedidos').child(key).remove();
+        }
+        // FIM DO BLOCO DE PEDIDOS RESTAURADO
+
+        database.ref('fotosDia').on('value', (snapshot) => {
+            const galeria = document.getElementById('galeria-fotos-dia');
+            if(!galeria) return;
+            let html = "";
+            snapshot.forEach(child => {
+                let f = child.val();
+                let safeBase64 = f.imagemBase64.replace(/'/g, "\\'");
+                let safeCantor = f.cantor.replace(/'/g, "\\'");
+                html += `
+                    <div class="item-foto-galeria">
+                        <img src="${f.imagemBase64}" alt="Foto Lembrança">
+                        <p>${f.cantor}</p>
+                        <div class="acoes-foto-card">
+                            <button onclick="visualizarFotoModal('${safeBase64}', '${safeCantor}')" class="btn-ver-foto">Ver</button>
+                            <a href="${f.imagemBase64}" download="Parada1095_${f.cantor}.png" class="btn-baixar-foto">Baixar</a>
+                        </div>
+                    </div>
+                `;
+            });
+            galeria.innerHTML = html || '<span style="color:#777; font-size:16px; grid-column: 1/-1;">Nenhuma foto tirada ainda hoje.</span>';
+        });
+
+        function clienteFazerPedido() {
+            const cantor = document.getElementById('cli-input-cantor').value.trim();
+            const busca = document.getElementById('cli-input-busca').value.trim();
+            if(!cantor || !busca) return alert("Preencha seu nome e a música desejada!");
+
+            const videoId = extrairVideoId(busca);
+            const tituloFinal = videoId ? "Música via Link" : busca;
+            const idFinal = videoId || "busca_" + Date.now();
+
+            database.ref('pedidos').push({ videoId: idFinal, titulo: tituloFinal, cantor: cantor });
+            alert("Pedido enviado com sucesso para o DJ!");
+            document.getElementById('cli-input-busca').value = "";
+        }
+
+        function clienteVotar(tipo) {
+            database.ref('votosAtual').push({ tipo: tipo });
+            alert("Voto computado com sucesso! Obrigado!");
+        }
+
+        database.ref('votosAtual').on('value', (snapshot) => {
+            const votos = snapshot.val();
+            totalVotosPublico = 0; contagemVotos = { ruim: 0, regular: 0, bom: 0, muitobom: 0, excelente: 0 };
+            if (votos) {
+                Object.values(votos).forEach(voto => {
+                    if (contagemVotos[voto.tipo] !== undefined) { contagemVotos[voto.tipo]++; totalVotosPublico++; }
+                });
+            }
+            const elContador = document.getElementById('contador-votos');
+            if(elContador) elContador.innerText = `📊 ${totalVotosPublico} votos ao vivo`;
+            if(document.getElementById('modal-votos') && document.getElementById('modal-votos').style.display === 'block') renderizarDetalhesVotos();
+        });
+
+        function abrirDetalhesVotos() { renderizarDetalhesVotos(); document.getElementById('fundo-modal').style.display = 'block'; document.getElementById('modal-votos').style.display = 'block'; }
+        function fecharDetalhesVotos() { document.getElementById('fundo-modal').style.display = 'none'; document.getElementById('modal-votos').style.display = 'none'; }
+        function renderizarDetalhesVotos() {
+            document.getElementById('detalhes-votos').innerHTML = `
+                <div class="linha-voto"><span style="color:#00d2ff">🤯 Excelente:</span> <strong>${contagemVotos.excelente}</strong></div>
+                <div class="linha-voto"><span style="color:#28a745">🤩 Muito Bom:</span> <strong>${contagemVotos.muitobom}</strong></div>
+                <div class="linha-voto"><span style="color:#ffeb3b">🙂 Bom:</span> <strong>${contagemVotos.bom}</strong></div>
+                <div class="linha-voto"><span style="color:#fd7e14">😕 Regular:</span> <strong>${contagemVotos.regular}</strong></div>
+                <div class="linha-voto"><span style="color:#e52d27">😖 Ruim:</span> <strong>${contagemVotos.ruim}</strong></div>
+            `;
+        }
+
+        function abrirModalCantor(videoId, titulo) {
+            musicaPendente = { videoId, titulo };
+            const inputCantor = document.getElementById('input-nome-cantor');
+            if(inputCantor) inputCantor.value = '';
+            renderizarCantoresSalvos();
+            document.getElementById('fundo-modal-cantor').style.display = 'block';
+            document.getElementById('modal-cantor').style.display = 'block';
+            if(inputCantor) inputCantor.focus();
+        }
+
+        function fecharModalCantor() {
+            musicaPendente = null;
+            document.getElementById('fundo-modal-cantor').style.display = 'none';
+            document.getElementById('modal-cantor').style.display = 'none';
+        }
+
+        // RESTAURAÇÃO DA FUNÇÃO CONFIRMAR CANTOR INTEGRAL
+        function confirmarCantor() {
+            let cantor = document.getElementById('input-nome-cantor').value.trim();
+            if (cantor === "") cantor = "Convidados";
+            
+            if (!cantoresSalvos.includes(cantor) && cantor !== "Convidados") {
+                cantoresSalvos.push(cantor);
+                localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
+                atualizarDatalistCantores();
+                renderizarCantoresSalvos();
+            }
+
+            if (musicaPendente) {
+                filaDeReproducao.push({ videoId: musicaPendente.videoId, titulo: musicaPendente.titulo, cantor: cantor });
+                atualizarTelaFila();
+                const campoBusca = document.getElementById('campoBusca');
+                if(campoBusca) campoBusca.value = ""; 
+            }
+            fecharModalCantor();
+        }
+
+        function selecionarCantorSalvo(nome) { document.getElementById('input-nome-cantor').value = nome; }
+
+        function excluirCantorSalvo(nome, event) {
+            event.stopPropagation(); 
+            if (confirm(`Excluir ${nome}?`)) {
+                cantoresSalvos = cantoresSalvos.filter(c => c !== nome);
+                localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
+                renderizarCantoresSalvos();
+                atualizarDatalistCantores();
+            }
+        }
+
+        function editarCantorSalvo(nomeAntigo, event) {
+            event.stopPropagation();
+            const novoNome = prompt("Editar nome:", nomeAntigo);
+            if (novoNome && novoNome.trim() !== "" && novoNome !== nomeAntigo) {
+                const index = cantoresSalvos.indexOf(nomeAntigo);
+                if (index !== -1) {
+                    cantoresSalvos[index] = novoNome.trim();
+                    localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
+                    renderizarCantoresSalvos();
+                    atualizarDatalistCantores();
+                }
+            }
+        }
+
+        function renderizarCantoresSalvos() {
+            const div = document.getElementById('lista-cantores-salvos');
+            if(!div) return;
+            if (cantoresSalvos.length === 0) {
+                div.innerHTML = "<span style='color:#777; font-size:13px;'>Nenhum cantor salvo.</span>";
+                return;
+            }
+            div.innerHTML = cantoresSalvos.map(c => `
+                <div class="chip-cantor">
+                    <span onclick="selecionarCantorSalvo('${c.replace(/'/g, "\\'")}')">${c}</span>
+                    <button class="btn-acao-chip" onclick="editarCantorSalvo('${c.replace(/'/g, "\\'")}', event)">✏️</button>
+                    <button class="btn-acao-chip" onclick="excluirCantorSalvo('${c.replace(/'/g, "\\'")}', event)">❌</button>
+                </div>
+            `).join('');
+        }
+
+        function limparCantores() {
+            if (confirm("Apagar todos os cantores salvos?")) {
+                cantoresSalvos = [];
+                localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
+                renderizarCantoresSalvos();
+                atualizarDatalistCantores();
+            }
+        }
+
+        const inputCantorEl = document.getElementById('input-nome-cantor');
+        if(inputCantorEl) inputCantorEl.addEventListener('keypress', e => { if(e.key === 'Enter') confirmarCantor(); });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === '6') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 60; } 
+            if (event.key === '7') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 70; } 
+            if (event.key === '8') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 80; } 
+            if (event.key === '9') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 90; } 
+            if (event.key === '0') { notaForcadaPeloDJ = 100; } 
+            atualizarDisplayNotaForcada();
+        });
+
+        function definirNotaManual() {
+            let nota = prompt("Definir nota final manualmente (0 a 100):");
+            if (nota !== null && nota !== "") {
+                let valor = parseInt(nota, 10);
+                if (!isNaN(valor) && valor >= 0 && valor <= 100) {
+                    notaForcadaPeloDJ = valor;
+                    atualizarDisplayNotaForcada();
+                } else {
+                    alert("Nota inválida.");
+                }
+            }
+        }
+
+        const campoBuscaEl = document.getElementById('campoBusca');
+        if(campoBuscaEl) campoBuscaEl.addEventListener('keypress', e => { if(e.key === 'Enter') buscarNoYouTube(); });
 
         function abrirTV() {
             telaTV = window.open("", "TelaTV", "width=800,height=600,toolbar=0,location=0,status=0,menubar=0,scrollbars=0,resizable=1");
@@ -801,7 +1066,7 @@
                     #tela-nota { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #121212, #3a0000); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
                     @keyframes piscar { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
                     
-                    /* TELA/CORTINA DE LIBERAR (AGORA COBRE A TELA TODA) */
+                    /* CORTINA DE LIBERAR O SOM (AGORA COBRE A TELA TODA COM FUNDO TRANSPARENTE E Z-INDEX MÁXIMO) */
                     #btn-liberar { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); color: #ffeb3b; border: none; font-size: 26px; font-weight: bold; cursor: pointer; z-index: 999999; display: flex; align-items: center; justify-content: center; text-shadow: 2px 2px 10px #000; }
                 </style></head>
                 <body onclick="document.getElementById('btn-liberar').style.display='none';">
@@ -842,7 +1107,7 @@
                         <h2 style="font-size: 26px; margin-bottom: 25px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
                         <div id="nota-loading" style="font-size: 26px; animation: piscar 1s infinite;">Calculando energia e votos do público... 🥁</div>
                         
-                        <!-- LAYOUT LADO A LADO DA NOTA COM FOTO SEM CORTE, OCULTA SE NÃO TIVER FOTO EXATA -->
+                        <!-- FOTO LADO A LADO SEM CORTES - USO DE MAX-HEIGHT E OBJECT-FIT: CONTAIN -->
                         <div id="nota-resultado" style="display:none; flex-direction:row; align-items:center; justify-content:center; gap: 70px; width: 95%; max-width: 1200px;">
                             
                             <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex: 1;">
@@ -880,7 +1145,7 @@
                     'onStateChange': e => { 
                         if (e.data === 0) {
                             if (musicaAtual && musicaAtual.cantor !== "Convidados") {
-                                gerarNotaFinal();
+                                gerarnotaFinalDirect();
                             } else {
                                 tocarProxima(true);
                             }
@@ -906,7 +1171,12 @@
             if (telaTV && !telaTV.closed) telaTV.document.getElementById('tela-aguardando').style.display = 'flex';
         }
 
+        function gerarnotaFinalDirect() {
+            gerarNotaFinal();
+        }
+
         function gerarNotaFinal() {
+            bloqueioFilaEmTransacao = true;
             captando = false; 
             let notaFinal;
             const votosCongelados = { ...contagemVotos };
@@ -936,7 +1206,7 @@
             ranking.push({ nome: musicaAtual.cantor, nota: notaFinal, titulo: musicaAtual.titulo, votos: votosCongelados });
             atualizarTelaRanking();
 
-            // BUSCA ESTRITA DA FOTO (Exatamente como pedido: só mostra foto se o nome for exato)
+            // BUSCA EXATA E RESTRITA: Só exibe se a foto corresponder em absoluto ao nome do cantor atual
             database.ref('fotosDia').once('value', (snapshot) => {
                 let fotoEncontrada = null;
                 let maiorTimestamp = 0;
@@ -976,6 +1246,7 @@
                         let fotoContainer = tvDoc.getElementById('tv-foto-container');
                         let fotoImg = tvDoc.getElementById('tv-foto-img');
                         
+                        // FOTO DEVE APARECER APENAS SE HOUVER COMBINAÇÃO
                         if (fotoEncontrada) { 
                             fotoImg.src = fotoEncontrada; 
                             fotoContainer.style.display = 'flex'; 
@@ -990,7 +1261,9 @@
             clearTimeout(timerNota);
             timerNota = setTimeout(() => {
                 if (telaTV && !telaTV.closed) telaTV.document.getElementById('tela-nota').style.display = 'none';
-                musicaAtual = null; tocarProxima(true); 
+                musicaAtual = null; 
+                bloqueioFilaEmTransacao = false;
+                tocarProxima(true); 
             }, 12000);
         }
 
@@ -1042,8 +1315,19 @@
             } catch (err) { div.innerHTML = "<p style='color:#e52d27'>Limite atingido.</p>"; }
         }
 
-        function removerMusica(i) { filaDeReproducao.splice(i, 1); atualizarTelaFila(); }
-        function moverMusica(i, d) { const t = filaDeReproducao[i]; filaDeReproducao[i] = filaDeReproducao[i+d]; filaDeReproducao[i+d] = t; atualizarTelaFila(); }
+        function removerMusica(i) { 
+            if (bloqueioFilaEmTransacao) return;
+            filaDeReproducao.splice(i, 1); 
+            atualizarTelaFila(); 
+        }
+        
+        function moverMusica(i, d) { 
+            if (bloqueioFilaEmTransacao) return;
+            const t = filaDeReproducao[i]; 
+            filaDeReproducao[i] = filaDeReproducao[i+d]; 
+            filaDeReproducao[i+d] = t; 
+            atualizarTelaFila(); 
+        }
 
         function editarCantorFila(i) {
             let item = filaDeReproducao[i];
@@ -1109,12 +1393,15 @@
 
         function tocarMusicaEspecifica(i) { 
             if(!telaTV || telaTV.closed) return alert("⚠️ TV fechada!"); 
-            iniciarMusica(filaDeReproducao.splice(i, 1)[0]); 
+            if(bloqueioFilaEmTransacao) return alert("Aguarde a apuração da nota atual para trocar de música!");
+            let musicaEscolhida = filaDeReproducao.splice(i, 1)[0];
+            iniciarMusica(musicaEscolhida);
             atualizarTelaFila();
         }
         
         function tocarProxima(auto = false) {
             if(!telaTV || telaTV.closed) { if (!auto) alert("⚠️ TV fechada!"); return; }
+            if(bloqueioFilaEmTransacao) return;
             if(filaDeReproducao.length > 0) { iniciarMusica(filaDeReproducao.shift()); } 
             else {
                 musicaAtual = null; atualizarTelaRanking();
@@ -1182,7 +1469,7 @@
                             </div>
                             <div style="display: flex; gap: 5px;">
                                 <button class="btn-acao" onclick="retrocederMusicaAtual()" style="font-size:18px;">⏪</button>
-                                <button class="btn-acao" onclick="pausarMusicaAtual()" style="font-size:18px;">⏯️️</button>
+                                <button class="btn-acao" onclick="pausarMusicaAtual()" style="font-size:18px;">⏯️</button>
                             </div>
                         </div>
                     </div>
@@ -1203,22 +1490,6 @@
         }
 
         atualizarTelaFila(); atualizarTelaHistorico(); atualizarTelaRanking();
-        
-        // MANTENDO SUAS FUNÇÕES ORIGINAIS
-        const inputCantorEl = document.getElementById('input-nome-cantor');
-        if(inputCantorEl) inputCantorEl.addEventListener('keypress', e => { if(e.key === 'Enter') confirmarCantor(); });
-
-        document.addEventListener('keydown', function(event) {
-            if (event.key === '6') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 60; } 
-            if (event.key === '7') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 70; } 
-            if (event.key === '8') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 80; } 
-            if (event.key === '9') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 90; } 
-            if (event.key === '0') { notaForcadaPeloDJ = 100; } 
-            atualizarDisplayNotaForcada();
-        });
-
-        const campoBuscaEl = document.getElementById('campoBusca');
-        if(campoBuscaEl) campoBuscaEl.addEventListener('keypress', e => { if(e.key === 'Enter') buscarNoYouTube(); });
     </script>
 </body>
 </html>
