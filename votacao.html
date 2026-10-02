@@ -81,7 +81,15 @@
         .item-foto-galeria { background: #222; border-radius: 8px; overflow: hidden; border: 1px solid #444; text-align: center; padding-bottom: 8px; }
         .item-foto-galeria img { width: 100%; height: 120px; object-fit: cover; }
         .item-foto-galeria p { font-size: 13px; margin: 6px 0; color: #ffeb3b; font-weight: bold; }
+        .btn-baixar-foto { display: inline-block; padding: 6px 10px; color: #fff; text-decoration: none; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; border: none; background: #28a745; }
         .btn-ver-foto { display: inline-block; padding: 6px 10px; color: #fff; text-decoration: none; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; border: none; background: #007bff; }
+
+        /* TELA DE BLOQUEIO / PROPAGANDA NOS CLIENTES */
+        #tela-bloqueio-propaganda { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #120000, #220b0b); z-index: 300000; align-items: center; justify-content: center; flex-direction: column; padding: 25px; box-sizing: border-box; text-align: center; }
+        .propaganda-box { background: rgba(20,20,20,0.95); border: 3px solid #ffeb3b; padding: 35px 25px; border-radius: 20px; max-width: 500px; width: 100%; box-shadow: 0 10px 40px rgba(0,0,0,0.9); }
+        .propaganda-box h1 { color: #ffeb3b; font-size: 30px; margin-top: 0; text-transform: uppercase; }
+        .propaganda-box h2 { color: #e52d27; font-size: 24px; margin: 15px 0; }
+        .propaganda-box p { color: #ddd; font-size: 18px; line-height: 1.5; }
 
         /* Versão no Rodapé */
         .versao-app-cliente { position: fixed; bottom: 4px; right: 8px; font-size: 11px; color: #fff; opacity: 0.4; z-index: 200000; pointer-events: none; }
@@ -90,6 +98,18 @@
     </style>
 </head>
 <body>
+
+    <!-- TELA DE BLOQUEIO E PROPAGANDA AUTOMÁTICA -->
+    <div id="tela-bloqueio-propaganda">
+        <div class="propaganda-box">
+            <h1>🍻 Parada 10.95 Bar 🍻</h1>
+            <h2>🎵 Noite de Karaokê Encerrada!</h2>
+            <p>Obrigado a todos pela presença e pelas cantorias incríveis!</p>
+            <div style="background: #b31217; color: #fff; padding: 15px; border-radius: 10px; margin-top: 20px; font-weight: bold; font-size: 20px;">
+                💡 Anote aí:<br>Toda Terça-Feira tem Karaokê imperdível aqui no Parada! 🎤
+            </div>
+        </div>
+    </div>
 
     <div class="header">
         🍻 Parada 10.95 Bar
@@ -228,7 +248,7 @@
 
     <datalist id="lista-cantores-datalist"></datalist>
 
-    <div class="versao-app-cliente">v1.82</div>
+    <div class="versao-app-cliente">v1.89</div>
     <div id="notificacao">✅ Pedido enviado ao DJ!</div>
 
     <script>
@@ -250,6 +270,15 @@
         let musicasCatalogo = [];
         let musicaPendenteYouTube = null;
         let cantoresSalvos = JSON.parse(localStorage.getItem('cantoresSalvos')) || [];
+
+        // ESCUTA EM TEMPO REAL O BLOQUEIO DO DJ PARA EXIBIR A TELA DE PROPAGANDA NO CLIENTE
+        database.ref('configSistema/bloqueado').on('value', (snap) => {
+            const bloqueado = !!snap.val();
+            const telaBlq = document.getElementById('tela-bloqueio-propaganda');
+            if (telaBlq) {
+                telaBlq.style.display = bloqueado ? 'flex' : 'none';
+            }
+        });
 
         function atualizarDatalistCantores() {
             const dl = document.getElementById('lista-cantores-datalist');
@@ -288,7 +317,6 @@
                 document.getElementById('status-musica').innerText = "🎵 " + st.titulo;
                 idCantorAtual = st.id;
 
-                // ATUALIZA AUTOMATICAMENTE O CAMPO TRAVADO COM O NOME OFICIAL DA MÚSICA TOCANDO
                 if (inputFotoCantor) {
                     inputFotoCantor.value = st.cantor;
                 }
