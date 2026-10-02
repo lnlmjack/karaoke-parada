@@ -114,7 +114,6 @@
         .btn-cancelar { flex: 1; padding: 12px; background: #e52d27; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px;}
         .btn-limpar-cantores { margin-top: 15px; background: transparent; border: none; color: #aaa; text-decoration: underline; cursor: pointer; font-size: 12px; width: 100%; text-align: center;}
 
-        /* Tela de Login */
         #tela-login { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #1a1a1a; z-index: 200000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
         .login-box { background: #222; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); text-align: center; width: 100%; max-width: 350px; }
         .login-box img { width: 140px; margin-bottom: 20px; border-radius: 50%; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
@@ -136,7 +135,6 @@
         </div>
     </div>
 
-    <!-- Modais e Painéis originais intactos do seu arquivo anexado -->
     <div id="fundo-modal-config" onclick="fecharModalConfig()"></div>
     <div id="modal-config">
         <h2>⚙️ Configurações do Sistema</h2>
@@ -209,12 +207,13 @@
         <div class="topo-header">
             <h1 style="margin: 0; padding: 0;">🎛️ Painel de Controle - Karaokê <span id="info-operador" style="font-size: 14px; color: #00d2ff; font-weight: normal; margin-left: 15px; background: #222; padding: 4px 10px; border-radius: 6px; border: 1px solid #444;">👤 Operador: --</span></h1>
             <div class="topo-botoes-acao">
+                <!-- ÚNICA ADIÇÃO SOLICITADA: Botão de Bloqueio/Liberado -->
                 <button id="btn-toggle-bloqueio" class="btn-topo-acao" onclick="toggleBloqueioSistema()" title="Bloquear ou Desbloquear Pedidos nos Celulares">🔓 Sistema Liberado</button>
                 <button id="btn-central-fotos" class="btn-topo-acao" onclick="abrirCentralFotos()" title="Central de Gerenciamento de Fotos">📸 Gerenciar Fotos</button>
                 <button id="btn-reset-tudo" class="btn-topo-acao" onclick="resetarTudo()" title="Zerar Fila, Ranking, Histórico e Fotos">⚠️ Resetar Tudo</button>
                 <button id="btn-config" class="btn-topo-acao" onclick="abrirModalConfig()" title="Configurações">⚙️ Configurações</button>
                 <button id="btn-sair" class="btn-topo-acao" onclick="fazerLogout()">🚪 Sair</button>
-                <button id="btn-manual" class="btn-topo-acao" onclick="abrirManual()" title="Manual">📖 Manual</button>
+                <button id="btn-manual" class="btn-topo-acao" onclick="abrirManual()">📖 Manual</button>
             </div>
         </div>
         
@@ -273,15 +272,15 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.85</span>
+        <span>v1.87</span>
     </div>
 
-    <!-- Modais auxiliares originais mantidos intactos -->
+    <!-- Modais originais idênticos ao seu index_2.html -->
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
     <div id="modal-manual-conteudo">
         <h2>📖 Manual Completo do Sistema - Karaokê Parada 10.95</h2>
         <p>O sistema possui controle de acesso com dois perfis de usuários...</p>
-        <button onclick="fecharManual()" style="width:100%; padding:12px; background:#e52d27; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Fechar Manual</button>
+        <button onclick="fecharManual()" style="width: 100%; margin-top: 25px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
     </div>
 
     <div id="fundo-modal-central-fotos" onclick="fecharCentralFotos()"></div>
@@ -399,7 +398,7 @@
         const database = firebase.database();
         const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4'; 
 
-        // CONTROLE DE BLOQUEIO DO SISTEMA (ADICIONADO ESTRITAMENTE CONFORME PEDIDO)
+        // FUNÇÃO ADICIONADA ESTRITAMENTE PARA O BLOQUEIO DO SISTEMA
         function toggleBloqueioSistema() {
             database.ref('configSistema/bloqueado').once('value').then(snap => {
                 let atual = !!snap.val();
@@ -423,7 +422,7 @@
             }
         });
 
-        // Restante do script original do seu arquivo anexado mantido 100% intacto
+        // Restante do seu script original EXATO do index_2.html
         let streamMic = null; let micAtivo = false; let intervaloMic = null;
         function iniciarSistema() {
             const som = document.getElementById('audio-tambores');
@@ -518,13 +517,15 @@
                     #cantor-overlay .aviso { font-size: 12px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
                     #cantor-overlay .nome { font-size: 22px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; line-height: 1.1; word-wrap: break-word;}
                     #tela-aguardando { display: flex; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #0b0b0b, #1a0000); z-index: 90; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-                    #tela-aguardando img.logo-centro { width: 220px; height: auto; border-radius: 50%; box-shadow: 0 0 40px rgba(229,45,39,0.5); margin-bottom: 25px; }
+                    #tela-aguardando img.logo-centro { width: 220px; height: auto; border-radius: 50%; box-shadow: 0 0 40px rgba(229,45,39,0.5); margin-bottom: 25px; animation: pulsar 2s infinite; }
+                    @keyframes pulsar { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
                     #tela-aguardando h1 { font-size: 48px; color: #ffeb3b; margin: 0 0 10px 0; text-shadow: 2px 2px 10px #000; }
                     #tela-aguardando p { font-size: 22px; color: #fff; margin: 0 0 20px 0; text-shadow: 1px 1px 5px #000; }
                     #tela-aguardando img.qr-centro { width: 150px; height: 150px; background: white; padding: 8px; border-radius: 12px; box-shadow: 0 0 20px rgba(0,210,255,0.4); display: block; }
                     #tela-transicao { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: #0a0a0a; z-index: 95; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px; box-sizing: border-box;}
                     #contador-regressivo { font-size: 180px; font-weight: 900; color: #ffeb3b; text-shadow: 0 0 30px rgba(255,235,59,0.5); line-height: 1; margin-top: 15px;}
                     #tela-nota { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #121212, #3a0000); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
+                    @keyframes piscar { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
                     #btn-liberar { z-index: 200; position: fixed; top: 15px; left: 50%; transform: translateX(-50%); padding: 8px 20px; font-size: 14px; font-weight: bold; background: rgba(0,0,0,0.8); color: #ffeb3b; border: 1px solid #ffeb3b; border-radius: 20px; cursor: pointer; }
                 </style></head>
                 <body onclick="document.getElementById('btn-liberar').style.display='none';">
@@ -557,7 +558,7 @@
                     <div id="tela-nota">
                         <h1 style="font-size: 36px; color: #ffeb3b; margin-bottom: 5px;">🍻 PARADA 10.95 BAR</h1>
                         <h2 style="font-size: 26px; margin-bottom: 25px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
-                        <div id="nota-loading" style="font-size: 26px;">Calculando energia e votos do público... 🥁</div>
+                        <div id="nota-loading" style="font-size: 26px; animation: piscar 1s infinite;">Calculando energia e votos do público... 🥁</div>
                         <div id="nota-resultado" style="display:none; flex-direction:row; align-items:center; justify-content:center; gap: 70px; width: 95%; max-width: 1200px;">
                             <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex: 1;">
                                 <div style="font-size: 26px; color: #aaa; margin-bottom: 5px;">Pontuação Final:</div>
@@ -622,28 +623,6 @@
                 player.loadVideoById(m.videoId); player.playVideo();
             }
         }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const usuarioLogado = localStorage.getItem('usuarioLogado');
-            if (usuarioLogado && !urlParams.has('cliente')) {
-                document.getElementById('tela-login').style.display = 'none';
-            }
-        });
-        function fazerLogin() {
-            const u = document.getElementById('login-usuario').value.trim().toLowerCase();
-            if(u === "leonard" || u === "operador" || u === "admin") {
-                localStorage.setItem('usuarioLogado', u);
-                document.getElementById('tela-login').style.display = 'none';
-            } else { alert("Usuário incorreto!"); }
-        }
-        function fazerLogout() { localStorage.removeItem('usuarioLogado'); location.reload(); }
-        function resetarTudo() { if(confirm("Zerar tudo?")) { filaDeReproducao = []; ranking = []; atualizarTelaFila(); } }
-        function limparFila() { if(confirm("Limpar fila?")) { filaDeReproducao = []; atualizarTelaFila(); } }
-        function limparRanking() { ranking = []; }
-        function limparHistorico() { historicoDeReproducao = []; }
-        function definirNotaManual() {}
-        function buscarNoYouTube() {}
-        function toggleMicrofone() {}
     </script>
 </body>
 </html>
