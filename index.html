@@ -20,7 +20,6 @@
         #btn-config { background: #ffc107; color: #000; border-color: #e0a800; display: none; } #btn-config:hover { background: #e0a800; }
         #btn-manual { background: #333; color: #fff; } #btn-manual:hover { background: #444; border-color: #00d2ff; }
         #btn-central-fotos { background: #28a745; color: #fff; border-color: #218838; } #btn-central-fotos:hover { background: #218838; }
-        #btn-toggle-bloqueio { background: #28a745; color: #fff; border-color: #218838; }
 
         .area-botoes-topo { display: flex; gap: 15px; margin-bottom: 15px; }
         .btn-topo { flex: 1; padding: 15px; font-size: 16px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s;}
@@ -86,7 +85,7 @@
         #modal-config { border: 2px solid #ffc107; } #modal-cantor { border: 2px solid #00d2ff; text-align: center; }
 
         #fundo-modal-central-fotos { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 600; }
-        #modal-central-fotos { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 601; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 650px; max-height: 85vh; overflow-y: auto; border: 2px solid #28a745; }
+        #modal-central-fotos { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 601; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 650px; color: #fff; max-height: 85vh; overflow-y: auto; border: 2px solid #28a745; }
 
         #fundo-modal-visualizar { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 250000; }
         #modal-visualizar { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 20px; border-radius: 12px; z-index: 250001; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 500px; color: #fff; max-height: 90vh; overflow-y: auto; border: 2px solid #ffeb3b; text-align: center; box-sizing: border-box; }
@@ -114,6 +113,7 @@
         .btn-cancelar { flex: 1; padding: 12px; background: #e52d27; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px;}
         .btn-limpar-cantores { margin-top: 15px; background: transparent; border: none; color: #aaa; text-decoration: underline; cursor: pointer; font-size: 12px; width: 100%; text-align: center;}
 
+        /* Tela de Login */
         #tela-login { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #1a1a1a; z-index: 200000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
         .login-box { background: #222; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); text-align: center; width: 100%; max-width: 350px; }
         .login-box img { width: 140px; margin-bottom: 20px; border-radius: 50%; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
@@ -121,6 +121,34 @@
         .login-input { width: 100%; padding: 15px; margin-bottom: 15px; background: #333; border: 1px solid #444; border-radius: 6px; color: white; font-size: 16px; box-sizing: border-box; }
         .login-btn { width: 100%; padding: 15px; background: #e52d27; color: white; font-size: 18px; font-weight: bold; border: 2px solid #fff; border-radius: 6px; cursor: pointer; transition: 0.2s; margin-top: 5px; }
         .login-btn:hover { background: #c21a15; }
+
+        /* Interface Mobile do Cliente */
+        #tela-cliente { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #121212; z-index: 150000; overflow-y: auto; box-sizing: border-box; }
+        .cliente-topo-vermelho { background: #b31217; color: #fff; padding: 32px 20px; text-align: center; font-size: 36px; font-weight: 900; letter-spacing: 2px; box-shadow: 0 6px 15px rgba(0,0,0,0.6); width: 100%; box-sizing: border-box; }
+        .cliente-corpo { padding: 60px 25px; width: 100%; max-width: 100%; box-sizing: border-box; text-align: center; }
+        .cliente-pergunta { font-size: 32px; color: #fff; margin-bottom: 50px; font-weight: bold; }
+        
+        .btn-menu-cliente { width: 100%; max-width: 100%; padding: 48px 25px; margin-bottom: 35px; border: none; border-radius: 20px; font-size: 38px; font-weight: 900; color: #fff; cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.6); transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 20px; text-transform: uppercase; box-sizing: border-box; }
+        .btn-menu-cliente:active { transform: scale(0.98); }
+        .btn-pedir { background: #e52d27; }
+        .btn-votar { background: #007bff; }
+        .btn-fotos { background: #28a745; }
+
+        .subtela-cliente { display: none; text-align: left; background: #1e1e1e; padding: 35px; border-radius: 16px; border: 2px solid #444; margin-top: 10px; width: 100%; box-sizing: border-box; }
+        .subtela-cliente h3 { font-size: 34px !important; margin-bottom: 25px !important; }
+        .subtela-cliente p, .subtela-cliente div { font-size: 26px !important; }
+        .btn-voltar-menu { background: #444; color: #fff; border: none; padding: 16px 28px; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 25px; font-size: 22px; }
+
+        .subtela-cliente input[type="text"] { width: 100%; padding: 26px !important; font-size: 28px !important; margin-bottom: 25px !important; background: #111 !important; color: #fff !important; border: 2px solid #666 !important; border-radius: 12px !important; box-sizing: border-box; }
+        .subtela-cliente button { font-size: 28px !important; padding: 26px !important; border-radius: 12px !important; }
+
+        .galeria-fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-top: 25px; }
+        .item-foto-galeria { background: #222; border-radius: 12px; overflow: hidden; border: 2px solid #555; text-align: center; padding-bottom: 12px; }
+        .item-foto-galeria img { width: 100%; height: 180px; object-fit: cover; }
+        .item-foto-galeria p { font-size: 18px; margin: 12px 0; color: #ffeb3b; font-weight: bold; }
+        .btn-baixar-foto, .btn-ver-foto { display: inline-block; padding: 12px 18px; color: #fff; text-decoration: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; border: none; }
+        .btn-baixar-foto { background: #28a745; }
+        .btn-ver-foto { background: #007bff; }
     </style>
 </head>
 <body>
@@ -133,6 +161,108 @@
             <input type="password" id="login-senha" class="login-input" placeholder="Senha" onkeypress="if(event.key === 'Enter') fazerLogin()">
             <button class="login-btn" onclick="fazerLogin()">Entrar</button>
         </div>
+    </div>
+
+    <div id="tela-cliente">
+        <div class="cliente-topo-vermelho">
+            <span>🍻 PARADA 10.95 BAR</span>
+        </div>
+
+        <div class="cliente-corpo">
+            <div id="menu-principal-cliente">
+                <div class="cliente-pergunta">O que você quer fazer?</div>
+                <button class="btn-menu-cliente btn-pedir" onclick="abrirSubtela('pedir')">📩 PEDIR MÚSICA</button>
+                <button class="btn-menu-cliente btn-votar" onclick="abrirSubtela('votar')">⭐ VOTAR NO CANTOR</button>
+                <button class="btn-menu-cliente btn-fotos" onclick="abrirSubtela('fotos')">📸 TIRAR FOTO & BAIXAR</button>
+            </div>
+
+            <div id="sub-pedir" class="subtela-cliente">
+                <button class="btn-voltar-menu" onclick="voltarMenuCliente()">⬅️ Voltar</button>
+                <h3 style="margin-top:0; color:#e52d27;">Pedir Música</h3>
+                <input type="text" id="cli-input-cantor" list="lista-cantores-datalist" placeholder="Seu Nome / Dupla">
+                <input type="text" id="cli-input-busca" placeholder="Nome da música ou link do YouTube">
+                <button onclick="clienteFazerPedido()" style="width:100%; background:#e52d27; color:#fff; border:none; font-weight:bold; cursor:pointer;">Enviar Pedido ao DJ</button>
+                
+                <div style="margin-top: 35px; border-top: 2px solid #444; padding-top: 25px;">
+                    <h4 style="margin:0 0 10px 0; font-size:22px; color:#ffeb3b;">Status na TV:</h4>
+                    <div id="cli-status-atual" style="color:#ccc;">Nenhuma música tocando no momento.</div>
+                </div>
+            </div>
+
+            <div id="sub-votar" class="subtela-cliente">
+                <button class="btn-voltar-menu" onclick="voltarMenuCliente()">⬅️ Voltar</button>
+                <h3 style="margin-top:0; color:#007bff;">Votação Ao Vivo</h3>
+                <p id="cli-musica-votacao" style="color:#ccc; margin-bottom:25px;">Aguardando música iniciar para votar...</p>
+                <div style="display:flex; flex-direction:column; gap:20px;">
+                    <button onclick="clienteVotar('excelente')" style="background:#00d2ff; color:#000; border:none; font-weight:bold; cursor:pointer;">🤯 Excelente (Nota Máxima)</button>
+                    <button onclick="clienteVotar('muitobom')" style="background:#28a745; color:#fff; border:none; font-weight:bold; cursor:pointer;">🤩 Muito Bom</button>
+                    <button onclick="clienteVotar('bom')" style="background:#ffeb3b; color:#000; border:none; font-weight:bold; cursor:pointer;">🙂 Bom</button>
+                    <button onclick="clienteVotar('regular')" style="background:#fd7e14; color:#fff; border:none; font-weight:bold; cursor:pointer;">😕 Regular</button>
+                    <button onclick="clienteVotar('ruim')" style="background:#e52d27; color:#fff; border:none; font-weight:bold; cursor:pointer;">😖 Ruim</button>
+                </div>
+            </div>
+
+            <div id="sub-fotos" class="subtela-cliente">
+                <button class="btn-voltar-menu" onclick="voltarMenuCliente()">⬅️ Voltar</button>
+                <h3 style="margin-top:0; color:#28a745;">📸 Foto Lembrança com Moldura Neon</h3>
+                <p style="color:#ccc; margin-bottom:20px;">Tire sua foto com moldura artística de Karaokê!</p>
+                
+                <input type="text" id="cli-foto-cantor" list="lista-cantores-datalist" placeholder="Nome do Cantor / Dupla">
+                <input type="file" id="input-camera-nativa" accept="image/*" capture="environment" style="display:none;" onchange="processarFotoNativa(this)">
+                <button onclick="document.getElementById('input-camera-nativa').click()" style="width:100%; background:#28a745; color:#fff; border:none; font-weight:bold; cursor:pointer; margin-bottom:20px;">📷 Tirar Foto (Câmera Nativa)</button>
+                <canvas id="canvas-foto" style="display:none;"></canvas>
+
+                <div style="margin-top: 35px; border-top: 2px solid #444; padding-top: 25px;">
+                    <h4 style="margin:0 0 15px 0; font-size:22px; color:#ffeb3b;">Galeria de Fotos do Dia</h4>
+                    <div id="galeria-fotos-dia" class="galeria-fotos">
+                        <span style="color:#777; font-size:18px; grid-column: 1/-1;">Nenhuma foto tirada ainda hoje.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <datalist id="lista-cantores-datalist"></datalist>
+
+    <div id="fundo-modal-visualizar" onclick="fecharModalVisualizar()"></div>
+    <div id="modal-visualizar">
+        <h3 id="modal-vis-titulo" style="color:#ffeb3b; margin-top:0;">Foto Lembrança</h3>
+        <img id="modal-vis-img" style="max-width:100%; max-height:60vh; border-radius:8px; border:2px solid #555; object-fit:contain;" alt="Foto Ampliada">
+        <div style="margin-top:15px; display:flex; gap:10px; justify-content:center;">
+            <a id="modal-vis-link-baixar" href="#" download="Parada1095_Foto.png" style="padding:10px 20px; background:#28a745; color:#fff; border-radius:6px; text-decoration:none; font-weight:bold;">Baixar Foto</a>
+            <button onclick="fecharModalVisualizar()" style="padding:10px 20px; background:#444; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">Fechar</button>
+        </div>
+    </div>
+
+    <div id="fundo-modal-central-fotos" onclick="fecharCentralFotos()"></div>
+    <div id="modal-central-fotos">
+        <h2 style="color:#28a745; margin-top:0; border-bottom:1px solid #333; padding-bottom:10px;">📸 Central de Gerenciamento de Fotos</h2>
+        <p style="font-size:13px; color:#aaa;">Selecione as fotos que deseja apagar ou use os botões de ação rápida abaixo:</p>
+        <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <button onclick="excluirSelecionadasAdmin()" style="flex:1; padding:10px; background:#e52d27; color:#fff; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">🗑️ Excluir Selecionadas</button>
+            <button onclick="excluirTodasAdmin()" style="flex:1; padding:10px; background:#b31217; color:#fff; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">⚠️ Excluir Todas</button>
+        </div>
+        <div id="lista-admin-fotos" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap:10px; max-height:45vh; overflow-y:auto; margin-bottom:15px; border:1px solid #333; padding:10px; border-radius:6px; background:#111;"></div>
+        <button onclick="fecharCentralFotos()" style="width:100%; padding:10px; background:#333; color:#fff; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">Fechar Central</button>
+    </div>
+
+    <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
+
+    <div id="fundo-modal-manual" onclick="fecharManual()"></div>
+    <div id="modal-manual-conteudo">
+        <h2>📖 Manual Completo do Sistema - Karaokê Parada 10.95</h2>
+        <p>Bem-vindo ao manual oficial do sistema de Karaokê do Parada 10.95 Bar.</p>
+        <h3>🎛️ 1. Painel do DJ</h3>
+        <ul>
+            <li><strong>Login e Segurança:</strong> Acesso restrito com perfis de Administrador e Operador Comum.</li>
+            <li><strong>1. Iniciar Sistema e TV:</strong> Abre a tela de exibição na TV do bar e ativa o captador de áudio.</li>
+            <li><strong>2. Avaliador (Microfone):</strong> Captura o som do ambiente para calcular a pontuação base em tempo real.</li>
+            <li><strong>Fila de Reprodução:</strong> Fila 100% blindada contra perdas. Conta com **botão de edição (✏️)** para corrigir nomes e **botão de play (▶️)** para tocar imediatamente.</li>
+            <li><strong>Tratamento de Erro do YouTube:</strong> Permite inserir um link substituto direto no topo da fila.</li>
+            <li><strong>Indicador de Próximo na TV:</strong> Aviso discreto no canto inferior esquerdo da TV.</li>
+            <li><strong>Tela de Nota:</strong> Exibe a pontuação final à esquerda e a foto gigante do cantor à direita. **Regra absoluta:** só mostra foto se o cantor exato tirou foto naquela apresentação; caso contrário, nenhuma foto é exibida.</li>
+        </ul>
+        <button onclick="fecharManual()" style="width: 100%; margin-top: 25px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
     </div>
 
     <div id="fundo-modal-config" onclick="fecharModalConfig()"></div>
@@ -207,8 +337,6 @@
         <div class="topo-header">
             <h1 style="margin: 0; padding: 0;">🎛️ Painel de Controle - Karaokê <span id="info-operador" style="font-size: 14px; color: #00d2ff; font-weight: normal; margin-left: 15px; background: #222; padding: 4px 10px; border-radius: 6px; border: 1px solid #444;">👤 Operador: --</span></h1>
             <div class="topo-botoes-acao">
-                <!-- ÚNICA ADIÇÃO SOLICITADA: Botão de Bloqueio/Liberado -->
-                <button id="btn-toggle-bloqueio" class="btn-topo-acao" onclick="toggleBloqueioSistema()" title="Bloquear ou Desbloquear Pedidos nos Celulares">🔓 Sistema Liberado</button>
                 <button id="btn-central-fotos" class="btn-topo-acao" onclick="abrirCentralFotos()" title="Central de Gerenciamento de Fotos">📸 Gerenciar Fotos</button>
                 <button id="btn-reset-tudo" class="btn-topo-acao" onclick="resetarTudo()" title="Zerar Fila, Ranking, Histórico e Fotos">⚠️ Resetar Tudo</button>
                 <button id="btn-config" class="btn-topo-acao" onclick="abrirModalConfig()" title="Configurações">⚙️ Configurações</button>
@@ -272,39 +400,8 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.87</span>
+        <span>v1.82</span>
     </div>
-
-    <!-- Modais originais idênticos ao seu index_2.html -->
-    <div id="fundo-modal-manual" onclick="fecharManual()"></div>
-    <div id="modal-manual-conteudo">
-        <h2>📖 Manual Completo do Sistema - Karaokê Parada 10.95</h2>
-        <p>O sistema possui controle de acesso com dois perfis de usuários...</p>
-        <button onclick="fecharManual()" style="width: 100%; margin-top: 25px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
-    </div>
-
-    <div id="fundo-modal-central-fotos" onclick="fecharCentralFotos()"></div>
-    <div id="modal-central-fotos" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#1a1a1a; padding:25px; border-radius:12px; z-index:601; width:90%; max-width:650px; max-height:85vh; overflow-y:auto; border:2px solid #28a745; color:#fff;">
-        <h2 style="color:#28a745; margin-top:0; border-bottom:1px solid #333; padding-bottom:10px;">📸 Central de Gerenciamento de Fotos</h2>
-        <div style="display:flex; gap:10px; margin-bottom:15px;">
-            <button onclick="excluirSelecionadasAdmin()" style="flex:1; padding:10px; background:#e52d27; color:#fff; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">🗑️ Excluir Selecionadas</button>
-            <button onclick="excluirTodasAdmin()" style="flex:1; padding:10px; background:#b31217; color:#fff; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">⚠️ Excluir Todas</button>
-        </div>
-        <div id="lista-admin-fotos" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap:10px; max-height:45vh; overflow-y:auto; margin-bottom:15px; border:1px solid #333; padding:10px; border-radius:6px; background:#111;"></div>
-        <button onclick="fecharCentralFotos()" style="width:100%; padding:10px; background:#333; color:#fff; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">Fechar Central</button>
-    </div>
-
-    <div id="fundo-modal-visualizar" onclick="fecharModalVisualizar()"></div>
-    <div id="modal-visualizar" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#1a1a1a; padding:20px; border-radius:12px; z-index:250001; width:90%; max-width:500px; border:2px solid #ffeb3b; text-align:center; color:#fff;">
-        <h3 id="modal-vis-titulo" style="color:#ffeb3b; margin-top:0;">Foto Lembrança</h3>
-        <img id="modal-vis-img" style="max-width:100%; max-height:60vh; border-radius:8px; border:2px solid #555; object-fit:contain;" alt="Foto">
-        <div style="margin-top:15px; display:flex; gap:10px; justify-content:center;">
-            <a id="modal-vis-link-baixar" href="#" download="Parada1095_Foto.png" style="padding:10px 20px; background:#28a745; color:#fff; border-radius:6px; text-decoration:none; font-weight:bold;">Baixar Foto</a>
-            <button onclick="fecharModalVisualizar()" style="padding:10px 20px; background:#444; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">Fechar</button>
-        </div>
-    </div>
-
-    <audio id="audio-tambores" src="tambores.mp3" preload="auto"></audio>
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
@@ -312,6 +409,7 @@
             document.getElementById('tela-login').style.display = 'none';
             const containerDJ = document.querySelector('.container');
             if(containerDJ) containerDJ.style.display = 'none';
+            document.getElementById('tela-cliente').style.display = 'block';
         }
 
         let usuariosAutorizados = JSON.parse(localStorage.getItem('usuariosAutorizados')) || [
@@ -328,18 +426,52 @@
         let tempoPausaSegundos = parseInt(localStorage.getItem('tempoPausaSegundos')) || 5;
         let cantoresSalvos = JSON.parse(localStorage.getItem('cantoresSalvos')) || [];
 
-        function abrirManual() { document.getElementById('fundo-modal-manual').style.display = 'block'; document.getElementById('modal-manual-conteudo').style.display = 'block'; }
-        function fecharManual() { document.getElementById('fundo-modal-manual').style.display = 'none'; document.getElementById('modal-manual-conteudo').style.display = 'none'; }
+        function atualizarDatalistCantores() {
+            const dl = document.getElementById('lista-cantores-datalist');
+            if(!dl) return;
+            dl.innerHTML = cantoresSalvos.map(c => `<option value="${c}">`).join('');
+        }
+
+        function renderizarChipsCanaisDiscretos() {
+            const container = document.getElementById('container-chips-canais');
+            if(!container) return;
+            let html = `<span style="font-weight:bold;">⭐ Preferência:</span>`;
+            canaisFavoritos.forEach((canal, idx) => {
+                html += `<div class="chip-canal"><span class="ordem-badge">${idx+1}º</span> ${canal}</div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function mudarAba(aba, evento) {
+            document.querySelectorAll('.conteudo-aba').forEach(el => el.classList.remove('ativo'));
+            document.querySelectorAll('.btn-aba').forEach(el => el.classList.remove('ativo'));
+            document.getElementById('aba-' + aba).classList.add('ativo');
+            evento.currentTarget.classList.add('ativo');
+        }
+
+        function abrirSubtela(tipo) {
+            document.getElementById('menu-principal-cliente').style.display = 'none';
+            document.querySelectorAll('.subtela-cliente').forEach(el => el.style.display = 'none');
+            document.getElementById('sub-' + tipo).style.display = 'block';
+            atualizarDatalistCantores();
+        }
+
+        function voltarMenuCliente() {
+            document.querySelectorAll('.subtela-cliente').forEach(el => el.style.display = 'none');
+            document.getElementById('menu-principal-cliente').style.display = 'block';
+        }
 
         function abrirCentralFotos() {
             document.getElementById('fundo-modal-central-fotos').style.display = 'block';
             document.getElementById('modal-central-fotos').style.display = 'block';
             carregarFotosAdmin();
         }
+
         function fecharCentralFotos() {
             document.getElementById('fundo-modal-central-fotos').style.display = 'none';
             document.getElementById('modal-central-fotos').style.display = 'none';
         }
+
         function carregarFotosAdmin() {
             database.ref('fotosDia').once('value', (snapshot) => {
                 const div = document.getElementById('lista-admin-fotos');
@@ -355,33 +487,259 @@
                             <input type="checkbox" class="chk-foto-admin" value="${key}" style="position:absolute; top:8px; left:8px; width:18px; height:18px; cursor:pointer;">
                             <img src="${f.imagemBase64}" style="width:100%; height:85px; object-fit:cover; border-radius:4px; margin-top:4px;" alt="Foto">
                             <p style="font-size:11px; margin:4px 0; color:#ffeb3b; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${f.cantor}</p>
-                            <button onclick="visualizarFotoModal('${safeBase64}', '${safeCantor}')" style="background:#007bff; color:#fff; border:none; padding:3px 6px; border-radius:3px; font-size:10px; cursor:pointer;">Ver</button>
+                            <div style="display:flex; gap:4px; justify-content:center;">
+                                <button onclick="visualizarFotoModal('${safeBase64}', '${safeCantor}')" style="background:#007bff; color:#fff; border:none; padding:3px 6px; border-radius:3px; font-size:10px; cursor:pointer;">Ver</button>
+                                <button onclick="excluirFotoAdmin('${key}')" style="background:#b31217; color:#fff; border:none; padding:3px 6px; border-radius:3px; font-size:10px; cursor:pointer;">Excluir</button>
+                            </div>
                         </div>
                     `;
                 });
                 div.innerHTML = html || "<p style='color:#777; grid-column:1/-1; text-align:center;'>Nenhuma foto enviada hoje.</p>";
             });
         }
+
+        function excluirFotoAdmin(key) {
+            if(confirm("Deseja realmente excluir esta foto?")) {
+                database.ref('fotosDia').child(key).remove().then(() => {
+                    carregarFotosAdmin();
+                });
+            }
+        }
+
+        function excluirSelecionadasAdmin() {
+            const checkboxes = document.querySelectorAll('.chk-foto-admin:checked');
+            if (checkboxes.length === 0) return alert("Selecione ao menos uma foto para excluir!");
+            
+            if (confirm(`Deseja realmente excluir as ${checkboxes.length} fotos selecionadas?`)) {
+                let promessas = [];
+                checkboxes.forEach(chk => {
+                    promessas.push(database.ref('fotosDia').child(chk.value).remove());
+                });
+                Promise.all(promessas).then(() => {
+                    carregarFotosAdmin();
+                    alert("Fotos selecionadas excluídas com sucesso!");
+                });
+            }
+        }
+
+        function excluirTodasAdmin() {
+            if (confirm("⚠️ ATENÇÃO: Deseja realmente excluir TODAS as fotos do dia?")) {
+                database.ref('fotosDia').remove().then(() => {
+                    carregarFotosAdmin();
+                    alert("Todas as fotos foram apagadas com sucesso!");
+                });
+            }
+        }
+
         function visualizarFotoModal(base64, cantor) {
             document.getElementById('modal-vis-titulo').innerText = `Foto: ${cantor}`;
             document.getElementById('modal-vis-img').src = base64;
             document.getElementById('modal-vis-link-baixar').href = base64;
+            document.getElementById('modal-vis-link-baixar').download = `Parada1095_${cantor}.png`;
             document.getElementById('fundo-modal-visualizar').style.display = 'block';
             document.getElementById('modal-visualizar').style.display = 'block';
         }
+
         function fecharModalVisualizar() {
             document.getElementById('fundo-modal-visualizar').style.display = 'none';
             document.getElementById('modal-visualizar').style.display = 'none';
         }
-        function excluirSelecionadasAdmin() {
-            const checkboxes = document.querySelectorAll('.chk-foto-admin:checked');
-            if (checkboxes.length === 0) return alert("Selecione ao menos uma foto!");
-            checkboxes.forEach(chk => database.ref('fotosDia').child(chk.value).remove());
-            carregarFotosAdmin();
+
+        function atualizarDisplayNotaForcada() {
+            const disp = document.getElementById('display-nota-forcada');
+            if (notaForcadaPeloDJ !== null) {
+                disp.innerText = `Nota: ${notaForcadaPeloDJ} |`;
+                disp.style.display = 'inline';
+            } else {
+                disp.style.display = 'none';
+            }
         }
-        function excluirTodasAdmin() {
-            if(confirm("Excluir todas as fotos?")) {
-                database.ref('fotosDia').remove().then(() => carregarFotosAdmin());
+
+        function abrirModalConfig() {
+            renderizarTabelaCanais();
+            renderizarTabelaUsuarios();
+            document.getElementById('input-tempo-pausa').value = tempoPausaSegundos;
+            document.getElementById('fundo-modal-config').style.display = 'block';
+            document.getElementById('modal-config').style.display = 'block';
+        }
+
+        function fecharModalConfig() {
+            document.getElementById('fundo-modal-config').style.display = 'none';
+            document.getElementById('modal-config').style.display = 'none';
+            renderizarChipsCanaisDiscretos();
+        }
+
+        function salvarTempoPausa() {
+            let val = parseInt(document.getElementById('input-tempo-pausa').value, 10);
+            if (isNaN(val) || val < 0) val = 0;
+            tempoPausaSegundos = val;
+            localStorage.setItem('tempoPausaSegundos', tempoPausaSegundos);
+            alert("Tempo de pausa salvo com sucesso!");
+        }
+
+        function renderizarTabelaCanais() {
+            const tbody = document.getElementById('tabela-corpo-canais');
+            if(!tbody) return;
+            tbody.innerHTML = canaisFavoritos.map((canal, index) => `
+                <tr>
+                    <td><strong>${index + 1}º</strong></td>
+                    <td>${canal}</td>
+                    <td style="text-align: right;">
+                        <button onclick="subirCanal(${index})" style="background:transparent; border:none; cursor:pointer;" title="Subir">⬆️</button>
+                        <button onclick="descerCanal(${index})" style="background:transparent; border:none; cursor:pointer;" title="Descer">⬇️</button>
+                        <button onclick="excluirCanal(${index})" style="background:transparent; border:none; cursor:pointer;" title="Excluir">❌</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function adicionarNovoCanal() {
+            const nome = document.getElementById('novo-canal-nome').value.trim();
+            if (!nome) return alert("Digite o nome do canal!");
+            if (canaisFavoritos.includes(nome)) return alert("Este canal já está cadastrado!");
+            canaisFavoritos.push(nome);
+            localStorage.setItem('canaisFavoritos', JSON.stringify(canaisFavoritos));
+            document.getElementById('novo-canal-nome').value = '';
+            renderizarTabelaCanais();
+        }
+
+        function subirCanal(index) {
+            if (index > 0) {
+                let temp = canaisFavoritos[index];
+                canaisFavoritos[index] = canaisFavoritos[index - 1];
+                canaisFavoritos[index - 1] = temp;
+                localStorage.setItem('canaisFavoritos', JSON.stringify(canaisFavoritos));
+                renderizarTabelaCanais();
+            }
+        }
+
+        function descerCanal(index) {
+            if (index < canaisFavoritos.length - 1) {
+                let temp = canaisFavoritos[index];
+                canaisFavoritos[index] = canaisFavoritos[index + 1];
+                canaisFavoritos[index + 1] = temp;
+                localStorage.setItem('canaisFavoritos', JSON.stringify(canaisFavoritos));
+                renderizarTabelaCanais();
+            }
+        }
+
+        function excluirCanal(index) {
+            if (confirm(`Excluir o canal "${canaisFavoritos[index]}"?`)) {
+                canaisFavoritos.splice(index, 1);
+                localStorage.setItem('canaisFavoritos', JSON.stringify(canaisFavoritos));
+                renderizarTabelaCanais();
+            }
+        }
+
+        function renderizarTabelaUsuarios() {
+            const tbody = document.getElementById('tabela-corpo-usuarios');
+            if(!tbody) return;
+            tbody.innerHTML = usuariosAutorizados.map((u, index) => `
+                <tr>
+                    <td><strong>${u.usuario}</strong></td>
+                    <td><span style="padding: 2px 6px; border-radius: 4px; font-size: 11px; background: ${u.tipo === 'admin' ? '#007bff' : '#333'}">${u.tipo.toUpperCase()}</span></td>
+                    <td style="text-align: right;">
+                        <button onclick="editarUsuario(${index})" style="background:transparent; border:none; cursor:pointer;" title="Editar">✏️</button>
+                        ${usuariosAutorizados.length > 1 ? `<button onclick="excluirUsuario(${index})" style="background:transparent; border:none; cursor:pointer;" title="Excluir">❌</button>` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function adicionarNovoUsuario() {
+            const nome = document.getElementById('novo-user-nome').value.trim().toLowerCase();
+            const senha = document.getElementById('novo-user-senha').value;
+            const tipo = document.getElementById('novo-user-tipo').value;
+            if (!nome || !senha) return alert("Preencha nome e senha!");
+            if (usuariosAutorizados.some(u => u.usuario === nome)) return alert("Usuário já existe!");
+            usuariosAutorizados.push({ usuario: nome, senha: senha, tipo: tipo });
+            localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
+            document.getElementById('novo-user-nome').value = '';
+            document.getElementById('novo-user-senha').value = '';
+            renderizarTabelaUsuarios();
+        }
+
+        function editarUsuario(index) {
+            const user = usuariosAutorizados[index];
+            const novoNome = prompt("Novo nome:", user.usuario);
+            if(novoNome === null) return;
+            const novaSenha = prompt("Nova senha:", user.senha);
+            if(novaSenha === null) return;
+            usuariosAutorizados[index].usuario = novoNome.trim().toLowerCase();
+            usuariosAutorizados[index].senha = novaSenha.trim();
+            localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
+            renderizarTabelaUsuarios();
+        }
+
+        function excluirUsuario(index) {
+            if(confirm("Excluir usuário?")) {
+                usuariosAutorizados.splice(index, 1);
+                localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
+                renderizarTabelaUsuarios();
+            }
+        }
+
+        function atualizarHeaderOperador() {
+            const usuarioLogado = localStorage.getItem('usuarioLogado') || "Convidado";
+            const tipo = localStorage.getItem('tipoUsuario');
+            const elOp = document.getElementById('info-operador');
+            if (elOp) elOp.innerText = `👤 Operador: ${usuarioLogado.toUpperCase()}`;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderizarChipsCanaisDiscretos();
+            atualizarDatalistCantores();
+            if (!urlParams.has('cliente')) {
+                const usuarioLogado = localStorage.getItem('usuarioLogado');
+                const tipoUsuario = localStorage.getItem('tipoUsuario');
+                if (usuarioLogado) {
+                    document.getElementById('tela-login').style.display = 'none';
+                    if (tipoUsuario === 'admin') document.getElementById('btn-config').style.display = 'inline-flex';
+                    atualizarHeaderOperador();
+                } else {
+                    document.getElementById('tela-login').style.display = 'flex';
+                }
+            }
+        });
+
+        function fazerLogin() {
+            const uInput = document.getElementById('login-usuario').value.trim().toLowerCase();
+            const sInput = document.getElementById('login-senha').value.trim();
+            if(!uInput || !sInput) return alert("Preencha usuário e senha!");
+            let encontrado = usuariosAutorizados.find(item => item.usuario === uInput && item.senha === sInput);
+            if (!encontrado && uInput === "leonard" && sInput === "123") encontrado = { usuario: "leonard", tipo: "admin" };
+            else if (!encontrado && uInput === "operador" && sInput === "123") encontrado = { usuario: "operador", tipo: "comum" };
+
+            if (encontrado) {
+                localStorage.setItem('usuarioLogado', encontrado.usuario);
+                localStorage.setItem('tipoUsuario', encontrado.tipo);
+                document.getElementById('tela-login').style.display = 'none';
+                document.getElementById('login-senha').value = '';
+                atualizarHeaderOperador();
+                if (encontrado.tipo === 'admin') document.getElementById('btn-config').style.display = 'inline-flex';
+            } else {
+                alert("Usuário ou senha incorretos!");
+            }
+        }
+
+        function fazerLogout() {
+            if(confirm("Deseja sair?")) {
+                localStorage.removeItem('usuarioLogado');
+                localStorage.removeItem('tipoUsuario');
+                location.reload();
+            }
+        }
+
+        function limparFila() { if (confirm("Esvaziar Fila?")) { filaDeReproducao = []; atualizarTelaFila(); } }
+        function limparRanking() { if (confirm("Zerar Ranking?")) { ranking = []; musicaAtual = null; atualizarTelaRanking(); } }
+        function limparHistorico() { if (confirm("Apagar Histórico?")) { historicoDeReproducao = []; atualizarTelaHistorico(); } }
+
+        function resetarTudo() {
+            if (confirm("⚠️ Deseja RESETAR TUDO (incluindo fotos do dia)?")) {
+                filaDeReproducao = []; ranking = []; historicoDeReproducao = []; musicaAtual = null;
+                database.ref('fotosDia').remove();
+                atualizarTelaFila(); atualizarTelaRanking(); atualizarTelaHistorico();
+                alert("Resetado com sucesso!");
             }
         }
 
@@ -398,32 +756,10 @@
         const database = firebase.database();
         const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4'; 
 
-        // FUNÇÃO ADICIONADA ESTRITAMENTE PARA O BLOQUEIO DO SISTEMA
-        function toggleBloqueioSistema() {
-            database.ref('configSistema/bloqueado').once('value').then(snap => {
-                let atual = !!snap.val();
-                database.ref('configSistema/bloqueado').set(!atual);
-            });
-        }
-
-        database.ref('configSistema/bloqueado').on('value', (snap) => {
-            let bloqueado = !!snap.val();
-            let btn = document.getElementById('btn-toggle-bloqueio');
-            if(btn) {
-                if(bloqueado) {
-                    btn.innerHTML = "🔒 Sistema Bloqueado";
-                    btn.style.background = "#b31217";
-                    btn.style.borderColor = "#ff5252";
-                } else {
-                    btn.innerHTML = "🔓 Sistema Liberado";
-                    btn.style.background = "#28a745";
-                    btn.style.borderColor = "#218838";
-                }
-            }
-        });
-
-        // Restante do seu script original EXATO do index_2.html
         let streamMic = null; let micAtivo = false; let intervaloMic = null;
+        function abrirManual() { document.getElementById('fundo-modal-manual').style.display = 'block'; document.getElementById('modal-manual-conteudo').style.display = 'block'; }
+        function fecharManual() { document.getElementById('fundo-modal-manual').style.display = 'none'; document.getElementById('modal-manual-conteudo').style.display = 'none'; }
+
         function iniciarSistema() {
             const som = document.getElementById('audio-tambores');
             som.volume = 0.5; som.muted = true;
@@ -467,6 +803,7 @@
         let historicoDeReproducao = JSON.parse(localStorage.getItem('historicoDeReproducao')) || []; 
         let ranking = JSON.parse(localStorage.getItem('ranking')) || [];
         let musicaPendente = null; 
+        let bloqueioFilaEmTransacao = false;
 
         let player; let telaTV; let monitorTV; let musicaAtual = null; let timerNota;
         let audioCtx; let analyser; let dataArray; let captando = false; 
@@ -488,11 +825,351 @@
             if(st && st.id && st.cantor && st.cantor !== "Avaliando...") {
                 if(statusCli) statusCli.innerHTML = `🎵 <strong>${st.titulo}</strong> <br>🎤 Voz: <strong>${st.cantor}</strong>`;
                 if(votacaoCli) votacaoCli.innerHTML = `Cantando Agora: <strong style="color:#00d2ff">${st.cantor}</strong> - ${st.titulo}`;
+                
                 if(inputFotoCantor && (!inputFotoCantor.value || inputFotoCantor.value === "Visitante Parada")) {
                     inputFotoCantor.value = st.cantor;
                 }
+            } else {
+                if(statusCli) statusCli.innerText = "Nenhuma música tocando no momento.";
+                if(votacaoCli) votacaoCli.innerText = "Aguardando música iniciar para votar...";
             }
         });
+
+        database.ref('fotosDia').on('value', (snapshot) => {
+            const galeria = document.getElementById('galeria-fotos-dia');
+            if(!galeria) return;
+            let html = "";
+            snapshot.forEach(child => {
+                let f = child.val();
+                let safeBase64 = f.imagemBase64.replace(/'/g, "\\'");
+                let safeCantor = f.cantor.replace(/'/g, "\\'");
+                html += `
+                    <div class="item-foto-galeria">
+                        <img src="${f.imagemBase64}" alt="Foto Lembrança">
+                        <p>${f.cantor}</p>
+                        <div class="acoes-foto-card">
+                            <button onclick="visualizarFotoModal('${safeBase64}', '${safeCantor}')" class="btn-ver-foto">Ver</button>
+                            <a href="${f.imagemBase64}" download="Parada1095_${f.cantor}.png" class="btn-baixar-foto">Baixar</a>
+                        </div>
+                    </div>
+                `;
+            });
+            galeria.innerHTML = html || '<span style="color:#777; font-size:16px; grid-column: 1/-1;">Nenhuma foto tirada ainda hoje.</span>';
+        });
+
+        function clienteFazerPedido() {
+            const cantor = document.getElementById('cli-input-cantor').value.trim();
+            const busca = document.getElementById('cli-input-busca').value.trim();
+            if(!cantor || !busca) return alert("Preencha seu nome e a música desejada!");
+
+            const videoId = extrairVideoId(busca);
+            const tituloFinal = videoId ? "Música via Link" : busca;
+            const idFinal = videoId || "busca_" + Date.now();
+
+            database.ref('pedidos').push({ videoId: idFinal, titulo: tituloFinal, cantor: cantor });
+            alert("Pedido enviado com sucesso para o DJ!");
+            document.getElementById('cli-input-busca').value = "";
+        }
+
+        function clienteVotar(tipo) {
+            database.ref('votosAtual').push({ tipo: tipo });
+            alert("Voto computado com sucesso! Obrigado!");
+        }
+
+        function processarFotoNativa(input) {
+            if (!input.files || !input.files[0]) return;
+            const cantor = document.getElementById('cli-foto-cantor').value.trim() || "Visitante Parada";
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.getElementById('canvas-foto');
+                    const larguraFoto = img.width;
+                    const alturaFoto = img.height;
+                    
+                    const margemBorda = Math.floor(larguraFoto * 0.06);
+                    const alturaRodape = Math.floor(alturaFoto * 0.22);
+
+                    canvas.width = larguraFoto + (margemBorda * 2);
+                    canvas.height = alturaFoto + (margemBorda * 2) + alturaRodape;
+                    const ctx = canvas.getContext('2d');
+
+                    ctx.fillStyle = "#0a0a12";
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    ctx.drawImage(img, margemBorda, margemBorda, larguraFoto, alturaFoto);
+
+                    ctx.shadowColor = "#00d2ff";
+                    ctx.shadowBlur = 25;
+                    ctx.strokeStyle = "#00d2ff";
+                    ctx.lineWidth = 10;
+                    ctx.strokeRect(margemBorda - 4, margemBorda - 4, larguraFoto + 8, alturaFoto + 8);
+
+                    ctx.shadowColor = "#ff007f";
+                    ctx.shadowBlur = 15;
+                    ctx.strokeStyle = "#ffeb3b";
+                    ctx.lineWidth = 4;
+                    ctx.strokeRect(margemBorda + 4, margemBorda + 4, larguraFoto - 8, alturaFoto - 8);
+
+                    ctx.shadowBlur = 0;
+
+                    const yRodape = (margemBorda * 2) + alturaFoto;
+                    const larguraRodapeTotal = larguraFoto + (margemBorda * 2);
+
+                    ctx.fillStyle = "rgba(10, 10, 15, 0.95)";
+                    ctx.fillRect(0, yRodape, larguraRodapeTotal, alturaRodape);
+
+                    ctx.strokeStyle = "#00d2ff";
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(0, yRodape);
+                    ctx.lineTo(larguraRodapeTotal, yRodape);
+                    ctx.stroke();
+
+                    const tamanhoFonteTitulo = Math.max(22, Math.floor(larguraFoto * 0.045));
+                    const tamanhoFonteCantor = Math.max(18, Math.floor(larguraFoto * 0.038));
+
+                    ctx.fillStyle = "#ffeb3b";
+                    ctx.font = `bold ${tamanhoFonteTitulo}px Arial`;
+                    ctx.fillText("🍻 KARAOKÊ DO PARADA 10.95", margemBorda + 15, yRodape + (alturaRodape * 0.42));
+
+                    ctx.fillStyle = "#ffffff";
+                    ctx.font = `bold ${tamanhoFonteCantor}px Arial`;
+                    ctx.fillText(`🎤 Cantor(a): ${cantor}`, margemBorda + 15, yRodape + (alturaRodape * 0.80));
+
+                    const imagemBase64 = canvas.toDataURL('image/jpeg', 0.9);
+
+                    database.ref('fotosDia').push({
+                        cantor: cantor,
+                        imagemBase64: imagemBase64,
+                        timestamp: Date.now()
+                    });
+
+                    if (cantor !== "Visitante Parada" && !cantoresSalvos.includes(cantor)) {
+                        cantoresSalvos.push(cantor);
+                        localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
+                        atualizarDatalistCantores();
+                    }
+
+                    alert("Foto tirada com moldura artística neon aplicada com sucesso!");
+                    input.value = "";
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+
+        let pedidosPendentes = [];
+        let autoAprovar = false;
+
+        function salvarCantorAutomaticamente(nome) {
+            if (!nome || nome.trim() === "" || nome.trim() === "Convidados") return;
+            const nomeFormatado = nome.trim();
+            if (!cantoresSalvos.includes(nomeFormatado)) {
+                cantoresSalvos.push(nomeFormatado);
+                localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
+                atualizarDatalistCantores();
+            }
+        }
+
+        function toggleAutoAprovar() {
+            const chkAuto = document.getElementById('chkAutoAprovar');
+            if(!chkAuto) return;
+            autoAprovar = chkAuto.checked;
+            if (autoAprovar && pedidosPendentes.length > 0) {
+                pedidosPendentes.forEach(p => {
+                    filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
+                    salvarCantorAutomaticamente(p.cantor);
+                    database.ref('pedidos').child(p.key).remove();
+                });
+                atualizarTelaFila();
+                if (!musicaAtual && filaDeReproducao.length > 0 && player && typeof player.loadVideoById === 'function' && !bloqueioFilaEmTransacao) {
+                    tocarProxima(true);
+                }
+            }
+        }
+
+        database.ref('pedidos').on('value', (snapshot) => {
+            pedidosPendentes = [];
+            snapshot.forEach(child => { pedidosPendentes.push({ key: child.key, ...child.val() }); });
+            if (autoAprovar && pedidosPendentes.length > 0) {
+                pedidosPendentes.forEach(p => {
+                    filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
+                    salvarCantorAutomaticamente(p.cantor);
+                    database.ref('pedidos').child(p.key).remove();
+                });
+                atualizarTelaFila();
+                if (!musicaAtual && filaDeReproducao.length > 0 && player && typeof player.loadVideoById === 'function' && !bloqueioFilaEmTransacao) {
+                    tocarProxima(true);
+                }
+            } else {
+                renderizarPedidos();
+            }
+        });
+
+        function renderizarPedidos() {
+            const divPedidos = document.getElementById('pedidos-lista');
+            if(!divPedidos) return;
+            if(pedidosPendentes.length === 0) {
+                divPedidos.innerHTML = "<p style='color:#aaa; font-size:13px; text-align:center;'>Nenhum pedido no momento.</p>";
+                return;
+            }
+            divPedidos.innerHTML = pedidosPendentes.map((p, index) => `
+                <div class="item-fila" style="border-left: 5px solid #00d2ff; margin-bottom: 8px;">
+                    <span class="titulo-musica">🎵 ${p.titulo} <br> <span class="nome-cantor">🎤 Voz: ${p.cantor}</span></span>
+                    <div class="botoes-acao">
+                        <button class="btn-acao" onclick="aprovarPedido(${index})" title="Aceitar">✅</button>
+                        <button class="btn-acao" onclick="rejeitarPedido('${p.key}')" title="Recusar">❌</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function aprovarPedido(index) {
+            const p = pedidosPendentes[index];
+            filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
+            salvarCantorAutomaticamente(p.cantor);
+            atualizarTelaFila();
+            database.ref('pedidos').child(p.key).remove(); 
+        }
+
+        function rejeitarPedido(key) {
+            if (confirm("Recusar música?")) database.ref('pedidos').child(key).remove();
+        }
+
+        database.ref('votosAtual').on('value', (snapshot) => {
+            const votos = snapshot.val();
+            totalVotosPublico = 0; contagemVotos = { ruim: 0, regular: 0, bom: 0, muitobom: 0, excelente: 0 };
+            if (votos) {
+                Object.values(votos).forEach(voto => {
+                    if (contagemVotos[voto.tipo] !== undefined) { contagemVotos[voto.tipo]++; totalVotosPublico++; }
+                });
+            }
+            const elContador = document.getElementById('contador-votos');
+            if(elContador) elContador.innerText = `📊 ${totalVotosPublico} votos ao vivo`;
+            if(document.getElementById('modal-votos') && document.getElementById('modal-votos').style.display === 'block') renderizarDetalhesVotos();
+        });
+
+        function abrirDetalhesVotos() { renderizarDetalhesVotos(); document.getElementById('fundo-modal').style.display = 'block'; document.getElementById('modal-votos').style.display = 'block'; }
+        function fecharDetalhesVotos() { document.getElementById('fundo-modal').style.display = 'none'; document.getElementById('modal-votos').style.display = 'none'; }
+        function renderizarDetalhesVotos() {
+            document.getElementById('detalhes-votos').innerHTML = `
+                <div class="linha-voto"><span style="color:#00d2ff">🤯 Excelente:</span> <strong>${contagemVotos.excelente}</strong></div>
+                <div class="linha-voto"><span style="color:#28a745">🤩 Muito Bom:</span> <strong>${contagemVotos.muitobom}</strong></div>
+                <div class="linha-voto"><span style="color:#ffeb3b">🙂 Bom:</span> <strong>${contagemVotos.bom}</strong></div>
+                <div class="linha-voto"><span style="color:#fd7e14">😕 Regular:</span> <strong>${contagemVotos.regular}</strong></div>
+                <div class="linha-voto"><span style="color:#e52d27">😖 Ruim:</span> <strong>${contagemVotos.ruim}</strong></div>
+            `;
+        }
+
+        function abrirModalCantor(videoId, titulo) {
+            musicaPendente = { videoId, titulo };
+            const inputCantor = document.getElementById('input-nome-cantor');
+            if(inputCantor) inputCantor.value = '';
+            renderizarCantoresSalvos();
+            document.getElementById('fundo-modal-cantor').style.display = 'block';
+            document.getElementById('modal-cantor').style.display = 'block';
+            if(inputCantor) inputCantor.focus();
+        }
+
+        function fecharModalCantor() {
+            musicaPendente = null;
+            document.getElementById('fundo-modal-cantor').style.display = 'none';
+            document.getElementById('modal-cantor').style.display = 'none';
+        }
+
+        function confirmarCantor() {
+            let cantor = document.getElementById('input-nome-cantor').value.trim();
+            if (cantor === "") cantor = "Convidados";
+            salvarCantorAutomaticamente(cantor);
+            if (musicaPendente) {
+                filaDeReproducao.push({ videoId: musicaPendente.videoId, titulo: musicaPendente.titulo, cantor: cantor });
+                atualizarTelaFila();
+                const campoBusca = document.getElementById('campoBusca');
+                if(campoBusca) campoBusca.value = ""; 
+            }
+            fecharModalCantor();
+        }
+
+        function selecionarCantorSalvo(nome) { document.getElementById('input-nome-cantor').value = nome; }
+
+        function excluirCantorSalvo(nome, event) {
+            event.stopPropagation(); 
+            if (confirm(`Excluir ${nome}?`)) {
+                cantoresSalvos = cantoresSalvos.filter(c => c !== nome);
+                localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
+                renderizarCantoresSalvos();
+                atualizarDatalistCantores();
+            }
+        }
+
+        function editarCantorSalvo(nomeAntigo, event) {
+            event.stopPropagation();
+            const novoNome = prompt("Editar nome:", nomeAntigo);
+            if (novoNome && novoNome.trim() !== "" && novoNome !== nomeAntigo) {
+                const index = cantoresSalvos.indexOf(nomeAntigo);
+                if (index !== -1) {
+                    cantoresSalvos[index] = novoNome.trim();
+                    localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
+                    renderizarCantoresSalvos();
+                    atualizarDatalistCantores();
+                }
+            }
+        }
+
+        function renderizarCantoresSalvos() {
+            const div = document.getElementById('lista-cantores-salvos');
+            if(!div) return;
+            if (cantoresSalvos.length === 0) {
+                div.innerHTML = "<span style='color:#777; font-size:13px;'>Nenhum cantor salvo.</span>";
+                return;
+            }
+            div.innerHTML = cantoresSalvos.map(c => `
+                <div class="chip-cantor">
+                    <span onclick="selecionarCantorSalvo('${c.replace(/'/g, "\\'")}')">${c}</span>
+                    <button class="btn-acao-chip" onclick="editarCantorSalvo('${c.replace(/'/g, "\\'")}', event)">✏️</button>
+                    <button class="btn-acao-chip" onclick="excluirCantorSalvo('${c.replace(/'/g, "\\'")}', event)">❌</button>
+                </div>
+            `).join('');
+        }
+
+        function limparCantores() {
+            if (confirm("Apagar todos os cantores salvos?")) {
+                cantoresSalvos = [];
+                localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
+                renderizarCantoresSalvos();
+                atualizarDatalistCantores();
+            }
+        }
+
+        const inputCantorEl = document.getElementById('input-nome-cantor');
+        if(inputCantorEl) inputCantorEl.addEventListener('keypress', e => { if(e.key === 'Enter') confirmarCantor(); });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === '6') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 60; } 
+            if (event.key === '7') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 70; } 
+            if (event.key === '8') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 80; } 
+            if (event.key === '9') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 90; } 
+            if (event.key === '0') { notaForcadaPeloDJ = 100; } 
+            atualizarDisplayNotaForcada();
+        });
+
+        function definirNotaManual() {
+            let nota = prompt("Definir nota final manualmente (0 a 100):");
+            if (nota !== null && nota !== "") {
+                let valor = parseInt(nota, 10);
+                if (!isNaN(valor) && valor >= 0 && valor <= 100) {
+                    notaForcadaPeloDJ = valor;
+                    atualizarDisplayNotaForcada();
+                } else {
+                    alert("Nota inválida.");
+                }
+            }
+        }
+
+        const campoBuscaEl = document.getElementById('campoBusca');
+        if(campoBuscaEl) campoBuscaEl.addEventListener('keypress', e => { if(e.key === 'Enter') buscarNoYouTube(); });
 
         function abrirTV() {
             telaTV = window.open("", "TelaTV", "width=800,height=600,toolbar=0,location=0,status=0,menubar=0,scrollbars=0,resizable=1");
@@ -503,29 +1180,37 @@
                 <style>
                     body { margin: 0; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; font-family: Arial;}
                     #player { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1;}
+                    
                     #logo-bar { position: absolute !important; top: 0px !important; left: 0px !important; z-index: 25; pointer-events: none; display: flex; align-items: flex-start; }
                     #logo-bar img { height: 140px !important; width: auto !important; display: block; } 
                     #logo-bar span { font-size: 34px; font-weight: 900; color: #fff; text-shadow: 3px 3px 10px #000; display: block; margin-top: 15px; margin-left: 15px; white-space: nowrap; }
+                    
                     #qr-code { position: absolute !important; top: 20px !important; right: 20px !important; z-index: 25; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
                     #qr-code img { width: 110px; height: 110px; background: white; padding: 5px; border-radius: 8px; display: block; margin: 0 auto; }
                     #qr-code p { margin: 8px 0 0 0; color: #fff; font-size: 12px; font-weight: bold; text-transform: uppercase;}
                     #qr-code span { color: #ffeb3b; font-size: 11px; }
+
                     #proximo-overlay { position: absolute !important; bottom: 20px !important; left: 20px !important; z-index: 25; background: rgba(10,10,15,0.75); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(0,210,255,0.4); text-align: left; pointer-events: none; display: none; backdrop-filter: blur(4px); max-width: 400px; }
                     #proximo-overlay .prox-titulo { font-size: 10px; color: #00d2ff; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
                     #proximo-overlay .prox-nome { font-size: 13px; color: #fff; font-weight: bold; margin: 2px 0 0 0; text-shadow: 1px 1px 3px #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
                     #cantor-overlay { position: absolute; top: -200px; right: 170px; background: linear-gradient(90deg, rgba(20,20,20,0.95), rgba(229,45,39,0.85)); padding: 10px 20px; border-radius: 15px; z-index: 24; transition: top 0.8s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: -3px 5px 15px rgba(0,0,0,0.5); max-width: 350px; text-align: right; border: 2px solid #e52d27;}
                     #cantor-overlay .aviso { font-size: 12px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
                     #cantor-overlay .nome { font-size: 22px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; line-height: 1.1; word-wrap: break-word;}
+                    
                     #tela-aguardando { display: flex; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #0b0b0b, #1a0000); z-index: 90; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
                     #tela-aguardando img.logo-centro { width: 220px; height: auto; border-radius: 50%; box-shadow: 0 0 40px rgba(229,45,39,0.5); margin-bottom: 25px; animation: pulsar 2s infinite; }
                     @keyframes pulsar { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
                     #tela-aguardando h1 { font-size: 48px; color: #ffeb3b; margin: 0 0 10px 0; text-shadow: 2px 2px 10px #000; }
                     #tela-aguardando p { font-size: 22px; color: #fff; margin: 0 0 20px 0; text-shadow: 1px 1px 5px #000; }
                     #tela-aguardando img.qr-centro { width: 150px; height: 150px; background: white; padding: 8px; border-radius: 12px; box-shadow: 0 0 20px rgba(0,210,255,0.4); display: block; }
+
                     #tela-transicao { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: #0a0a0a; z-index: 95; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px; box-sizing: border-box;}
                     #contador-regressivo { font-size: 180px; font-weight: 900; color: #ffeb3b; text-shadow: 0 0 30px rgba(255,235,59,0.5); line-height: 1; margin-top: 15px;}
+
                     #tela-nota { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #121212, #3a0000); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
                     @keyframes piscar { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
+                    
                     #btn-liberar { z-index: 200; position: fixed; top: 15px; left: 50%; transform: translateX(-50%); padding: 8px 20px; font-size: 14px; font-weight: bold; background: rgba(0,0,0,0.8); color: #ffeb3b; border: 1px solid #ffeb3b; border-radius: 20px; cursor: pointer; }
                 </style></head>
                 <body onclick="document.getElementById('btn-liberar').style.display='none';">
@@ -533,70 +1218,343 @@
                         <img src="logop.png" alt="Logo">
                         <span>PARADA 10.95 BAR</span>
                     </div>
+                    
                     <div id="qr-code">
                         <img src="qrcode.png?v=2" alt="Escaneie">
                         <p>APONTE O CELULAR</p>
                         <span>Peça e Vote!</span>
                     </div>
+
                     <div id="proximo-overlay">
                         <p class="prox-titulo">Próximo na Fila</p>
                         <p id="prox-nome-txt" class="prox-nome">--</p>
                     </div>
+
                     <div id="cantor-overlay"></div>
+
                     <div id="tela-aguardando">
                         <img src="logop.png" class="logo-centro" alt="Logo Bar">
                         <h1>🍻 AGUARDANDO PRÓXIMA MÚSICA 🍻</h1>
                         <p>Aponte a câmera para o QR Code, escolha seu som ou peça ao DJ!</p>
                         <img src="qrcode.png?v=2" class="qr-centro" alt="QR Code">
                     </div>
+                    
                     <div id="tela-transicao">
                         <h3 style="font-size: 25px; color: #aaa; margin: 0 0 10px 0; text-transform: uppercase;">PRÓXIMO CANTOR:</h3>
                         <h1 id="transicao-cantor-nome" style="font-size: 45px; color: #e52d27; margin: 0 0 15px 0;"></h1>
                         <h2 id="transicao-musica-titulo" style="font-size: 24px; color: #00d2ff; margin: 0 0 25px 0; font-weight: normal;"></h2>
                         <div id="contador-regressivo">5</div>
                     </div>
+
                     <div id="tela-nota">
                         <h1 style="font-size: 36px; color: #ffeb3b; margin-bottom: 5px;">🍻 PARADA 10.95 BAR</h1>
                         <h2 style="font-size: 26px; margin-bottom: 25px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
                         <div id="nota-loading" style="font-size: 26px; animation: piscar 1s infinite;">Calculando energia e votos do público... 🥁</div>
+                        
+                        <!-- Layout Lado a Lado: Só exibe foto se houver foto exata do cantor -->
                         <div id="nota-resultado" style="display:none; flex-direction:row; align-items:center; justify-content:center; gap: 70px; width: 95%; max-width: 1200px;">
+                            
                             <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex: 1;">
                                 <div style="font-size: 26px; color: #aaa; margin-bottom: 5px;">Pontuação Final:</div>
                                 <div id="nota-valor" style="font-size: 160px; font-weight: 900; line-height: 1;">100</div>
                             </div>
+
                             <div id="tv-foto-container" style="display:none; flex: 1.2; width: 550px; height: 450px; background: #0a0a0a; border-radius: 16px; border: 5px solid #ffeb3b; box-shadow: 0 0 40px rgba(255,235,59,0.7); overflow: hidden; align-items: center; justify-content: center;">
                                 <img id="tv-foto-img" style="width: 100%; height: 100%; object-fit: contain; border-radius: 12px;" alt="Foto do Cantor">
                             </div>
+
                         </div>
                     </div>
+
                     <button id="btn-liberar" onclick="this.style.display='none';">👆 Clique aqui para liberar o som (F11)</button>
                     <div id="player"></div>
                     <script> function onYouTubeIframeAPIReady() { if(window.opener) window.opener.iniciarPlayer(YT); } <\/script>
                     <script src="https://www.youtube.com/iframe_api"><\/script>
                 </body></html>
             `);
+
+            monitorTV = setInterval(() => {
+                if (telaTV && telaTV.closed) {
+                    clearInterval(monitorTV);
+                    const bTv = document.getElementById('botaoTV');
+                    if(bTv) { bTv.innerHTML = "📺 TELA FECHADA! REABRIR"; bTv.style.background = "#e52d27"; }
+                }
+            }, 1000);
         }
 
         function iniciarPlayer(YT_API) {
             player = new YT_API.Player(telaTV.document.getElementById('player'), {
                 videoId: '', playerVars: { 'autoplay': 1, 'controls': 1, 'fs': 0 }, 
                 events: { 
-                    'onStateChange': e => { if (e.data === 0) tocarProxima(true); } 
+                    'onStateChange': e => { 
+                        if (e.data === 0) {
+                            if (musicaAtual && musicaAtual.cantor !== "Convidados") {
+                                gerarnotaFinalDirect();
+                            } else {
+                                tocarProxima(true);
+                            }
+                        } 
+                    }, 
+                    'onError': e => { 
+                        erroNoPlayer = true; 
+                        let termoNovo = prompt("⚠️ O YouTube bloqueou este vídeo!\nDigite o nome de outra música ou cole o link correto para tocar imediatamente no topo da fila:");
+                        if (termoNovo && termoNovo.trim() !== "") {
+                            let videoIdNovo = extrairVideoId(termoNovo);
+                            let idFinal = videoIdNovo || "busca_" + Date.now();
+                            let tituloFinal = videoIdNovo ? "Música Substituta" : termoNovo;
+                            
+                            filaDeReproducao.unshift({ videoId: idFinal, titulo: tituloFinal, cantor: musicaAtual ? musicaAtual.cantor : "Convidados" });
+                            atualizarTelaFila();
+                            tocarProxima(true);
+                        }
+                    } 
                 }
             });
             const bTv = document.getElementById('botaoTV');
             if(bTv) { bTv.innerHTML = "✅ TELA CONECTADA!"; bTv.style.background = "#17a2b8"; }
+            if (telaTV && !telaTV.closed) telaTV.document.getElementById('tela-aguardando').style.display = 'flex';
         }
 
-        function tocarProxima(auto = false) {
-            if(filaDeReproducao.length > 0) {
-                let m = filaDeReproducao.shift();
-                musicaAtual = m;
-                atualizarTelaFila();
-                if (telaTV && !telaTV.closed) {
-                    telaTV.document.getElementById('tela-aguardando').style.display = 'none';
-                    player.loadVideoById(m.videoId); player.playVideo();
+        function gerarnotaFinalDirect() {
+            gerarNotaFinal();
+        }
+
+        function gerarNotaFinal() {
+            bloqueioFilaEmTransacao = true;
+            captando = false; 
+            let notaFinal;
+            const votosCongelados = { ...contagemVotos };
+            database.ref('statusAtual').set({ cantor: "Avaliando...", titulo: "Olhe para a tela da TV!", id: "avaliando" });
+
+            if (notaForcadaPeloDJ !== null) {
+                notaFinal = notaForcadaPeloDJ; notaForcadaPeloDJ = null; 
+                atualizarDisplayNotaForcada();
+            } else {
+                let notaBase;
+                if (qtdLeituras > 0 && micAtivo) {
+                    let energiaMedia = somaEnergia / qtdLeituras;
+                    notaBase = Math.floor(55 + (energiaMedia * 1.2)); 
+                } else {
+                    notaBase = Math.floor(Math.random() * 21) + 65; 
                 }
+                if (notaBase > 85) notaBase = 85;
+                let bonusPublico = 0;
+                if(totalVotosPublico > 0) {
+                    bonusPublico = (votosCongelados.excelente * 4) + (votosCongelados.muitobom * 2) + (votosCongelados.bom * 1) - (votosCongelados.regular * 1) - (votosCongelados.ruim * 3);
+                    if (bonusPublico > 15) bonusPublico = 15; if (bonusPublico < -15) bonusPublico = -15; 
+                }
+                notaFinal = notaBase + bonusPublico;
+                if (notaFinal > 100) notaFinal = 100; if (notaFinal < 50) notaFinal = 50; 
+            }
+
+            ranking.push({ nome: musicaAtual.cantor, nota: notaFinal, titulo: musicaAtual.titulo, votos: votosCongelados });
+            atualizarTelaRanking();
+
+            // BUSCA PRECISA E ESTRITA: Compara o nome exato do cantor atual. Se não houver foto desse cantor, nenhuma foto aparece.
+            database.ref('fotosDia').once('value', (snapshot) => {
+                let fotoEncontrada = null;
+                let maiorTimestamp = 0;
+                let cantorAtualBusca = musicaAtual ? musicaAtual.cantor.trim().toLowerCase() : "";
+
+                snapshot.forEach(child => {
+                    let f = child.val();
+                    if (f && f.imagemBase64 && f.cantor) {
+                        let cantorFoto = f.cantor.trim().toLowerCase();
+                        // Compara estritamente se o nome cadastrado na foto é idêntico ao cantor da música atual
+                        if (cantorFoto === cantorAtualBusca) {
+                            if (!f.timestamp || f.timestamp >= maiorTimestamp) {
+                                maiorTimestamp = f.timestamp || 0;
+                                fotoEncontrada = f.imagemBase64;
+                            }
+                        }
+                    }
+                });
+
+                if (telaTV && !telaTV.closed) {
+                    let tvDoc = telaTV.document;
+                    tvDoc.getElementById('nota-cantor-nome').innerText = musicaAtual ? musicaAtual.cantor : "";
+                    tvDoc.getElementById('nota-loading').style.display = 'block';
+                    tvDoc.getElementById('nota-resultado').style.display = 'none';
+                    tvDoc.getElementById('tela-nota').style.display = 'flex';
+                    tvDoc.getElementById('cantor-overlay').style.top = '-200px';
+
+                    const som = document.getElementById('audio-tambores');
+                    som.currentTime = 0;
+                    som.play().catch(e => {});
+
+                    setTimeout(() => {
+                        tvDoc.getElementById('nota-loading').style.display = 'none';
+                        let valorEl = tvDoc.getElementById('nota-valor');
+                        valorEl.innerText = notaFinal;
+                        valorEl.style.color = notaFinal >= 90 ? '#28a745' : notaFinal >= 75 ? '#ffeb3b' : '#e52d27';
+                        
+                        let fotoContainer = tvDoc.getElementById('tv-foto-container');
+                        let fotoImg = tvDoc.getElementById('tv-foto-img');
+                        
+                        // SÓ EXIBE SE A FOTO PERTENCER EXATAMENTE A ESTE CANTOR
+                        if (fotoEncontrada) { 
+                            fotoImg.src = fotoEncontrada; 
+                            fotoContainer.style.display = 'flex'; 
+                        } else { 
+                            fotoContainer.style.display = 'none'; 
+                        }
+                        tvDoc.getElementById('nota-resultado').style.display = 'flex';
+                    }, 4000); 
+                }
+            });
+
+            clearTimeout(timerNota);
+            timerNota = setTimeout(() => {
+                if (telaTV && !telaTV.closed) telaTV.document.getElementById('tela-nota').style.display = 'none';
+                musicaAtual = null; 
+                bloqueioFilaEmTransacao = false;
+                tocarProxima(true); 
+            }, 12000);
+        }
+
+        function extrairVideoId(url) {
+            const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+            const match = url.match(regex);
+            return match ? match[1] : null;
+        }
+
+        async function buscarNoYouTube() {
+            const termoOriginal = document.getElementById('campoBusca').value; if (!termoOriginal) return;
+            const div = document.getElementById('resultados'); div.innerHTML = ''; 
+            const videoId = extrairVideoId(termoOriginal);
+            if (videoId) {
+                if (musicaAtual && erroNoPlayer) {
+                    if (confirm("⚠️ Substituir música?")) {
+                        musicaAtual.videoId = videoId; musicaAtual.titulo = "Música via Link";
+                        erroNoPlayer = false; player.loadVideoById(videoId); player.playVideo();
+                        document.getElementById('campoBusca').value = ""; return;
+                    }
+                }
+                abrirModalCantor(videoId, "Música via Link");
+                return;
+            }
+
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(termoOriginal + " karaoke -oficial -clipe -live")}&type=video&key=${API_KEY}`;
+            try {
+                const res = await fetch(url); const dados = await res.json();
+                let itensOrdenados = [...dados.items].sort((a, b) => {
+                    let tituloA = a.snippet.title.toLowerCase(); let canalA = a.snippet.channelTitle.toLowerCase();
+                    let indexA = canaisFavoritos.findIndex(c => tituloA.includes(c.toLowerCase()) || canalA.includes(c.toLowerCase()));
+                    let tituloB = b.snippet.title.toLowerCase(); let canalB = b.snippet.channelTitle.toLowerCase();
+                    let indexB = canaisFavoritos.findIndex(c => tituloB.includes(c.toLowerCase()) || canalB.includes(c.toLowerCase()));
+                    if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                    if (indexA !== -1) return -1;
+                    if (indexB !== -1) return 1;
+                    return 0;
+                });
+
+                itensOrdenados.forEach(v => {
+                    const thumbnail = v.snippet.thumbnails.default.url;
+                    const tituloVid = v.snippet.title; const nomeCanalVid = v.snippet.channelTitle;
+                    const d = document.createElement('div'); 
+                    d.className = 'item-resultado'; 
+                    d.innerHTML = `<img src="${thumbnail}" alt="Thumb"><div class="info-resultado"><span class="titulo-video">${tituloVid}</span><span class="nome-canal">${nomeCanalVid}</span></div>`; 
+                    d.onclick = () => abrirModalCantor(v.id.videoId, v.snippet.title);
+                    div.appendChild(d);
+                });
+            } catch (err) { div.innerHTML = "<p style='color:#e52d27'>Limite atingido.</p>"; }
+        }
+
+        function removerMusica(i) { 
+            if (bloqueioFilaEmTransacao) return;
+            filaDeReproducao.splice(i, 1); 
+            atualizarTelaFila(); 
+        }
+        
+        function moverMusica(i, d) { 
+            if (bloqueioFilaEmTransacao) return;
+            const t = filaDeReproducao[i]; 
+            filaDeReproducao[i] = filaDeReproducao[i+d]; 
+            filaDeReproducao[i+d] = t; 
+            atualizarTelaFila(); 
+        }
+
+        function editarCantorFila(i) {
+            let item = filaDeReproducao[i];
+            let novoNome = prompt("Editar nome do cantor(a):", item.cantor);
+            if (novoNome !== null && novoNome.trim() !== "") {
+                filaDeReproducao[i].cantor = novoNome.trim();
+                salvarCantorAutomaticamente(novoNome.trim());
+                atualizarTelaFila();
+            }
+        }
+
+        function pausarMusicaAtual() {
+            if (player && typeof player.getPlayerState === 'function') {
+                if (player.getPlayerState() === 1) player.pauseVideo();
+                else if (player.getPlayerState() === 2) player.playVideo();
+            }
+        }
+
+        function retrocederMusicaAtual() {
+            if (player && typeof player.seekTo === 'function') player.seekTo(Math.max(0, player.getCurrentTime() - 10), true);
+        }
+
+        function executarInicioMusica(m) {
+            clearTimeout(timerNota);
+            if (telaTV && !telaTV.closed) {
+                telaTV.document.getElementById('tela-nota').style.display = 'none';
+                telaTV.document.getElementById('tela-aguardando').style.display = 'none';
+            }
+            database.ref('votosAtual').remove();
+            database.ref('statusAtual').set({ cantor: m.cantor, titulo: m.titulo, id: Date.now() });
+            musicaAtual = m; historicoDeReproducao.push(m);
+            atualizarTelaFila(); atualizarTelaHistorico(); atualizarTelaRanking();
+            
+            if (telaTV && !telaTV.closed && m.cantor !== "Convidados") {
+                telaTV.document.getElementById('cantor-overlay').innerHTML = `<div style="display:inline-block; vertical-align:middle;"><span class="aviso">Com a Voz</span><p class="nome">${m.cantor}</p></div>`;
+                telaTV.document.getElementById('cantor-overlay').style.top = '-200px'; 
+                setTimeout(() => telaTV.document.getElementById('cantor-overlay').style.top = '20px', 100);
+            }
+            captando = true; somaEnergia = 0; qtdLeituras = 0; notaForcadaPeloDJ = null; 
+            atualizarDisplayNotaForcada(); erroNoPlayer = false;
+            player.loadVideoById(m.videoId); player.playVideo(); 
+        }
+
+        function iniciarMusica(m) {
+            if (tempoPausaSegundos > 0 && telaTV && !telaTV.closed) {
+                let tempoRestante = tempoPausaSegundos;
+                let transicaoEl = telaTV.document.getElementById('tela-transicao');
+                let cantorEl = telaTV.document.getElementById('transicao-cantor-nome');
+                let musicaEl = telaTV.document.getElementById('transicao-musica-titulo');
+                let contadorEl = telaTV.document.getElementById('contador-regressivo');
+                cantorEl.innerText = m.cantor; musicaEl.innerText = `🎵 ${m.titulo}`; contadorEl.innerText = tempoRestante;
+                transicaoEl.style.display = 'flex';
+                telaTV.document.getElementById('tela-aguardando').style.display = 'none';
+                telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
+
+                let timerRegressivo = setInterval(() => {
+                    tempoRestante--;
+                    if (tempoRestante > 0) contadorEl.innerText = tempoRestante;
+                    else { clearInterval(timerRegressivo); transicaoEl.style.display = 'none'; executarInicioMusica(m); }
+                }, 1000);
+            } else { executarInicioMusica(m); }
+        }
+
+        function tocarMusicaEspecifica(i) { 
+            if(!telaTV || telaTV.closed) return alert("⚠️ TV fechada!"); 
+            if(bloqueioFilaEmTransacao) return alert("Aguarde a apuração da nota atual para trocar de música!");
+            let musicaEscolhida = filaDeReproducao.splice(i, 1)[0];
+            iniciarMusica(musicaEscolhida);
+            atualizarTelaFila();
+        }
+        
+        function tocarProxima(auto = false) {
+            if(!telaTV || telaTV.closed) { if (!auto) alert("⚠️ TV fechada!"); return; }
+            if(bloqueioFilaEmTransacao) return;
+            if(filaDeReproducao.length > 0) { iniciarMusica(filaDeReproducao.shift()); } 
+            else {
+                musicaAtual = null; atualizarTelaRanking();
+                if(telaTV && !telaTV.closed) {
+                    telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
+                    telaTV.document.getElementById('tela-aguardando').style.display = 'flex';
+                }
+                database.ref('statusAtual').set(null);
             }
         }
 
@@ -608,21 +1566,75 @@
                 <div class="item-fila">
                     <span class="titulo-musica"><strong>${i+1}º</strong> - ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span></span>
                     <div class="botoes-acao">
+                        <button class="btn-acao" onclick="editarCantorFila(${i})" title="Editar Cantor">✏️</button>
                         <button class="btn-acao" onclick="tocarMusicaEspecifica(${i})" title="Tocar Agora">▶️</button>
+                        ${i > 0 ? `<button class="btn-acao" onclick="moverMusica(${i}, -1)" title="Subir">⬆️</button>` : ''}
+                        ${i < filaDeReproducao.length - 1 ? `<button class="btn-acao" onclick="moverMusica(${i}, 1)" title="Descer">⬇️</button>` : ''}
                         <button class="btn-acao" onclick="removerMusica(${i})" title="Remover">❌</button>
                     </div>
                 </div>
             `).join('');
-        }
-        function removerMusica(i) { filaDeReproducao.splice(i, 1); atualizarTelaFila(); }
-        function tocarMusicaEspecifica(i) { let m = filaDeReproducao.splice(i, 1)[0]; iniciarMusica(m); atualizarTelaFila(); }
-        function iniciarMusica(m) {
-            musicaAtual = m;
+            
             if (telaTV && !telaTV.closed) {
-                telaTV.document.getElementById('tela-aguardando').style.display = 'none';
-                player.loadVideoById(m.videoId); player.playVideo();
+                let proxOverlay = telaTV.document.getElementById('proximo-overlay');
+                let proxTxt = telaTV.document.getElementById('prox-nome-txt');
+                if (proxOverlay && proxTxt) {
+                    if (filaDeReproducao.length > 0) {
+                        proxTxt.innerText = `${filaDeReproducao[0].cantor} - ${filaDeReproducao[0].titulo}`;
+                        proxOverlay.style.display = 'block';
+                    } else {
+                        proxOverlay.style.display = 'none';
+                    }
+                }
+            }
+
+            if (filaDeReproducao.length === 0 && !musicaAtual && telaTV && !telaTV.closed) {
+                telaTV.document.getElementById('tela-aguardando').style.display = 'flex';
             }
         }
+
+        function atualizarTelaHistorico() { 
+            localStorage.setItem('historicoDeReproducao', JSON.stringify(historicoDeReproducao));
+            const divHist = document.getElementById('historico');
+            if(!divHist) return;
+            divHist.innerHTML = historicoDeReproducao.slice().reverse().map(item => `<div class="item-historico">✔️ ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span></div>`).join(''); 
+        }
+        
+        function atualizarTelaRanking() {
+            localStorage.setItem('ranking', JSON.stringify(ranking));
+            const divRank = document.getElementById('ranking');
+            if(!divRank) return;
+            let htmlTocando = "";
+            if (musicaAtual) {
+                htmlTocando = `
+                    <div class="item-tocando-agora">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div class="info-ranking">
+                                ▶️ <strong>Tocando Agora</strong> <br>🎤 ${musicaAtual.cantor} <br><span style="font-size:11px;">🎵 ${musicaAtual.titulo}</span>
+                            </div>
+                            <div style="display: flex; gap: 5px;">
+                                <button class="btn-acao" onclick="retrocederMusicaAtual()" style="font-size:18px;">⏪</button>
+                                <button class="btn-acao" onclick="pausarMusicaAtual()" style="font-size:18px;">⏯️</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            let htmlRanking = [...ranking].sort((a,b) => b.nota - a.nota).map((item, i) => `
+                <div class="item-ranking" onclick="document.getElementById('votos-rank-${i}').style.display = document.getElementById('votos-rank-${i}').style.display === 'none' ? 'block' : 'none'" style="cursor:pointer;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="info-ranking">${i === 0 ? '👑' : '⭐'} <strong>${i+1}º Lugar</strong> <br>🎤 ${item.nome} <br><span style="font-size:11px;">🎵 ${item.titulo}</span></div>
+                        <div class="pontuacao">${item.nota}</div>
+                    </div>
+                    <div id="votos-rank-${i}" style="display:none; margin-top: 15px; background: #111; padding: 10px; border-radius: 5px; font-size: 13px; text-align: center;">
+                        <span style="color:#00d2ff">🤯 ${item.votos.excelente}</span> | <span style="color:#28a745">🤩 ${item.votos.muitobom}</span> | <span style="color:#ffeb3b">🙂 ${item.votos.bom}</span> | <span style="color:#fd7e14">😕 ${item.votos.regular}</span> | <span style="color:#e52d27">😖 ${item.votos.ruim}</span>
+                    </div>
+                </div>
+            `).join('');
+            divRank.innerHTML = htmlTocando + htmlRanking;
+        }
+
+        atualizarTelaFila(); atualizarTelaHistorico(); atualizarTelaRanking();
     </script>
 </body>
 </html>

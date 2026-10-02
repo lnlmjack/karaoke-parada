@@ -81,15 +81,7 @@
         .item-foto-galeria { background: #222; border-radius: 8px; overflow: hidden; border: 1px solid #444; text-align: center; padding-bottom: 8px; }
         .item-foto-galeria img { width: 100%; height: 120px; object-fit: cover; }
         .item-foto-galeria p { font-size: 13px; margin: 6px 0; color: #ffeb3b; font-weight: bold; }
-        .btn-baixar-foto { display: inline-block; padding: 6px 10px; color: #fff; text-decoration: none; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; border: none; background: #28a745; }
         .btn-ver-foto { display: inline-block; padding: 6px 10px; color: #fff; text-decoration: none; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; border: none; background: #007bff; }
-
-        /* TELA DE BLOQUEIO / PROPAGANDA NOS CLIENTES */
-        #tela-bloqueio-propaganda { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #120000, #220b0b); z-index: 300000; align-items: center; justify-content: center; flex-direction: column; padding: 25px; box-sizing: border-box; text-align: center; }
-        .propaganda-box { background: rgba(20,20,20,0.95); border: 3px solid #ffeb3b; padding: 35px 25px; border-radius: 20px; max-width: 500px; width: 100%; box-shadow: 0 10px 40px rgba(0,0,0,0.9); }
-        .propaganda-box h1 { color: #ffeb3b; font-size: 30px; margin-top: 0; text-transform: uppercase; }
-        .propaganda-box h2 { color: #e52d27; font-size: 24px; margin: 15px 0; }
-        .propaganda-box p { color: #ddd; font-size: 18px; line-height: 1.5; }
 
         /* Versão no Rodapé */
         .versao-app-cliente { position: fixed; bottom: 4px; right: 8px; font-size: 11px; color: #fff; opacity: 0.4; z-index: 200000; pointer-events: none; }
@@ -98,18 +90,6 @@
     </style>
 </head>
 <body>
-
-    <!-- TELA DE BLOQUEIO E PROPAGANDA AUTOMÁTICA -->
-    <div id="tela-bloqueio-propaganda">
-        <div class="propaganda-box">
-            <h1>🍻 Parada 10.95 Bar 🍻</h1>
-            <h2>🎵 Noite de Karaokê Encerrada!</h2>
-            <p>Obrigado a todos pela presença e pelas cantorias incríveis!</p>
-            <div style="background: #b31217; color: #fff; padding: 15px; border-radius: 10px; margin-top: 20px; font-weight: bold; font-size: 20px;">
-                💡 Anote aí:<br>Toda Terça-Feira tem Karaokê imperdível aqui no Parada! 🎤
-            </div>
-        </div>
-    </div>
 
     <div class="header">
         🍻 Parada 10.95 Bar
@@ -203,14 +183,15 @@
     <div class="card" id="aba-fotos" style="display: none;">
         <button class="btn-voltar" onclick="mostrarAba('menu')">⬅️ Voltar ao Menu</button>
         
-        <h2 style="color: #28a745;">📸 Foto Lembrança com Moldura</h2>
-        <p style="font-size: 15px; color: #ccc; margin-bottom: 15px;">Tire sua foto, aplique a moldura artística e baixe para postar!</p>
+        <h2 style="color: #28a745;">📸 Foto Lembrança</h2>
+        <p style="font-size: 15px; color: #ccc; margin-bottom: 15px;">Cantor(a) no palco no momento:</p>
         
-        <input type="text" id="cli-foto-cantor" list="lista-cantores-datalist" placeholder="Nome do Cantor / Dupla">
+        <!-- CAMPO TRAVADO: Exibe automaticamente o cantor oficial do sistema, sem permitir digitação errada -->
+        <input type="text" id="cli-foto-cantor" value="Palco Livre" readonly style="background:#111; color:#ffeb3b; font-weight:bold; text-align:center; font-size:20px; border:2px solid #28a745;">
         
         <input type="file" id="input-camera-nativa" accept="image/*" capture="environment" style="display:none;" onchange="processarFotoNativa(this)">
         
-        <button onclick="document.getElementById('input-camera-nativa').click()" style="width:100%; padding:16px; background:#28a745; color:#fff; border:none; border-radius:10px; font-weight:bold; font-size:16px; cursor:pointer; margin-bottom:20px;">📷 Tirar Foto (Câmera Nativa)</button>
+        <button onclick="document.getElementById('input-camera-nativa').click()" style="width:100%; padding:18px; background:#28a745; color:#fff; border:none; border-radius:10px; font-weight:bold; font-size:18px; cursor:pointer; margin-bottom:20px; text-transform: uppercase;">📷 Tirar Foto Oficial</button>
         
         <canvas id="canvas-foto" style="display:none;"></canvas>
 
@@ -247,7 +228,7 @@
 
     <datalist id="lista-cantores-datalist"></datalist>
 
-    <div class="versao-app-cliente">v1.87</div>
+    <div class="versao-app-cliente">v1.82</div>
     <div id="notificacao">✅ Pedido enviado ao DJ!</div>
 
     <script>
@@ -269,15 +250,6 @@
         let musicasCatalogo = [];
         let musicaPendenteYouTube = null;
         let cantoresSalvos = JSON.parse(localStorage.getItem('cantoresSalvos')) || [];
-
-        // ESCUTA EM TEMPO REAL O BLOQUEIO DO DJ PARA EXIBIR A TELA DE PROPAGANDA NO CLIENTE
-        database.ref('configSistema/bloqueado').on('value', (snap) => {
-            const bloqueado = !!snap.val();
-            const telaBlq = document.getElementById('tela-bloqueio-propaganda');
-            if (telaBlq) {
-                telaBlq.style.display = bloqueado ? 'flex' : 'none';
-            }
-        });
 
         function atualizarDatalistCantores() {
             const dl = document.getElementById('lista-cantores-datalist');
@@ -316,7 +288,8 @@
                 document.getElementById('status-musica').innerText = "🎵 " + st.titulo;
                 idCantorAtual = st.id;
 
-                if (inputFotoCantor && (!inputFotoCantor.value || inputFotoCantor.value === "Visitante Parada")) {
+                // ATUALIZA AUTOMATICAMENTE O CAMPO TRAVADO COM O NOME OFICIAL DA MÚSICA TOCANDO
+                if (inputFotoCantor) {
                     inputFotoCantor.value = st.cantor;
                 }
 
@@ -328,10 +301,12 @@
             } else if (st && st.id === "avaliando") {
                 document.getElementById('cantor-atual').innerText = "Calculando as Notas...";
                 document.getElementById('status-musica').innerText = "Olhe para a tela da TV!";
+                if (inputFotoCantor) inputFotoCantor.value = "Apuração de Nota";
                 esconderVoto();
             } else {
                 document.getElementById('cantor-atual').innerText = "Palco Livre!";
                 document.getElementById('status-musica').innerText = "Nenhuma música tocando no momento.";
+                if (inputFotoCantor) inputFotoCantor.value = "Palco Livre";
                 esconderVoto();
             }
         });
@@ -566,7 +541,12 @@
 
         function processarFotoNativa(input) {
             if (!input.files || !input.files[0]) return;
-            const cantor = document.getElementById('cli-foto-cantor').value.trim() || "Visitante Parada";
+            const cantor = document.getElementById('cli-foto-cantor').value.trim();
+            if (!cantor || cantor === "Palco Livre" || cantor === "Aguardando...") {
+                alert("Aguarde uma música iniciar para tirar a foto oficial do cantor(a)!");
+                input.value = "";
+                return;
+            }
             
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -612,7 +592,7 @@
                     const imagemBase64 = canvas.toDataURL('image/jpeg', 0.9);
                     database.ref('fotosDia').push({ cantor, imagemBase64, timestamp: Date.now() });
 
-                    alert("Foto tirada e moldura aplicada com sucesso!");
+                    alert("Foto oficial salva e vinculada ao cantor(a) " + cantor + "!");
                     input.value = "";
                 }
                 img.src = e.target.result;
