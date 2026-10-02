@@ -86,7 +86,7 @@
         #modal-config { border: 2px solid #ffc107; } #modal-cantor { border: 2px solid #00d2ff; text-align: center; }
 
         #fundo-modal-central-fotos { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 600; }
-        #modal-central-fotos { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 601; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 650px; max-height: 85vh; overflow-y: auto; border: 2px solid #28a745; color: #fff; }
+        #modal-central-fotos { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 601; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 650px; color: #fff; max-height: 85vh; overflow-y: auto; border: 2px solid #28a745; }
 
         #fundo-modal-visualizar { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 250000; }
         #modal-visualizar { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 20px; border-radius: 12px; z-index: 250001; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 500px; color: #fff; max-height: 90vh; overflow-y: auto; border: 2px solid #ffeb3b; text-align: center; box-sizing: border-box; }
@@ -140,9 +140,9 @@
     <div id="modal-config">
         <h2>⚙️ Configurações do Sistema</h2>
         <div class="abas-config">
-            <button class="btn-aba ativo" onclick="mudarAba('canais', event)">⭐ Canais Favoritos</button>
-            <button class="btn-aba" onclick="mudarAba('usuarios', event)">👥 Usuários</button>
-            <button class="btn-aba" onclick="mudarAba('transicao', event)">⏳ Transição / Pausa</button>
+            <button class="btn-aba ativo" onclick="mudarAba('canais', this)">⭐ Canais Favoritos</button>
+            <button class="btn-aba" onclick="mudarAba('usuarios', this)">👥 Usuários</button>
+            <button class="btn-aba" onclick="mudarAba('transicao', this)">⏳ Transição / Pausa</button>
         </div>
         <div id="aba-canais" class="conteudo-aba ativo">
             <div style="max-height: 150px; overflow-y: auto;">
@@ -272,7 +272,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.92</span>
+        <span>v1.91</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
@@ -344,11 +344,11 @@
             container.innerHTML = html;
         }
 
-        function mudarAba(aba, evento) {
-            document.querySelectorAll('.conteudo-aba').forEach(el => el.classList.remove('ativo'));
-            document.querySelectorAll('.btn-aba').forEach(el => el.classList.remove('ativo'));
+        function mudarAba(aba, el) {
+            document.querySelectorAll('.conteudo-aba').forEach(e => e.classList.remove('ativo'));
+            document.querySelectorAll('.btn-aba').forEach(e => e.classList.remove('ativo'));
             document.getElementById('aba-' + aba).classList.add('ativo');
-            evento.currentTarget.classList.add('ativo');
+            el.classList.add('ativo');
         }
 
         function abrirSubtela(tipo) {
@@ -658,7 +658,7 @@
         const database = firebase.database();
         const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4'; 
 
-        // CONTROLE DE BLOQUEIO DO SISTEMA
+        // ------------------ CONTROLE DE BLOQUEIO DO SISTEMA (ADIÇÃO SEGURA) ------------------
         function toggleBloqueioSistema() {
             database.ref('configSistema/bloqueado').once('value').then(snap => {
                 let atual = !!snap.val();
@@ -681,6 +681,7 @@
                 }
             }
         });
+        // ------------------------------------------------------------------------------------
 
         let streamMic = null; let micAtivo = false; let intervaloMic = null;
         function abrirManual() { document.getElementById('fundo-modal-manual').style.display = 'block'; document.getElementById('modal-manual-conteudo').style.display = 'block'; }
@@ -800,7 +801,7 @@
                     #tela-nota { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #121212, #3a0000); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
                     @keyframes piscar { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
                     
-                    /* BOTÃO F11 EM TELA INTEIRA INVISÍVEL APÓS CLIQUE */
+                    /* TELA/CORTINA DE LIBERAR (AGORA COBRE A TELA TODA) */
                     #btn-liberar { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); color: #ffeb3b; border: none; font-size: 26px; font-weight: bold; cursor: pointer; z-index: 999999; display: flex; align-items: center; justify-content: center; text-shadow: 2px 2px 10px #000; }
                 </style></head>
                 <body onclick="document.getElementById('btn-liberar').style.display='none';">
@@ -841,7 +842,7 @@
                         <h2 style="font-size: 26px; margin-bottom: 25px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
                         <div id="nota-loading" style="font-size: 26px; animation: piscar 1s infinite;">Calculando energia e votos do público... 🥁</div>
                         
-                        <!-- LAYOUT LADO A LADO DA NOTA COM FOTO SEM CORTE -->
+                        <!-- LAYOUT LADO A LADO DA NOTA COM FOTO SEM CORTE, OCULTA SE NÃO TIVER FOTO EXATA -->
                         <div id="nota-resultado" style="display:none; flex-direction:row; align-items:center; justify-content:center; gap: 70px; width: 95%; max-width: 1200px;">
                             
                             <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex: 1;">
@@ -935,7 +936,7 @@
             ranking.push({ nome: musicaAtual.cantor, nota: notaFinal, titulo: musicaAtual.titulo, votos: votosCongelados });
             atualizarTelaRanking();
 
-            // BUSCA PRECISA E ESTRITA PELA FOTO DO CANTOR
+            // BUSCA ESTRITA DA FOTO (Exatamente como pedido: só mostra foto se o nome for exato)
             database.ref('fotosDia').once('value', (snapshot) => {
                 let fotoEncontrada = null;
                 let maiorTimestamp = 0;
@@ -1044,6 +1045,16 @@
         function removerMusica(i) { filaDeReproducao.splice(i, 1); atualizarTelaFila(); }
         function moverMusica(i, d) { const t = filaDeReproducao[i]; filaDeReproducao[i] = filaDeReproducao[i+d]; filaDeReproducao[i+d] = t; atualizarTelaFila(); }
 
+        function editarCantorFila(i) {
+            let item = filaDeReproducao[i];
+            let novoNome = prompt("Editar nome do cantor(a):", item.cantor);
+            if (novoNome !== null && novoNome.trim() !== "") {
+                filaDeReproducao[i].cantor = novoNome.trim();
+                salvarCantorAutomaticamente(novoNome.trim());
+                atualizarTelaFila();
+            }
+        }
+
         function pausarMusicaAtual() {
             if (player && typeof player.getPlayerState === 'function') {
                 if (player.getPlayerState() === 1) player.pauseVideo();
@@ -1123,10 +1134,11 @@
                 <div class="item-fila">
                     <span class="titulo-musica"><strong>${i+1}º</strong> - ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span></span>
                     <div class="botoes-acao">
+                        <button class="btn-acao" onclick="editarCantorFila(${i})" title="Editar Cantor">✏️</button>
                         <button class="btn-acao" onclick="tocarMusicaEspecifica(${i})" title="Tocar Agora">▶️</button>
-                        ${i > 0 ? `<button class="btn-acao" onclick="moverMusica(${i}, -1)">⬆️</button>` : ''}
-                        ${i < filaDeReproducao.length - 1 ? `<button class="btn-acao" onclick="moverMusica(${i}, 1)">⬇️</button>` : ''}
-                        <button class="btn-acao" onclick="removerMusica(${i})">❌</button>
+                        ${i > 0 ? `<button class="btn-acao" onclick="moverMusica(${i}, -1)" title="Subir">⬆️</button>` : ''}
+                        ${i < filaDeReproducao.length - 1 ? `<button class="btn-acao" onclick="moverMusica(${i}, 1)" title="Descer">⬇️</button>` : ''}
+                        <button class="btn-acao" onclick="removerMusica(${i})" title="Remover">❌</button>
                     </div>
                 </div>
             `).join('');
@@ -1170,7 +1182,7 @@
                             </div>
                             <div style="display: flex; gap: 5px;">
                                 <button class="btn-acao" onclick="retrocederMusicaAtual()" style="font-size:18px;">⏪</button>
-                                <button class="btn-acao" onclick="pausarMusicaAtual()" style="font-size:18px;">⏯️</button>
+                                <button class="btn-acao" onclick="pausarMusicaAtual()" style="font-size:18px;">⏯️️</button>
                             </div>
                         </div>
                     </div>
@@ -1191,6 +1203,22 @@
         }
 
         atualizarTelaFila(); atualizarTelaHistorico(); atualizarTelaRanking();
+        
+        // MANTENDO SUAS FUNÇÕES ORIGINAIS
+        const inputCantorEl = document.getElementById('input-nome-cantor');
+        if(inputCantorEl) inputCantorEl.addEventListener('keypress', e => { if(e.key === 'Enter') confirmarCantor(); });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === '6') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 60; } 
+            if (event.key === '7') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 70; } 
+            if (event.key === '8') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 80; } 
+            if (event.key === '9') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 90; } 
+            if (event.key === '0') { notaForcadaPeloDJ = 100; } 
+            atualizarDisplayNotaForcada();
+        });
+
+        const campoBuscaEl = document.getElementById('campoBusca');
+        if(campoBuscaEl) campoBuscaEl.addEventListener('keypress', e => { if(e.key === 'Enter') buscarNoYouTube(); });
     </script>
 </body>
 </html>
