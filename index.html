@@ -109,9 +109,10 @@
         .chip-cantor:hover { background: #444; border-color: #00d2ff; }
         .chip-cantor span { cursor: pointer; flex: 1; }
         .btn-acao-chip { background: transparent; border: none; cursor: pointer; font-size: 12px; color: #aaa; padding: 0; margin: 0;}
-        .botoes-modal-cantor { display: flex; gap: 10px; }
-        .btn-confirmar { flex: 2; padding: 12px; background: #28a745; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px;}
-        .btn-cancelar { flex: 1; padding: 12px; background: #e52d27; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px;}
+        
+        .botoes-modal-cantor { display: flex; flex-direction: column; gap: 10px; }
+        .btn-confirmar { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px;}
+        .btn-cancelar { width: 100%; padding: 12px; background: #e52d27; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px;}
         .btn-limpar-cantores { margin-top: 15px; background: transparent; border: none; color: #aaa; text-decoration: underline; cursor: pointer; font-size: 12px; width: 100%; text-align: center;}
 
         /* Tela de Login */
@@ -198,8 +199,9 @@
         <input type="text" id="input-nome-cantor" list="lista-cantores-datalist" placeholder="Digite o nome...">
         <div id="lista-cantores-salvos"></div>
         <div class="botoes-modal-cantor">
-            <button onclick="confirmarCantor()" class="btn-confirmar">Confirmar</button>
-            <button onclick="fecharModalCantor()" class="btn-cancelar">Cancelar</button>
+            <button onclick="confirmarCantor(false)" class="btn-confirmar">✅ Adicionar ao Final da Fila</button>
+            <button onclick="confirmarCantor(true)" class="btn-confirmar" style="background:#007bff;">🔝 Colocar no Topo (Fura-Fila)</button>
+            <button onclick="fecharModalCantor()" class="btn-cancelar">❌ Cancelar</button>
         </div>
         <button onclick="limparCantores()" class="btn-limpar-cantores">🗑️ Limpar Lista Salva</button>
     </div>
@@ -245,7 +247,10 @@
             <div class="painel">
                 <h3 style="margin-top: 0; color: #fff; display: flex; justify-content: space-between; align-items: center;">
                     Fila:
-                    <button class="btn-limpar-painel" onclick="limparFila()">🗑️ Limpar Fila</button>
+                    <div>
+                        <button class="btn-limpar-painel" style="background:#007bff; color:#fff; margin-right: 5px;" onclick="restaurarBackup()">🔙 Restaurar Backup</button>
+                        <button class="btn-limpar-painel" onclick="limparFila()">🗑️ Limpar</button>
+                    </div>
                 </h3>
                 <div id="fila"></div>
             </div>
@@ -272,7 +277,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.97</span>
+        <span>v1.98</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
@@ -350,27 +355,17 @@
             el.classList.add('ativo');
         }
 
-        function abrirSubtela(tipo) {
-            document.getElementById('menu-principal-cliente').style.display = 'none';
-            document.querySelectorAll('.subtela-cliente').forEach(el => el.style.display = 'none');
-            document.getElementById('sub-' + tipo).style.display = 'block';
-            atualizarDatalistCantores();
-        }
-
-        function voltarMenuCliente() {
-            document.querySelectorAll('.subtela-cliente').forEach(el => el.style.display = 'none');
-            document.getElementById('menu-principal-cliente').style.display = 'block';
-        }
-
         function abrirCentralFotos() {
             document.getElementById('fundo-modal-central-fotos').style.display = 'block';
             document.getElementById('modal-central-fotos').style.display = 'block';
             carregarFotosAdmin();
         }
+
         function fecharCentralFotos() {
             document.getElementById('fundo-modal-central-fotos').style.display = 'none';
             document.getElementById('modal-central-fotos').style.display = 'none';
         }
+
         function carregarFotosAdmin() {
             database.ref('fotosDia').once('value', (snapshot) => {
                 const div = document.getElementById('lista-admin-fotos');
@@ -396,6 +391,7 @@
                 div.innerHTML = html || "<p style='color:#777; grid-column:1/-1; text-align:center;'>Nenhuma foto enviada hoje.</p>";
             });
         }
+
         function excluirFotoAdmin(key) {
             if(confirm("Deseja realmente excluir esta foto?")) {
                 database.ref('fotosDia').child(key).remove().then(() => {
@@ -403,9 +399,11 @@
                 });
             }
         }
+
         function excluirSelecionadasAdmin() {
             const checkboxes = document.querySelectorAll('.chk-foto-admin:checked');
             if (checkboxes.length === 0) return alert("Selecione ao menos uma foto para excluir!");
+            
             if (confirm(`Deseja realmente excluir as ${checkboxes.length} fotos selecionadas?`)) {
                 let promessas = [];
                 checkboxes.forEach(chk => {
@@ -417,6 +415,7 @@
                 });
             }
         }
+
         function excluirTodasAdmin() {
             if (confirm("⚠️ ATENÇÃO: Deseja realmente excluir TODAS as fotos do dia?")) {
                 database.ref('fotosDia').remove().then(() => {
@@ -425,6 +424,7 @@
                 });
             }
         }
+
         function visualizarFotoModal(base64, cantor) {
             document.getElementById('modal-vis-titulo').innerText = `Foto: ${cantor}`;
             document.getElementById('modal-vis-img').src = base64;
@@ -433,6 +433,7 @@
             document.getElementById('fundo-modal-visualizar').style.display = 'block';
             document.getElementById('modal-visualizar').style.display = 'block';
         }
+
         function fecharModalVisualizar() {
             document.getElementById('fundo-modal-visualizar').style.display = 'none';
             document.getElementById('modal-visualizar').style.display = 'none';
@@ -505,6 +506,7 @@
                 renderizarTabelaCanais();
             }
         }
+
         function descerCanal(index) {
             if (index < canaisFavoritos.length - 1) {
                 let temp = canaisFavoritos[index];
@@ -514,6 +516,7 @@
                 renderizarTabelaCanais();
             }
         }
+
         function excluirCanal(index) {
             if (confirm(`Excluir o canal "${canaisFavoritos[index]}"?`)) {
                 canaisFavoritos.splice(index, 1);
@@ -621,7 +624,12 @@
             }
         }
 
-        function limparFila() { if (confirm("Esvaziar Fila?")) { filaDeReproducao = []; atualizarTelaFila(); } }
+        function limparFila() { 
+            if (confirm("Esvaziar Fila?")) { 
+                filaDeReproducao = []; 
+                atualizarTelaFila(true); // true ignora o backup para não apagar a cópia na nuvem
+            } 
+        }
         function limparRanking() { if (confirm("Zerar Ranking?")) { ranking = []; musicaAtual = null; atualizarTelaRanking(); } }
         function limparHistorico() { if (confirm("Apagar Histórico?")) { historicoDeReproducao = []; atualizarTelaHistorico(); } }
 
@@ -629,8 +637,23 @@
             if (confirm("⚠️ Deseja RESETAR TUDO (incluindo fotos do dia)?")) {
                 filaDeReproducao = []; ranking = []; historicoDeReproducao = []; musicaAtual = null;
                 database.ref('fotosDia').remove();
-                atualizarTelaFila(); atualizarTelaRanking(); atualizarTelaHistorico();
+                atualizarTelaFila(true); atualizarTelaRanking(); atualizarTelaHistorico();
                 alert("Resetado com sucesso!");
+            }
+        }
+
+        // FUNÇÃO DE RESTAURAR O BACKUP DA NUVEM
+        function restaurarBackup() {
+            if(confirm("Restaurar a fila a partir do último backup salvo na nuvem?")) {
+                database.ref('backupFila').once('value').then(snap => {
+                    if(snap.exists() && snap.val()) {
+                        filaDeReproducao = snap.val();
+                        atualizarTelaFila(false);
+                        alert("Fila restaurada com sucesso!");
+                    } else {
+                        alert("Nenhum backup encontrado na nuvem.");
+                    }
+                });
             }
         }
 
@@ -647,7 +670,7 @@
         const database = firebase.database();
         const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4'; 
 
-        // CONTROLE DE BLOQUEIO DO SISTEMA 
+        // CONTROLE DE BLOQUEIO DO SISTEMA
         function toggleBloqueioSistema() {
             database.ref('configSistema/bloqueado').once('value').then(snap => {
                 let atual = !!snap.val();
@@ -750,7 +773,7 @@
             }
         });
 
-        // ------------------ BLOCO DE PEDIDOS E AUTO-APROVAR RESTAURADO INTEGRALMENTE ------------------
+        // ------------------ BLOCO DE PEDIDOS DO CLIENTE ------------------
         let pedidosPendentes = [];
         let autoAprovar = false;
 
@@ -856,7 +879,7 @@
             `;
         }
 
-        // ------------------ BLOCO DE MODAL DE CANTOR RESTAURADO ------------------
+        // ------------------ MODAL DE CANTOR E BOTÕES DE FILA/TOPO ------------------
         function abrirModalCantor(videoId, titulo) {
             musicaPendente = { videoId, titulo };
             const inputCantor = document.getElementById('input-nome-cantor');
@@ -873,12 +896,16 @@
             document.getElementById('modal-cantor').style.display = 'none';
         }
 
-        function confirmarCantor() {
+        function confirmarCantor(noTopo = false) {
             let cantor = document.getElementById('input-nome-cantor').value.trim();
             if (cantor === "") cantor = "Convidados";
             salvarCantorAutomaticamente(cantor);
             if (musicaPendente) {
-                filaDeReproducao.push({ videoId: musicaPendente.videoId, titulo: musicaPendente.titulo, cantor: cantor });
+                if (noTopo) {
+                    filaDeReproducao.unshift({ videoId: musicaPendente.videoId, titulo: musicaPendente.titulo, cantor: cantor });
+                } else {
+                    filaDeReproducao.push({ videoId: musicaPendente.videoId, titulo: musicaPendente.titulo, cantor: cantor });
+                }
                 atualizarTelaFila();
                 const campoBusca = document.getElementById('campoBusca');
                 if(campoBusca) campoBusca.value = ""; 
@@ -937,8 +964,9 @@
             }
         }
 
+        // CONFIRMAR COM ENTER INSERE NO FINAL DA FILA (PADRÃO)
         const inputCantorEl = document.getElementById('input-nome-cantor');
-        if(inputCantorEl) inputCantorEl.addEventListener('keypress', e => { if(e.key === 'Enter') confirmarCantor(); });
+        if(inputCantorEl) inputCantorEl.addEventListener('keypress', e => { if(e.key === 'Enter') confirmarCantor(false); });
         // ------------------ FIM DO BLOCO DE MODAL DE CANTOR ------------------
 
         document.addEventListener('keydown', function(event) {
@@ -963,7 +991,7 @@
             }
         }
 
-        // RESTAURAÇÃO: ENTER PARA BUSCAR NO YOUTUBE
+        // ------------------ BUSCA E ENTER PARA BUSCAR NO YOUTUBE RESTAURADO ------------------
         const campoBuscaEl = document.getElementById('campoBusca');
         if(campoBuscaEl) campoBuscaEl.addEventListener('keypress', e => { if(e.key === 'Enter') buscarNoYouTube(); });
 
@@ -1048,7 +1076,7 @@
                         <h2 style="font-size: 26px; margin-bottom: 25px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
                         <div id="nota-loading" style="font-size: 26px; animation: piscar 1s infinite;">Calculando energia e votos do público... 🥁</div>
                         
-                        <!-- LAYOUT LADO A LADO DA NOTA COM FOTO SEM CORTE -->
+                        <!-- FOTO COM OBJECT-FIT: CONTAIN SEM CORTES E SEMPRE MANTENDO PROPORÇÃO -->
                         <div id="nota-resultado" style="display:none; flex-direction:row; align-items:center; justify-content:center; gap: 70px; width: 95%; max-width: 1200px;">
                             
                             <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex: 1;">
@@ -1104,7 +1132,7 @@
                             atualizarTelaFila();
                             tocarProxima(true);
                         } else {
-                            tocarProxima(true); // Segurança
+                            tocarProxima(true); // Segurança: Se DJ cancelar, pula pra próxima pra não travar
                         }
                     } 
                 }
@@ -1149,7 +1177,7 @@
             ranking.push({ nome: musicaAtual.cantor, nota: notaFinal, titulo: musicaAtual.titulo, votos: votosCongelados });
             atualizarTelaRanking();
 
-            // BUSCA EXATA E RESTRITA: Só exibe se a foto corresponder em absoluto ao nome do cantor atual
+            // BUSCA ESTRITA DA FOTO (Exatamente como pedido: só mostra foto se o nome for exato)
             database.ref('fotosDia').once('value', (snapshot) => {
                 let fotoEncontrada = null;
                 let maiorTimestamp = 0;
@@ -1189,7 +1217,7 @@
                         let fotoContainer = tvDoc.getElementById('tv-foto-container');
                         let fotoImg = tvDoc.getElementById('tv-foto-img');
                         
-                        // FOTO DEVE APARECER APENAS SE HOUVER COMBINAÇÃO
+                        // FOTO SÓ APARECE SE TIVER COMBINAÇÃO
                         if (fotoEncontrada) { 
                             fotoImg.src = fotoEncontrada; 
                             fotoContainer.style.display = 'flex'; 
@@ -1356,8 +1384,14 @@
             }
         }
 
-        function atualizarTelaFila() {
+        // SALVA AUTOMATICAMENTE O BACKUP NA NUVEM A CADA MUDANÇA NA FILA (EXCETO AO LIMPAR MANUALMENTE)
+        function atualizarTelaFila(ignorarBackup = false) {
             localStorage.setItem('filaDeReproducao', JSON.stringify(filaDeReproducao));
+            
+            if (!ignorarBackup) {
+                database.ref('backupFila').set(filaDeReproducao);
+            }
+
             const divFila = document.getElementById('fila');
             if(!divFila) return;
             divFila.innerHTML = filaDeReproducao.map((item, i) => `
