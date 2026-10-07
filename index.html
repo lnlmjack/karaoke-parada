@@ -199,8 +199,8 @@
         <input type="text" id="input-nome-cantor" list="lista-cantores-datalist" placeholder="Digite o nome...">
         <div id="lista-cantores-salvos"></div>
         <div class="botoes-modal-cantor">
-            <button onclick="confirmarCantor(false)" class="btn-confirmar">✅ Adicionar ao Final da Fila</button>
-            <button onclick="confirmarCantor(true)" class="btn-confirmar" style="background:#007bff;">🔝 Colocar no Topo (Fura-Fila)</button>
+            <button onclick="confirmarCantor(false)" class="btn-confirmar">✅ Adicionar ao Final</button>
+            <button onclick="confirmarCantor(true)" class="btn-confirmar" style="background:#007bff;">🔝 Colocar no Topo</button>
             <button onclick="fecharModalCantor()" class="btn-cancelar">❌ Cancelar</button>
         </div>
         <button onclick="limparCantores()" class="btn-limpar-cantores">🗑️ Limpar Lista Salva</button>
@@ -277,7 +277,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v1.98</span>
+        <span>v1.99</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
@@ -299,9 +299,9 @@
     </div>
 
     <div id="fundo-modal-visualizar" onclick="fecharModalVisualizar()"></div>
-    <div id="modal-visualizar" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#1a1a1a; padding:20px; border-radius:12px; z-index:250001; width:90%; max-width:500px; border:2px solid #ffeb3b; text-align:center; color:#fff;">
+    <div id="modal-visualizar" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#1a1a1a; padding:20px; border-radius:12px; z-index:250001; box-shadow:0 10px 40px rgba(0,0,0,0.9); width:90%; max-width:500px; color:#fff; border:2px solid #ffeb3b; text-align:center; box-sizing:border-box;">
         <h3 id="modal-vis-titulo" style="color:#ffeb3b; margin-top:0;">Foto Lembrança</h3>
-        <img id="modal-vis-img" style="max-width:100%; max-height:60vh; border-radius:8px; border:2px solid #555; object-fit:contain;" alt="Foto">
+        <img id="modal-vis-img" style="max-width:100%; max-height:60vh; border-radius:8px; border:2px solid #555; object-fit:contain;" alt="Foto Ampliada">
         <div style="margin-top:15px; display:flex; gap:10px; justify-content:center;">
             <a id="modal-vis-link-baixar" href="#" download="Parada1095_Foto.png" style="padding:10px 20px; background:#28a745; color:#fff; border-radius:6px; text-decoration:none; font-weight:bold;">Baixar Foto</a>
             <button onclick="fecharModalVisualizar()" style="padding:10px 20px; background:#444; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">Fechar</button>
@@ -353,6 +353,18 @@
             document.querySelectorAll('.btn-aba').forEach(e => e.classList.remove('ativo'));
             document.getElementById('aba-' + aba).classList.add('ativo');
             el.classList.add('ativo');
+        }
+
+        function abrirSubtela(tipo) {
+            document.getElementById('menu-principal-cliente').style.display = 'none';
+            document.querySelectorAll('.subtela-cliente').forEach(el => el.style.display = 'none');
+            document.getElementById('sub-' + tipo).style.display = 'block';
+            atualizarDatalistCantores();
+        }
+
+        function voltarMenuCliente() {
+            document.querySelectorAll('.subtela-cliente').forEach(el => el.style.display = 'none');
+            document.getElementById('menu-principal-cliente').style.display = 'block';
         }
 
         function abrirCentralFotos() {
@@ -480,7 +492,7 @@
                     <td>${canal}</td>
                     <td style="text-align: right;">
                         <button onclick="subirCanal(${index})" style="background:transparent; border:none; cursor:pointer;" title="Subir">⬆️</button>
-                        <button onclick="descerCanal(${index})" style="background:transparent; border:none; cursor:pointer;" title="Descer">⬇</button>
+                        <button onclick="descerCanal(${index})" style="background:transparent; border:none; cursor:pointer;" title="Descer">⬇️</button>
                         <button onclick="excluirCanal(${index})" style="background:transparent; border:none; cursor:pointer;" title="Excluir">❌</button>
                     </td>
                 </tr>
@@ -627,7 +639,7 @@
         function limparFila() { 
             if (confirm("Esvaziar Fila?")) { 
                 filaDeReproducao = []; 
-                atualizarTelaFila(true); // true ignora o backup para não apagar a cópia na nuvem
+                atualizarTelaFila(true); 
             } 
         }
         function limparRanking() { if (confirm("Zerar Ranking?")) { ranking = []; musicaAtual = null; atualizarTelaRanking(); } }
@@ -642,7 +654,6 @@
             }
         }
 
-        // FUNÇÃO DE RESTAURAR O BACKUP DA NUVEM
         function restaurarBackup() {
             if(confirm("Restaurar a fila a partir do último backup salvo na nuvem?")) {
                 database.ref('backupFila').once('value').then(snap => {
@@ -670,7 +681,6 @@
         const database = firebase.database();
         const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4'; 
 
-        // CONTROLE DE BLOQUEIO DO SISTEMA
         function toggleBloqueioSistema() {
             database.ref('configSistema/bloqueado').once('value').then(snap => {
                 let atual = !!snap.val();
@@ -741,7 +751,6 @@
         let historicoDeReproducao = JSON.parse(localStorage.getItem('historicoDeReproducao')) || []; 
         let ranking = JSON.parse(localStorage.getItem('ranking')) || [];
         let musicaPendente = null; 
-        let bloqueioFilaEmTransacao = false;
 
         let player; let telaTV; let monitorTV; let musicaAtual = null; let timerNota;
         let audioCtx; let analyser; let dataArray; let captando = false; 
@@ -773,7 +782,6 @@
             }
         });
 
-        // ------------------ BLOCO DE PEDIDOS DO CLIENTE ------------------
         let pedidosPendentes = [];
         let autoAprovar = false;
 
@@ -784,7 +792,6 @@
                 cantoresSalvos.push(nomeFormatado);
                 localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
                 atualizarDatalistCantores();
-                renderizarCantoresSalvos();
             }
         }
 
@@ -799,7 +806,7 @@
                     database.ref('pedidos').child(p.key).remove();
                 });
                 atualizarTelaFila();
-                if (!musicaAtual && filaDeReproducao.length > 0 && player && typeof player.loadVideoById === 'function' && !bloqueioFilaEmTransacao) {
+                if (!musicaAtual && filaDeReproducao.length > 0 && player && typeof player.loadVideoById === 'function') {
                     tocarProxima(true);
                 }
             }
@@ -815,7 +822,7 @@
                     database.ref('pedidos').child(p.key).remove();
                 });
                 atualizarTelaFila();
-                if (!musicaAtual && filaDeReproducao.length > 0 && player && typeof player.loadVideoById === 'function' && !bloqueioFilaEmTransacao) {
+                if (!musicaAtual && filaDeReproducao.length > 0 && player && typeof player.loadVideoById === 'function') {
                     tocarProxima(true);
                 }
             } else {
@@ -852,7 +859,6 @@
         function rejeitarPedido(key) {
             if (confirm("Recusar música?")) database.ref('pedidos').child(key).remove();
         }
-        // ------------------ FIM DO BLOCO DE PEDIDOS ------------------
 
         database.ref('votosAtual').on('value', (snapshot) => {
             const votos = snapshot.val();
@@ -879,7 +885,6 @@
             `;
         }
 
-        // ------------------ MODAL DE CANTOR E BOTÕES DE FILA/TOPO ------------------
         function abrirModalCantor(videoId, titulo) {
             musicaPendente = { videoId, titulo };
             const inputCantor = document.getElementById('input-nome-cantor');
@@ -964,10 +969,8 @@
             }
         }
 
-        // CONFIRMAR COM ENTER INSERE NO FINAL DA FILA (PADRÃO)
         const inputCantorEl = document.getElementById('input-nome-cantor');
         if(inputCantorEl) inputCantorEl.addEventListener('keypress', e => { if(e.key === 'Enter') confirmarCantor(false); });
-        // ------------------ FIM DO BLOCO DE MODAL DE CANTOR ------------------
 
         document.addEventListener('keydown', function(event) {
             if (event.key === '6') { notaForcadaPeloDJ = Math.floor(Math.random() * 10) + 60; } 
@@ -991,7 +994,6 @@
             }
         }
 
-        // ------------------ BUSCA E ENTER PARA BUSCAR NO YOUTUBE RESTAURADO ------------------
         const campoBuscaEl = document.getElementById('campoBusca');
         if(campoBuscaEl) campoBuscaEl.addEventListener('keypress', e => { if(e.key === 'Enter') buscarNoYouTube(); });
 
@@ -1035,7 +1037,6 @@
                     #tela-nota { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #121212, #3a0000); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
                     @keyframes piscar { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
                     
-                    /* CORTINA DE LIBERAR O SOM EM TELA CHEIA - SOME AO CLICAR EM QUALQUER LUGAR */
                     #btn-liberar { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); color: #ffeb3b; border: none; font-size: 26px; font-weight: bold; cursor: pointer; z-index: 999999; display: flex; align-items: center; justify-content: center; text-shadow: 2px 2px 10px #000; }
                 </style></head>
                 <body onclick="document.getElementById('btn-liberar').style.display='none';">
@@ -1076,21 +1077,16 @@
                         <h2 style="font-size: 26px; margin-bottom: 25px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
                         <div id="nota-loading" style="font-size: 26px; animation: piscar 1s infinite;">Calculando energia e votos do público... 🥁</div>
                         
-                        <!-- FOTO COM OBJECT-FIT: CONTAIN SEM CORTES E SEMPRE MANTENDO PROPORÇÃO -->
                         <div id="nota-resultado" style="display:none; flex-direction:row; align-items:center; justify-content:center; gap: 70px; width: 95%; max-width: 1200px;">
-                            
                             <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex: 1;">
                                 <div style="font-size: 26px; color: #aaa; margin-bottom: 5px;">Pontuação Final:</div>
                                 <div id="nota-valor" style="font-size: 160px; font-weight: 900; line-height: 1;">100</div>
                             </div>
-
                             <div id="tv-foto-container" style="display:none; flex: 1.2; align-items: center; justify-content: center;">
                                 <img id="tv-foto-img" style="max-width: 100%; max-height: 450px; object-fit: contain; border-radius: 12px; border: 5px solid #ffeb3b; box-shadow: 0 0 40px rgba(255,235,59,0.7);" alt="Foto do Cantor">
                             </div>
-
                         </div>
                     </div>
-
                     <button id="btn-liberar" onclick="this.style.display='none';">👆 Clique em qualquer lugar desta tela para liberar o som (F11)</button>
                     <div id="player"></div>
                     <script> function onYouTubeIframeAPIReady() { if(window.opener) window.opener.iniciarPlayer(YT); } <\/script>
@@ -1114,7 +1110,7 @@
                     'onStateChange': e => { 
                         if (e.data === 0) {
                             if (musicaAtual && musicaAtual.cantor !== "Convidados") {
-                                gerarnotaFinalDirect();
+                                gerarNotaFinal();
                             } else {
                                 tocarProxima(true);
                             }
@@ -1122,18 +1118,7 @@
                     }, 
                     'onError': e => { 
                         erroNoPlayer = true; 
-                        let termoNovo = prompt("⚠️ O YouTube bloqueou este vídeo!\nDigite o nome de outra música ou cole o link correto para tocar imediatamente no topo da fila:");
-                        if (termoNovo && termoNovo.trim() !== "") {
-                            let videoIdNovo = extrairVideoId(termoNovo);
-                            let idFinal = videoIdNovo || "busca_" + Date.now();
-                            let tituloFinal = videoIdNovo ? "Música Substituta" : termoNovo;
-                            
-                            filaDeReproducao.unshift({ videoId: idFinal, titulo: tituloFinal, cantor: musicaAtual ? musicaAtual.cantor : "Convidados" });
-                            atualizarTelaFila();
-                            tocarProxima(true);
-                        } else {
-                            tocarProxima(true); // Segurança: Se DJ cancelar, pula pra próxima pra não travar
-                        }
+                        alert("⚠️ O YouTube bloqueou este vídeo!");
                     } 
                 }
             });
@@ -1142,12 +1127,7 @@
             if (telaTV && !telaTV.closed) telaTV.document.getElementById('tela-aguardando').style.display = 'flex';
         }
 
-        function gerarnotaFinalDirect() {
-            gerarNotaFinal();
-        }
-
         function gerarNotaFinal() {
-            bloqueioFilaEmTransacao = true;
             captando = false; 
             let notaFinal;
             const votosCongelados = { ...contagemVotos };
@@ -1177,7 +1157,6 @@
             ranking.push({ nome: musicaAtual.cantor, nota: notaFinal, titulo: musicaAtual.titulo, votos: votosCongelados });
             atualizarTelaRanking();
 
-            // BUSCA ESTRITA DA FOTO (Exatamente como pedido: só mostra foto se o nome for exato)
             database.ref('fotosDia').once('value', (snapshot) => {
                 let fotoEncontrada = null;
                 let maiorTimestamp = 0;
@@ -1217,7 +1196,6 @@
                         let fotoContainer = tvDoc.getElementById('tv-foto-container');
                         let fotoImg = tvDoc.getElementById('tv-foto-img');
                         
-                        // FOTO SÓ APARECE SE TIVER COMBINAÇÃO
                         if (fotoEncontrada) { 
                             fotoImg.src = fotoEncontrada; 
                             fotoContainer.style.display = 'flex'; 
@@ -1232,9 +1210,7 @@
             clearTimeout(timerNota);
             timerNota = setTimeout(() => {
                 if (telaTV && !telaTV.closed) telaTV.document.getElementById('tela-nota').style.display = 'none';
-                musicaAtual = null; 
-                bloqueioFilaEmTransacao = false;
-                tocarProxima(true); 
+                musicaAtual = null; tocarProxima(true); 
             }, 12000);
         }
 
@@ -1286,23 +1262,12 @@
             } catch (err) { div.innerHTML = "<p style='color:#e52d27'>Limite atingido.</p>"; }
         }
 
-        function removerMusica(i) { 
-            if (bloqueioFilaEmTransacao) return;
-            filaDeReproducao.splice(i, 1); 
-            atualizarTelaFila(); 
-        }
-        
-        function moverMusica(i, d) { 
-            if (bloqueioFilaEmTransacao) return;
-            const t = filaDeReproducao[i]; 
-            filaDeReproducao[i] = filaDeReproducao[i+d]; 
-            filaDeReproducao[i+d] = t; 
-            atualizarTelaFila(); 
-        }
+        function removerMusica(i) { filaDeReproducao.splice(i, 1); atualizarTelaFila(); }
+        function moverMusica(i, d) { const t = filaDeReproducao[i]; filaDeReproducao[i] = filaDeReproducao[i+d]; filaDeReproducao[i+d] = t; atualizarTelaFila(); }
 
         function editarCantorFila(i) {
             let item = filaDeReproducao[i];
-            let novoNome = prompt("Editar nome do cantor(a):", item.cantor);
+            let novoNome = prompt("Editar nome:", item.cantor);
             if (novoNome !== null && novoNome.trim() !== "") {
                 filaDeReproducao[i].cantor = novoNome.trim();
                 salvarCantorAutomaticamente(novoNome.trim());
@@ -1364,15 +1329,12 @@
 
         function tocarMusicaEspecifica(i) { 
             if(!telaTV || telaTV.closed) return alert("⚠️ TV fechada!"); 
-            if(bloqueioFilaEmTransacao) return alert("Aguarde a apuração da nota atual para trocar de música!");
-            let musicaEscolhida = filaDeReproducao.splice(i, 1)[0];
-            iniciarMusica(musicaEscolhida);
+            iniciarMusica(filaDeReproducao.splice(i, 1)[0]); 
             atualizarTelaFila();
         }
         
         function tocarProxima(auto = false) {
             if(!telaTV || telaTV.closed) { if (!auto) alert("⚠️ TV fechada!"); return; }
-            if(bloqueioFilaEmTransacao) return;
             if(filaDeReproducao.length > 0) { iniciarMusica(filaDeReproducao.shift()); } 
             else {
                 musicaAtual = null; atualizarTelaRanking();
@@ -1384,7 +1346,6 @@
             }
         }
 
-        // SALVA AUTOMATICAMENTE O BACKUP NA NUVEM A CADA MUDANÇA NA FILA (EXCETO AO LIMPAR MANUALMENTE)
         function atualizarTelaFila(ignorarBackup = false) {
             localStorage.setItem('filaDeReproducao', JSON.stringify(filaDeReproducao));
             
