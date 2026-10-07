@@ -2,146 +2,630 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>Painel do DJ - Karaokê</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    
+    <title>Menu - Karaokê Parada 10.95</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
     
     <style>
-        body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; padding: 20px; margin: 0; }
-        .container { max-width: 1600px; margin: 0 auto; position: relative; }
+        body { font-family: 'Arial', sans-serif; background-color: #121212; color: #fff; margin: 0; padding: 0; text-align: center; }
+        .header { background-color: #b31217; padding: 18px 15px; font-size: 22px; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.5); text-transform: uppercase; letter-spacing: 1px;}
         
-        .topo-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
-        .topo-botoes-acao { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        #menu-principal { padding: 25px 15px; box-sizing: border-box; width: 100%; max-width: 600px; margin: 0 auto; }
+        .btn-menu-grande { width: 100%; padding: 22px 20px; margin-bottom: 18px; border: none; border-radius: 12px; font-size: 20px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 6px 15px rgba(0,0,0,0.5); text-transform: uppercase; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
+        .btn-menu-grande:active { transform: scale(0.97); }
+        .btn-pedir { background: linear-gradient(135deg, #e52d27, #b31217); border: 2px solid #ff5252;}
+        .btn-votar { background: linear-gradient(135deg, #007bff, #0056b3); border: 2px solid #3399ff;}
+        .btn-fotos { background: linear-gradient(135deg, #28a745, #218838); border: 2px solid #34ce57;}
+        .icone-grande { font-size: 38px; margin-bottom: 8px; display: block;}
+
+        .card { background: #1e1e1e; margin: 0 auto; padding: 20px 15px; border-radius: 0; box-shadow: none; text-align: left; box-sizing: border-box; width: 100%; max-width: 600px; min-height: 100vh; }
+        .card h2 { margin-top: 5px; color: #00d2ff; font-size: 24px; border-bottom: 2px solid #333; padding-bottom: 12px; }
         
-        .btn-topo-acao { padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; border: 1px solid #555; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px; }
-        #btn-reset-tudo { background: #b31217; color: #fff; border-color: #ff5252; } #btn-reset-tudo:hover { background: #e52d27; }
-        #btn-sair { background: transparent; color: #aaa; } #btn-sair:hover { color: #fff; background: #e52d27; border-color: #e52d27; }
-        #btn-config { background: #ffc107; color: #000; border-color: #e0a800; display: none; } #btn-config:hover { background: #e0a800; }
-        #btn-manual { background: #333; color: #fff; } #btn-manual:hover { background: #444; border-color: #00d2ff; }
-        #btn-central-fotos { background: #28a745; color: #fff; border-color: #218838; } #btn-central-fotos:hover { background: #218838; }
-        #btn-toggle-bloqueio { background: #28a745; color: #fff; border-color: #218838; }
-
-        .area-botoes-topo { display: flex; gap: 15px; margin-bottom: 15px; }
-        .btn-topo { flex: 1; padding: 15px; font-size: 16px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s;}
-        .btn-tv { background: #007bff; } .btn-tv:hover { background: #0056b3; } .btn-tv.conectado { background: #17a2b8; pointer-events: none; }
-        .btn-mic { background: #e52d27; text-align: center; display: flex; align-items: center; justify-content: center; } 
-        .btn-mic:hover { filter: brightness(1.2); }
-
-        .area-busca { display: flex; gap: 10px; margin-bottom: 15px; }
-        input { flex: 1; padding: 12px; border-radius: 5px; border: none; font-size: 16px; }
-        .btn-buscar { padding: 12px 25px; background: #e52d27; color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer;}
+        .btn-voltar { background: #444; color: #fff; border: 1px solid #666; padding: 12px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; display: block; margin-bottom: 15px; width: 100%; text-align: center; box-sizing: border-box;}
         
-        .canais-preferidos { display: flex; gap: 5px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; font-size: 11px; color: #777; background: #161616; padding: 6px 10px; border-radius: 4px; border: 1px solid #282828; }
-        .chip-canal { background: #222; border: 1px solid #444; padding: 2px 7px; border-radius: 10px; color: #ccc; display: inline-flex; align-items: center; gap: 3px; font-size: 10px; }
-        .chip-canal .ordem-badge { background: rgba(0,0,0,0.5); padding: 1px 3px; border-radius: 6px; font-size: 8px; color: #ffeb3b; }
+        .btn-catalogo { background: #00d2ff; color: #000; width: 100%; padding: 16px; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); text-transform: uppercase; box-sizing: border-box; text-align: center; }
+        .btn-catalogo:active { transform: scale(0.97); }
 
-        .paineis { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
-        .painel { background: #1e1e1e; padding: 15px; border-radius: 8px; height: 450px; overflow-y: auto; position: relative;}
+        /* CARROSSEL DO ALFABETO */
+        .alfabeto-container { display: flex; overflow-x: auto; gap: 8px; margin-bottom: 20px; padding-bottom: 8px; }
+        .alfabeto-container::-webkit-scrollbar { height: 8px; }
+        .alfabeto-container::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
+        .btn-letra { flex: 0 0 auto; background: #333; color: #fff; border: 1px solid #555; border-radius: 8px; padding: 10px 14px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-letra.ativo { background: #00d2ff; color: #000; border-color: #00d2ff; }
+
+        /* Estilo dos Resultados de Busca com Thumbnails */
+        .item-resultado { background: #2a2a2a; padding: 12px; margin-bottom: 12px; border-radius: 10px; border-left: 6px solid #00d2ff; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; box-shadow: 0 3px 8px rgba(0,0,0,0.4); }
+        .item-resultado:active { background: #333; }
+        .item-resultado img { width: 95px; height: 65px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
+        .info-resultado { flex: 1; display: flex; flex-direction: column; text-align: left; }
+        .info-resultado .titulo-video { font-size: 15px; font-weight: bold; line-height: 1.2; color: #fff; }
+        .info-resultado .nome-canal { font-size: 13px; color: #00d2ff; margin-top: 4px; font-weight: bold; }
+
+        /* Modal do Cantor */
+        #fundo-modal-cantor { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 500; }
+        #modal-cantor { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 14px; z-index: 501; box-shadow: 0 10px 30px rgba(0,0,0,0.9); width: 90%; max-width: 450px; color: #fff; border: 2px solid #00d2ff; text-align: center; box-sizing: border-box; }
+        #modal-cantor h2 { color: #00d2ff; font-size: 22px; margin-top: 0; margin-bottom: 15px; }
+        #input-nome-cantor { width: 100%; padding: 14px; font-size: 18px; margin-bottom: 15px; background: #111; color: #fff; border: 2px solid #555; border-radius: 8px; box-sizing: border-box; }
+        #lista-cantores-salvos { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; max-height: 130px; overflow-y: auto; justify-content: center; }
+        .chip-cantor { background: #333; border: 1px solid #555; padding: 8px 12px; border-radius: 16px; font-size: 14px; cursor: pointer; color: #fff; }
+        .botoes-modal-cantor { display: flex; gap: 12px; }
+        .btn-confirmar { flex: 2; padding: 14px; background: #28a745; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer;}
+        .btn-cancelar { flex: 1; padding: 14px; background: #e52d27; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer;}
+
+        /* Area de Votação */
+        #cantor-atual { color: #ffeb3b; font-size: 26px; font-weight: bold; margin: 15px 0; text-align: center; }
+        #status-musica { color: #ccc; font-size: 18px; font-style: italic; margin-bottom: 25px; text-align: center; }
         
-        .item-resultado, .item-fila, .item-historico, .item-ranking { margin: 10px 0; padding: 12px; background: #333; border-radius: 5px; }
-        .item-resultado { cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px; position: relative; } 
-        .item-resultado:hover { background: #e52d27; }
-        .item-resultado img { width: 70px; height: 50px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
+        .btn-voto { width: 100%; padding: 20px; margin: 10px 0; border: none; border-radius: 12px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.4); text-align: center; box-sizing: border-box; }
+        .btn-voto:active { transform: scale(0.97); }
+        .v-exc { background: #00d2ff; color: #000; }
+        .v-mb { background: #28a745; color: #fff; }
+        .v-bom { background: #ffeb3b; color: #000; }
+        .v-reg { background: #fd7e14; color: #fff; }
+        .v-ruim { background: #e52d27; color: #fff; }
+
+        #confirmacao-voto { display: none; background: #222; padding: 25px; border-radius: 14px; border: 2px solid #ffeb3b; margin-top: 15px; text-align: center; }
+        .btn-conf { width: 48%; padding: 16px; border: none; border-radius: 10px; color: white; font-weight: bold; font-size: 18px; cursor: pointer;}
         
-        .info-resultado { flex: 1; display: flex; flex-direction: column; }
-        .info-resultado .titulo-video { font-size: 13px; font-weight: bold; line-height: 1.2; }
-        .info-resultado .nome-canal { font-size: 11px; color: #00d2ff; margin-top: 4px; font-weight: bold; }
+        /* Area de Busca */
+        input[type="text"] { width: 100%; box-sizing: border-box; padding: 16px; border-radius: 10px; border: 2px solid #555; background: #111; color: #fff; font-size: 18px; margin-bottom: 20px; }
+        .btn-busca { background: #e52d27; color: #fff; width: 100%; padding: 16px; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; box-sizing: border-box; }
         
-        .item-fila { border-left: 5px solid #e52d27; display: flex; justify-content: space-between; align-items: center; }
-        .titulo-musica { flex: 1; font-size: 14px; } .nome-cantor { color: #aaa; font-size: 12px; display: block; font-style: italic; }
-        .botoes-acao { display: flex; gap: 3px; } .btn-acao { background: transparent; border: none; cursor: pointer; font-size: 16px; padding: 5px; transition: 0.2s;} .btn-acao:hover { transform: scale(1.2); }
-        
-        .item-historico { border-left: 5px solid #28a745; color: #888; font-size: 14px; background: #222; }
-        .item-ranking { border-left: 5px solid #ffeb3b; background: #222; font-size: 14px; display: flex; flex-direction: column; align-items: stretch; transition: 0.2s; }
-        .item-ranking:hover { background: #2a2a2a; }
-        .info-ranking { flex: 1; } .pontuacao { font-size: 26px; color: #ffeb3b; font-weight: 900; margin-left: 10px; }
-        
-        .item-tocando-agora { border-left: 5px solid #00d2ff; background: #1a2634; font-size: 14px; display: flex; flex-direction: column; align-items: stretch; margin: 10px 0; padding: 12px; border-radius: 5px; }
+        /* Fotos */
+        .galeria-fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-top: 15px; }
+        .item-foto-galeria { background: #222; border-radius: 8px; overflow: hidden; border: 1px solid #444; text-align: center; padding-bottom: 8px; }
+        .item-foto-galeria img { width: 100%; height: 120px; object-fit: cover; }
+        .item-foto-galeria p { font-size: 13px; margin: 6px 0; color: #ffeb3b; font-weight: bold; }
+        .btn-baixar-foto { display: inline-block; padding: 6px 10px; color: #fff; text-decoration: none; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; border: none; background: #28a745; }
+        .btn-ver-foto { display: inline-block; padding: 6px 10px; color: #fff; text-decoration: none; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; border: none; background: #007bff; }
 
-        #contador-votos { background: #e52d27; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 11px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.5); display: inline-block; }
-        #contador-votos:hover { transform: scale(1.05); background: #c21a15; }
+        /* TELA DE BLOQUEIO / PROPAGANDA NOS CLIENTES */
+        #tela-bloqueio-propaganda { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #120000, #220b0b); z-index: 300000; align-items: center; justify-content: center; flex-direction: column; padding: 25px; box-sizing: border-box; text-align: center; }
+        .propaganda-box { background: rgba(20,20,20,0.95); border: 3px solid #ffeb3b; padding: 35px 25px; border-radius: 20px; max-width: 500px; width: 100%; box-shadow: 0 10px 40px rgba(0,0,0,0.9); }
+        .propaganda-box h1 { color: #ffeb3b; font-size: 30px; margin-top: 0; text-transform: uppercase; }
+        .propaganda-box h2 { color: #e52d27; font-size: 24px; margin: 15px 0; }
+        .propaganda-box p { color: #ddd; font-size: 18px; line-height: 1.5; }
 
-        #modal-votos { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 200; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #e52d27; width: 300px; }
-        #modal-votos h2 { margin-top: 0; color: #fff; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        .linha-voto { display: flex; justify-content: space-between; font-size: 20px; margin: 12px 0; border-bottom: 1px dashed #333; padding-bottom: 5px; }
-        #fundo-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 199; }
+        /* Versão no Rodapé */
+        .versao-app-cliente { position: fixed; bottom: 4px; right: 8px; font-size: 11px; color: #fff; opacity: 0.4; z-index: 200000; pointer-events: none; }
 
-        .btn-limpar-painel { background: #333; color: #aaa; border: none; font-size: 11px; padding: 3px 8px; border-radius: 4px; cursor: pointer; transition: 0.2s; }
-        .btn-limpar-painel:hover { background: #e52d27; color: #fff; }
-
-        #modal-manual-conteudo { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 30px; border-radius: 12px; z-index: 300; box-shadow: 0 10px 40px rgba(0,0,0,0.9); border: 2px solid #00d2ff; width: 90%; max-width: 850px; max-height: 85vh; overflow-y: auto; color: #ddd; text-align: left; }
-        #modal-manual-conteudo h2 { color: #00d2ff; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; font-size: 22px; text-align: center;}
-        #modal-manual-conteudo h3 { color: #ffeb3b; margin-top: 20px; margin-bottom: 8px; font-size: 16px; border-left: 4px solid #e52d27; padding-left: 10px; }
-        #modal-manual-conteudo p, #modal-manual-conteudo li { line-height: 1.5; font-size: 14px; }
-        #modal-manual-conteudo ul { margin-top: 5px; margin-bottom: 12px; padding-left: 20px; }
-        #fundo-modal-manual { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 299; }
-        
-        .versao-app { position: fixed; bottom: 4px; right: 8px; font-size: 12px; color: #fff; opacity: 0.3; z-index: 200005; display: flex; align-items: center; gap: 6px; }
-        .versao-app span { color: #fff; }
-        .versao-app:hover { opacity: 1; }
-
-        #fundo-modal-config, #fundo-modal-cantor { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 500; }
-        #modal-config, #modal-cantor { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 501; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 550px; color: #fff; max-height: 85vh; overflow-y: auto; }
-        #modal-config { border: 2px solid #ffc107; } #modal-cantor { border: 2px solid #00d2ff; text-align: center; }
-
-        #fundo-modal-central-fotos { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 600; }
-        #modal-central-fotos { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border-radius: 12px; z-index: 601; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 650px; max-height: 85vh; overflow-y: auto; border: 2px solid #28a745; color: #fff; }
-
-        #fundo-modal-visualizar { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 250000; }
-        #modal-visualizar { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 20px; border-radius: 12px; z-index: 250001; box-shadow: 0 10px 40px rgba(0,0,0,0.9); width: 90%; max-width: 500px; color: #fff; max-height: 90vh; overflow-y: auto; border: 2px solid #ffeb3b; text-align: center; box-sizing: border-box; }
-
-        .abas-config { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; flex-wrap: wrap; }
-        .btn-aba { background: #222; border: 1px solid #444; color: #aaa; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
-        .btn-aba.ativo { background: #ffc107; color: #000; border-color: #ffc107; }
-        .conteudo-aba { display: none; } .conteudo-aba.ativo { display: block; }
-
-        .tabela-canais, .tabela-usuarios { width: 100%; margin-bottom: 15px; border-collapse: collapse; text-align: left; font-size: 13px; }
-        .tabela-canais th, .tabela-canais td, .tabela-usuarios th, .tabela-usuarios td { padding: 6px; border-bottom: 1px solid #333; }
-        .tabela-canais th { color: #ffc107; } .tabela-usuarios th { color: #007bff; }
-        
-        .form-novo-canal, .form-novo-usuario { background: #222; padding: 12px; border-radius: 8px; margin-top: 10px; }
-        .form-novo-canal input, .form-novo-usuario input, .form-novo-usuario select { width: 100%; padding: 8px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #555; background: #111; color: #fff; box-sizing: border-box; font-size: 13px; }
-        
-        #input-nome-cantor { width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #555; background: #222; color: #fff; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; }
-        #lista-cantores-salvos { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; max-height: 150px; overflow-y: auto; justify-content: center; }
-        .chip-cantor { background: #333; border: 1px solid #555; padding: 6px 12px; border-radius: 20px; font-size: 14px; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
-        .chip-cantor:hover { background: #444; border-color: #00d2ff; }
-        .chip-cantor span { cursor: pointer; flex: 1; }
-        .btn-acao-chip { background: transparent; border: none; cursor: pointer; font-size: 12px; color: #aaa; padding: 0; margin: 0;}
-        
-        /* BOTÕES DE ADICIONAR NA FILA (NORMAL OU TOPO) */
-        .botoes-modal-cantor { display: flex; flex-direction: column; gap: 10px; }
-        .btn-confirmar { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px;}
-        .btn-cancelar { width: 100%; padding: 12px; background: #e52d27; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px;}
-        .btn-limpar-cantores { margin-top: 15px; background: transparent; border: none; color: #aaa; text-decoration: underline; cursor: pointer; font-size: 12px; width: 100%; text-align: center;}
-
-        /* Tela de Login */
-        #tela-login { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #1a1a1a; z-index: 200000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-        .login-box { background: #222; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); text-align: center; width: 100%; max-width: 350px; }
-        .login-box img { width: 140px; margin-bottom: 20px; border-radius: 50%; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        .login-box h2 { color: #e52d27; font-size: 26px; margin-top: 0; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: bold; }
-        .login-input { width: 100%; padding: 15px; margin-bottom: 15px; background: #333; border: 1px solid #444; border-radius: 6px; color: white; font-size: 16px; box-sizing: border-box; }
-        .login-btn { width: 100%; padding: 15px; background: #e52d27; color: white; font-size: 18px; font-weight: bold; border: 2px solid #fff; border-radius: 6px; cursor: pointer; transition: 0.2s; margin-top: 5px; }
-        .login-btn:hover { background: #c21a15; }
+        #notificacao { display: none; position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: #28a745; color: white; padding: 16px 28px; border-radius: 30px; font-weight: bold; font-size: 16px; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
     </style>
 </head>
 <body>
 
-    <div id="tela-login">
-        <div class="login-box">
-            <img src="logop.png" alt="Logo Parada 10.95">
-            <h2>🔒 Painel do DJ</h2>
-            <input type="text" id="login-usuario" class="login-input" placeholder="Usuário">
-            <input type="password" id="login-senha" class="login-input" placeholder="Senha" onkeypress="if(event.key === 'Enter') fazerLogin()">
-            <button class="login-btn" onclick="fazerLogin()">Entrar</button>
+    <!-- TELA DE BLOQUEIO E PROPAGANDA AUTOMÁTICA -->
+    <div id="tela-bloqueio-propaganda">
+        <div class="propaganda-box">
+            <h1>🍻 Parada 10.95 Bar 🍻</h1>
+            <h2>🎵 Noite de Karaokê Encerrada!</h2>
+            <p>Obrigado a todos pela presença e pelas cantorias incríveis!</p>
+            <div style="background: #b31217; color: #fff; padding: 15px; border-radius: 10px; margin-top: 20px; font-weight: bold; font-size: 20px;">
+                💡 Anote aí:<br>Toda Terça-Feira tem Karaokê imperdível aqui no Parada! 🎤
+            </div>
         </div>
     </div>
 
-    <div id="fundo-modal-config" onclick="fecharModalConfig()"></div>
-    <div id="modal-config">
-        <h2>⚙️ Configurações do Sistema</h2>
-        <div class="abas-config">
-            <button class="btn-aba ativo" onclick="mudarAba('canais', this)">⭐ Canais Favoritos</button>
-            <button class="btn-aba" onclick="mudarAba('usuarios', this)">👥 Usuários</button>
-            <button class
+    <div class="header">
+        🍻 Parada 10.95 Bar
+    </div>
+
+    <!-- TELA 1: MENU PRINCIPAL -->
+    <div id="menu-principal">
+        <h2 style="color: #fff; margin-bottom: 30px; font-size: 24px;">O que você quer fazer?</h2>
+        
+        <button class="btn-menu-grande btn-pedir" onclick="mostrarAba('pedir')">
+            <span class="icone-grande">📩</span>
+            Pedir Música
+        </button>
+        
+        <button class="btn-menu-grande btn-votar" onclick="mostrarAba('votar')">
+            <span class="icone-grande">⭐</span>
+            Votar no Cantor
+        </button>
+
+        <button class="btn-menu-grande btn-fotos" onclick="mostrarAba('fotos')">
+            <span class="icone-grande">📸</span>
+            Tirar Foto & Baixar
+        </button>
+    </div>
+
+    <!-- TELA 2: PEDIR MÚSICA -->
+    <div class="card" id="aba-pedir" style="display: none;">
+        <button class="btn-voltar" onclick="mostrarAba('menu')">⬅️ Voltar ao Menu</button>
+        
+        <h2 style="color: #ffeb3b;">📩 Escolha sua Música</h2>
+        
+        <button class="btn-catalogo" onclick="mostrarAba('catalogo')">🗂️ Explorar Catálogo de Músicas</button>
+        
+        <p style="font-size: 16px; color: #ccc; margin-bottom: 15px;">Ou pesquise livremente no YouTube:</p>
+        
+        <input type="text" id="campoBusca" placeholder="Ex: Evidências Chitãozinho...">
+        <button class="btn-busca" onclick="buscarMusica()">🔍 Buscar no YouTube</button>
+        
+        <div id="resultados"></div>
+    </div>
+
+    <!-- TELA 3: CATÁLOGO DE MÚSICAS -->
+    <div class="card" id="aba-catalogo" style="display: none;">
+        <button class="btn-voltar" onclick="mostrarAba('pedir')">⬅️ Voltar para a Busca</button>
+        
+        <h2 style="color: #00d2ff;">🗂️ Catálogo Completo</h2>
+        <p style="font-size: 16px; color: #ccc; margin-bottom: 15px;">Toque na letra inicial do artista ou digite na barra abaixo:</p>
+        
+        <div id="filtro-alfabeto" class="alfabeto-container"></div>
+
+        <input type="text" id="buscaCatalogo" placeholder="🔎 Digite aqui o cantor ou a música..." onkeyup="filtrarCatalogo()">
+        
+        <div id="lista-catalogo" style="height: 400px; overflow-y: auto; text-align: left; padding-right: 5px;">
+            <p style="text-align: center; color: #aaa; font-size: 16px;">Carregando músicas...</p>
+        </div>
+    </div>
+
+    <!-- TELA 4: VOTAÇÃO AO VIVO -->
+    <div class="card" id="aba-votar" style="display: none;">
+        <button class="btn-voltar" onclick="mostrarAba('menu')">⬅️ Voltar ao Menu</button>
+        
+        <h2 style="text-align: center;">🎤 No Palco Agora</h2>
+        <div id="status-palco">
+            <div id="cantor-atual">Aguardando...</div>
+            <div id="status-musica">Preste atenção na TV!</div>
+        </div>
+
+        <div id="lista-botoes" style="display: none;">
+            <p style="margin-bottom: 20px; font-size: 18px; color: #ccc; text-align: center;">O que você achou da apresentação?</p>
+            <button class="btn-voto v-exc" onclick="prepararVoto('excelente', '🤯 Excelente')">🤯 Excelente</button>
+            <button class="btn-voto v-mb" onclick="prepararVoto('muitobom', '🤩 Muito Bom')">🤩 Muito Bom</button>
+            <button class="btn-voto v-bom" onclick="prepararVoto('bom', '🙂 Bom')">🙂 Bom</button>
+            <button class="btn-voto v-reg" onclick="prepararVoto('regular', '😕 Regular')">😕 Regular</button>
+            <button class="btn-voto v-ruim" onclick="prepararVoto('ruim', '😖 Ruim')">😖 Ruim</button>
+        </div>
+
+        <div id="confirmacao-voto">
+            <p style="margin-top: 0; font-size: 18px; color: #fff;">Confirmar voto:<br><strong id="texto-voto-escolhido" style="font-size: 26px; display: block; margin-top: 10px; color: #ffeb3b;"></strong></p>
+            <div style="display: flex; justify-content: space-between; margin-top: 25px;">
+                <button class="btn-conf" style="background:#e52d27;" onclick="cancelarVoto()">❌ Cancelar</button>
+                <button class="btn-conf" style="background:#28a745;" onclick="confirmarVoto()">✅ Votar!</button>
+            </div>
+        </div>
+
+        <div id="msg-agradecimento" style="display: none; color: #28a745; font-weight: bold; font-size: 20px; margin-top: 25px; text-align: center;">
+            ✅ Voto registrado com sucesso!
+        </div>
+    </div>
+
+    <!-- TELA 5: FOTO LEMBRANÇA COM MOLDURA NEON -->
+    <div class="card" id="aba-fotos" style="display: none;">
+        <button class="btn-voltar" onclick="mostrarAba('menu')">⬅️ Voltar ao Menu</button>
+        
+        <h2 style="color: #28a745;">📸 Foto Lembrança</h2>
+        <p style="font-size: 15px; color: #ccc; margin-bottom: 15px;">Cantor(a) no palco no momento:</p>
+        
+        <!-- CAMPO TRAVADO: Lê o nome oficial do cantor automaticamente -->
+        <input type="text" id="cli-foto-cantor" value="Palco Livre" readonly style="background:#111; color:#ffeb3b; font-weight:bold; text-align:center; font-size:20px; border:2px solid #28a745;">
+        
+        <input type="file" id="input-camera-nativa" accept="image/*" capture="environment" style="display:none;" onchange="processarFotoNativa(this)">
+        
+        <button onclick="document.getElementById('input-camera-nativa').click()" style="width:100%; padding:18px; background:#28a745; color:#fff; border:none; border-radius:10px; font-weight:bold; font-size:18px; cursor:pointer; margin-bottom:20px; text-transform: uppercase;">📷 Tirar Foto Oficial</button>
+        
+        <canvas id="canvas-foto" style="display:none;"></canvas>
+
+        <div style="margin-top: 25px; border-top: 2px solid #444; padding-top: 15px;">
+            <h4 style="margin:0 0 12px 0; font-size:18px; color:#ffeb3b;">Galeria de Fotos do Dia</h4>
+            <div id="galeria-fotos-dia" class="galeria-fotos">
+                <span style="color:#777; font-size:14px; grid-column: 1/-1;">Nenhuma foto tirada ainda hoje.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE VISUALIZAÇÃO DE FOTO -->
+    <div id="fundo-modal-visualizar" onclick="fecharModalVisualizar()" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.9); z-index:250000;"></div>
+    <div id="modal-visualizar" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#1a1a1a; padding:20px; border-radius:12px; z-index:250001; box-shadow:0 10px 40px rgba(0,0,0,0.9); width:90%; max-width:450px; color:#fff; border:2px solid #ffeb3b; text-align:center; box-sizing:border-box;">
+        <h3 id="modal-vis-titulo" style="color:#ffeb3b; margin-top:0; font-size:18px;">Foto Lembrança</h3>
+        <p style="font-size:13px; color:#aaa; margin:5px 0 15px 0;">Segure o dedo na imagem e escolha <strong>"Salvar Imagem"</strong>:</p>
+        <img id="modal-vis-img" style="width:100%; max-height:45vh; border-radius:8px; border:2px solid #555; object-fit:contain; margin-bottom:15px;" alt="Foto Ampliada">
+        <div style="display:flex; gap:10px; justify-content:center;">
+            <button onclick="fecharModalVisualizar()" style="width:100%; padding:12px; background:#444; color:#fff; border:none; border-radius:6px; font-weight:bold; font-size:15px; cursor:pointer;">Fechar</button>
+        </div>
+    </div>
+
+    <!-- MODAL PARA PERGUNTAR O NOME ANTES DE ENVIAR A MÚSICA -->
+    <div id="fundo-modal-cantor" onclick="fecharModalCantor()"></div>
+    <div id="modal-cantor">
+        <h2>🎤 Quem vai cantar?</h2>
+        <input type="text" id="input-nome-cantor" list="lista-cantores-datalist" placeholder="Digite seu nome ou dupla...">
+        <div id="lista-cantores-salvos"></div>
+        <div class="botoes-modal-cantor">
+            <button onclick="confirmarPedidoComCantor()" class="btn-confirmar">Confirmar</button>
+            <button onclick="fecharModalCantor()" class="btn-cancelar">Cancelar</button>
+        </div>
+    </div>
+
+    <datalist id="lista-cantores-datalist"></datalist>
+
+    <div class="versao-app-cliente">v2.00</div>
+    <div id="notificacao">✅ Pedido enviado ao DJ!</div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBMLhTZc7qQLjE65L3BuW9e2ijvxObTxp8",
+            authDomain: "karaoke-parada.firebaseapp.com",
+            databaseURL: "https://karaoke-parada-default-rtdb.firebaseio.com",
+            projectId: "karaoke-parada",
+            storageBucket: "karaoke-parada.firebasestorage.app",
+            messagingSenderId: "379214932685",
+            appId: "1:379214932685:web:873e8b5b7d882a4f751784"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4'; 
+        
+        let idCantorAtual = null;
+        let votoPendente = null;
+        let musicasCatalogo = [];
+        let musicaPendenteYouTube = null;
+        let cantoresSalvos = JSON.parse(localStorage.getItem('cantoresSalvos')) || [];
+
+        database.ref('configSistema/bloqueado').on('value', (snap) => {
+            const bloqueado = !!snap.val();
+            const telaBlq = document.getElementById('tela-bloqueio-propaganda');
+            if (telaBlq) {
+                telaBlq.style.display = bloqueado ? 'flex' : 'none';
+            }
+        });
+
+        function atualizarDatalistCantores() {
+            const dl = document.getElementById('lista-cantores-datalist');
+            if(!dl) return;
+            dl.innerHTML = cantoresSalvos.map(c => `<option value="${c}">`).join('');
+            
+            const divSalvos = document.getElementById('lista-cantores-salvos');
+            if(divSalvos) {
+                divSalvos.innerHTML = cantoresSalvos.map(c => `<div class="chip-cantor" onclick="document.getElementById('input-nome-cantor').value='${c.replace(/'/g, "\\'")}'">${c}</div>`).join('');
+            }
+        }
+
+        function mostrarAba(aba) {
+            document.getElementById('menu-principal').style.display = 'none';
+            document.getElementById('aba-pedir').style.display = 'none';
+            document.getElementById('aba-votar').style.display = 'none';
+            document.getElementById('aba-catalogo').style.display = 'none';
+            document.getElementById('aba-fotos').style.display = 'none';
+
+            if (aba === 'menu') document.getElementById('menu-principal').style.display = 'block';
+            if (aba === 'pedir') document.getElementById('aba-pedir').style.display = 'block';
+            if (aba === 'votar') document.getElementById('aba-votar').style.display = 'block';
+            if (aba === 'catalogo') document.getElementById('aba-catalogo').style.display = 'block';
+            if (aba === 'fotos') {
+                document.getElementById('aba-fotos').style.display = 'block';
+                atualizarDatalistCantores();
+            }
+        }
+
+        database.ref('statusAtual').on('value', (snapshot) => {
+            const st = snapshot.val();
+            const inputFotoCantor = document.getElementById('cli-foto-cantor');
+
+            if(st && st.id && st.cantor && st.cantor !== "Avaliando...") {
+                document.getElementById('cantor-atual').innerText = "Voz: " + st.cantor;
+                document.getElementById('status-musica').innerText = "🎵 " + st.titulo;
+                idCantorAtual = st.id;
+
+                if (inputFotoCantor) {
+                    inputFotoCantor.value = st.cantor;
+                }
+
+                if (localStorage.getItem('voto_' + idCantorAtual)) {
+                    bloquearVoto();
+                } else {
+                    liberarVoto();
+                }
+            } else if (st && st.id === "avaliando") {
+                document.getElementById('cantor-atual').innerText = "Calculando as Notas...";
+                document.getElementById('status-musica').innerText = "Olhe para a tela da TV!";
+                if (inputFotoCantor) inputFotoCantor.value = "Apuração de Nota";
+                esconderVoto();
+            } else {
+                document.getElementById('cantor-atual').innerText = "Palco Livre!";
+                document.getElementById('status-musica').innerText = "Nenhuma música tocando no momento.";
+                if (inputFotoCantor) inputFotoCantor.value = "Palco Livre";
+                esconderVoto();
+            }
+        });
+
+        database.ref('fotosDia').on('value', (snapshot) => {
+            const galeria = document.getElementById('galeria-fotos-dia');
+            if(!galeria) return;
+            let html = "";
+            snapshot.forEach(child => {
+                let f = child.val();
+                let safeBase64 = f.imagemBase64.replace(/'/g, "\\'");
+                let safeCantor = f.cantor.replace(/'/g, "\\'");
+                html += `
+                    <div class="item-foto-galeria">
+                        <img src="${f.imagemBase64}" alt="Foto">
+                        <p>${f.cantor}</p>
+                        <div style="display:flex; gap:5px; justify-content:center; padding-bottom:6px;">
+                            <button onclick="visualizarFotoModal('${safeBase64}', '${safeCantor}')" class="btn-ver-foto">Ver / Salvar</button>
+                        </div>
+                    </div>
+                `;
+            });
+            galeria.innerHTML = html || '<span style="color:#777; font-size:14px; grid-column: 1/-1;">Nenhuma foto tirada ainda hoje.</span>';
+        });
+
+        function visualizarFotoModal(base64, cantor) {
+            document.getElementById('modal-vis-titulo').innerText = `Foto: ${cantor}`;
+            document.getElementById('modal-vis-img').src = base64;
+            document.getElementById('fundo-modal-visualizar').style.display = 'block';
+            document.getElementById('modal-visualizar').style.display = 'block';
+        }
+
+        function fecharModalVisualizar() {
+            document.getElementById('fundo-modal-visualizar').style.display = 'none';
+            document.getElementById('modal-visualizar').style.display = 'none';
+        }
+
+        function gerarBotoesAlfabeto() {
+            const div = document.getElementById('filtro-alfabeto');
+            const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+            let html = `<button class="btn-letra ativo" id="btn-letra-TODOS" onclick="filtrarPorLetra('TODOS')">TUDO</button>`;
+            alfabeto.forEach(letra => {
+                html += `<button class="btn-letra" id="btn-letra-${letra}" onclick="filtrarPorLetra('${letra}')">${letra}</button>`;
+            });
+            div.innerHTML = html;
+        }
+
+        function filtrarPorLetra(letra) {
+            document.querySelectorAll('.btn-letra').forEach(b => b.classList.remove('ativo'));
+            document.getElementById('btn-letra-' + letra).classList.add('ativo');
+            document.getElementById('buscaCatalogo').value = ''; 
+            if (letra === 'TODOS') { renderizarCatalogo(musicasCatalogo.slice(0, 150)); return; }
+            const filtrados = musicasCatalogo.filter(m => m.cantor.toUpperCase().startsWith(letra)).slice(0, 150);
+            renderizarCatalogo(filtrados);
+        }
+
+        async function carregarCatalogo() {
+            gerarBotoesAlfabeto(); 
+            try {
+                const response = await fetch('catalogo.csv?v=' + new Date().getTime());
+                const text = await response.text();
+                const delimitador = text.split('\n')[0].includes(';') ? ';' : ',';
+                let linhas = text.split('\n');
+
+                let headers = [];
+                let celulaH = ''; let aspasH = false;
+                let linhaH = linhas[0].trim();
+                for(let j = 0; j < linhaH.length; j++) {
+                    let char = linhaH[j];
+                    if(char === '"') aspasH = !aspasH;
+                    else if (char === delimitador && !aspasH) { headers.push(celulaH.trim().toUpperCase()); celulaH = ''; }
+                    else celulaH += char;
+                }
+                headers.push(celulaH.trim().toUpperCase());
+
+                let idxCantor = 0, idxTitulo = 2, idxInicio = 3;
+                headers.forEach((h, i) => {
+                    if (h.includes('CANTOR')) idxCantor = i;
+                    if (h.includes('TÍTULO') || h.includes('TITULO') || h === 'MUSICA' || h === 'MÚSICA') idxTitulo = i;
+                    if (h.includes('INÍCIO') || h.includes('INICIO') || h.includes('LETRA')) idxInicio = i;
+                });
+                
+                for (let i = 1; i < linhas.length; i++) {
+                    let linha = linhas[i].trim();
+                    if (!linha) continue;
+                    let colunas = []; let celula = ''; let aspas = false;
+                    for(let j = 0; j < linha.length; j++) {
+                        let char = linha[j];
+                        if(char === '"') aspas = !aspas;
+                        else if (char === delimitador && !aspas) { colunas.push(celula.trim()); celula = ''; }
+                        else celula += char;
+                    }
+                    colunas.push(celula.trim());
+
+                    if (colunas.length > Math.max(idxCantor, idxTitulo)) {
+                        let cantor = colunas[idxCantor] ? colunas[idxCantor].replace(/^"|"$/g, '').trim() : '';
+                        let titulo = colunas[idxTitulo] ? colunas[idxTitulo].replace(/^"|"$/g, '').trim() : '';
+                        let inicio = colunas[idxInicio] ? colunas[idxInicio].replace(/^"|"$/g, '').trim() : '';
+                        if(cantor && titulo) {
+                            musicasCatalogo.push({ cantor, titulo, inicio, filtro: (cantor + " " + titulo + " " + inicio).toLowerCase() });
+                        }
+                    }
+                }
+                musicasCatalogo.sort((a, b) => a.cantor.localeCompare(b.cantor, 'pt-BR'));
+                renderizarCatalogo(musicasCatalogo.slice(0, 150)); 
+            } catch(e) {
+                document.getElementById('lista-catalogo').innerHTML = '<p style="color:#e52d27; text-align:center; font-size:18px;">Catálogo offline. Peça digitando na busca principal.</p>';
+            }
+        }
+
+        function renderizarCatalogo(lista) {
+            const div = document.getElementById('lista-catalogo');
+            div.innerHTML = '';
+            if(lista.length === 0) { div.innerHTML = '<p style="text-align:center; color:#aaa; font-size:18px;">Nenhuma música encontrada.</p>'; return; }
+            let html = '';
+            lista.forEach(m => {
+                let tituloEscapado = m.titulo.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                let cantorEscapado = m.cantor.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                html += `
+                <div class="item-resultado" onclick="selecionarDoCatalogo('${tituloEscapado}', '${cantorEscapado}')">
+                    <div class="info-resultado">
+                        <strong style="font-size: 16px; display: block; margin-bottom: 4px;">🎤 ${m.cantor}</strong>
+                        <span style="font-size: 14px; color: #fff; display: block;">🎵 ${m.titulo}</span>
+                        ${m.inicio ? `<span style="font-size: 12px; color: #aaa; margin-top: 2px; display: block; font-style: italic;">📝 ${m.inicio}</span>` : ''}
+                    </div>
+                </div>`;
+            });
+            div.innerHTML = html;
+        }
+
+        function filtrarCatalogo() {
+            document.querySelectorAll('.btn-letra').forEach(b => b.classList.remove('ativo'));
+            const termo = document.getElementById('buscaCatalogo').value.toLowerCase();
+            if (!termo) { document.getElementById('btn-letra-TODOS').classList.add('ativo'); renderizarCatalogo(musicasCatalogo.slice(0, 150)); return; }
+            const filtrados = musicasCatalogo.filter(m => m.filtro.includes(termo)).slice(0, 150);
+            renderizarCatalogo(filtrados);
+        }
+
+        function selecionarDoCatalogo(titulo, cantor) {
+            abrirModalCantor("catalogo_" + Date.now(), titulo + " - " + cantor);
+        }
+
+        window.onload = () => { carregarCatalogo(); };
+
+        function liberarVoto() { document.getElementById('lista-botoes').style.display = 'block'; document.getElementById('confirmacao-voto').style.display = 'none'; document.getElementById('msg-agradecimento').style.display = 'none'; votoPendente = null; }
+        function esconderVoto() { document.getElementById('lista-botoes').style.display = 'none'; document.getElementById('confirmacao-voto').style.display = 'none'; document.getElementById('msg-agradecimento').style.display = 'none'; votoPendente = null; }
+        function bloquearVoto() { document.getElementById('lista-botoes').style.display = 'none'; document.getElementById('confirmacao-voto').style.display = 'none'; document.getElementById('msg-agradecimento').style.display = 'block'; votoPendente = null; }
+
+        function prepararVoto(tipo, texto) {
+            votoPendente = tipo;
+            document.getElementById('texto-voto-escolhido').innerText = texto;
+            document.getElementById('lista-botoes').style.display = 'none';
+            document.getElementById('confirmacao-voto').style.display = 'block';
+        }
+
+        function cancelarVoto() { votoPendente = null; document.getElementById('confirmacao-voto').style.display = 'none'; document.getElementById('lista-botoes').style.display = 'block'; }
+        function confirmarVoto() { if (!votoPendente || !idCantorAtual) return; database.ref('votosAtual').push({ tipo: votoPendente }); localStorage.setItem('voto_' + idCantorAtual, 'sim'); bloquearVoto(); }
+
+        document.getElementById('campoBusca').addEventListener('keypress', function(e) { if (e.key === 'Enter') buscarMusica(); });
+
+        async function buscarMusica() {
+            const termo = document.getElementById('campoBusca').value;
+            if (!termo) return alert("Digite o nome de uma música!");
+            const div = document.getElementById('resultados');
+            div.innerHTML = '<p style="text-align:center; color:#00d2ff; font-size:16px;">Buscando no YouTube...</p>'; 
+
+            const query = encodeURIComponent(termo + " karaoke -oficial -clipe -live");
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${query}&type=video&key=${API_KEY}`;
+            
+            try {
+                const res = await fetch(url); const dados = await res.json();
+                div.innerHTML = '';
+                if(dados.items.length === 0) { div.innerHTML = '<p style="color:#e52d27; font-size:16px;">Música não encontrada.</p>'; return; }
+
+                dados.items.forEach(v => {
+                    const thumb = v.snippet.thumbnails.default.url;
+                    const titulo = v.snippet.title;
+                    const canal = v.snippet.channelTitle;
+
+                    const btn = document.createElement('div');
+                    btn.className = 'item-resultado';
+                    btn.innerHTML = `
+                        <img src="${thumb}" alt="Thumb">
+                        <div class="info-resultado">
+                            <span class="titulo-video">${titulo}</span>
+                            <span class="nome-canal">🎤 ${canal}</span>
+                        </div>`; 
+                    btn.onclick = () => abrirModalCantor(v.id.videoId, titulo);
+                    div.appendChild(btn);
+                });
+            } catch (err) { div.innerHTML = "<p style='color:#e52d27; font-size:16px;'>Erro ao buscar.</p>"; }
+        }
+
+        function abrirModalCantor(videoId, titulo) {
+            musicaPendenteYouTube = { videoId, titulo };
+            document.getElementById('input-nome-cantor').value = '';
+            atualizarDatalistCantores();
+            document.getElementById('fundo-modal-cantor').style.display = 'block';
+            document.getElementById('modal-cantor').style.display = 'block';
+            document.getElementById('input-nome-cantor').focus();
+        }
+
+        function fecharModalCantor() {
+            musicaPendenteYouTube = null;
+            document.getElementById('fundo-modal-cantor').style.display = 'none';
+            document.getElementById('modal-cantor').style.display = 'none';
+        }
+
+        function confirmarPedidoComCantor() {
+            const nomeCantor = document.getElementById('input-nome-cantor').value.trim() || "Convidados";
+            if (!cantoresSalvos.includes(nomeCantor) && nomeCantor !== "Convidados") {
+                cantoresSalvos.push(nomeCantor);
+                localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
+            }
+
+            if (musicaPendenteYouTube) {
+                database.ref('pedidos').push({
+                    videoId: musicaPendenteYouTube.videoId,
+                    titulo: musicaPendenteYouTube.titulo,
+                    cantor: nomeCantor
+                }).then(() => {
+                    document.getElementById('campoBusca').value = "";
+                    document.getElementById('resultados').innerHTML = "";
+                    fecharModalCantor();
+                    mostrarAba('menu'); 
+                    const notif = document.getElementById('notificacao');
+                    notif.style.display = 'block';
+                    setTimeout(() => notif.style.display = 'none', 3000);
+                });
+            }
+        }
+
+        function processarFotoNativa(input) {
+            if (!input.files || !input.files[0]) return;
+            const cantor = document.getElementById('cli-foto-cantor').value.trim();
+            if (!cantor || cantor === "Palco Livre" || cantor === "Aguardando..." || cantor === "Apuração de Nota") {
+                alert("Aguarde uma música iniciar para tirar a foto oficial!");
+                input.value = "";
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.getElementById('canvas-foto');
+                    const larguraFoto = img.width; const alturaFoto = img.height;
+                    const margemBorda = Math.floor(larguraFoto * 0.06);
+                    const alturaRodape = Math.floor(alturaFoto * 0.28);
+
+                    canvas.width = larguraFoto + (margemBorda * 2);
+                    canvas.height = alturaFoto + (margemBorda * 2) + alturaRodape;
+                    const ctx = canvas.getContext('2d');
+
+                    ctx.fillStyle = "#0a0a12"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, margemBorda, margemBorda, larguraFoto, alturaFoto);
+
+                    ctx.shadowColor = "#00d2ff"; ctx.shadowBlur = 25; ctx.strokeStyle = "#00d2ff"; ctx.lineWidth = 10;
+                    ctx.strokeRect(margemBorda - 4, margemBorda - 4, larguraFoto + 8, alturaFoto + 8);
+                    ctx.shadowColor = "#ff007f"; ctx.shadowBlur = 15; ctx.strokeStyle = "#ffeb3b"; ctx.lineWidth = 4;
+                    ctx.strokeRect(margemBorda + 4, margemBorda + 4, larguraFoto - 8, alturaFoto - 8);
+                    ctx.shadowBlur = 0;
+
+                    const yRodape = (margemBorda * 2) + alturaFoto;
+                    ctx.fillStyle = "rgba(10, 10, 15, 0.95)";
+                    ctx.fillRect(0, yRodape, larguraFoto + (margemBorda * 2), alturaRodape);
+
+                    const hoje = new Date();
+                    const dataFormatada = hoje.toLocaleDateString('pt-BR');
+
+                    ctx.fillStyle = "#ffeb3b"; 
+                    ctx.font = `bold ${Math.max(26, Math.floor(larguraFoto * 0.055))}px Arial`;
+                    ctx.fillText("🍻 PARADA 10.95 BAR", margemBorda + 20, yRodape + (alturaRodape * 0.35));
+
+                    ctx.fillStyle = "#ffffff"; 
+                    ctx.font = `bold ${Math.max(22, Math.floor(larguraFoto * 0.045))}px Arial`;
+                    ctx.fillText(`🎤 Voz: ${cantor}`, margemBorda + 20, yRodape + (alturaRodape * 0.68));
+
+                    ctx.fillStyle = "#00d2ff"; 
+                    ctx.font = `bold ${Math.max(15, Math.floor(larguraFoto * 0.032))}px Arial`;
+                    ctx.fillText(`📅 ${dataFormatada}`, margemBorda + 20, yRodape + (alturaRodape * 0.90));
+
+                    const imagemBase64 = canvas.toDataURL('image/jpeg', 0.9);
+                    database.ref('fotosDia').push({ cantor, imagemBase64, timestamp: Date.now() });
+
+                    alert("Foto oficial salva e vinculada a " + cantor + "!");
+                    input.value = "";
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    </script>
+</body>
+</html>
