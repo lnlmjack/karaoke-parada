@@ -81,7 +81,6 @@
         .item-foto-galeria { background: #222; border-radius: 8px; overflow: hidden; border: 1px solid #444; text-align: center; padding-bottom: 8px; }
         .item-foto-galeria img { width: 100%; height: 120px; object-fit: cover; }
         .item-foto-galeria p { font-size: 13px; margin: 6px 0; color: #ffeb3b; font-weight: bold; }
-        .btn-baixar-foto { display: inline-block; padding: 6px 10px; color: #fff; text-decoration: none; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; border: none; background: #28a745; }
         .btn-ver-foto { display: inline-block; padding: 6px 10px; color: #fff; text-decoration: none; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; border: none; background: #007bff; }
 
         /* TELA DE BLOQUEIO / PROPAGANDA NOS CLIENTES */
@@ -91,7 +90,6 @@
         .propaganda-box h2 { color: #e52d27; font-size: 24px; margin: 15px 0; }
         .propaganda-box p { color: #ddd; font-size: 18px; line-height: 1.5; }
 
-        /* Versão no Rodapé */
         .versao-app-cliente { position: fixed; bottom: 4px; right: 8px; font-size: 11px; color: #fff; opacity: 0.4; z-index: 200000; pointer-events: none; }
 
         #notificacao { display: none; position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: #28a745; color: white; padding: 16px 28px; border-radius: 30px; font-weight: bold; font-size: 16px; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
@@ -178,7 +176,7 @@
         </div>
 
         <div id="lista-botoes" style="display: none;">
-            <p style="margin-bottom: 20px; font-size: 18px; color: #ccc; text-align: center;">O que você achou da apresentação?</p>
+            <p style="margin-bottom: 20px; font-size: 18px; color: #ccc; text-align: center;">O que achou da apresentação?</p>
             <button class="btn-voto v-exc" onclick="prepararVoto('excelente', '🤯 Excelente')">🤯 Excelente</button>
             <button class="btn-voto v-mb" onclick="prepararVoto('muitobom', '🤩 Muito Bom')">🤩 Muito Bom</button>
             <button class="btn-voto v-bom" onclick="prepararVoto('bom', '🙂 Bom')">🙂 Bom</button>
@@ -204,7 +202,7 @@
         <button class="btn-voltar" onclick="mostrarAba('menu')">⬅️ Voltar ao Menu</button>
         
         <h2 style="color: #28a745;">📸 Foto Lembrança</h2>
-        <p style="font-size: 15px; color: #ccc; margin-bottom: 15px;">Cantor(a) no palco no momento:</p>
+        <p style="font-size: 15px; color: #ccc; margin-bottom: 15px;">Cantor no palco no momento:</p>
         
         <input type="text" id="cli-foto-cantor" value="Palco Livre" readonly style="background:#111; color:#ffeb3b; font-weight:bold; text-align:center; font-size:20px; border:2px solid #28a745;">
         
@@ -247,7 +245,7 @@
 
     <datalist id="lista-cantores-datalist"></datalist>
 
-    <div class="versao-app-cliente">v1.91</div>
+    <div class="versao-app-cliente">v2.05</div>
     <div id="notificacao">✅ Pedido enviado ao DJ!</div>
 
     <script>
@@ -269,8 +267,19 @@
         let musicasCatalogo = [];
         let musicaPendenteYouTube = null;
         let cantoresSalvos = JSON.parse(localStorage.getItem('cantoresSalvos')) || [];
+        let canaisFavoritos = [
+            "Muramatsu Karaoke",
+            "Tequila Karaoke",
+            "Versão Karaokê"
+        ];
 
-        // ESCUTA O BLOQUEIO DO DJ PARA EXIBIR A TELA DE PROPAGANDA NO CLIENTE
+        // Sincroniza canais favoritos configurados pelo DJ
+        database.ref('configSistema/canaisFavoritos').on('value', (snap) => {
+            if (snap.exists() && Array.isArray(snap.val())) {
+                canaisFavoritos = snap.val();
+            }
+        });
+
         database.ref('configSistema/bloqueado').on('value', (snap) => {
             const bloqueado = !!snap.val();
             const telaBlq = document.getElementById('tela-bloqueio-propaganda');
@@ -501,14 +510,26 @@
             div.innerHTML = '<p style="text-align:center; color:#00d2ff; font-size:16px;">Buscando no YouTube...</p>'; 
 
             const query = encodeURIComponent(termo + " karaoke -oficial -clipe -live");
-            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${query}&type=video&key=${API_KEY}`;
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${query}&type=video&key=${API_KEY}`;
             
             try {
                 const res = await fetch(url); const dados = await res.json();
                 div.innerHTML = '';
                 if(dados.items.length === 0) { div.innerHTML = '<p style="color:#e52d27; font-size:16px;">Música não encontrada.</p>'; return; }
 
-                dados.items.forEach(v => {
+                // Aplica a ordem de canais prioritários também na busca do celular
+                let itensOrdenados = [...dados.items].sort((a, b) => {
+                    let tituloA = a.snippet.title.toLowerCase(); let canalA = a.snippet.channelTitle.toLowerCase();
+                    let indexA = canaisFavoritos.findIndex(c => tituloA.includes(c.toLowerCase()) || canalA.includes(c.toLowerCase()));
+                    let tituloB = b.snippet.title.toLowerCase(); let canalB = b.snippet.channelTitle.toLowerCase();
+                    let indexB = canaisFavoritos.findIndex(c => tituloB.includes(c.toLowerCase()) || canalB.includes(c.toLowerCase()));
+                    if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                    if (indexA !== -1) return -1;
+                    if (indexB !== -1) return 1;
+                    return 0;
+                });
+
+                itensOrdenados.slice(0, 6).forEach(v => {
                     const thumb = v.snippet.thumbnails.default.url;
                     const titulo = v.snippet.title;
                     const canal = v.snippet.channelTitle;
@@ -569,8 +590,8 @@
         function processarFotoNativa(input) {
             if (!input.files || !input.files[0]) return;
             const cantor = document.getElementById('cli-foto-cantor').value.trim();
-            if (!cantor || cantor === "Palco Livre" || cantor === "Aguardando...") {
-                alert("Aguarde uma música iniciar para tirar a foto oficial do cantor(a)!");
+            if (!cantor || cantor === "Palco Livre" || cantor === "Aguardando..." || cantor === "Apuração de Nota") {
+                alert("Aguarde uma música iniciar para tirar a foto oficial!");
                 input.value = "";
                 return;
             }
@@ -610,7 +631,7 @@
 
                     ctx.fillStyle = "#ffffff"; 
                     ctx.font = `bold ${Math.max(22, Math.floor(larguraFoto * 0.045))}px Arial`;
-                    ctx.fillText(`🎤 Cantor(a): ${cantor}`, margemBorda + 20, yRodape + (alturaRodape * 0.68));
+                    ctx.fillText(`🎤 Voz: ${cantor}`, margemBorda + 20, yRodape + (alturaRodape * 0.68));
 
                     ctx.fillStyle = "#00d2ff"; 
                     ctx.font = `bold ${Math.max(15, Math.floor(larguraFoto * 0.032))}px Arial`;
@@ -619,7 +640,7 @@
                     const imagemBase64 = canvas.toDataURL('image/jpeg', 0.9);
                     database.ref('fotosDia').push({ cantor, imagemBase64, timestamp: Date.now() });
 
-                    alert("Foto oficial salva e vinculada ao cantor(a) " + cantor + "!");
+                    alert("Foto oficial salva e vinculada a " + cantor + "!");
                     input.value = "";
                 }
                 img.src = e.target.result;
