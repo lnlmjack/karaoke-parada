@@ -278,7 +278,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v2.09</span>
+        <span>v2.10</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
@@ -550,6 +550,7 @@
             if (!nome || !senha) return alert("Preencha nome e senha!");
             if (usuariosAutorizados.some(u => u.usuario === nome)) return alert("Usuário já existe!");
             usuariosAutorizados.push({ usuario: nome, senha: senha, tipo: tipo });
+            localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
             document.getElementById('novo-user-nome').value = '';
             document.getElementById('novo-user-senha').value = '';
             renderizarTabelaUsuarios();
@@ -563,12 +564,14 @@
             if(novaSenha === null) return;
             usuariosAutorizados[index].usuario = novoNome.trim().toLowerCase();
             usuariosAutorizados[index].senha = novaSenha.trim();
+            localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
             renderizarTabelaUsuarios();
         }
 
         function excluirUsuario(index) {
             if(confirm("Excluir usuário?")) {
                 usuariosAutorizados.splice(index, 1);
+                localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados));
                 renderizarTabelaUsuarios();
             }
         }
@@ -687,13 +690,6 @@
                 </body></html>
             `);
 
-            popUpFila.acaoRecolocar = function(index) {
-                recolocarMusicaDoPopUp(index);
-            };
-            popUpFila.acaoLimpar = function() {
-                limparHistoricoPopUp();
-            };
-
             atualizarPopUpFila();
         }
 
@@ -738,7 +734,6 @@
                 let div = popUpFila.document.getElementById('conteudo-popup');
                 if (!div) return;
 
-                // Fila Atual: ordenada por ordem de chegada/execução
                 let naFilaAtualHtml = filaDeReproducao.map((item, i) => `
                     <div class="item">
                         <div class="info">
@@ -749,7 +744,6 @@
                     </div>
                 `).join('');
 
-                // Músicas já tocadas / fora da fila atual
                 let outrasMusicas = historicoPopUpPermanente.filter(m => 
                     !filaDeReproducao.some(f => f.videoId === m.videoId && f.cantor === m.cantor && f.titulo === m.titulo)
                 );
@@ -765,7 +759,7 @@
                                 <span class="titulo">${item.titulo}</span>
                                 <span class="cantor">🎤 Voz: ${item.cantor}</span>
                             </div>
-                            <button class="btn-recolocar" onclick="window.acaoRecolocar(${idxReal})">➕ Recolocar</button>
+                            <button class="btn-recolocar" data-idx="${idxReal}">➕ Recolocar</button>
                         </div>
                     `;
                 }).join('');
@@ -779,11 +773,27 @@
                     ${outrasHtml || "<p style='color:#777; font-size:12px;'>Nenhuma música no histórico ainda.</p>"}
 
                     <div style="text-align: center; margin-top: 25px; padding-bottom: 25px;">
-                        <button class="btn-limpar-popup" onclick="window.acaoLimpar()">🗑️ Limpar Livro de Segurança</button>
+                        <button id="btn-limpar-seguranca" class="btn-limpar-popup">🗑️ Limpar Livro de Segurança</button>
                     </div>
                 `;
 
                 div.innerHTML = htmlFinal;
+
+                // Event Listeners diretos da janela pai (evita bloqueios de script entre janelas do navegador)
+                let btnLimpar = popUpFila.document.getElementById('btn-limpar-seguranca');
+                if (btnLimpar) {
+                    btnLimpar.onclick = function() {
+                        limparHistoricoPopUp();
+                    };
+                }
+
+                let botoesRecolocar = popUpFila.document.querySelectorAll('.btn-recolocar');
+                botoesRecolocar.forEach(btn => {
+                    btn.onclick = function() {
+                        let idx = parseInt(this.getAttribute('data-idx'), 10);
+                        recolocarMusicaDoPopUp(idx);
+                    };
+                });
             }
         }
 
