@@ -278,7 +278,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v2.06</span>
+        <span>v2.07</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
@@ -663,6 +663,9 @@
             }
         }
 
+        // ==========================
+        // POP-UP INDEPENDENTE E PERMANENTE DA FILA
+        // ==========================
         let popUpFila = null;
         function abrirPopUpFila() {
             popUpFila = window.open("", "PopUpFila", "width=480,height=750,toolbar=0,scrollbars=1,resizable=1");
@@ -679,7 +682,8 @@
                     .cantor { color: #ffeb3b; font-size: 12px; }
                     .btn-recolocar { background: #28a745; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; flex-shrink: 0;}
                     .btn-recolocar:hover { background: #218838; }
-                    .btn-limpar-popup { background: transparent; border: 1px solid #555; color: #aaa; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; margin-top: 15px;}
+                    .btn-limpar-popup { background: transparent; border: 1px solid #555; color: #aaa; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-top: 15px; transition: 0.2s;}
+                    .btn-limpar-popup:hover { background: #e52d27; color: #fff; border-color: #e52d27; }
                 </style></head><body>
                 <h2>🛡️ Central de Segurança da Fila</h2>
                 <div id="conteudo-popup">Carregando...</div>
@@ -717,7 +721,7 @@
         };
 
         window.limparHistoricoPopUp = function() {
-            if(confirm("Deseja apagar o histórico de segurança permanente do Pop-up?")) {
+            if (confirm("Deseja apagar o histórico de segurança permanente do Pop-up?")) {
                 historicoPopUpPermanente = [];
                 localStorage.setItem('historicoPopUpPermanente', JSON.stringify(historicoPopUpPermanente));
                 atualizarPopUpFila();
@@ -743,7 +747,10 @@
                     !filaDeReproducao.some(f => f.videoId === m.videoId && f.cantor === m.cantor && f.titulo === m.titulo)
                 );
 
-                let outrasHtml = outrasMusicas.map((item) => {
+                // Ordenado do mais recente para o mais antigo (últimos adicionados no topo)
+                let outrasOrdenadas = outrasMusicas.slice().reverse();
+
+                let outrasHtml = outrasOrdenadas.map((item) => {
                     let idxReal = historicoPopUpPermanente.indexOf(item);
                     return `
                         <div class="item tocada">
@@ -764,7 +771,7 @@
                     <p style="font-size:11px; color:#aaa; margin:0 0 10px 0;">Estas músicas não somem mesmo ao limpar a fila. Clique em Recolocar para reinseri-las:</p>
                     ${outrasHtml || "<p style='color:#777; font-size:12px;'>Nenhuma música no histórico ainda.</p>"}
 
-                    <div style="text-align: center;">
+                    <div style="text-align: center; margin-top: 20px; padding-bottom: 20px;">
                         <button class="btn-limpar-popup" onclick="window.opener.limparHistoricoPopUp()">🗑️ Limpar Livro de Segurança</button>
                     </div>
                 `;
@@ -1146,6 +1153,7 @@
 
                     #tela-nota { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #121212, #3a0000); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
                     
+                    /* CORTINA DE LIBERAR O SOM EM TELA CHEIA */
                     #btn-liberar { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); color: #ffeb3b; border: none; font-size: 26px; font-weight: bold; cursor: pointer; z-index: 999999; display: flex; align-items: center; justify-content: center; text-shadow: 2px 2px 10px #000; }
                 </style></head>
                 <body onclick="document.getElementById('btn-liberar').style.display='none';">
