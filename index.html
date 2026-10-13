@@ -278,7 +278,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v2.10</span>
+        <span>v2.11</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
@@ -687,6 +687,22 @@
                 </style></head><body>
                 <h2>🛡️ Central de Segurança da Fila</h2>
                 <div id="conteudo-popup">Carregando...</div>
+                <script>
+                    function executarLimpezaPopUp() {
+                        if (confirm("Deseja apagar o histórico de segurança permanente do Pop-up?")) {
+                            localStorage.setItem('historicoPopUpPermanente', JSON.stringify([]));
+                            if (window.opener && typeof window.opener.sincronizarLimpezaDoPopUp === 'function') {
+                                window.opener.sincronizarLimpezaDoPopUp();
+                            }
+                            location.reload();
+                        }
+                    }
+                    function executarRecolocarPopUp(idx) {
+                        if (window.opener && typeof window.opener.recolocarMusicaDoPopUp === 'function') {
+                            window.opener.recolocarMusicaDoPopUp(idx);
+                        }
+                    }
+                <\\/script>
                 </body></html>
             `);
 
@@ -707,7 +723,7 @@
             atualizarPopUpFila();
         }
 
-        function recolocarMusicaDoPopUp(index) {
+        window.recolocarMusicaDoPopUp = function(index) {
             let musica = historicoPopUpPermanente[index];
             if (musica) {
                 filaDeReproducao.push({
@@ -719,15 +735,12 @@
                 atualizarTelaFila(false);
                 alert(`"${musica.titulo}" foi recolocada na fila com sucesso!`);
             }
-        }
+        };
 
-        function limparHistoricoPopUp() {
-            if (confirm("Deseja apagar o histórico de segurança permanente do Pop-up?")) {
-                historicoPopUpPermanente = [];
-                localStorage.setItem('historicoPopUpPermanente', JSON.stringify(historicoPopUpPermanente));
-                atualizarPopUpFila();
-            }
-        }
+        window.sincronizarLimpezaDoPopUp = function() {
+            historicoPopUpPermanente = [];
+            localStorage.setItem('historicoPopUpPermanente', JSON.stringify([]));
+        };
 
         function atualizarPopUpFila() {
             if (popUpFila && !popUpFila.closed) {
@@ -748,7 +761,7 @@
                     !filaDeReproducao.some(f => f.videoId === m.videoId && f.cantor === m.cantor && f.titulo === m.titulo)
                 );
 
-                // ORDENAÇÃO: Mais recente (maior timestamp) sempre no topo
+                // ORDENAÇÃO: Mais recente no topo
                 outrasMusicas.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
                 let outrasHtml = outrasMusicas.map((item) => {
@@ -759,7 +772,7 @@
                                 <span class="titulo">${item.titulo}</span>
                                 <span class="cantor">🎤 Voz: ${item.cantor}</span>
                             </div>
-                            <button class="btn-recolocar" data-idx="${idxReal}">➕ Recolocar</button>
+                            <button class="btn-recolocar" onclick="executarRecolocarPopUp(${idxReal})">➕ Recolocar</button>
                         </div>
                     `;
                 }).join('');
@@ -773,27 +786,11 @@
                     ${outrasHtml || "<p style='color:#777; font-size:12px;'>Nenhuma música no histórico ainda.</p>"}
 
                     <div style="text-align: center; margin-top: 25px; padding-bottom: 25px;">
-                        <button id="btn-limpar-seguranca" class="btn-limpar-popup">🗑️ Limpar Livro de Segurança</button>
+                        <button class="btn-limpar-popup" onclick="executarLimpezaPopUp()">🗑️ Limpar Livro de Segurança</button>
                     </div>
                 `;
 
                 div.innerHTML = htmlFinal;
-
-                // Event Listeners diretos da janela pai (evita bloqueios de script entre janelas do navegador)
-                let btnLimpar = popUpFila.document.getElementById('btn-limpar-seguranca');
-                if (btnLimpar) {
-                    btnLimpar.onclick = function() {
-                        limparHistoricoPopUp();
-                    };
-                }
-
-                let botoesRecolocar = popUpFila.document.querySelectorAll('.btn-recolocar');
-                botoesRecolocar.forEach(btn => {
-                    btn.onclick = function() {
-                        let idx = parseInt(this.getAttribute('data-idx'), 10);
-                        recolocarMusicaDoPopUp(idx);
-                    };
-                });
             }
         }
 
