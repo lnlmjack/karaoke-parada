@@ -278,7 +278,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v2.14</span>
+        <span>v2.15</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
@@ -602,7 +602,6 @@
             const sInput = document.getElementById('login-senha').value.trim();
             if(!uInput || !sInput) return alert("Preencha usuário e senha!");
 
-            // Trata o login caso seja digitado o e-mail completo
             if (uInput === "leonard@parada.com.br") uInput = "leonard";
             if (uInput === "operador@parada.com.br") uInput = "operador";
 
@@ -738,7 +737,6 @@
                 let div = popUpFila.document.getElementById('conteudo-popup');
                 if (!div) return;
 
-                // Fila Atual
                 let naFilaAtualHtml = filaDeReproducao.map((item, i) => `
                     <div class="item">
                         <div class="info">
@@ -753,7 +751,6 @@
                     !filaDeReproducao.some(f => f.videoId === m.videoId && f.cantor === m.cantor && f.titulo === m.titulo)
                 );
 
-                // ORDENAÇÃO: Mais recente no topo
                 outrasMusicas.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
                 let outrasHtml = outrasMusicas.map((item) => {
@@ -784,7 +781,6 @@
 
                 div.innerHTML = htmlFinal;
 
-                // Event listener atrelado via DOM pela janela pai
                 let btnLimpar = popUpFila.document.getElementById('btn-limpar-popup-seguranca');
                 if (btnLimpar) {
                     btnLimpar.onclick = function() {
@@ -1252,11 +1248,7 @@
                 events: { 
                     'onStateChange': e => { 
                         if (e.data === 0) {
-                            if (musicaAtual && musicaAtual.cantor !== "Convidados") {
-                                gerarNotaFinal();
-                            } else {
-                                tocarProxima(true);
-                            }
+                            gerarNotaFinal();
                         } 
                     }, 
                     'onError': e => { 
@@ -1266,7 +1258,7 @@
                             let idFinal = videoIdNovo || "busca_" + Date.now();
                             let tituloFinal = videoIdNovo ? "Música Substituta" : termoNovo;
                             
-                            let nova = { videoId: idFinal, titulo: tituloFinal, cantor: musicaAtual ? musicaAtual.cantor : "Convidados" };
+                            let nova = { videoId: idFinal, titulo: tituloFinal, cantor: (musicaAtual && musicaAtual.cantor) ? musicaAtual.cantor : "Convidados" };
                             filaDeReproducao.unshift(nova);
                             registrarNoPopUpPermanente(nova);
                             atualizarTelaFila();
@@ -1288,15 +1280,11 @@
                     let cur = player.getCurrentTime();
                     let dur = player.getDuration();
                     
-                    if (dur > 10 && cur > 0 && (dur - cur) <= 1.2 && st === 1) {
-                        if (musicaAtual && musicaAtual.cantor !== "Convidados") {
-                            gerarNotaFinal();
-                        } else {
-                            tocarProxima(true);
-                        }
+                    if (dur > 5 && cur > 0 && (dur - cur) <= 0.8 && st === 1) {
+                        gerarNotaFinal();
                     }
                 }
-            }, 500);
+            }, 400);
         }
 
         let notaJaGeradaNestaMusica = false;
@@ -1305,18 +1293,13 @@
             if (notaJaGeradaNestaMusica) return;
             notaJaGeradaNestaMusica = true;
 
-            if (!musicaAtual) {
-                tocarProxima(true);
-                return;
-            }
-
             captando = false; 
             let notaFinal;
             const votosCongelados = { ...contagemVotos };
             
-            const nomeDoCantor = musicaAtual.cantor;
-            const tituloDaMusica = musicaAtual.titulo;
-            const tempoInicioCanto = musicaAtual.timestampInicio || 0;
+            const nomeDoCantor = (musicaAtual && musicaAtual.cantor && musicaAtual.cantor.trim() !== "") ? musicaAtual.cantor.trim() : "Convidado do Bar";
+            const tituloDaMusica = (musicaAtual && musicaAtual.titulo) ? musicaAtual.titulo : "Música Especial";
+            const tempoInicioCanto = (musicaAtual && musicaAtual.timestampInicio) ? musicaAtual.timestampInicio : 0;
 
             database.ref('statusAtual').set({ cantor: "Avaliando...", titulo: "Olhe para a tela da TV!", id: "avaliando" });
 
@@ -1351,7 +1334,7 @@
             database.ref('fotosDia').once('value', (snapshot) => {
                 let fotoEncontrada = null;
                 let maiorTimestamp = 0;
-                let cantorAtualBusca = nomeDoCantor.trim().toLowerCase();
+                let cantorAtualBusca = nomeDoCantor.toLowerCase();
 
                 snapshot.forEach(child => {
                     let f = child.val();
