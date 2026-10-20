@@ -144,7 +144,6 @@
             <button class="btn-aba ativo" onclick="mudarAba('canais', this)">⭐ Canais Favoritos</button>
             <button class="btn-aba" onclick="mudarAba('usuarios', this)">👥 Usuários</button>
             <button class="btn-aba" onclick="mudarAba('transicao', this)">⏳ Transição / Pausa</button>
-            <button class="btn-aba" onclick="mudarAba('cantores', this)">🎤 Cantores Salvos</button>
         </div>
         <div id="aba-canais" class="conteudo-aba ativo">
             <div style="max-height: 150px; overflow-y: auto;">
@@ -184,12 +183,6 @@
                 <button onclick="salvarTempoPausa()" style="width: 100%; padding: 8px; background: #007bff; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Salvar Tempo</button>
             </div>
         </div>
-        <div id="aba-cantores" class="conteudo-aba">
-            <div class="form-novo-canal" style="text-align: center;">
-                <p style="font-size: 14px; color: #aaa; margin-bottom: 15px;">Ao limpar os cantores aqui, a lista salva também será apagada dos celulares dos espectadores.</p>
-                <button onclick="limparCantoresGeral()" style="width: 100%; padding: 12px; background: #b31217; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">🗑️ Apagar Nomes de Cantores de Todos os Celulares</button>
-            </div>
-        </div>
         <button onclick="fecharModalConfig()" style="width: 100%; margin-top: 15px; padding: 10px; background: #333; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Fechar</button>
     </div>
 
@@ -210,7 +203,7 @@
             <button onclick="confirmarCantor(true)" class="btn-confirmar" style="background:#007bff;">🔝 Colocar no Topo (Fura-Fila)</button>
             <button onclick="fecharModalCantor()" class="btn-cancelar">❌ Cancelar</button>
         </div>
-        <button onclick="limparCantoresGeral()" class="btn-limpar-cantores">🗑️ Apagar Nomes dos Celulares e do DJ</button>
+        <button onclick="limparCantores()" class="btn-limpar-cantores">🗑️ Limpar Lista Salva</button>
     </div>
 
     <div class="container">
@@ -285,7 +278,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v2.20</span>
+        <span>v2.16</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
@@ -337,21 +330,6 @@
         function sincronizarCanaisFirebase() {
             database.ref('configSistema/canaisFavoritos').set(canaisFavoritos);
         }
-
-        // Sincroniza lista de cantores com o Firebase
-        database.ref('configSistema/cantoresSalvos').on('value', (snap) => {
-            if (snap.exists() && Array.isArray(snap.val())) {
-                cantoresSalvos = snap.val();
-                localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
-                atualizarDatalistCantores();
-                renderizarCantoresSalvos();
-            } else if (snap.exists() && snap.val() === "limpo") {
-                cantoresSalvos = [];
-                localStorage.setItem('cantoresSalvos', JSON.stringify([]));
-                atualizarDatalistCantores();
-                renderizarCantoresSalvos();
-            }
-        });
 
         function atualizarDatalistCantores() {
             const dl = document.getElementById('lista-cantores-datalist');
@@ -689,21 +667,19 @@
         }
 
         // ==========================
-        // CENTRAL DE SEGURANÇA DA FILA
+        // POP-UP INDEPENDENTE E PERMANENTE DA FILA
         // ==========================
         let popUpFila = null;
         function abrirPopUpFila() {
             popUpFila = window.open("", "PopUpFila", "width=480,height=750,toolbar=0,scrollbars=1,resizable=1");
-            let doc = popUpFila.document;
-            doc.open();
-            doc.write(`
+            popUpFila.document.write(`
                 <!DOCTYPE html><html><head><title>Central de Segurança da Fila</title>
                 <style>
                     body { font-family: Arial, sans-serif; background: #121212; color: #fff; padding: 20px; margin: 0; }
                     h2 { color: #ffeb3b; border-bottom: 2px solid #333; padding-bottom: 10px; margin-top:0; font-size: 20px;}
                     h3 { color: #00d2ff; margin-top: 20px; font-size: 15px; border-left: 4px solid #00d2ff; padding-left: 8px;}
                     .item { background: #222; margin: 8px 0; padding: 12px; border-left: 5px solid #ffeb3b; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; gap: 8px;}
-                    .item.tocada { border-left-color: #28a745; opacity: 0.85; }
+                    .item.tocada { border-left-color: #28a745; opacity: 0.75; }
                     .info { flex: 1; }
                     .titulo { font-weight: bold; font-size: 14px; display:block; margin-bottom: 4px; color: #fff;}
                     .cantor { color: #ffeb3b; font-size: 12px; }
@@ -716,20 +692,14 @@
                 <div id="conteudo-popup">Carregando...</div>
                 </body></html>
             `);
-            doc.close();
 
             atualizarPopUpFila();
         }
 
-        // REGISTRO PERMANENTE: Qualquer música colocada na fila entra aqui e nunca sai sozinha
         function registrarNoPopUpPermanente(musica) {
-            let uid = musica.uid || ("m_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5));
-            musica.uid = uid;
-            
-            let existe = historicoPopUpPermanente.some(m => m.uid === uid || (m.videoId === musica.videoId && m.cantor === musica.cantor && m.titulo === musica.titulo));
+            let existe = historicoPopUpPermanente.some(m => m.videoId === musica.videoId && m.cantor === musica.cantor && m.titulo === musica.titulo);
             if (!existe) {
                 historicoPopUpPermanente.push({
-                    uid: uid,
                     videoId: musica.videoId,
                     titulo: musica.titulo,
                     cantor: musica.cantor,
@@ -743,14 +713,11 @@
         function recolocarMusicaDoPopUp(index) {
             let musica = historicoPopUpPermanente[index];
             if (musica) {
-                let nova = { 
-                    uid: "m_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5),
-                    videoId: musica.videoId, 
-                    titulo: musica.titulo, 
-                    cantor: musica.cantor 
-                };
-                filaDeReproducao.push(nova);
-                registrarNoPopUpPermanente(nova);
+                filaDeReproducao.push({
+                    videoId: musica.videoId,
+                    titulo: musica.titulo,
+                    cantor: musica.cantor
+                });
                 salvarCantorAutomaticamente(musica.cantor);
                 atualizarTelaFila(false);
                 alert(`"${musica.titulo}" foi recolocada na fila com sucesso!`);
@@ -780,14 +747,13 @@
                     </div>
                 `).join('');
 
-                // Músicas que não estão na fila atual (excluídas ou já tocadas)
-                let foraDaFila = historicoPopUpPermanente.filter(m => 
-                    !filaDeReproducao.some(f => (f.uid && m.uid && f.uid === m.uid) || (f.videoId === m.videoId && f.cantor === m.cantor && f.titulo === m.titulo))
+                let outrasMusicas = historicoPopUpPermanente.filter(m => 
+                    !filaDeReproducao.some(f => f.videoId === m.videoId && f.cantor === m.cantor && f.titulo === m.titulo)
                 );
 
-                foraDaFila.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                outrasMusicas.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-                let outrasHtml = foraDaFila.map((item) => {
+                let outrasHtml = outrasMusicas.map((item) => {
                     let idxReal = historicoPopUpPermanente.indexOf(item);
                     return `
                         <div class="item tocada">
@@ -804,9 +770,9 @@
                     <h3>⏳ Presentes na Fila Original (${filaDeReproducao.length})</h3>
                     ${naFilaAtualHtml || "<p style='color:#777; font-size:12px;'>Nenhuma música na fila agora.</p>"}
                     
-                    <h3>📋 Histórico / Excluídas / Backup (${foraDaFila.length})</h3>
-                    <p style="font-size:11px; color:#aaa; margin:0 0 10px 0;">Todas as músicas que entraram na fila ficam salvas aqui mesmo se forem excluídas. Clique em Recolocar para reinseri-las:</p>
-                    ${outrasHtml || "<p style='color:#777; font-size:12px;'>Nenhuma música arquivada no momento.</p>"}
+                    <h3>📋 Histórico Geral / Já Tocadas (${outrasMusicas.length})</h3>
+                    <p style="font-size:11px; color:#aaa; margin:0 0 10px 0;">Estas músicas não somem mesmo ao limpar a fila. Clique em Recolocar para reinseri-las:</p>
+                    ${outrasHtml || "<p style='color:#777; font-size:12px;'>Nenhuma música no histórico ainda.</p>"}
 
                     <div style="text-align: center; margin-top: 25px; padding-bottom: 25px;">
                         <button id="btn-limpar-popup-seguranca" class="btn-limpar-popup">🗑️ Limpar Livro de Segurança</button>
@@ -955,9 +921,7 @@
             if (!cantoresSalvos.includes(nomeFormatado)) {
                 cantoresSalvos.push(nomeFormatado);
                 localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
-                database.ref('configSistema/cantoresSalvos').set(cantoresSalvos);
                 atualizarDatalistCantores();
-                renderizarCantoresSalvos();
             }
         }
 
@@ -967,14 +931,8 @@
             autoAprovar = chkAuto.checked;
             if (autoAprovar && pedidosPendentes.length > 0) {
                 pedidosPendentes.forEach(p => {
-                    let item = { 
-                        uid: "m_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5),
-                        videoId: p.videoId, 
-                        titulo: p.titulo, 
-                        cantor: p.cantor 
-                    };
-                    filaDeReproducao.push(item);
-                    registrarNoPopUpPermanente(item);
+                    filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
+                    registrarNoPopUpPermanente(p);
                     salvarCantorAutomaticamente(p.cantor);
                     database.ref('pedidos').child(p.key).remove();
                 });
@@ -990,14 +948,8 @@
             snapshot.forEach(child => { pedidosPendentes.push({ key: child.key, ...child.val() }); });
             if (autoAprovar && pedidosPendentes.length > 0) {
                 pedidosPendentes.forEach(p => {
-                    let item = { 
-                        uid: "m_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5),
-                        videoId: p.videoId, 
-                        titulo: p.titulo, 
-                        cantor: p.cantor 
-                    };
-                    filaDeReproducao.push(item);
-                    registrarNoPopUpPermanente(item);
+                    filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
+                    registrarNoPopUpPermanente(p);
                     salvarCantorAutomaticamente(p.cantor);
                     database.ref('pedidos').child(p.key).remove();
                 });
@@ -1030,14 +982,8 @@
 
         function aprovarPedido(index) {
             const p = pedidosPendentes[index];
-            let item = { 
-                uid: "m_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5),
-                videoId: p.videoId, 
-                titulo: p.titulo, 
-                cantor: p.cantor 
-            };
-            filaDeReproducao.push(item);
-            registrarNoPopUpPermanente(item);
+            filaDeReproducao.push({ videoId: p.videoId, titulo: p.titulo, cantor: p.cantor });
+            registrarNoPopUpPermanente(p);
             salvarCantorAutomaticamente(p.cantor);
             atualizarTelaFila();
             database.ref('pedidos').child(p.key).remove(); 
@@ -1093,12 +1039,7 @@
             if (cantor === "") cantor = "Convidados";
             salvarCantorAutomaticamente(cantor);
             if (musicaPendente) {
-                let nova = { 
-                    uid: "m_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5),
-                    videoId: musicaPendente.videoId, 
-                    titulo: musicaPendente.titulo, 
-                    cantor: cantor 
-                };
+                let nova = { videoId: musicaPendente.videoId, titulo: musicaPendente.titulo, cantor: cantor };
                 if (noTopo) {
                     filaDeReproducao.unshift(nova);
                 } else {
@@ -1119,7 +1060,6 @@
             if (confirm(`Excluir ${nome}?`)) {
                 cantoresSalvos = cantoresSalvos.filter(c => c !== nome);
                 localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
-                database.ref('configSistema/cantoresSalvos').set(cantoresSalvos);
                 renderizarCantoresSalvos();
                 atualizarDatalistCantores();
             }
@@ -1133,7 +1073,6 @@
                 if (index !== -1) {
                     cantoresSalvos[index] = novoNome.trim();
                     localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
-                    database.ref('configSistema/cantoresSalvos').set(cantoresSalvos);
                     renderizarCantoresSalvos();
                     atualizarDatalistCantores();
                 }
@@ -1156,14 +1095,12 @@
             `).join('');
         }
 
-        function limparCantoresGeral() {
-            if (confirm("⚠️ Tem certeza que deseja apagar a lista de cantores salvos daqui e de TODOS os celulares dos espectadores?")) {
+        function limparCantores() {
+            if (confirm("Apagar todos os cantores salvos?")) {
                 cantoresSalvos = [];
-                localStorage.setItem('cantoresSalvos', JSON.stringify([]));
-                database.ref('configSistema/cantoresSalvos').set("limpo");
+                localStorage.setItem('cantoresSalvos', JSON.stringify(cantoresSalvos));
                 renderizarCantoresSalvos();
                 atualizarDatalistCantores();
-                alert("Lista de cantores zerada com sucesso em todo o sistema!");
             }
         }
 
@@ -1197,89 +1134,102 @@
 
         function abrirTV() {
             telaTV = window.open("", "TelaTV", "width=800,height=600,toolbar=0,location=0,status=0,menubar=0,scrollbars=0,resizable=1");
-            
-            let htmlTV = '<!DOCTYPE html><html><head>' +
-                '<base href="' + window.location.href + '">' +
-                '<title>TV - Parada 10.95</title>' +
-                '<style>' +
-                    'body { margin: 0; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; font-family: Arial;}' +
-                    '#player { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1;}' +
-                    '#logo-bar { position: absolute !important; top: 0px !important; left: 0px !important; z-index: 25; pointer-events: none; display: flex; align-items: flex-start; }' +
-                    '#logo-bar img { height: 140px !important; width: auto !important; display: block; }' +
-                    '#logo-bar span { font-size: 34px; font-weight: 900; color: #fff; text-shadow: 3px 3px 10px #000; display: block; margin-top: 15px; margin-left: 15px; white-space: nowrap; }' +
-                    '#qr-code { position: absolute !important; top: 20px !important; right: 20px !important; z-index: 25; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }' +
-                    '#qr-code img { width: 110px; height: 110px; background: white; padding: 5px; border-radius: 8px; display: block; margin: 0 auto; }' +
-                    '#qr-code p { margin: 8px 0 0 0; color: #fff; font-size: 12px; font-weight: bold; text-transform: uppercase;}' +
-                    '#qr-code span { color: #ffeb3b; font-size: 11px; }' +
-                    '#proximo-overlay { position: absolute !important; bottom: 20px !important; left: 20px !important; z-index: 25; background: rgba(10,10,15,0.75); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(0,210,255,0.4); text-align: left; pointer-events: none; display: none; backdrop-filter: blur(4px); max-width: 400px; }' +
-                    '#proximo-overlay .prox-titulo { font-size: 10px; color: #00d2ff; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin: 0; }' +
-                    '#proximo-overlay .prox-nome { font-size: 13px; color: #fff; font-weight: bold; margin: 2px 0 0 0; text-shadow: 1px 1px 3px #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }' +
-                    '#cantor-overlay { position: absolute; top: -200px; right: 170px; background: linear-gradient(90deg, rgba(20,20,20,0.95), rgba(229,45,39,0.85)); padding: 10px 20px; border-radius: 15px; z-index: 24; transition: top 0.8s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: -3px 5px 15px rgba(0,0,0,0.5); max-width: 350px; text-align: right; border: 2px solid #e52d27;}' +
-                    '#cantor-overlay .aviso { font-size: 12px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}' +
-                    '#cantor-overlay .nome { font-size: 22px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; line-height: 1.1; word-wrap: break-word;}' +
-                    '#tela-aguardando { display: flex; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #0b0b0b, #1a0000); z-index: 90; flex-direction: column; justify-content: center; align-items: center; text-align: center; }' +
-                    '#tela-aguardando img.logo-centro { width: 220px; height: auto; border-radius: 50%; box-shadow: 0 0 40px rgba(229,45,39,0.5); margin-bottom: 25px; animation: pulsar 2s infinite; }' +
-                    '@keyframes pulsar { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }' +
-                    '#tela-aguardando h1 { font-size: 48px; color: #ffeb3b; margin: 0 0 10px 0; text-shadow: 2px 2px 10px #000; }' +
-                    '#tela-aguardando p { font-size: 22px; color: #fff; margin: 0 0 20px 0; text-shadow: 1px 1px 5px #000; }' +
-                    '#tela-aguardando img.qr-centro { width: 150px; height: 150px; background: white; padding: 8px; border-radius: 12px; box-shadow: 0 0 20px rgba(0,210,255,0.4); display: block; }' +
-                    '#tela-transicao { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: #0a0a0a; z-index: 95; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px; box-sizing: border-box;}' +
-                    '#contador-regressivo { font-size: 180px; font-weight: 900; color: #ffeb3b; text-shadow: 0 0 30px rgba(255,235,59,0.5); line-height: 1; margin-top: 15px;}' +
-                    '#tela-nota { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #121212, #3a0000); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center;}' +
-                    '#btn-liberar { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); color: #ffeb3b; border: none; font-size: 26px; font-weight: bold; cursor: pointer; z-index: 999999; display: flex; align-items: center; justify-content: center; text-shadow: 2px 2px 10px #000; }' +
-                '</style></head>' +
-                '<body onclick="document.getElementById(\'btn-liberar\').style.display=\'none\';">' +
-                    '<div id="logo-bar">' +
-                        '<img src="logop.png" alt="Logo">' +
-                        '<span>PARADA 10.95 BAR</span>' +
-                    '</div>' +
-                    '<div id="qr-code">' +
-                        '<img src="qrcode.png?v=2" alt="Escaneie">' +
-                        '<p>APONTE O CELULAR</p>' +
-                        '<span>Peça e Vote!</span>' +
-                    '</div>' +
-                    '<div id="proximo-overlay">' +
-                        '<p class="prox-titulo">Próximo na Fila</p>' +
-                        '<p id="prox-nome-txt" class="prox-nome">--</p>' +
-                    '</div>' +
-                    '<div id="cantor-overlay"></div>' +
-                    '<div id="tela-aguardando">' +
-                        '<img src="logop.png" class="logo-centro" alt="Logo Bar">' +
-                        '<h1>🍻 AGUARDANDO PRÓXIMA MÚSICA 🍻</h1>' +
-                        '<p>Aponte a câmera para o QR Code, escolha seu som ou peça ao DJ!</p>' +
-                        '<img src="qrcode.png?v=2" class="qr-centro" alt="QR Code">' +
-                    '</div>' +
-                    '<div id="tela-transicao">' +
-                        '<h3 style="font-size: 25px; color: #aaa; margin: 0 0 10px 0; text-transform: uppercase;">PRÓXIMO CANTOR:</h3>' +
-                        '<h1 id="transicao-cantor-nome" style="font-size: 45px; color: #e52d27; margin: 0 0 15px 0;"></h1>' +
-                        '<h2 id="transicao-musica-titulo" style="font-size: 24px; color: #00d2ff; margin: 0 0 25px 0; font-weight: normal;"></h2>' +
-                        '<div id="contador-regressivo">5</div>' +
-                    '</div>' +
-                    '<div id="tela-nota">' +
-                        '<h1 style="font-size: 36px; color: #ffeb3b; margin-bottom: 5px;">🍻 PARADA 10.95 BAR</h1>' +
-                        '<h2 style="font-size: 26px; margin-bottom: 25px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>' +
-                        '<div id="nota-loading" style="font-size: 26px; color: #fff;">Calculando energia e votos... 🥁</div>' +
-                        '<div id="nota-resultado" style="display:flex; flex-direction:row; align-items:center; justify-content:center; gap: 70px; width: 95%; max-width: 1200px;">' +
-                            '<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex: 1;">' +
-                                '<div style="font-size: 26px; color: #aaa; margin-bottom: 5px;">Pontuação Final:</div>' +
-                                '<div id="nota-valor" style="font-size: 160px; font-weight: 900; line-height: 1; color: #fff;">--</div>' +
-                            '</div>' +
-                            '<div id="tv-foto-container" style="display:none; flex: 1.2; align-items: center; justify-content: center;">' +
-                                '<img id="tv-foto-img" style="max-width: 100%; max-height: 450px; object-fit: contain; border-radius: 12px; border: 5px solid #ffeb3b; box-shadow: 0 0 40px rgba(255,235,59,0.7);" alt="Foto do Cantor">' +
-                            '</div>' +
-                        '</div>' +
-                    '</div>' +
-                    '<button id="btn-liberar" onclick="this.style.display=\'none\';">👆 Clique em qualquer lugar desta tela para liberar o som (F11)</button>' +
-                    '<div id="player"></div>' +
-                    '<script>' +
-                        'function onYouTubeIframeAPIReady() { if(window.opener) window.opener.iniciarPlayer(YT); }' +
-                    '<' + '/script>' +
-                    '<script src="https://www.youtube.com/iframe_api"><' + '/script>' +
-                '</body></html>';
+            telaTV.document.write(`
+                <!DOCTYPE html><html><head>
+                <base href="${window.location.href}">
+                <title>TV - Parada 10.95</title>
+                <style>
+                    body { margin: 0; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; font-family: Arial;}
+                    #player { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1;}
+                    
+                    #logo-bar { position: absolute !important; top: 0px !important; left: 0px !important; z-index: 25; pointer-events: none; display: flex; align-items: flex-start; }
+                    #logo-bar img { height: 140px !important; width: auto !important; display: block; } 
+                    #logo-bar span { font-size: 34px; font-weight: 900; color: #fff; text-shadow: 3px 3px 10px #000; display: block; margin-top: 15px; margin-left: 15px; white-space: nowrap; }
+                    
+                    #qr-code { position: absolute !important; top: 20px !important; right: 20px !important; z-index: 25; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
+                    #qr-code img { width: 110px; height: 110px; background: white; padding: 5px; border-radius: 8px; display: block; margin: 0 auto; }
+                    #qr-code p { margin: 8px 0 0 0; color: #fff; font-size: 12px; font-weight: bold; text-transform: uppercase;}
+                    #qr-code span { color: #ffeb3b; font-size: 11px; }
 
-            telaTV.document.open();
-            telaTV.document.write(htmlTV);
-            telaTV.document.close();
+                    #proximo-overlay { position: absolute !important; bottom: 20px !important; left: 20px !important; z-index: 25; background: rgba(10,10,15,0.75); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(0,210,255,0.4); text-align: left; pointer-events: none; display: none; backdrop-filter: blur(4px); max-width: 400px; }
+                    #proximo-overlay .prox-titulo { font-size: 10px; color: #00d2ff; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
+                    #proximo-overlay .prox-nome { font-size: 13px; color: #fff; font-weight: bold; margin: 2px 0 0 0; text-shadow: 1px 1px 3px #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+                    #cantor-overlay { position: absolute; top: -200px; right: 170px; background: linear-gradient(90deg, rgba(20,20,20,0.95), rgba(229,45,39,0.85)); padding: 10px 20px; border-radius: 15px; z-index: 24; transition: top 0.8s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: -3px 5px 15px rgba(0,0,0,0.5); max-width: 350px; text-align: right; border: 2px solid #e52d27;}
+                    #cantor-overlay .aviso { font-size: 12px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
+                    #cantor-overlay .nome { font-size: 22px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; line-height: 1.1; word-wrap: break-word;}
+                    
+                    #tela-aguardando { display: flex; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #0b0b0b, #1a0000); z-index: 90; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+                    #tela-aguardando img.logo-centro { width: 220px; height: auto; border-radius: 50%; box-shadow: 0 0 40px rgba(229,45,39,0.5); margin-bottom: 25px; animation: pulsar 2s infinite; }
+                    @keyframes pulsar { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+                    #tela-aguardando h1 { font-size: 48px; color: #ffeb3b; margin: 0 0 10px 0; text-shadow: 2px 2px 10px #000; }
+                    #tela-aguardando p { font-size: 22px; color: #fff; margin: 0 0 20px 0; text-shadow: 1px 1px 5px #000; }
+                    #tela-aguardando img.qr-centro { width: 150px; height: 150px; background: white; padding: 8px; border-radius: 12px; box-shadow: 0 0 20px rgba(0,210,255,0.4); display: block; }
+
+                    #tela-transicao { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: #0a0a0a; z-index: 95; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px; box-sizing: border-box;}
+                    #contador-regressivo { font-size: 180px; font-weight: 900; color: #ffeb3b; text-shadow: 0 0 30px rgba(255,235,59,0.5); line-height: 1; margin-top: 15px;}
+
+                    #tela-nota { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #121212, #3a0000); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
+                    
+                    /* CORTINA DE LIBERAR O SOM EM TELA CHEIA */
+                    #btn-liberar { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); color: #ffeb3b; border: none; font-size: 26px; font-weight: bold; cursor: pointer; z-index: 999999; display: flex; align-items: center; justify-content: center; text-shadow: 2px 2px 10px #000; }
+                </style></head>
+                <body onclick="document.getElementById('btn-liberar').style.display='none';">
+                    <div id="logo-bar">
+                        <img src="logop.png" alt="Logo">
+                        <span>PARADA 10.95 BAR</span>
+                    </div>
+                    
+                    <div id="qr-code">
+                        <img src="qrcode.png?v=2" alt="Escaneie">
+                        <p>APONTE O CELULAR</p>
+                        <span>Peça e Vote!</span>
+                    </div>
+
+                    <div id="proximo-overlay">
+                        <p class="prox-titulo">Próximo na Fila</p>
+                        <p id="prox-nome-txt" class="prox-nome">--</p>
+                    </div>
+
+                    <div id="cantor-overlay"></div>
+
+                    <div id="tela-aguardando">
+                        <img src="logop.png" class="logo-centro" alt="Logo Bar">
+                        <h1>🍻 AGUARDANDO PRÓXIMA MÚSICA 🍻</h1>
+                        <p>Aponte a câmera para o QR Code, escolha seu som ou peça ao DJ!</p>
+                        <img src="qrcode.png?v=2" class="qr-centro" alt="QR Code">
+                    </div>
+                    
+                    <div id="tela-transicao">
+                        <h3 style="font-size: 25px; color: #aaa; margin: 0 0 10px 0; text-transform: uppercase;">PRÓXIMO CANTOR:</h3>
+                        <h1 id="transicao-cantor-nome" style="font-size: 45px; color: #e52d27; margin: 0 0 15px 0;"></h1>
+                        <h2 id="transicao-musica-titulo" style="font-size: 24px; color: #00d2ff; margin: 0 0 25px 0; font-weight: normal;"></h2>
+                        <div id="contador-regressivo">5</div>
+                    </div>
+
+                    <div id="tela-nota">
+                        <h1 style="font-size: 36px; color: #ffeb3b; margin-bottom: 5px;">🍻 PARADA 10.95 BAR</h1>
+                        <h2 style="font-size: 26px; margin-bottom: 25px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>
+                        <div id="nota-loading" style="font-size: 26px; color: #fff;">Calculando energia e votos... 🥁</div>
+                        
+                        <div id="nota-resultado" style="display:flex; flex-direction:row; align-items:center; justify-content:center; gap: 70px; width: 95%; max-width: 1200px;">
+                            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex: 1;">
+                                <div style="font-size: 26px; color: #aaa; margin-bottom: 5px;">Pontuação Final:</div>
+                                <div id="nota-valor" style="font-size: 160px; font-weight: 900; line-height: 1; color: #fff;">--</div>
+                            </div>
+
+                            <div id="tv-foto-container" style="display:none; flex: 1.2; align-items: center; justify-content: center;">
+                                <img id="tv-foto-img" style="max-width: 100%; max-height: 450px; object-fit: contain; border-radius: 12px; border: 5px solid #ffeb3b; box-shadow: 0 0 40px rgba(255,235,59,0.7);" alt="Foto do Cantor">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="btn-liberar" onclick="this.style.display='none';">👆 Clique em qualquer lugar desta tela para liberar o som (F11)</button>
+                    <div id="player"></div>
+                    <script> function onYouTubeIframeAPIReady() { if(window.opener) window.opener.iniciarPlayer(YT); } <\/script>
+                    <script src="https://www.youtube.com/iframe_api"><\/script>
+                </body></html>
+            `);
 
             monitorTV = setInterval(() => {
                 if (telaTV && telaTV.closed) {
@@ -1308,12 +1258,7 @@
                             let idFinal = videoIdNovo || "busca_" + Date.now();
                             let tituloFinal = videoIdNovo ? "Música Substituta" : termoNovo;
                             
-                            let nova = { 
-                                uid: "m_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5),
-                                videoId: idFinal, 
-                                titulo: tituloFinal, 
-                                cantor: (musicaAtual && musicaAtual.cantor) ? musicaAtual.cantor : "Convidados" 
-                            };
+                            let nova = { videoId: idFinal, titulo: tituloFinal, cantor: (musicaAtual && musicaAtual.cantor) ? musicaAtual.cantor : "Convidados" };
                             filaDeReproducao.unshift(nova);
                             registrarNoPopUpPermanente(nova);
                             atualizarTelaFila();
