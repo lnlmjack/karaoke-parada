@@ -278,7 +278,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v2.15</span>
+        <span>v2.16</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
@@ -1136,7 +1136,7 @@
             telaTV = window.open("", "TelaTV", "width=800,height=600,toolbar=0,location=0,status=0,menubar=0,scrollbars=0,resizable=1");
             telaTV.document.write(`
                 <!DOCTYPE html><html><head>
-                <base href="\${window.location.href}">
+                <base href="${window.location.href}">
                 <title>TV - Parada 10.95</title>
                 <style>
                     body { margin: 0; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; font-family: Arial;}
@@ -1478,7 +1478,25 @@
             if (player && typeof player.seekTo === 'function') player.seekTo(Math.max(0, player.getCurrentTime() - 10), true);
         }
 
-        function executarInicioMusica(m) {
+        async function resolverVideoIdValido(m) {
+            if (m.videoId && m.videoId.length === 11 && !m.videoId.includes(' ') && !m.videoId.startsWith('catalogo_') && !m.videoId.startsWith('busca_')) {
+                return m.videoId;
+            }
+            try {
+                let termo = m.titulo;
+                let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${encodeURIComponent(termo + " karaoke")}&type=video&key=${API_KEY}`;
+                let res = await fetch(url);
+                let dados = await res.json();
+                if (dados.items && dados.items.length > 0) {
+                    return dados.items[0].id.videoId;
+                }
+            } catch (err) {
+                console.error("Erro ao buscar videoId no YouTube:", err);
+            }
+            return m.videoId;
+        }
+
+        async function executarInicioMusica(m) {
             clearTimeout(timerNota);
             notaJaGeradaNestaMusica = false;
             m.timestampInicio = Date.now();
@@ -1504,7 +1522,14 @@
             }
             captando = true; somaEnergia = 0; qtdLeituras = 0; notaForcadaPeloDJ = null; 
             atualizarDisplayNotaForcada(); erroNoPlayer = false;
-            player.loadVideoById(m.videoId); player.playVideo(); 
+
+            let videoIdReal = await resolverVideoIdValido(m);
+            m.videoId = videoIdReal;
+
+            if (player && typeof player.loadVideoById === 'function') {
+                player.loadVideoById(videoIdReal);
+                player.playVideo();
+            }
         }
 
         function iniciarMusica(m) {
