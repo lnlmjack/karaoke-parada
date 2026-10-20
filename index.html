@@ -285,7 +285,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v2.18</span>
+        <span>v2.19</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
@@ -688,12 +688,14 @@
         }
 
         // ==========================
-        // POP-UP INDEPENDENTE E PERMANENTE DA FILA
+        // CENTRAL DE SEGURANÇA DA FILA
         // ==========================
         let popUpFila = null;
         function abrirPopUpFila() {
             popUpFila = window.open("", "PopUpFila", "width=480,height=750,toolbar=0,scrollbars=1,resizable=1");
-            popUpFila.document.write(`
+            let doc = popUpFila.document;
+            doc.open();
+            doc.write(`
                 <!DOCTYPE html><html><head><title>Central de Segurança da Fila</title>
                 <style>
                     body { font-family: Arial, sans-serif; background: #121212; color: #fff; padding: 20px; margin: 0; }
@@ -713,6 +715,7 @@
                 <div id="conteudo-popup">Carregando...</div>
                 </body></html>
             `);
+            doc.close();
 
             atualizarPopUpFila();
         }
@@ -738,11 +741,11 @@
         function recolocarMusicaDoPopUp(index) {
             let musica = historicoPopUpPermanente[index];
             if (musica) {
-                let nova = {
+                let nova = { 
                     uid: "m_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5),
-                    videoId: musica.videoId,
-                    titulo: musica.titulo,
-                    cantor: musica.cantor
+                    videoId: musica.videoId, 
+                    titulo: musica.titulo, 
+                    cantor: musica.cantor 
                 };
                 filaDeReproducao.push(nova);
                 registrarNoPopUpPermanente(nova);
@@ -1188,320 +1191,6 @@
 
         const campoBuscaEl = document.getElementById('campoBusca');
         if(campoBuscaEl) campoBuscaEl.addEventListener('keypress', e => { if(e.key === 'Enter') buscarNoYouTube(); });
-
-        function abrirTV() {
-            telaTV = window.open("", "TelaTV", "width=800,height=600,toolbar=0,location=0,status=0,menubar=0,scrollbars=0,resizable=1");
-            
-            let htmlTV = '<!DOCTYPE html><html><head>' +
-                '<base href="' + window.location.href + '">' +
-                '<title>TV - Parada 10.95</title>' +
-                '<style>' +
-                    'body { margin: 0; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; font-family: Arial;}' +
-                    '#player { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1;}' +
-                    '#logo-bar { position: absolute !important; top: 0px !important; left: 0px !important; z-index: 25; pointer-events: none; display: flex; align-items: flex-start; }' +
-                    '#logo-bar img { height: 140px !important; width: auto !important; display: block; }' +
-                    '#logo-bar span { font-size: 34px; font-weight: 900; color: #fff; text-shadow: 3px 3px 10px #000; display: block; margin-top: 15px; margin-left: 15px; white-space: nowrap; }' +
-                    '#qr-code { position: absolute !important; top: 20px !important; right: 20px !important; z-index: 25; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }' +
-                    '#qr-code img { width: 110px; height: 110px; background: white; padding: 5px; border-radius: 8px; display: block; margin: 0 auto; }' +
-                    '#qr-code p { margin: 8px 0 0 0; color: #fff; font-size: 12px; font-weight: bold; text-transform: uppercase;}' +
-                    '#qr-code span { color: #ffeb3b; font-size: 11px; }' +
-                    '#proximo-overlay { position: absolute !important; bottom: 20px !important; left: 20px !important; z-index: 25; background: rgba(10,10,15,0.75); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(0,210,255,0.4); text-align: left; pointer-events: none; display: none; backdrop-filter: blur(4px); max-width: 400px; }' +
-                    '#proximo-overlay .prox-titulo { font-size: 10px; color: #00d2ff; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin: 0; }' +
-                    '#proximo-overlay .prox-nome { font-size: 13px; color: #fff; font-weight: bold; margin: 2px 0 0 0; text-shadow: 1px 1px 3px #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }' +
-                    '#cantor-overlay { position: absolute; top: -200px; right: 170px; background: linear-gradient(90deg, rgba(20,20,20,0.95), rgba(229,45,39,0.85)); padding: 10px 20px; border-radius: 15px; z-index: 24; transition: top 0.8s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: -3px 5px 15px rgba(0,0,0,0.5); max-width: 350px; text-align: right; border: 2px solid #e52d27;}' +
-                    '#cantor-overlay .aviso { font-size: 12px; color: #ffeb3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}' +
-                    '#cantor-overlay .nome { font-size: 22px; font-weight: 900; margin: 0; text-shadow: 2px 2px 5px #000; line-height: 1.1; word-wrap: break-word;}' +
-                    '#tela-aguardando { display: flex; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #0b0b0b, #1a0000); z-index: 90; flex-direction: column; justify-content: center; align-items: center; text-align: center; }' +
-                    '#tela-aguardando img.logo-centro { width: 220px; height: auto; border-radius: 50%; box-shadow: 0 0 40px rgba(229,45,39,0.5); margin-bottom: 25px; animation: pulsar 2s infinite; }' +
-                    '@keyframes pulsar { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }' +
-                    '#tela-aguardando h1 { font-size: 48px; color: #ffeb3b; margin: 0 0 10px 0; text-shadow: 2px 2px 10px #000; }' +
-                    '#tela-aguardando p { font-size: 22px; color: #fff; margin: 0 0 20px 0; text-shadow: 1px 1px 5px #000; }' +
-                    '#tela-aguardando img.qr-centro { width: 150px; height: 150px; background: white; padding: 8px; border-radius: 12px; box-shadow: 0 0 20px rgba(0,210,255,0.4); display: block; }' +
-                    '#tela-transicao { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: #0a0a0a; z-index: 95; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px; box-sizing: border-box;}' +
-                    '#contador-regressivo { font-size: 180px; font-weight: 900; color: #ffeb3b; text-shadow: 0 0 30px rgba(255,235,59,0.5); line-height: 1; margin-top: 15px;}' +
-                    '#tela-nota { display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #121212, #3a0000); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center;}' +
-                    '#btn-liberar { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); color: #ffeb3b; border: none; font-size: 26px; font-weight: bold; cursor: pointer; z-index: 999999; display: flex; align-items: center; justify-content: center; text-shadow: 2px 2px 10px #000; }' +
-                '</style></head>' +
-                '<body onclick="document.getElementById(\'btn-liberar\').style.display=\'none\';">' +
-                    '<div id="logo-bar">' +
-                        '<img src="logop.png" alt="Logo">' +
-                        '<span>PARADA 10.95 BAR</span>' +
-                    '</div>' +
-                    '<div id="qr-code">' +
-                        '<img src="qrcode.png?v=2" alt="Escaneie">' +
-                        '<p>APONTE O CELULAR</p>' +
-                        '<span>Peça e Vote!</span>' +
-                    '</div>' +
-                    '<div id="proximo-overlay">' +
-                        '<p class="prox-titulo">Próximo na Fila</p>' +
-                        '<p id="prox-nome-txt" class="prox-nome">--</p>' +
-                    '</div>' +
-                    '<div id="cantor-overlay"></div>' +
-                    '<div id="tela-aguardando">' +
-                        '<img src="logop.png" class="logo-centro" alt="Logo Bar">' +
-                        '<h1>🍻 AGUARDANDO PRÓXIMA MÚSICA 🍻</h1>' +
-                        '<p>Aponte a câmera para o QR Code, escolha seu som ou peça ao DJ!</p>' +
-                        '<img src="qrcode.png?v=2" class="qr-centro" alt="QR Code">' +
-                    '</div>' +
-                    '<div id="tela-transicao">' +
-                        '<h3 style="font-size: 25px; color: #aaa; margin: 0 0 10px 0; text-transform: uppercase;">PRÓXIMO CANTOR:</h3>' +
-                        '<h1 id="transicao-cantor-nome" style="font-size: 45px; color: #e52d27; margin: 0 0 15px 0;"></h1>' +
-                        '<h2 id="transicao-musica-titulo" style="font-size: 24px; color: #00d2ff; margin: 0 0 25px 0; font-weight: normal;"></h2>' +
-                        '<div id="contador-regressivo">5</div>' +
-                    '</div>' +
-                    '<div id="tela-nota">' +
-                        '<h1 style="font-size: 36px; color: #ffeb3b; margin-bottom: 5px;">🍻 PARADA 10.95 BAR</h1>' +
-                        '<h2 style="font-size: 26px; margin-bottom: 25px;">Voz: <span id="nota-cantor-nome" style="color:#e52d27;"></span></h2>' +
-                        '<div id="nota-loading" style="font-size: 26px; color: #fff;">Calculando energia e votos... 🥁</div>' +
-                        '<div id="nota-resultado" style="display:flex; flex-direction:row; align-items:center; justify-content:center; gap: 70px; width: 95%; max-width: 1200px;">' +
-                            '<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex: 1;">' +
-                                '<div style="font-size: 26px; color: #aaa; margin-bottom: 5px;">Pontuação Final:</div>' +
-                                '<div id="nota-valor" style="font-size: 160px; font-weight: 900; line-height: 1; color: #fff;">--</div>' +
-                            '</div>' +
-                            '<div id="tv-foto-container" style="display:none; flex: 1.2; align-items: center; justify-content: center;">' +
-                                '<img id="tv-foto-img" style="max-width: 100%; max-height: 450px; object-fit: contain; border-radius: 12px; border: 5px solid #ffeb3b; box-shadow: 0 0 40px rgba(255,235,59,0.7);" alt="Foto do Cantor">' +
-                            '</div>' +
-                        '</div>' +
-                    '</div>' +
-                    '<button id="btn-liberar" onclick="this.style.display=\'none\';">👆 Clique em qualquer lugar desta tela para liberar o som (F11)</button>' +
-                    '<div id="player"></div>' +
-                    '<script>' +
-                        'function onYouTubeIframeAPIReady() { if(window.opener) window.opener.iniciarPlayer(YT); }' +
-                    '<' + '/script>' +
-                    '<script src="https://www.youtube.com/iframe_api"><' + '/script>' +
-                '</body></html>';
-
-            telaTV.document.open();
-            telaTV.document.write(htmlTV);
-            telaTV.document.close();
-
-            monitorTV = setInterval(() => {
-                if (telaTV && telaTV.closed) {
-                    clearInterval(monitorTV);
-                    const bTv = document.getElementById('botaoTV');
-                    if(bTv) { bTv.innerHTML = "📺 TELA FECHADA! REABRIR"; bTv.style.background = "#e52d27"; }
-                }
-            }, 1000);
-        }
-
-        let monitorFimMusica = null;
-
-        function iniciarPlayer(YT_API) {
-            player = new YT_API.Player(telaTV.document.getElementById('player'), {
-                videoId: '', playerVars: { 'autoplay': 1, 'controls': 1, 'fs': 0 }, 
-                events: { 
-                    'onStateChange': e => { 
-                        if (e.data === 0) {
-                            gerarNotaFinal();
-                        } 
-                    }, 
-                    'onError': e => { 
-                        let termoNovo = prompt("⚠️ O YouTube bloqueou este vídeo!\nDigite o nome de outra música ou cole o link correto para tocar imediatamente no topo da fila:");
-                        if (termoNovo && termoNovo.trim() !== "") {
-                            let videoIdNovo = extrairVideoId(termoNovo);
-                            let idFinal = videoIdNovo || "busca_" + Date.now();
-                            let tituloFinal = videoIdNovo ? "Música Substituta" : termoNovo;
-                            
-                            let nova = { 
-                                uid: "m_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5),
-                                videoId: idFinal, 
-                                titulo: tituloFinal, 
-                                cantor: (musicaAtual && musicaAtual.cantor) ? musicaAtual.cantor : "Convidados" 
-                            };
-                            filaDeReproducao.unshift(nova);
-                            registrarNoPopUpPermanente(nova);
-                            atualizarTelaFila();
-                            tocarProxima(true);
-                        } else {
-                            tocarProxima(true);
-                        }
-                    } 
-                }
-            });
-            const bTv = document.getElementById('botaoTV');
-            if(bTv) { bTv.innerHTML = "✅ TELA CONECTADA!"; bTv.style.background = "#17a2b8"; }
-            if (telaTV && !telaTV.closed) telaTV.document.getElementById('tela-aguardando').style.display = 'flex';
-
-            if (monitorFimMusica) clearInterval(monitorFimMusica);
-            monitorFimMusica = setInterval(() => {
-                if (player && typeof player.getCurrentTime === 'function' && typeof player.getDuration === 'function' && typeof player.getPlayerState === 'function') {
-                    let st = player.getPlayerState();
-                    let cur = player.getCurrentTime();
-                    let dur = player.getDuration();
-                    
-                    if (dur > 5 && cur > 0 && (dur - cur) <= 0.8 && st === 1) {
-                        gerarNotaFinal();
-                    }
-                }
-            }, 400);
-        }
-
-        let notaJaGeradaNestaMusica = false;
-
-        function gerarNotaFinal() {
-            if (notaJaGeradaNestaMusica) return;
-            notaJaGeradaNestaMusica = true;
-
-            captando = false; 
-            let notaFinal;
-            const votosCongelados = { ...contagemVotos };
-            
-            const nomeDoCantor = (musicaAtual && musicaAtual.cantor && musicaAtual.cantor.trim() !== "") ? musicaAtual.cantor.trim() : "Convidado do Bar";
-            const tituloDaMusica = (musicaAtual && musicaAtual.titulo) ? musicaAtual.titulo : "Música Especial";
-            const tempoInicioCanto = (musicaAtual && musicaAtual.timestampInicio) ? musicaAtual.timestampInicio : 0;
-
-            database.ref('statusAtual').set({ cantor: "Avaliando...", titulo: "Olhe para a tela da TV!", id: "avaliando" });
-
-            if (notaForcadaPeloDJ !== null) {
-                notaFinal = notaForcadaPeloDJ; notaForcadaPeloDJ = null; 
-                atualizarDisplayNotaForcada();
-            } else {
-                let notaBase;
-                if (qtdLeituras > 0 && micAtivo) {
-                    let energiaMedia = somaEnergia / qtdLeituras;
-                    let fator = energiaMedia * 1.5;
-                    notaBase = Math.floor(65 + fator); 
-                } else {
-                    notaBase = Math.floor(Math.random() * 26) + 65; 
-                }
-                if (notaBase > 95) notaBase = 95;
-                
-                let bonusPublico = 0;
-                if(totalVotosPublico > 0) {
-                    bonusPublico = (votosCongelados.excelente * 5) + (votosCongelados.muitobom * 3) + (votosCongelados.bom * 1) - (votosCongelados.regular * 2) - (votosCongelados.ruim * 4);
-                    if (bonusPublico > 20) bonusPublico = 20; if (bonusPublico < -20) bonusPublico = -20; 
-                }
-                notaFinal = notaBase + bonusPublico;
-                if (notaFinal > 100) notaFinal = 100; if (notaFinal < 50) notaFinal = 50; 
-            }
-            
-            notaFinal = Math.floor(notaFinal) || 65;
-
-            ranking.push({ nome: nomeDoCantor, nota: notaFinal, titulo: tituloDaMusica, votos: votosCongelados });
-            atualizarTelaRanking();
-
-            database.ref('fotosDia').once('value', (snapshot) => {
-                let fotoEncontrada = null;
-                let maiorTimestamp = 0;
-                let cantorAtualBusca = nomeDoCantor.toLowerCase();
-
-                snapshot.forEach(child => {
-                    let f = child.val();
-                    if (f && f.imagemBase64 && f.cantor) {
-                        let cantorFoto = f.cantor.trim().toLowerCase();
-                        let tsFoto = f.timestamp || 0;
-                        if (cantorFoto === cantorAtualBusca && tsFoto >= (tempoInicioCanto - 5000)) {
-                            if (tsFoto >= maiorTimestamp) {
-                                maiorTimestamp = tsFoto;
-                                fotoEncontrada = f.imagemBase64;
-                            }
-                        }
-                    }
-                });
-
-                if (telaTV && !telaTV.closed) {
-                    try {
-                        let tvDoc = telaTV.document;
-                        tvDoc.getElementById('nota-cantor-nome').innerText = nomeDoCantor;
-                        tvDoc.getElementById('nota-loading').style.display = 'block';
-                        
-                        let resDiv = tvDoc.getElementById('nota-resultado');
-                        resDiv.style.display = 'flex';
-                        
-                        let fotoContainer = tvDoc.getElementById('tv-foto-container');
-                        if (fotoContainer) fotoContainer.style.display = 'none';
-
-                        tvDoc.getElementById('tela-nota').style.display = 'flex';
-                        tvDoc.getElementById('cantor-overlay').style.top = '-200px';
-
-                        const som = document.getElementById('audio-tambores');
-                        if (som) { som.currentTime = 0; som.play().catch(e => {}); }
-
-                        let valorEl = tvDoc.getElementById('nota-valor');
-                        valorEl.style.color = '#fff';
-                        
-                        let intervaloRoleta = setInterval(() => {
-                            if(valorEl) valorEl.innerText = Math.floor(Math.random() * 41) + 60; 
-                        }, 50);
-
-                        setTimeout(() => {
-                            if (!telaTV || telaTV.closed) return;
-                            clearInterval(intervaloRoleta);
-                            tvDoc.getElementById('nota-loading').style.display = 'none';
-                            
-                            if (valorEl) {
-                                valorEl.innerText = notaFinal;
-                                valorEl.style.color = notaFinal >= 90 ? '#28a745' : notaFinal >= 75 ? '#ffeb3b' : '#e52d27';
-                            }
-                            
-                            let fotoImg = tvDoc.getElementById('tv-foto-img');
-                            if (fotoEncontrada && fotoImg && fotoContainer) { 
-                                fotoImg.src = fotoEncontrada; 
-                                fotoContainer.style.display = 'flex'; 
-                            }
-                        }, 4000); 
-                    } catch (e) {}
-                }
-            });
-
-            clearTimeout(timerNota);
-            timerNota = setTimeout(() => {
-                if (telaTV && !telaTV.closed) {
-                    let tn = telaTV.document.getElementById('tela-nota');
-                    if(tn) tn.style.display = 'none';
-                }
-                musicaAtual = null; 
-                tocarProxima(true); 
-            }, 12000);
-        }
-
-        function extrairVideoId(url) {
-            const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
-            const match = url.match(regex);
-            return match ? match[1] : null;
-        }
-
-        async function buscarNoYouTube() {
-            const termoOriginal = document.getElementById('campoBusca').value; if (!termoOriginal) return;
-            const div = document.getElementById('resultados'); div.innerHTML = ''; 
-            const videoId = extrairVideoId(termoOriginal);
-            if (videoId) {
-                if (musicaAtual && erroNoPlayer) {
-                    if (confirm("⚠️ Substituir música?")) {
-                        musicaAtual.videoId = videoId; musicaAtual.titulo = "Música via Link";
-                        erroNoPlayer = false; player.loadVideoById(videoId); player.playVideo();
-                        document.getElementById('campoBusca').value = ""; return;
-                    }
-                }
-                abrirModalCantor(videoId, "Música via Link");
-                return;
-            }
-
-            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(termoOriginal + " karaoke -oficial -clipe -live")}&type=video&key=${API_KEY}`;
-            try {
-                const res = await fetch(url); const dados = await res.json();
-                let itensOrdenados = [...dados.items].sort((a, b) => {
-                    let tituloA = a.snippet.title.toLowerCase(); let canalA = a.snippet.channelTitle.toLowerCase();
-                    let indexA = canaisFavoritos.findIndex(c => tituloA.includes(c.toLowerCase()) || canalA.includes(c.toLowerCase()));
-                    let tituloB = b.snippet.title.toLowerCase(); let canalB = b.snippet.channelTitle.toLowerCase();
-                    let indexB = canaisFavoritos.findIndex(c => tituloB.includes(c.toLowerCase()) || canalB.includes(c.toLowerCase()));
-                    if (indexA !== -1 && indexB !== -1) return indexA - indexB;
-                    if (indexA !== -1) return -1;
-                    if (indexB !== -1) return 1;
-                    return 0;
-                });
-
-                itensOrdenados.forEach(v => {
-                    const thumbnail = v.snippet.thumbnails.default.url;
-                    const tituloVid = v.snippet.title; const nomeCanalVid = v.snippet.channelTitle;
-                    const d = document.createElement('div'); 
-                    d.className = 'item-resultado'; 
-                    d.innerHTML = `<img src="${thumbnail}" alt="Thumb"><div class="info-resultado"><span class="titulo-video">${tituloVid}</span><span class="nome-canal">${nomeCanalVid}</span></div>`; 
-                    d.onclick = () => abrirModalCantor(v.id.videoId, v.snippet.title);
-                    div.appendChild(d);
-                });
-            } catch (err) { div.innerHTML = "<p style='color:#e52d27'>Limite atingido.</p>"; }
-        }
 
         function removerMusica(i) { filaDeReproducao.splice(i, 1); atualizarTelaFila(); }
         function moverMusica(i, d) { const t = filaDeReproducao[i]; filaDeReproducao[i] = filaDeReproducao[i+d]; filaDeReproducao[i+d] = t; atualizarTelaFila(); }
