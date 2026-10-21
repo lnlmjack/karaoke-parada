@@ -150,10 +150,10 @@
         <p class="cantores-salvos-titulo">Cantores usados recentemente</p>
         <div id="lista-cantores-salvos"></div>
         <div id="cantores-salvos-vazio" class="cantores-salvos-vazio" style="display:none;">Nenhum nome salvo ainda.</div>
-        <div class="botoes-modal-cantor"><button onclick="confirmarPedidoComCantor()" class="btn-confirmar">Confirmar</button><button onclick="fecharModalCantor()" class="btn-cancelar">Cancelar</button></div>
+        <div class="botoes-modal-cantor"><button id="btn-confirmar-pedido" onclick="confirmarPedidoComCantor()" class="btn-confirmar">Confirmar</button><button onclick="fecharModalCantor()" class="btn-cancelar">Cancelar</button></div>
     </div>
     <datalist id="lista-cantores-datalist"></datalist>
-    <div class="versao-app-cliente">v2.05</div>
+    <div class="versao-app-cliente">v2.06</div>
     <div id="notificacao">✅ Pedido enviado ao DJ!</div>
     <script>
         const firebaseConfig = {
@@ -173,6 +173,7 @@
         let votoPendente = null;
         let musicasCatalogo = [];
         let musicaPendenteYouTube = null;
+        let enviandoPedidoMusica = false;
         let cantoresSalvos = JSON.parse(localStorage.getItem('cantoresSalvos')) || [];
         let canaisFavoritos = ["Muramatsu Karaoke", "Tequila Karaoke", "Versão Karaokê"];
 
@@ -390,17 +391,32 @@
             atualizarDatalistCantores(); document.getElementById('fundo-modal-cantor').style.display='block';
             document.getElementById('modal-cantor').style.display='block'; document.getElementById('input-nome-cantor').focus();
         }
-        function fecharModalCantor() { musicaPendenteYouTube=null; document.getElementById('fundo-modal-cantor').style.display='none'; document.getElementById('modal-cantor').style.display='none'; }
+        function fecharModalCantor() {
+            if (enviandoPedidoMusica) return;
+            musicaPendenteYouTube=null;
+            document.getElementById('fundo-modal-cantor').style.display='none';
+            document.getElementById('modal-cantor').style.display='none';
+            const botao=document.getElementById('btn-confirmar-pedido');
+            if (botao) { botao.disabled=false; botao.textContent='Confirmar'; botao.style.cursor='pointer'; }
+        }
         async function confirmarPedidoComCantor() {
+            if (!musicaPendenteYouTube || enviandoPedidoMusica) return;
+            enviandoPedidoMusica=true;
+            const botao=document.getElementById('btn-confirmar-pedido');
+            if (botao) { botao.disabled=true; botao.textContent='Enviando...'; botao.style.cursor='wait'; }
             const nomeCantor=document.getElementById('input-nome-cantor').value.trim() || 'Convidados';
-            if (musicaPendenteYouTube) {
-                try {
-                    await adicionarCantorSalvo(nomeCantor);
-                    await database.ref('pedidos').push({videoId:musicaPendenteYouTube.videoId,titulo:musicaPendenteYouTube.titulo,cantor:nomeCantor});
-                    document.getElementById('campoBusca').value=''; document.getElementById('resultados').innerHTML='';
-                    fecharModalCantor(); mostrarAba('menu');
-                    const notif=document.getElementById('notificacao'); notif.style.display='block'; setTimeout(()=>notif.style.display='none',3000);
-                } catch(err) { alert('Não foi possível enviar o pedido. Verifique a conexão e tente novamente.'); }
+            try {
+                await adicionarCantorSalvo(nomeCantor);
+                await database.ref('pedidos').push({videoId:musicaPendenteYouTube.videoId,titulo:musicaPendenteYouTube.titulo,cantor:nomeCantor});
+                document.getElementById('campoBusca').value=''; document.getElementById('resultados').innerHTML='';
+                enviandoPedidoMusica=false;
+                fecharModalCantor(); mostrarAba('menu');
+                const notif=document.getElementById('notificacao'); notif.style.display='block'; setTimeout(()=>notif.style.display='none',3000);
+            } catch(err) {
+                alert('Não foi possível enviar o pedido. Verifique a conexão e tente novamente.');
+            } finally {
+                enviandoPedidoMusica=false;
+                if (botao) { botao.disabled=false; botao.textContent='Confirmar'; botao.style.cursor='pointer'; }
             }
         }
         function processarFotoNativa(input) {
