@@ -305,7 +305,7 @@
             
             <div class="painel">
                 <h3 style="margin-top: 0; color: #28a745; display: flex; justify-content: space-between; align-items: center;">
-                    Histórico:
+                    <span>Histórico: <span id="contador-historico" style="font-size:13px; color:#aaa; font-weight:normal;">0 músicas</span></span>
                     <button class="btn-limpar-painel" onclick="limparHistorico()">🗑️ Limpar Histórico</button>
                 </h3>
                 <div id="historico"></div>
@@ -327,7 +327,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v2.23</span>
+        <span>v2.24</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
@@ -362,7 +362,7 @@
             <li>Permita pop-ups para abrir a tela da TV e a Central de Segurança.</li>
             <li>Permita acesso ao microfone se quiser usar o avaliador de ambiente.</li>
             <li>O celular precisa de conexão com a internet para buscar no YouTube, enviar pedidos/votos e sincronizar fotos.</li>
-            <li>A versão do sistema aparece discretamente no canto inferior direito do painel. Após esta atualização, deve mostrar <strong>v2.23</strong>.</li>
+            <li>A versão do sistema aparece discretamente no canto inferior direito do painel. Após esta atualização, deve mostrar <strong>v2.24</strong>.</li>
         </ul>
 
         <h3 id="manual-acesso">2. Acesso e perfis</h3>
@@ -449,9 +449,9 @@
 
         <h3 id="manual-historicos">10. Histórico e estatísticas</h3>
         <ul>
-            <li><strong>Histórico:</strong> registra as músicas iniciadas e seus cantores; é diferente do Livro de Segurança e da fila pendente.</li>
+            <li><strong>Histórico:</strong> registra as músicas iniciadas e seus cantores; a contagem ao lado do título mostra quantas músicas estão registradas no histórico. É diferente do Livro de Segurança e da fila pendente.</li>
             <li><strong>Limpar Histórico:</strong> apaga os registros de execução locais exibidos nesse painel depois de confirmação. Não confunda com limpar fila ou Livro de Segurança.</li>
-            <li><strong>Estatísticas avançadas:</strong> escolha data inicial e final e aplique o período. São apresentados total de músicas, dias com atividade, dia mais movimentado, horário de pico, gráficos por dia/hora, resumo diário e músicas mais cantadas.</li>
+            <li><strong>Estatísticas avançadas:</strong> escolha data inicial e final e aplique o período. São apresentados o total de músicas tocadas no período selecionado, dias com atividade, dia mais movimentado, horário de pico, gráficos por dia/hora, resumo diário e músicas mais cantadas.</li>
             <li>As estatísticas dependem de registros com data/hora no histórico deste navegador. Um histórico antigo sem carimbo de data pode não entrar nos gráficos.</li>
         </ul>
 
@@ -2278,6 +2278,8 @@
             localStorage.setItem('historicoDeReproducao', JSON.stringify(historicoDeReproducao));
             const divHist = document.getElementById('historico');
             if(!divHist) return;
+            const contadorHistorico = document.getElementById('contador-historico');
+            if (contadorHistorico) contadorHistorico.textContent = `${historicoDeReproducao.length} ${historicoDeReproducao.length === 1 ? 'música' : 'músicas'}`;
             divHist.innerHTML = historicoDeReproducao.slice().reverse().map(item => `<div class="item-historico">✔️ ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span></div>`).join(''); 
             if (typeof renderizarEstatisticasAvancadas === 'function') renderizarEstatisticasAvancadas();
         }
@@ -2366,7 +2368,7 @@
 
             area.innerHTML = `
                 <div class="estat-cartoes">
-                    <div class="estat-cartao">Músicas cantadas<strong>${registros.length}</strong></div>
+                    <div class="estat-cartao">Músicas tocadas no período<strong>${registros.length}</strong></div>
                     <div class="estat-cartao">Dias com atividade<strong>${diasOrdenados.length}</strong></div>
                     <div class="estat-cartao">Dia mais movimentado<strong style="font-size:16px;">${fmtData(diaPico)} · ${porDia[diaPico]}</strong></div>
                     <div class="estat-cartao">Horário de pico<strong>${String(horaPico).padStart(2,'0')}:00 · ${porHora[horaPico]}</strong></div>
