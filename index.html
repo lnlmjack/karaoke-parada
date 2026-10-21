@@ -890,12 +890,17 @@
         }
 
         function executarLimpezaPopUpDireta() {
-            if (confirm("Deseja apagar o histórico de segurança permanente do Pop-up?")) {
+            if (!confirm("Deseja apagar o histórico de segurança permanente do Pop-up?")) return;
+            try {
                 historicoPopUpPermanente = [];
-                localStorage.setItem('historicoPopUpPermanente', JSON.stringify([]));
+                localStorage.removeItem('historicoPopUpPermanente');
                 atualizarPopUpFila();
+            } catch (erro) {
+                alert("Não foi possível limpar o Livro de Segurança. Feche e reabra a Central e tente novamente.");
+                console.error("Erro ao limpar o Livro de Segurança da Fila:", erro);
             }
         }
+        window.executarLimpezaPopUpDireta = executarLimpezaPopUpDireta;
 
         function atualizarPopUpFila() {
             if (popUpFila && !popUpFila.closed) {
@@ -948,8 +953,18 @@
 
                 let btnLimpar = popUpFila.document.getElementById('btn-limpar-popup-seguranca');
                 if (btnLimpar) {
+                    btnLimpar.type = 'button';
                     btnLimpar.onclick = function() {
-                        executarLimpezaPopUpDireta();
+                        try {
+                            if (!popUpFila || popUpFila.closed || !popUpFila.opener || typeof popUpFila.opener.executarLimpezaPopUpDireta !== 'function') {
+                                alert("Não foi possível acessar o painel principal. Feche e reabra a Central de Segurança.");
+                                return;
+                            }
+                            popUpFila.opener.executarLimpezaPopUpDireta();
+                        } catch (erro) {
+                            alert("Não foi possível executar a limpeza. Feche e reabra a Central de Segurança.");
+                            console.error("Erro no botão de limpeza do Livro de Segurança:", erro);
+                        }
                     };
                 }
 
