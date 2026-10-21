@@ -25,11 +25,17 @@
         #btn-central-fotos { background: #28a745; color: #fff; border-color: #218838; } #btn-central-fotos:hover { background: #218838; }
         #btn-toggle-bloqueio { background: #28a745; color: #fff; border-color: #218838; }
 
-        .area-botoes-topo { display: flex; gap: 15px; margin-bottom: 15px; }
-        .btn-topo { flex: 1; padding: 15px; font-size: 16px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s;}
-        .btn-tv { background: #007bff; } .btn-tv:hover { background: #0056b3; } .btn-tv.conectado { background: #17a2b8; pointer-events: none; }
-        .btn-mic { background: #e52d27; text-align: center; display: flex; align-items: center; justify-content: center; } 
-        .btn-mic:hover { filter: brightness(1.2); }
+        .area-botoes-topo { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .btn-topo { flex: 1; min-height: 48px; box-sizing: border-box; padding: 13px 18px; font-size: 15px; font-weight: bold; color: white; border: 1px solid transparent; border-radius: 10px; cursor: pointer; box-shadow: 0 3px 8px rgba(0,0,0,0.22); transition: background-color 0.2s, box-shadow 0.2s, transform 0.2s;}
+        .btn-tv { background: linear-gradient(135deg, #087cf0, #0063cc); border-color: rgba(120,190,255,0.35); letter-spacing: 0.2px; } .btn-tv:hover { background: linear-gradient(135deg, #1688fa, #0758ad); box-shadow: 0 5px 12px rgba(0,100,220,0.25); transform: translateY(-1px); } .btn-tv.conectado { background: #17a2b8; pointer-events: none; }
+        .btn-mic { flex: 0 0 42px; width: 42px; min-width: 42px; height: 42px; min-height: 42px; padding: 0; background: #e52d27; color: #fff; border: 1px solid rgba(255,255,255,0.18); border-radius: 50%; text-align: center; display: inline-flex; align-items: center; justify-content: center; font-size: 17px; line-height: 1; box-shadow: none; } 
+        .btn-mic:hover { filter: brightness(1.15); box-shadow: 0 0 0 3px rgba(255,255,255,0.07); }
+        .btn-mic:focus-visible, .btn-tv:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+        @media (max-width: 600px) {
+            .area-botoes-topo { gap: 8px; }
+            .btn-tv { padding: 12px 10px; font-size: 13px; }
+            .btn-mic { flex-basis: 40px; width: 40px; min-width: 40px; height: 40px; min-height: 40px; }
+        }
 
         .area-busca { display: flex; gap: 10px; margin-bottom: 15px; }
         input { flex: 1; padding: 12px; border-radius: 5px; border: none; font-size: 16px; }
@@ -258,7 +264,7 @@
         
         <div class="area-botoes-topo">
             <button id="botaoTV" class="btn-topo btn-tv" onclick="iniciarSistema()">🚀 1. INICIAR SISTEMA E TV</button>
-            <button id="botaoMic" class="btn-topo btn-mic" onclick="toggleMicrofone()">🎙️ 2. AVALIADOR (INICIANDO...)</button>
+            <button id="botaoMic" class="btn-topo btn-mic" onclick="toggleMicrofone()" title="Avaliador iniciando..." aria-label="Avaliador iniciando...">🎙️</button>
         </div>
 
         <div class="canais-preferidos" id="container-chips-canais"></div>
@@ -1014,7 +1020,7 @@
                 if (audioCtx && audioCtx.state !== 'closed') await audioCtx.close();
                 audioCtx = null; analyser = null; micAtivo = false;
                 if (intervaloMic) clearInterval(intervaloMic);
-                btn.innerHTML = "🎙️ 2. AVALIADOR (DESLIGADO)"; btn.style.background = "#e52d27"; 
+                btn.innerHTML = "🎙️"; btn.title = "Avaliador desligado — clique para ligar"; btn.setAttribute("aria-label", btn.title); btn.style.background = "#e52d27"; 
             } else {
                 try {
                     streamMic = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -1024,7 +1030,7 @@
                     audioCtx.createMediaStreamSource(streamMic).connect(analyser);
                     analyser.fftSize = 256; dataArray = new Uint8Array(analyser.frequencyBinCount);
                     micAtivo = true;
-                    btn.innerHTML = "🎙️ 2. AVALIADOR (LIGADO)"; btn.style.background = "#17a2b8"; 
+                    btn.innerHTML = "🎙️"; btn.title = "Avaliador ligado — clique para desligar"; btn.setAttribute("aria-label", btn.title); btn.style.background = "#17a2b8"; 
                     if (intervaloMic) clearInterval(intervaloMic);
                     intervaloMic = setInterval(() => {
                         if (captando && analyser && micAtivo) {
@@ -1033,7 +1039,7 @@
                             somaEnergia += (soma / dataArray.length); qtdLeituras++;
                         }
                     }, 200);
-                } catch (err) { btn.innerHTML = "⚠️ MICROFONE BLOQUEADO"; btn.style.background = "#e52d27"; }
+                } catch (err) { btn.innerHTML = "⚠️"; btn.title = "Microfone bloqueado — clique para tentar novamente"; btn.setAttribute("aria-label", btn.title); btn.style.background = "#e52d27"; }
             }
         }
         
