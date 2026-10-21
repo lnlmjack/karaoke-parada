@@ -327,13 +327,176 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v2.22</span>
+        <span>v2.23</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
-    <div id="modal-manual-conteudo">
-        <h2>📖 Manual Completo do Sistema - Karaokê Parada 10.95</h2>
-        <p>O sistema possui controle de acesso com dois perfis de usuários...</p>
+    <div id="modal-manual-conteudo" aria-label="Manual completo do sistema">
+        <h2>📖 Manual Didático Completo — Karaokê Parada 10.95</h2>
+        <p><strong>Para que serve:</strong> este manual explica as funções existentes no painel do DJ (<code>index.html</code>) e na página usada pelo público no celular (<code>votacao.html</code>). Use o índice para ir direto à parte desejada; para fechar, use o botão no fim ou clique fora da janela.</p>
+
+        <nav aria-label="Índice do manual" style="background:#111;border:1px solid #333;border-radius:8px;padding:14px;margin:16px 0;">
+            <strong style="color:#ffeb3b;">Índice</strong>
+            <ol style="columns:2;column-gap:28px;margin:8px 0 0;padding-left:22px;">
+                <li><a href="#manual-visao" style="color:#00d2ff;">Visão geral e preparação</a></li>
+                <li><a href="#manual-acesso" style="color:#00d2ff;">Acesso e perfis</a></li>
+                <li><a href="#manual-inicio" style="color:#00d2ff;">Inicialização, TV e microfone</a></li>
+                <li><a href="#manual-busca" style="color:#00d2ff;">Busca do DJ e inclusão direta</a></li>
+                <li><a href="#manual-pedidos" style="color:#00d2ff;">Pedidos recebidos e aprovação</a></li>
+                <li><a href="#manual-fila" style="color:#00d2ff;">Fila, ordem e reprodução</a></li>
+                <li><a href="#manual-seguranca" style="color:#00d2ff;">Central de Segurança e recuperação</a></li>
+                <li><a href="#manual-falhas" style="color:#00d2ff;">Falha do YouTube e vídeo substituto</a></li>
+                <li><a href="#manual-votos" style="color:#00d2ff;">Votos, nota e ranking</a></li>
+                <li><a href="#manual-historicos" style="color:#00d2ff;">Histórico e estatísticas</a></li>
+                <li><a href="#manual-fotos" style="color:#00d2ff;">Fotos da noite</a></li>
+                <li><a href="#manual-config" style="color:#00d2ff;">Configurações e cantores</a></li>
+                <li><a href="#manual-celular" style="color:#00d2ff;">Como o público usa o celular</a></li>
+                <li><a href="#manual-problemas" style="color:#00d2ff;">Problemas comuns e cuidados</a></li>
+            </ol>
+        </nav>
+
+        <h3 id="manual-visao">1. Visão geral e preparação da noite</h3>
+        <p>O sistema tem duas telas que trabalham juntas: o painel do DJ controla a noite e a página de votação no celular permite pedir músicas, votar e ver fotos. A fila e as configurações compartilhadas usam o Firebase; cópias locais ajudam a recuperar informações no navegador do painel.</p>
+        <ul>
+            <li>Abra o painel em uma janela/aba do navegador e mantenha-o aberto durante o evento.</li>
+            <li>Permita pop-ups para abrir a tela da TV e a Central de Segurança.</li>
+            <li>Permita acesso ao microfone se quiser usar o avaliador de ambiente.</li>
+            <li>O celular precisa de conexão com a internet para buscar no YouTube, enviar pedidos/votos e sincronizar fotos.</li>
+            <li>A versão do sistema aparece discretamente no canto inferior direito do painel. Após esta atualização, deve mostrar <strong>v2.23</strong>.</li>
+        </ul>
+
+        <h3 id="manual-acesso">2. Acesso e perfis</h3>
+        <p>Na tela de entrada, informe usuário e senha e escolha <strong>Entrar</strong>. O usuário administrador tem acesso ao botão <strong>Configurações</strong>; o perfil comum opera as funções de DJ sem essa área administrativa. O painel mantém a sessão neste navegador até sair.</p>
+        <ul>
+            <li><strong>Fazer login:</strong> valida os dados definidos no sistema, oculta a tela de entrada e identifica o operador no cabeçalho.</li>
+            <li><strong>Fazer logout:</strong> o botão <strong>Sair</strong> pede confirmação, encerra a sessão local e recarrega a página.</li>
+            <li><strong>Importante:</strong> as credenciais de demonstração ou provisórias escritas no código devem ser trocadas/geridas pelo responsável antes de expor o painel publicamente. Não compartilhe senhas.</li>
+        </ul>
+
+        <h3 id="manual-inicio">3. Inicialização, TV e microfone</h3>
+        <ul>
+            <li><strong>1. Iniciar Sistema e TV:</strong> abre a janela de exibição e prepara o player do YouTube. O primeiro clique na TV pode ser necessário para liberar áudio/autoplay do navegador.</li>
+            <li><strong>Estado da TV:</strong> o botão informa quando a tela está conectada. Se a janela fechar, use novamente o botão para reabri-la.</li>
+            <li><strong>Ícone 🎙️ do avaliador:</strong> é o controle compacto do microfone. Azul/ciano indica ligado; vermelho indica desligado ou bloqueado. Clique para alternar. O navegador pode pedir permissão.</li>
+            <li><strong>Como entra na nota:</strong> durante a música, o sistema lê a energia sonora captada. Se não houver microfone ativo/leitura, usa uma nota-base aleatória; os votos do público também podem influenciar a nota.</li>
+            <li><strong>Observação:</strong> o microfone avalia o nível de som ambiente, não identifica tecnicamente afinação ou letra cantada.</li>
+        </ul>
+
+        <h3 id="manual-busca">4. Busca do DJ e inclusão direta</h3>
+        <p>Na caixa <strong>Busca do DJ</strong>, cole um link do YouTube ou digite o título/artista. Ao digitar, o painel consulta vídeos e destaca canais favoritos configurados. Selecione o resultado correto para abrir a escolha de cantor.</p>
+        <ul>
+            <li><strong>Link direto:</strong> se o endereço contiver um ID de vídeo reconhecível, o painel passa diretamente à escolha do cantor.</li>
+            <li><strong>Busca por texto:</strong> confira título e canal antes de escolher. Um resultado pode ser uma versão errada, bloqueada ou indisponível; prefira karaokês cuja reprodução já tenha sido verificada.</li>
+            <li><strong>Escolha do cantor:</strong> digite o nome ou selecione um nome recente. Se deixar em branco, o sistema usa “Convidados”.</li>
+            <li><strong>Adicionar ao final:</strong> coloca a música depois das que já estão esperando.</li>
+            <li><strong>Colocar no topo (Fura-Fila):</strong> insere a música no início da fila, à frente das próximas. Use com critério para preservar a ordem combinada com o público.</li>
+            <li>Adicionar uma música registra também o cantor entre os nomes recentes e atualiza a Central de Segurança.</li>
+        </ul>
+
+        <h3 id="manual-pedidos">5. Pedidos recebidos e aprovação</h3>
+        <p>Pedidos enviados pelos celulares aparecem no painel <strong>Pedidos</strong>, com título e nome de quem vai cantar.</p>
+        <ul>
+            <li><strong>✅ Aprovar:</strong> transfere o pedido para o fim da fila, registra-o no Livro de Segurança e remove o pedido da lista de pendências.</li>
+            <li><strong>❌ Recusar:</strong> pede confirmação e, se confirmado, remove o pedido sem incluí-lo na fila.</li>
+            <li><strong>Auto-Aprovar:</strong> quando marcado, os pedidos pendentes são aprovados automaticamente e acrescentados à fila. Desmarque para voltar à aprovação manual.</li>
+            <li>Se o mesmo pedido parecer permanecer por alguns instantes, aguarde a sincronização. Evite aprová-lo repetidamente para não criar entradas duplicadas.</li>
+        </ul>
+
+        <h3 id="manual-fila">6. Fila, ordem e reprodução</h3>
+        <p>A fila mostra as músicas ainda aguardando. Cada linha oferece controles próprios:</p>
+        <ul>
+            <li><strong>✏️ Editar cantor:</strong> corrige o nome associado à música e adiciona o novo nome à lista recente.</li>
+            <li><strong>▶️ Tocar agora:</strong> começa a faixa escolhida após a pausa/transição configurada. Se outra estiver tocando, ela é devolvida à fila para não ser perdida.</li>
+            <li><strong>⬆️ / ⬇️ Mover:</strong> altera a posição sem excluir a música.</li>
+            <li><strong>❌ Remover:</strong> retira apenas a música selecionada da fila.</li>
+            <li><strong>Limpar:</strong> esvazia a fila depois de confirmação. É uma ação intencional e não deve ser usada como forma de recuperar falhas.</li>
+            <li><strong>🔙 Restaurar:</strong> mescla o backup local e o da nuvem com a fila atual. A rotina procura preservar as músicas existentes e não substitui simplesmente a fila inteira.</li>
+            <li><strong>Próxima automaticamente:</strong> ao terminar normalmente uma apresentação, após a tela da nota, o sistema inicia a próxima música, se houver. Um erro do YouTube não deve ser tratado como término normal; veja a seção de falhas.</li>
+        </ul>
+        <p>A fila é gravada localmente e enviada ao backup do Firebase quando sofre alterações. Se a internet cair, a cópia local permanece; quando voltar, o backup remoto pode ser lido/mesclado. Não apague os dados do navegador durante um evento: isso pode remover a cópia local.</p>
+
+        <h3 id="manual-seguranca">7. Central de Segurança da Fila e recuperação</h3>
+        <p>Use <strong>🪟 Pop-up Fila</strong> para abrir o Livro de Segurança. Ele separa as músicas que ainda estão na fila das que foram registradas como pedidos/entradas anteriores e já não estão na fila atual.</p>
+        <ul>
+            <li><strong>Na fila:</strong> mostra a fila presente no painel; a Central é para consulta e recuperação, não para editar sua ordem diretamente.</li>
+            <li><strong>➕ Recolocar:</strong> devolve aquela música à fila principal, preservando o cantor e o título. A operação deve ser confirmada visualmente no painel; se a faixa estiver no Livro por ter falhado, substitua o vídeo incorreto antes de tentar tocá-la novamente.</li>
+            <li><strong>🗑️ Excluir individual:</strong> apaga somente o registro escolhido do Livro de Segurança, após confirmação. Não deve retirar outra música nem mexer na fila.</li>
+            <li><strong>Limpar Livro de Segurança:</strong> remove todos os registros do Livro após confirmação. A fila atual fica como está.</li>
+            <li>O Livro de Segurança e a fila são conjuntos diferentes: apagar o Livro não é o mesmo que limpar a fila.</li>
+            <li>Se a janela não abrir, autorize pop-ups para o site. Mantenha o painel original aberto enquanto usa a Central.</li>
+        </ul>
+
+        <h3 id="manual-falhas">8. Falha do YouTube e escolha de vídeo substituto</h3>
+        <p>Uma falha pode ocorrer porque o vídeo foi removido, bloqueado para incorporação, restrito por região ou temporariamente indisponível. O aviso na TV identifica o título e o cantor e informa ao público que o DJ vai localizar outro vídeo; a música deve ficar preservada no início da fila, sem apagar as demais.</p>
+        <ol>
+            <li>Na área de busca do DJ, confira se o título da música falhada já está preenchido; mantenha o cantor indicado no aviso.</li>
+            <li>Pesquise o mesmo nome no YouTube e examine os resultados. Não escolha automaticamente sem conferir o título/canal e se é a versão de karaokê desejada.</li>
+            <li>Clique no resultado substituto. O sistema deve trocar o ID do vídeo, preservar o nome original da música e do cantor, mantê-la no primeiro lugar e iniciar a reprodução.</li>
+            <li>Se outro vídeo também falhar, repita a busca e selecione uma versão diferente. As outras pessoas e músicas da fila devem continuar aguardando.</li>
+            <li>Se o resultado não corresponder ou a fila não mostrar a faixa no topo, não limpe a fila: abra a Central/backup, confirme a faixa pendente e peça ao DJ responsável para corrigir antes de avançar.</li>
+        </ol>
+        <p><strong>Regra de segurança:</strong> o erro de vídeo não significa que o cantor desistiu. Não recuse nem descarte a música; recupere o vídeo mantendo os dados do pedido.</p>
+
+        <h3 id="manual-votos">9. Votos, nota e ranking</h3>
+        <ul>
+            <li><strong>Contador de votos ao vivo:</strong> mostra quantos votos foram recebidos para a apresentação atual. Clique para ver a distribuição por categoria.</li>
+            <li><strong>Categorias:</strong> Excelente, Muito Bom, Bom, Regular e Ruim. O celular solicita confirmação antes de registrar um voto.</li>
+            <li><strong>Nota final:</strong> combina uma base estimada pelo avaliador de som (ou aleatória quando não há leitura) com bônus/penalidades dos votos; aplica limites para manter a pontuação na faixa prevista pelo código.</li>
+            <li><strong>Forçar nota:</strong> o ícone de engrenagem do rodapé permite definir manualmente uma nota de 0 a 100 para a próxima apuração. As teclas 6, 7, 8, 9 e 0 também preparam notas/faixas manuais conforme o código.</li>
+            <li><strong>Ranking:</strong> reúne as apresentações avaliadas, ordenadas pela pontuação. Clique em um cartão para expandir/ocultar os detalhes dos votos.</li>
+            <li><strong>Limpar Ranking:</strong> apaga as posições exibidas e, conforme a função atual, também zera a referência da música corrente. Confirme antes de usar.</li>
+        </ul>
+
+        <h3 id="manual-historicos">10. Histórico e estatísticas</h3>
+        <ul>
+            <li><strong>Histórico:</strong> registra as músicas iniciadas e seus cantores; é diferente do Livro de Segurança e da fila pendente.</li>
+            <li><strong>Limpar Histórico:</strong> apaga os registros de execução locais exibidos nesse painel depois de confirmação. Não confunda com limpar fila ou Livro de Segurança.</li>
+            <li><strong>Estatísticas avançadas:</strong> escolha data inicial e final e aplique o período. São apresentados total de músicas, dias com atividade, dia mais movimentado, horário de pico, gráficos por dia/hora, resumo diário e músicas mais cantadas.</li>
+            <li>As estatísticas dependem de registros com data/hora no histórico deste navegador. Um histórico antigo sem carimbo de data pode não entrar nos gráficos.</li>
+        </ul>
+
+        <h3 id="manual-fotos">11. Fotos da noite</h3>
+        <p>Os celulares podem tirar uma foto oficial associada ao cantor atual. A imagem recebe moldura e identificação visual, é salva em <strong>fotosDia</strong> no Firebase e aparece na galeria do público e na Central de Gerenciamento de Fotos do painel.</p>
+        <ul>
+            <li><strong>Gerenciar Fotos:</strong> abre a lista de fotos do dia; use <strong>Ver</strong> para ampliar e baixar uma foto.</li>
+            <li><strong>Excluir:</strong> remove uma foto individual após confirmação.</li>
+            <li><strong>Excluir Selecionadas:</strong> marque uma ou mais miniaturas e confirme a exclusão.</li>
+            <li><strong>Excluir Todas:</strong> remove todas as fotos do dia; a confirmação é deliberada e não pode ser desfeita pelo painel.</li>
+            <li>O botão de foto no celular só funciona quando há um cantor válido no palco; aguarde o nome da pessoa aparecer.</li>
+        </ul>
+
+        <h3 id="manual-config">12. Configurações: canais, usuários, pausa e cantores</h3>
+        <p>O acesso a <strong>⚙️ Configurações</strong> é reservado ao administrador. Há abas para Canais Favoritos, Usuários, Transição/Pausa e Cantores recentes.</p>
+        <ul>
+            <li><strong>Canais Favoritos:</strong> adicione nomes de canais para priorizá-los nos resultados de busca; use subir/descer para definir a prioridade ou excluir um canal. As alterações são gravadas localmente e sincronizadas com o celular.</li>
+            <li><strong>Usuários:</strong> permite cadastrar, editar e excluir operadores conforme as opções disponíveis. Confirme com cuidado para não remover o único acesso administrativo.</li>
+            <li><strong>Transição/Pausa:</strong> define quantos segundos a TV espera antes de iniciar a próxima música. A contagem informa o cantor e o título que estão prestes a tocar.</li>
+            <li><strong>Cantores recentes:</strong> apresenta nomes usados na votação. O administrador pode remover um nome ou limpar a lista sincronizada. A alteração é propagada aos celulares conectados.</li>
+            <li><strong>Botão Sistema Liberado/Bloqueado:</strong> quando bloqueado, os celulares exibem a tela de aviso/propaganda e deixam de oferecer normalmente pedidos e votação; desbloqueie para retomar.</li>
+        </ul>
+
+        <h3 id="manual-celular">13. Como o público usa a página de votação</h3>
+        <ol>
+            <li><strong>Menu:</strong> a pessoa escolhe Pedir Música, Votar no Cantor ou Tirar Foto &amp; Baixar.</li>
+            <li><strong>Pedir Música:</strong> busca no YouTube ou abre o catálogo. Ao escolher um resultado, informa o nome de quem vai cantar e confirma o pedido. O pedido chega ao DJ; ele só entra na fila quando aprovado ou quando Auto-Aprovar está ativo.</li>
+            <li><strong>Catálogo:</strong> permite percorrer letras do alfabeto ou digitar cantor/música. Selecione um item e identifique o cantor antes de enviar.</li>
+            <li><strong>Votar:</strong> mostra cantor e música atuais. Escolha uma categoria, confira a confirmação e toque em Votar. O mesmo navegador/celular fica marcado como já votado para aquela apresentação; não limpe os dados do navegador para tentar votar várias vezes.</li>
+            <li><strong>Fotos:</strong> abre a câmera do aparelho, associa a imagem ao cantor indicado e permite ver/baixar imagens disponíveis na galeria.</li>
+            <li><strong>Bloqueio:</strong> se o DJ encerrar/bloquear os pedidos, o celular mostra a mensagem do evento em vez das opções normais.</li>
+        </ol>
+
+        <h3 id="manual-problemas">14. Problemas comuns e cuidados</h3>
+        <ul>
+            <li><strong>TV não abriu:</strong> permita pop-ups; clique em Iniciar Sistema e TV novamente. Depois clique na própria TV para liberar o áudio se solicitado.</li>
+            <li><strong>Microfone não liga:</strong> permita o acesso nas configurações do navegador e confirme que o computador tem um microfone selecionado. O restante do sistema pode funcionar sem ele.</li>
+            <li><strong>Vídeo dá erro:</strong> mantenha a faixa na fila, pesquise o mesmo título, selecione outro resultado e confirme que o cantor permaneceu correto. Não use Limpar Fila para contornar o erro.</li>
+            <li><strong>Pedido não aparece:</strong> confira conexão com a internet, se o sistema está liberado e se o pedido foi confirmado no celular. Atualize a lista aguardando a sincronização antes de pedir de novo.</li>
+            <li><strong>Fila parece incompleta:</strong> não adicione repetidamente nem limpe. Use Restaurar para mesclar os backups; verifique também a Central de Segurança.</li>
+            <li><strong>Central não abre:</strong> permita pop-ups. Não feche o painel principal enquanto a janela de segurança estiver em uso.</li>
+            <li><strong>Dados locais:</strong> evite modo privado/guests, limpeza automática de dados e troca de navegador no meio do evento. A cópia local da fila pertence ao navegador/dispositivo em que o painel está aberto.</li>
+            <li><strong>Redefinição total:</strong> Resetar Tudo remove fila, ranking, histórico e fotos do dia; é uma ação de encerramento/manutenção, não de recuperação.</li>
+        </ul>
+        <p style="background:#222;border-left:4px solid #ffeb3b;padding:12px;border-radius:5px;"><strong>Resumo seguro para o DJ:</strong> aprovar pedidos para colocá-los na fila; usar a Central para recuperar uma música que saiu; trocar apenas o vídeo quando o YouTube falhar; restaurar para mesclar backups; limpar fila, Livro, histórico, ranking ou fotos somente sabendo qual conjunto será apagado.</p>
         <button onclick="fecharManual()" style="width: 100%; margin-top: 25px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
     </div>
 
