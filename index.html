@@ -326,7 +326,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v2.20</span>
+        <span>v2.21</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
@@ -829,8 +829,60 @@
         // POP-UP INDEPENDENTE E PERMANENTE DA FILA
         // ==========================
         let popUpFila = null;
+
+        // Esta rotina roda na janela principal: os eventos dos botões do pop-up
+        // são registrados aqui e mantêm este escopo, sem depender de window.opener.
+        function processarAcaoCentralFila(acao, registro) {
+            if (acao === 'excluir') {
+                
+                if (!registro || typeof registro !== 'object') return;
+                const indice = historicoPopUpPermanente.findIndex(item =>
+                    item.videoId === registro.videoId &&
+                    item.titulo === registro.titulo &&
+                    item.cantor === registro.cantor &&
+                    (item.timestamp || 0) === (registro.timestamp || 0)
+                );
+                if (indice < 0) {
+                    atualizarPopUpFila();
+                    return;
+                }
+                const musica = historicoPopUpPermanente[indice];
+                if (!window.confirm(`Excluir "${musica.titulo}" — ${musica.cantor} do Livro de Segurança?`)) return;
+                const atualizado = historicoPopUpPermanente.filter((_, i) => i !== indice);
+                try {
+                    localStorage.setItem('historicoPopUpPermanente', JSON.stringify(atualizado));
+                    historicoPopUpPermanente = atualizado;
+                    atualizarPopUpFila();
+                } catch (erro) {
+                    window.alert('Não foi possível salvar a exclusão. O histórico não foi alterado.');
+                }
+                return;
+            }
+
+            if (acao === 'limpar') {
+                if (!window.confirm('Deseja apagar todos os registros do Livro de Segurança? A fila atual não será alterada.')) return;
+                try {
+                    localStorage.setItem('historicoPopUpPermanente', JSON.stringify([]));
+                    historicoPopUpPermanente = [];
+                    atualizarPopUpFila();
+                } catch (erro) {
+                    window.alert('Não foi possível salvar a limpeza. O histórico não foi alterado.');
+                }
+            }
+        }
+
+        function enviarAcaoCentralFila(acao, registro) {
+            // Não encaminha via window.opener: o listener do botão é criado no painel,
+            // portanto window.opener apontaria para a própria janela (ou seria null).
+            processarAcaoCentralFila(acao, registro);
+        }
+
         function abrirPopUpFila() {
-            popUpFila = window.open("", "PopUpFila", "width=480,height=750,toolbar=0,scrollbars=1,resizable=1");
+            popUpFila = window.open('', 'PopUpFila', 'width=480,height=750,toolbar=0,scrollbars=1,resizable=1');
+            if (!popUpFila) {
+                window.alert('O navegador bloqueou a janela da Central de Segurança. Permita pop-ups para este site e tente novamente.');
+                return;
+            }
             popUpFila.document.write(`
                 <!DOCTYPE html><html><head><title>Central de Segurança da Fila</title>
                 <style>
@@ -839,10 +891,10 @@
                     h3 { color: #00d2ff; margin-top: 20px; font-size: 15px; border-left: 4px solid #00d2ff; padding-left: 8px;}
                     .item { background: #222; margin: 8px 0; padding: 12px; border-left: 5px solid #ffeb3b; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; gap: 8px;}
                     .item.tocada { border-left-color: #28a745; opacity: 0.75; }
-                    .info { flex: 1; }
-                    .titulo { font-weight: bold; font-size: 14px; display:block; margin-bottom: 4px; color: #fff;}
+                    .info { flex: 1; min-width: 0; }
+                    .titulo { font-weight: bold; font-size: 14px; display:block; margin-bottom: 4px; color: #fff; overflow-wrap: anywhere; }
                     .cantor { color: #ffeb3b; font-size: 12px; }
-                    .btn-recolocar { background: #28a745; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; flex-shrink: 0;}
+                    .btn-recolocar { background: #28a745; color: #fff; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; flex-shrink: 0;}
                     .btn-recolocar:hover { background: #218838; }
                     .btn-excluir-popup { background: #3a2020; color: #ff8a80; border: 1px solid #754040; padding: 6px 9px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; flex-shrink: 0; }
                     .btn-excluir-popup:hover { background: #b31217; color: #fff; border-color: #e52d27; }
@@ -853,12 +905,12 @@
                 <div id="conteudo-popup">Carregando...</div>
                 </body></html>
             `);
-
+            popUpFila.document.close();
             atualizarPopUpFila();
         }
 
         function registrarNoPopUpPermanente(musica) {
-            let existe = historicoPopUpPermanente.some(m => m.videoId === musica.videoId && m.cantor === musica.cantor && m.titulo === musica.titulo);
+            const existe = historicoPopUpPermanente.some(m => m.videoId === musica.videoId && m.cantor === musica.cantor && m.titulo === musica.titulo);
             if (!existe) {
                 historicoPopUpPermanente.push({
                     videoId: musica.videoId,
@@ -872,95 +924,81 @@
         }
 
         function recolocarMusicaDoPopUp(index) {
-            let musica = historicoPopUpPermanente[index];
+            const musica = historicoPopUpPermanente[index];
             if (musica) {
-                filaDeReproducao.push({
-                    videoId: musica.videoId,
-                    titulo: musica.titulo,
-                    cantor: musica.cantor
-                });
+                filaDeReproducao.push({ videoId: musica.videoId, titulo: musica.titulo, cantor: musica.cantor });
                 salvarCantorAutomaticamente(musica.cantor);
                 atualizarTelaFila(false);
-                alert(`"${musica.titulo}" foi recolocada na fila com sucesso!`);
+                window.alert(`"${musica.titulo}" foi recolocada na fila com sucesso!`);
             }
         }
 
-        window.executarLimpezaPopUpDireta = function() {
-            if (confirm("Deseja apagar todos os registros do Livro de Segurança? A fila atual não será alterada.")) {
-                historicoPopUpPermanente = [];
-                localStorage.setItem('historicoPopUpPermanente', JSON.stringify(historicoPopUpPermanente));
-                atualizarPopUpFila();
-            }
-        };
-
-        window.excluirMusicaHistoricoPopUp = function(index) {
-            if (!Number.isInteger(index) || index < 0 || index >= historicoPopUpPermanente.length) return;
-            const musica = historicoPopUpPermanente[index];
-            if (confirm(`Excluir "${musica.titulo}" — ${musica.cantor} do Livro de Segurança?`)) {
-                historicoPopUpPermanente.splice(index, 1);
-                localStorage.setItem('historicoPopUpPermanente', JSON.stringify(historicoPopUpPermanente));
-                atualizarPopUpFila();
-            }
-        };
-
         function atualizarPopUpFila() {
-            if (popUpFila && !popUpFila.closed) {
-                let div = popUpFila.document.getElementById('conteudo-popup');
-                if (!div) return;
+            if (!popUpFila || popUpFila.closed) return;
+            let div;
+            try { div = popUpFila.document.getElementById('conteudo-popup'); } catch (erro) { return; }
+            if (!div) return;
 
-                let naFilaAtualHtml = filaDeReproducao.map((item, i) => `
-                    <div class="item">
+            const naFilaAtualHtml = filaDeReproducao.map((item, i) => `
+                <div class="item">
+                    <div class="info">
+                        <span class="titulo">${i + 1}º - ${item.titulo}</span>
+                        <span class="cantor">🎤 Voz: ${item.cantor}</span>
+                    </div>
+                    <span style="font-size: 11px; color: #00d2ff; font-weight: bold;">Na Fila</span>
+                </div>
+            `).join('');
+
+            const outrasMusicas = historicoPopUpPermanente.filter(m =>
+                !filaDeReproducao.some(f => f.videoId === m.videoId && f.cantor === m.cantor && f.titulo === m.titulo)
+            ).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+            const outrasHtml = outrasMusicas.map(item => {
+                const indice = historicoPopUpPermanente.indexOf(item);
+                const registroSeguro = encodeURIComponent(JSON.stringify(item));
+                return `
+                    <div class="item tocada">
                         <div class="info">
-                            <span class="titulo">${i+1}º - ${item.titulo}</span>
+                            <span class="titulo">${item.titulo}</span>
                             <span class="cantor">🎤 Voz: ${item.cantor}</span>
                         </div>
-                        <span style="font-size: 11px; color: #00d2ff; font-weight: bold;">Na Fila</span>
-                    </div>
-                `).join('');
-
-                let outrasMusicas = historicoPopUpPermanente.filter(m => 
-                    !filaDeReproducao.some(f => f.videoId === m.videoId && f.cantor === m.cantor && f.titulo === m.titulo)
-                );
-
-                outrasMusicas.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
-                let outrasHtml = outrasMusicas.map((item) => {
-                    let idxReal = historicoPopUpPermanente.indexOf(item);
-                    return `
-                        <div class="item tocada">
-                            <div class="info">
-                                <span class="titulo">${item.titulo}</span>
-                                <span class="cantor">🎤 Voz: ${item.cantor}</span>
-                            </div>
-                            <button class="btn-recolocar" data-idx="${idxReal}">➕ Recolocar</button>
-                            <button class="btn-excluir-popup" data-idx="${idxReal}" onclick="window.opener.excluirMusicaHistoricoPopUp(${idxReal})" title="Excluir apenas este registro">🗑️</button>
-                        </div>
-                    `;
-                }).join('');
-
-                let htmlFinal = `
-                    <h3>⏳ Presentes na Fila Original (${filaDeReproducao.length})</h3>
-                    ${naFilaAtualHtml || "<p style='color:#777; font-size:12px;'>Nenhuma música na fila agora.</p>"}
-                    
-                    <h3>📋 Histórico Geral / Já Tocadas (${outrasMusicas.length})</h3>
-                    <p style="font-size:11px; color:#aaa; margin:0 0 10px 0;">Estas músicas não somem mesmo ao limpar a fila. Clique em Recolocar para reinseri-las:</p>
-                    ${outrasHtml || "<p style='color:#777; font-size:12px;'>Nenhuma música no histórico ainda.</p>"}
-
-                    <div style="text-align: center; margin-top: 25px; padding-bottom: 25px;">
-                        <button id="btn-limpar-popup-seguranca" class="btn-limpar-popup" onclick="window.opener.executarLimpezaPopUpDireta()">🗑️ Limpar Livro de Segurança</button>
+                        <button class="btn-recolocar" data-idx="${indice}" type="button">➕ Recolocar</button>
+                        <button class="btn-excluir-popup" data-registro="${registroSeguro}" type="button" title="Excluir apenas este registro">🗑️</button>
                     </div>
                 `;
+            }).join('');
 
-                div.innerHTML = htmlFinal;
+            div.innerHTML = `
+                <h3>⏳ Presentes na Fila Original (${filaDeReproducao.length})</h3>
+                ${naFilaAtualHtml || "<p style='color:#777; font-size:12px;'>Nenhuma música na fila agora.</p>"}
+                <h3>📋 Histórico Geral / Já Tocadas (${outrasMusicas.length})</h3>
+                <p style="font-size:11px; color:#aaa; margin:0 0 10px 0;">Estas músicas não somem mesmo ao limpar a fila. Clique em Recolocar para reinseri-las:</p>
+                ${outrasHtml || "<p style='color:#777; font-size:12px;'>Nenhuma música no histórico ainda.</p>"}
+                <div style="text-align: center; margin-top: 25px; padding-bottom: 25px;">
+                    <button id="btn-limpar-popup-seguranca" class="btn-limpar-popup" type="button">🗑️ Limpar Livro de Segurança</button>
+                </div>
+            `;
 
-                let botoesRecolocar = popUpFila.document.querySelectorAll('.btn-recolocar');
-                botoesRecolocar.forEach(btn => {
-                    btn.onclick = function() {
-                        let idx = parseInt(this.getAttribute('data-idx'), 10);
-                        recolocarMusicaDoPopUp(idx);
-                    };
+            const btnLimpar = popUpFila.document.getElementById('btn-limpar-popup-seguranca');
+            if (btnLimpar) btnLimpar.addEventListener('click', () => enviarAcaoCentralFila('limpar'));
+
+            popUpFila.document.querySelectorAll('.btn-excluir-popup').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    try {
+                        const registro = JSON.parse(decodeURIComponent(this.getAttribute('data-registro')));
+                        enviarAcaoCentralFila('excluir', registro);
+                    } catch (erro) {
+                        popUpFila.alert('Não foi possível identificar este registro. Atualize a Central e tente novamente.');
+                    }
                 });
-            }
+            });
+
+            popUpFila.document.querySelectorAll('.btn-recolocar').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const indice = Number.parseInt(this.getAttribute('data-idx'), 10);
+                    recolocarMusicaDoPopUp(indice);
+                });
+            });
         }
 
         const firebaseConfig = {
