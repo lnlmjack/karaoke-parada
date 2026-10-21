@@ -25,10 +25,10 @@
         #btn-central-fotos { background: #28a745; color: #fff; border-color: #218838; } #btn-central-fotos:hover { background: #218838; }
         #btn-toggle-bloqueio { background: #28a745; color: #fff; border-color: #218838; }
 
-        .area-botoes-topo { display: flex; gap: 15px; margin-bottom: 15px; }
+        .area-botoes-topo { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
         .btn-topo { flex: 1; padding: 15px; font-size: 16px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s;}
         .btn-tv { background: #007bff; } .btn-tv:hover { background: #0056b3; } .btn-tv.conectado { background: #17a2b8; pointer-events: none; }
-        .btn-mic { background: #e52d27; text-align: center; display: flex; align-items: center; justify-content: center; } 
+        .btn-mic { flex: 0 0 44px; width: 44px; height: 44px; padding: 0; background: #e52d27; text-align: center; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 20px; }
         .btn-mic:hover { filter: brightness(1.2); }
 
         .area-busca { display: flex; gap: 10px; margin-bottom: 15px; }
@@ -258,7 +258,7 @@
         
         <div class="area-botoes-topo">
             <button id="botaoTV" class="btn-topo btn-tv" onclick="iniciarSistema()">🚀 1. INICIAR SISTEMA E TV</button>
-            <button id="botaoMic" class="btn-topo btn-mic" onclick="toggleMicrofone()">🎙️ 2. AVALIADOR (INICIANDO...)</button>
+            <button id="botaoMic" class="btn-mic" onclick="toggleMicrofone()" title="Avaliador desligado. Clique para ligar o microfone." aria-label="Ligar ou desligar avaliador">🎙️</button>
         </div>
 
         <div class="canais-preferidos" id="container-chips-canais"></div>
@@ -326,7 +326,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v2.21</span>
+        <span>v2.22</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
@@ -830,11 +830,32 @@
         // ==========================
         let popUpFila = null;
 
-        // Esta rotina roda na janela principal: os eventos dos botões do pop-up
-        // são registrados aqui e mantêm este escopo, sem depender de window.opener.
+        // Os eventos são tratados pelo painel principal; confirmações e avisos são
+        // exibidos pela própria Central para evitar diálogos bloqueados entre janelas.
+        function confirmarAcaoCentralFila(mensagem) {
+            try {
+                if (!popUpFila || popUpFila.closed) {
+                    window.alert('A Central de Segurança foi fechada. Abra-a novamente e tente outra vez.');
+                    return false;
+                }
+                return popUpFila.confirm(mensagem);
+            } catch (erro) {
+                window.alert('Não foi possível abrir a confirmação da Central de Segurança.');
+                return false;
+            }
+        }
+
+        function avisarErroCentralFila(mensagem) {
+            try {
+                if (popUpFila && !popUpFila.closed) popUpFila.alert(mensagem);
+                else window.alert(mensagem);
+            } catch (erro) {
+                window.alert(mensagem);
+            }
+        }
+
         function processarAcaoCentralFila(acao, registro) {
             if (acao === 'excluir') {
-                
                 if (!registro || typeof registro !== 'object') return;
                 const indice = historicoPopUpPermanente.findIndex(item =>
                     item.videoId === registro.videoId &&
@@ -844,36 +865,35 @@
                 );
                 if (indice < 0) {
                     atualizarPopUpFila();
+                    avisarErroCentralFila('Este registro não está mais no histórico. A Central foi atualizada.');
                     return;
                 }
                 const musica = historicoPopUpPermanente[indice];
-                if (!window.confirm(`Excluir "${musica.titulo}" — ${musica.cantor} do Livro de Segurança?`)) return;
+                if (!confirmarAcaoCentralFila(`Excluir "${musica.titulo}" — ${musica.cantor} do Livro de Segurança?`)) return;
                 const atualizado = historicoPopUpPermanente.filter((_, i) => i !== indice);
                 try {
                     localStorage.setItem('historicoPopUpPermanente', JSON.stringify(atualizado));
                     historicoPopUpPermanente = atualizado;
                     atualizarPopUpFila();
                 } catch (erro) {
-                    window.alert('Não foi possível salvar a exclusão. O histórico não foi alterado.');
+                    avisarErroCentralFila('Não foi possível salvar a exclusão. O histórico não foi alterado.');
                 }
                 return;
             }
 
             if (acao === 'limpar') {
-                if (!window.confirm('Deseja apagar todos os registros do Livro de Segurança? A fila atual não será alterada.')) return;
+                if (!confirmarAcaoCentralFila('Deseja apagar todos os registros do Livro de Segurança? A fila atual não será alterada.')) return;
                 try {
                     localStorage.setItem('historicoPopUpPermanente', JSON.stringify([]));
                     historicoPopUpPermanente = [];
                     atualizarPopUpFila();
                 } catch (erro) {
-                    window.alert('Não foi possível salvar a limpeza. O histórico não foi alterado.');
+                    avisarErroCentralFila('Não foi possível salvar a limpeza. O histórico não foi alterado.');
                 }
             }
         }
 
         function enviarAcaoCentralFila(acao, registro) {
-            // Não encaminha via window.opener: o listener do botão é criado no painel,
-            // portanto window.opener apontaria para a própria janela (ou seria null).
             processarAcaoCentralFila(acao, registro);
         }
 
@@ -1058,7 +1078,7 @@
                 if (audioCtx && audioCtx.state !== 'closed') await audioCtx.close();
                 audioCtx = null; analyser = null; micAtivo = false;
                 if (intervaloMic) clearInterval(intervaloMic);
-                btn.innerHTML = "🎙️ 2. AVALIADOR (DESLIGADO)"; btn.style.background = "#e52d27"; 
+                btn.innerHTML = "🎙️"; btn.title = "Avaliador desligado. Clique para ligar o microfone."; btn.style.background = "#e52d27"; 
             } else {
                 try {
                     streamMic = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -1068,7 +1088,7 @@
                     audioCtx.createMediaStreamSource(streamMic).connect(analyser);
                     analyser.fftSize = 256; dataArray = new Uint8Array(analyser.frequencyBinCount);
                     micAtivo = true;
-                    btn.innerHTML = "🎙️ 2. AVALIADOR (LIGADO)"; btn.style.background = "#17a2b8"; 
+                    btn.innerHTML = "🎙️"; btn.title = "Avaliador ligado. Clique para desligar o microfone."; btn.style.background = "#17a2b8"; 
                     if (intervaloMic) clearInterval(intervaloMic);
                     intervaloMic = setInterval(() => {
                         if (captando && analyser && micAtivo) {
@@ -1077,7 +1097,7 @@
                             somaEnergia += (soma / dataArray.length); qtdLeituras++;
                         }
                     }, 200);
-                } catch (err) { btn.innerHTML = "⚠️ MICROFONE BLOQUEADO"; btn.style.background = "#e52d27"; }
+                } catch (err) { btn.innerHTML = "🎙️"; btn.title = "Microfone bloqueado. Verifique a permissão do navegador."; btn.style.background = "#e52d27"; }
             }
         }
         
