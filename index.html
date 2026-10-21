@@ -326,7 +326,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v2.19</span>
+        <span>v2.20</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
@@ -933,7 +933,7 @@
                                 <span class="cantor">🎤 Voz: ${item.cantor}</span>
                             </div>
                             <button class="btn-recolocar" data-idx="${idxReal}">➕ Recolocar</button>
-                            <button class="btn-excluir-popup" data-idx="${idxReal}" title="Excluir apenas este registro">🗑️</button>
+                            <button class="btn-excluir-popup" data-idx="${idxReal}" onclick="window.opener.excluirMusicaHistoricoPopUp(${idxReal})" title="Excluir apenas este registro">🗑️</button>
                         </div>
                     `;
                 }).join('');
@@ -947,26 +947,11 @@
                     ${outrasHtml || "<p style='color:#777; font-size:12px;'>Nenhuma música no histórico ainda.</p>"}
 
                     <div style="text-align: center; margin-top: 25px; padding-bottom: 25px;">
-                        <button id="btn-limpar-popup-seguranca" class="btn-limpar-popup">🗑️ Limpar Livro de Segurança</button>
+                        <button id="btn-limpar-popup-seguranca" class="btn-limpar-popup" onclick="window.opener.executarLimpezaPopUpDireta()">🗑️ Limpar Livro de Segurança</button>
                     </div>
                 `;
 
                 div.innerHTML = htmlFinal;
-
-                let btnLimpar = popUpFila.document.getElementById('btn-limpar-popup-seguranca');
-                if (btnLimpar) {
-                    btnLimpar.onclick = function() {
-                        window.executarLimpezaPopUpDireta();
-                    };
-                }
-
-                let botoesExcluir = popUpFila.document.querySelectorAll('.btn-excluir-popup');
-                botoesExcluir.forEach(btn => {
-                    btn.onclick = function() {
-                        let idx = parseInt(this.getAttribute('data-idx'), 10);
-                        if (Number.isInteger(idx)) window.excluirMusicaHistoricoPopUp(idx);
-                    };
-                });
 
                 let botoesRecolocar = popUpFila.document.querySelectorAll('.btn-recolocar');
                 botoesRecolocar.forEach(btn => {
