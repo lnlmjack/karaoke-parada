@@ -25,10 +25,12 @@
         #btn-central-fotos { background: #28a745; color: #fff; border-color: #218838; } #btn-central-fotos:hover { background: #218838; }
         #btn-toggle-bloqueio { background: #28a745; color: #fff; border-color: #218838; }
 
-        .area-botoes-topo { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .area-botoes-topo { display: flex; gap: 8px; margin-bottom: 15px; align-items: center; }
+        #botaoTV { flex: 1; }
+        #botaoMic.btn-mic { flex: 0 0 42px; width: 42px; height: 42px; min-height: 42px; padding: 0; border-radius: 50%; font-size: 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.25); }
         .btn-topo { flex: 1; padding: 15px; font-size: 16px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s;}
         .btn-tv { background: #007bff; } .btn-tv:hover { background: #0056b3; } .btn-tv.conectado { background: #17a2b8; pointer-events: none; }
-        .btn-mic { flex: 0 0 44px; width: 44px; height: 44px; padding: 0; background: #e52d27; text-align: center; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 20px; }
+        .btn-mic { background: #e52d27; text-align: center; display: flex; align-items: center; justify-content: center; } 
         .btn-mic:hover { filter: brightness(1.2); }
 
         .area-busca { display: flex; gap: 10px; margin-bottom: 15px; }
@@ -97,6 +99,21 @@
         #modal-manual-conteudo h3 { color: #ffeb3b; margin-top: 20px; margin-bottom: 8px; font-size: 16px; border-left: 4px solid #e52d27; padding-left: 10px; }
         #modal-manual-conteudo p, #modal-manual-conteudo li { line-height: 1.5; font-size: 14px; }
         #modal-manual-conteudo ul { margin-top: 5px; margin-bottom: 12px; padding-left: 20px; }
+        #modal-manual-conteudo h4 { color: #00d2ff; margin: 14px 0 7px; font-size: 15px; }
+        #modal-manual-conteudo ol { padding-left: 23px; }
+        #modal-manual-conteudo li { margin: 5px 0; }
+        #modal-manual-conteudo code { background: #111; color: #ffeb3b; padding: 2px 4px; border-radius: 3px; }
+        .manual-indice, .manual-aviso { background: #202020; border: 1px solid #383838; border-radius: 8px; padding: 12px 14px; margin: 14px 0; }
+        .manual-indice strong { color: #ffeb3b; display: block; margin-bottom: 8px; }
+        .manual-indice div { display: flex; flex-wrap: wrap; gap: 7px 12px; }
+        .manual-indice a { color: #00d2ff; text-decoration: none; font-size: 13px; }
+        .manual-indice a:hover { text-decoration: underline; }
+        .manual-aviso { border-left: 4px solid #ffc107; color: #ddd; font-size: 13px; }
+        .manual-tabela-wrap { overflow-x: auto; }
+        .manual-tabela { width: 100%; border-collapse: collapse; font-size: 12px; margin: 10px 0 15px; }
+        .manual-tabela th, .manual-tabela td { border: 1px solid #3a3a3a; padding: 8px; text-align: left; vertical-align: top; }
+        .manual-tabela th { color: #ffeb3b; background: #222; }
+        .manual-tabela td:first-child { color: #00d2ff; font-weight: bold; }
         #fundo-modal-manual { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 299; }
         
         .versao-app { position: fixed; bottom: 4px; right: 8px; font-size: 12px; color: #fff; opacity: 0.3; z-index: 200005; display: flex; align-items: center; gap: 6px; }
@@ -258,7 +275,7 @@
         
         <div class="area-botoes-topo">
             <button id="botaoTV" class="btn-topo btn-tv" onclick="iniciarSistema()">🚀 1. INICIAR SISTEMA E TV</button>
-            <button id="botaoMic" class="btn-mic" onclick="toggleMicrofone()" title="Avaliador desligado. Clique para ligar o microfone." aria-label="Ligar ou desligar avaliador">🎙️</button>
+            <button id="botaoMic" class="btn-topo btn-mic" onclick="toggleMicrofone()" title="Avaliador: iniciando" aria-label="Alternar avaliador de áudio">🎙️</button>
         </div>
 
         <div class="canais-preferidos" id="container-chips-canais"></div>
@@ -331,8 +348,172 @@
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
     <div id="modal-manual-conteudo">
-        <h2>📖 Manual Completo do Sistema - Karaokê Parada 10.95</h2>
-        <p>O sistema possui controle de acesso com dois perfis de usuários...</p>
+
+        <h2>📖 Manual Completo do Sistema — Karaokê Parada 10.95</h2>
+        <p style="text-align:center;color:#aaa;margin-top:-2px;">Guia prático do painel do DJ e das funções disponíveis no celular do público.</p>
+        <div class="manual-aviso"><strong>Como usar:</strong> este manual fica dentro de uma janela rolável. Use o índice para ir direto ao assunto e o botão <em>Fechar Manual</em> no final para voltar ao painel.</div>
+
+        <nav class="manual-indice" aria-label="Índice do manual">
+            <strong>📚 Índice rápido</strong>
+            <div>
+                <a href="#manual-visao">Visão geral</a><a href="#manual-login">Acesso e perfis</a>
+                <a href="#manual-inicio">Preparar o sistema e a TV</a><a href="#manual-pedidos">Pedidos de músicas</a>
+                <a href="#manual-fila">Fila e controles de reprodução</a><a href="#manual-seguranca">Central de Segurança da Fila</a>
+                <a href="#manual-votos-dj">Votos, avaliação e ranking</a><a href="#manual-historicos">Histórico e estatísticas</a>
+                <a href="#manual-fotos-dj">Fotos do dia</a><a href="#manual-config">Configurações</a>
+                <a href="#manual-celular">Sistema de votação no celular</a><a href="#manual-problemas">Solução de problemas</a>
+                <a href="#manual-cuidados">Cuidados e limites importantes</a>
+            </div>
+        </nav>
+
+        <h3 id="manual-visao">1. Visão geral: como as partes se comunicam</h3>
+        <p>O sistema é composto por três telas que trabalham em conjunto: <strong>o painel do DJ</strong> (controle e reprodução), <strong>a tela da TV</strong> (vídeo, avisos e pontuação) e <strong>a página do celular</strong> (pedido de músicas, voto e fotos). O painel e os celulares usam o Firebase para compartilhar pedidos, status da música, votos, configuração de canais, bloqueio e fotos.</p>
+        <p>A fila de reprodução e as listas de histórico/ranking também são guardadas no armazenamento local do navegador do painel. Por isso, usar o mesmo navegador e o mesmo perfil do dispositivo é importante para conservar esses dados. O backup da fila é gravado separadamente na nuvem quando o sistema salva uma alteração normal na fila.</p>
+
+        <h3 id="manual-login">2. Acesso ao painel e perfis de usuário</h3>
+        <p>Na tela inicial, informe usuário e senha e selecione <strong>Entrar</strong>. O painel identifica o perfil e mostra o nome do operador no topo. O perfil administrador também vê o botão <strong>Configurações</strong>; o operador comum trabalha com os controles operacionais apresentados no painel.</p>
+        <ul>
+            <li><strong>Administrador:</strong> além da operação, acessa canais favoritos, usuários, tempo de transição e gestão dos cantores recentes.</li>
+            <li><strong>Operador comum:</strong> pode acompanhar pedidos, aprovar ou recusar, organizar e tocar a fila, abrir os controles de ranking, histórico e outras telas de operação.</li>
+            <li><strong>Sair:</strong> pede confirmação, encerra a sessão local e recarrega a página. Ao entrar novamente, é necessário autenticar outra vez.</li>
+        </ul>
+        <div class="manual-aviso"><strong>Segurança:</strong> na versão atual, a verificação de acesso acontece no próprio navegador e há credenciais iniciais definidas no código. Não publique esse HTML com senhas reais nem considere esse mecanismo equivalente a uma autenticação segura de servidor. Restrinja o acesso ao endereço e revise as credenciais antes de usar em ambiente público.</div>
+
+        <h3 id="manual-inicio">3. Preparar o karaokê, a TV e o avaliador</h3>
+        <ol>
+            <li><strong>Iniciar Sistema e TV:</strong> abre uma janela separada destinada à televisão, carrega o player do YouTube e tenta ativar o avaliador de áudio automaticamente. Permita a abertura de pop-ups para o site.</li>
+            <li><strong>Liberar o som na TV:</strong> quando aparecer a cortina de instrução, clique uma vez na tela da TV para permitir a reprodução de áudio. Se desejar, coloque essa janela em tela cheia pelo navegador.</li>
+            <li><strong>Avaliador de áudio:</strong> o pequeno botão de microfone liga ou desliga a captura do microfone do computador. Na primeira ativação, permita o acesso ao microfone no navegador. O estado é identificado pelo ícone/cor e pela dica exibida ao passar o cursor.</li>
+            <li><strong>Permissão negada:</strong> se o navegador bloquear o microfone, abra as permissões do site nas configurações do navegador, autorize o microfone e tente novamente.</li>
+        </ol>
+        <p>O avaliador mede o nível de energia sonora captado pelo microfone durante a música; ele <strong>não reconhece palavras, afinação nem identifica a voz do cantor</strong>. Se não houver leituras válidas, o sistema usa uma nota-base aleatória. O resultado também pode ser influenciado pelos votos do público, conforme a regra explicada na seção de avaliação.</p>
+
+        <h3 id="manual-pedidos">4. Busca e pedidos de músicas no painel</h3>
+        <p>Na área <strong>Busca do DJ</strong>, digite o nome de uma música ou cole um link do YouTube e selecione <strong>Buscar Música (DJ)</strong>. Os resultados aparecem com título e canal; clique no resultado e informe o cantor no modal. Escolha se a música entra no fim da fila ou no topo usando as opções do modal.</p>
+        <p>Os canais configurados como favoritos são usados para priorizar resultados correspondentes na busca; não garantem que o vídeo esteja disponível, correto ou liberado para reprodução. Links do YouTube podem falhar por restrições do próprio vídeo.</p>
+        <p>Na área <strong>Pedidos</strong> aparecem as músicas enviadas pelo público. O botão de confirmação (✅) aceita o pedido e adiciona a música ao fim da fila; o botão de recusa (❌) remove o pedido após confirmação. A caixa <strong>Auto-Aprovar</strong> faz com que novos pedidos sejam adicionados automaticamente sem decisão individual do DJ.</p>
+        <div class="manual-aviso"><strong>Dica de operação:</strong> deixe o Auto-Aprovar desmarcado quando quiser revisar títulos, vídeos e nomes antes de incluí-los. Pedidos recebidos não começam a tocar imediatamente: primeiro entram na fila, salvo se a reprodução automática da fila iniciar por estar sem música ativa.</div>
+
+        <h3 id="manual-fila">5. Fila: organizar, tocar e remover músicas</h3>
+        <p>A área <strong>Fila</strong> mostra a ordem de execução. Cada linha disponibiliza os controles correspondentes:</p>
+        <ul>
+            <li><strong>✏️ Editar cantor:</strong> altera o nome associado à música e registra o nome na lista de cantores recentes (exceto “Convidados”).</li>
+            <li><strong>▶️ Tocar agora:</strong> retira aquela música da posição da fila e começa sua execução na TV. Se houver tempo de pausa configurado, a contagem regressiva aparece antes do início.</li>
+            <li><strong>⬆️ / ⬇️ Mover:</strong> muda a posição da música na fila.</li>
+            <li><strong>❌ Remover:</strong> tira somente aquela música da fila.</li>
+            <li><strong>🗑️ Limpar:</strong> esvazia a fila de espera após confirmação. Não equivale a apagar o Livro de Segurança, o ranking ou o histórico geral.</li>
+        </ul>
+        <p>O botão <strong>🔙 Restaurar</strong> tenta recuperar a fila salva em <code>backupFila</code> no Firebase. Use-o quando precisar reconstituir a lista a partir do último backup disponível; a fila restaurada substitui a fila de espera que estava carregada no painel.</p>
+        <p>A música que já está tocando é controlada separadamente da fila. O quadro de reprodução mostra a música atual no ranking, com <strong>⏯️ pausar/retomar</strong> e <strong>⏪ voltar dez segundos</strong>. A janela da TV precisa estar aberta para iniciar ou controlar vídeos.</p>
+
+        <h3 id="manual-seguranca">6. Central de Segurança da Fila / Livro de Segurança</h3>
+        <p>Selecione <strong>🪟 Pop-up Fila</strong> para abrir uma janela com duas partes: músicas ainda presentes na fila atual e registros guardados no Livro de Segurança que não estão na fila. O Livro preserva os registros mesmo quando a fila é limpa; ele não é a mesma coisa que o histórico de execução do painel.</p>
+        <ul>
+            <li><strong>➕ Recolocar:</strong> adiciona uma cópia do registro selecionado ao fim da fila. A música permanece no Livro de Segurança.</li>
+            <li><strong>🗑️ Excluir no registro:</strong> remove somente aquele item do Livro de Segurança. Não remove uma cópia que já esteja na fila e não interrompe a música atual.</li>
+            <li><strong>🗑️ Limpar Livro de Segurança:</strong> apaga os registros do Livro após confirmação; não esvazia a fila de espera nem encerra a música que está tocando.</li>
+        </ul>
+        <p>O Livro de Segurança é armazenado localmente no navegador do painel. Abrir a Central exige que a janela de pop-up seja permitida. Se a janela não abrir, autorize pop-ups para o endereço e clique novamente em <strong>Pop-up Fila</strong>.</p>
+
+        <h3 id="manual-votos-dj">7. Votação ao vivo, avaliação e ranking no painel</h3>
+        <p>Enquanto há uma música ativa, o painel recebe votos enviados pelos celulares e mostra o total em <strong>📊 votos ao vivo</strong>. Clique nesse indicador para abrir a contagem por categoria: Excelente, Muito Bom, Bom, Regular e Ruim. A tela é atualizada enquanto novos votos chegam.</p>
+        <p>Ao terminar a música, o sistema congela a contagem daquele momento e calcula a nota. Na versão atual, o cálculo é:</p>
+        <ul>
+            <li><strong>Nota-base com microfone:</strong> a energia média captada é convertida em uma base que começa em 65 e tem limite superior 95.</li>
+            <li><strong>Sem leitura do microfone:</strong> a nota-base é sorteada entre 65 e 90.</li>
+            <li><strong>Peso do público:</strong> Excelente soma 5 pontos; Muito Bom soma 3; Bom soma 1; Regular subtrai 2; Ruim subtrai 4 por voto. O bônus total é limitado entre −20 e +20.</li>
+            <li><strong>Limites finais:</strong> o resultado é limitado a uma pontuação entre 50 e 100.</li>
+        </ul>
+        <p>A TV mostra a tela de apuração, uma animação de contagem e a nota final. O registro entra no <strong>Ranking e Execução</strong> com cantor, música, nota e distribuição dos votos. Clique em uma colocação para expandir ou recolher os detalhes dos votos.</p>
+        <p>O ícone de engrenagem discreto no rodapé permite informar uma nota manual de 0 a 100. Também há atalhos de teclado: <strong>6</strong> define uma nota aleatória de 60–69, <strong>7</strong> de 70–79, <strong>8</strong> de 80–89, <strong>9</strong> de 90–99 e <strong>0</strong> define 100. A nota manual/atalho vale para a próxima apuração gerada; iniciar uma nova música limpa a nota forçada anterior.</p>
+        <p><strong>Limpar Ranking</strong> zera as colocações do ranking. Não use essa ação como substituto de limpar a fila ou o histórico.</p>
+
+        <h3 id="manual-historicos">8. Histórico de execução e estatísticas</h3>
+        <p>O painel <strong>Histórico</strong> registra as músicas iniciadas, com cantor e título, e permite apagar essa lista pelo botão <strong>Limpar Histórico</strong>. Essa ação é independente do ranking e do Livro de Segurança. Os dados desse histórico são mantidos localmente no navegador.</p>
+        <p>Em <strong>Estatísticas avançadas</strong>, defina data inicial e final e selecione <strong>Aplicar período</strong>. O sistema usa as datas presentes nos registros locais para mostrar músicas cantadas, quantidade de dias com atividade, dia e hora de pico, barras por dia e por horário, resumo diário e até dez músicas mais frequentes. Se os registros não tiverem data válida ou não houver execução no período, a área informa que não há dados para exibir.</p>
+        <p>As datas digitadas usam o seletor de calendário do navegador. Os rótulos apresentados nos resumos usam o formato brasileiro <strong>DD/MM/AAAA</strong>; os horários são exibidos em formato de 24 horas.</p>
+
+        <h3 id="manual-fotos-dj">9. Central de fotos no painel</h3>
+        <p>Selecione <strong>📸 Gerenciar Fotos</strong> para consultar as fotos do dia salvas na nuvem. Em cada cartão, use <strong>Ver</strong> para abrir a foto e o botão de baixar para salvá-la; use <strong>Excluir</strong> para remover apenas aquela imagem.</p>
+        <p>Marque as caixas de seleção e escolha <strong>Excluir Selecionadas</strong> para apagar somente as imagens marcadas. <strong>Excluir Todas</strong> remove todas as fotos da coleção do dia. Essas ações são destrutivas e pedem confirmação; confira a seleção antes de confirmar.</p>
+        <p>O botão <strong>Resetar Tudo</strong> limpa a fila, o ranking, o histórico de execução, a música atual registrada no painel e as fotos do dia. É uma ação ampla e não pode ser tratada como simples limpeza do Livro de Segurança; faça-a apenas quando realmente quiser reiniciar esses dados.</p>
+
+        <h3 id="manual-config">10. Configurações do administrador</h3>
+        <p>O botão <strong>⚙️ Configurações</strong> abre abas separadas. O acesso depende do perfil administrador.</p>
+        <ul>
+            <li><strong>⭐ Canais Favoritos:</strong> adiciona canais usados para priorizar resultados de busca. Os botões de seta alteram a ordem de preferência e o botão de exclusão remove um canal. As alterações também são publicadas em <code>configSistema/canaisFavoritos</code> para a busca do celular.</li>
+            <li><strong>👥 Usuários:</strong> apresenta opções para incluir, editar e excluir usuários locais. Confira a configuração efetivamente ativa após recarregar o painel antes de confiar nela para controle de acesso; esta lista não é um serviço de autenticação compartilhado entre dispositivos.</li>
+            <li><strong>⏳ Transição / Pausa:</strong> define a quantidade de segundos de contagem regressiva antes de iniciar a próxima faixa. Informe o número e selecione <strong>Salvar Tempo</strong>. Zero remove a pausa.</li>
+            <li><strong>🎤 Cantores recentes:</strong> lista nomes sugeridos nos celulares. É possível remover um nome individual ou limpar a lista. Essas alterações são sincronizadas pelo caminho de configuração no Firebase para atualizar os dispositivos conectados.</li>
+        </ul>
+        <p>O botão superior <strong>Sistema Liberado / Sistema Bloqueado</strong> alterna o estado do site do público. Bloqueado, os celulares mostram uma tela de aviso em vez de permitir o fluxo normal de pedidos e votos. Liberado, a página retorna ao menu do karaokê.</p>
+
+        <h3 id="manual-celular">11. Como o público usa o sistema de votação no celular</h3>
+        <p>O QR Code exibido na TV abre o menu móvel. Os nomes dos botões podem variar ligeiramente com a versão publicada, mas no arquivo de votação fornecido há três ações principais: <strong>Pedir Música</strong>, <strong>Votar no Cantor</strong> e <strong>Tirar Foto &amp; Baixar</strong>.</p>
+
+        <h4>11.1 Pedir uma música</h4>
+        <ol>
+            <li>No menu, toque em <strong>Pedir Música</strong>.</li>
+            <li>Para procurar livremente, digite um título ou artista e toque em <strong>Buscar no YouTube</strong>. Também pode abrir o <strong>Catálogo de Músicas</strong>.</li>
+            <li>No catálogo, filtre pela letra inicial do artista ou digite artista/música no campo de busca. A lista mostra resultados; toque no item desejado.</li>
+            <li>Informe o nome do cantor ou dupla no modal. Selecione um nome sugerido ou digite um novo. Se o nome ficar vazio, o sistema usa “Convidados”.</li>
+            <li>Confirme o pedido. Uma mensagem confirma o envio; o pedido aparece no painel do DJ para aprovação, a menos que o Auto-Aprovar esteja ativado.</li>
+        </ol>
+        <p>O catálogo vem de <code>catalogo.csv</code> publicado junto com a página. Se não carregar, verifique se esse material está disponível no mesmo site; a busca livre do YouTube continua sendo uma alternativa quando a API e a conexão estão funcionando.</p>
+
+        <h4>11.2 Votar no cantor</h4>
+        <ol>
+            <li>Toque em <strong>Votar no Cantor</strong> e confira o nome e a música mostrados no palco virtual.</li>
+            <li>Quando a música estiver ativa, selecione uma avaliação: Excelente, Muito Bom, Bom, Regular ou Ruim.</li>
+            <li>Revise a opção apresentada e toque em <strong>Votar!</strong> para confirmar, ou em <strong>Cancelar</strong> para escolher outra.</li>
+            <li>Depois de registrado, o celular mostra a confirmação e oculta os botões de voto para aquela música.</li>
+        </ol>
+        <p>A página grava no armazenamento local do aparelho um marcador de voto por identificador de música para evitar um segundo voto no mesmo navegador. Essa proteção não equivale a validação antifraude por conta individual: limpar os dados do navegador, usar outro navegador ou outro dispositivo pode permitir uma nova participação.</p>
+
+        <h4>11.3 Tirar e guardar uma foto</h4>
+        <ol>
+            <li>Toque em <strong>Tirar Foto &amp; Baixar</strong>. O nome no campo “Cantor no palco no momento” é atualizado pelo status da música.</li>
+            <li>Toque em <strong>Tirar Foto Oficial</strong> e autorize o uso da câmera, se o celular perguntar.</li>
+            <li>A foto recebe moldura neon, nome do cantor e data; depois é enviada para a galeria compartilhada do dia.</li>
+            <li>Na <strong>Galeria de Fotos do Dia</strong>, toque em <strong>Ver / Salvar</strong>. Em celulares, pressione e segure a imagem e escolha a opção de salvar oferecida pelo sistema.</li>
+        </ol>
+        <p>A captura só é aceita quando há um cantor associado à música ativa. Durante o palco livre ou a apuração da nota, a página pede para aguardar a próxima música.</p>
+
+        <h3 id="manual-problemas">12. Solução de problemas — verifique nesta ordem</h3>
+        <ul>
+            <li><strong>A TV ou a Central não abriu:</strong> permita pop-ups para o site, retorne ao painel e clique uma vez no botão correspondente.</li>
+            <li><strong>A TV abriu sem som:</strong> clique na cortina de liberação de áudio; confira o volume do dispositivo e do player.</li>
+            <li><strong>O avaliador não liga:</strong> verifique se a página usa HTTPS, permita o microfone nas permissões do navegador, confira se o microfone correto está conectado e tente novamente.</li>
+            <li><strong>Busca sem resultado ou mensagem de erro:</strong> teste outro termo, confira a conexão e a disponibilidade da API do YouTube. A busca pode atingir limites ou falhar por configuração externa.</li>
+            <li><strong>Pedido não aparece no painel:</strong> verifique conexão com a internet, o estado do Firebase e se o pedido foi confirmado no celular. Confirme também se o painel está aberto na configuração correta.</li>
+            <li><strong>Voto não aparece:</strong> confira se há música ativa e se o celular mostra os botões de avaliação. O voto precisa ser confirmado na tela final; uma avaliação apenas selecionada ainda não foi enviada.</li>
+            <li><strong>Foto não salva:</strong> autorize a câmera, confira a conexão e aguarde o retorno de confirmação. O cantor precisa estar identificado como ativo.</li>
+            <li><strong>Fila ou histórico mudou depois de trocar de computador/navegador:</strong> a fila local, o ranking e o histórico não são automaticamente uma cópia completa entre navegadores. Tente <strong>Restaurar</strong> para recuperar a fila do backup disponível.</li>
+            <li><strong>Central mostra conteúdo antigo:</strong> feche a janela da Central, reabra pelo botão e recarregue a página se necessário. Confira se está usando o painel publicado mais recente.</li>
+        </ul>
+
+        <h3 id="manual-cuidados">13. Cuidados importantes e diferenças entre ações</h3>
+        <div class="manual-tabela-wrap"><table class="manual-tabela">
+            <thead><tr><th>Ação</th><th>O que altera</th><th>O que não deve ser confundido</th></tr></thead>
+            <tbody>
+                <tr><td>Limpar Fila</td><td>Faixas que aguardam para tocar.</td><td>Não limpa o Livro de Segurança, o ranking nem o histórico.</td></tr>
+                <tr><td>Excluir / limpar Livro</td><td>Registros guardados na Central de Segurança.</td><td>Não remove itens que já estão na fila nem para a música ativa.</td></tr>
+                <tr><td>Limpar Ranking</td><td>Colocações e notas exibidas no ranking.</td><td>Não apaga votos em uma música ativa, fila ou histórico.</td></tr>
+                <tr><td>Limpar Histórico</td><td>Lista de músicas executadas e base das estatísticas locais.</td><td>Não remove a fila, fotos ou Livro de Segurança.</td></tr>
+                <tr><td>Resetar Tudo</td><td>Fila, ranking, histórico, estado atual no painel e fotos do dia.</td><td>É a ação mais abrangente; exige atenção antes de confirmar.</td></tr>
+            </tbody>
+        </table></div>
+        <p>As ações da Central e de exclusão de fotos são destrutivas. Leia o texto da confirmação antes de continuar. Quando houver dúvida sobre se uma faixa está na fila ou apenas no Livro de Segurança, consulte as duas seções da Central antes de excluir.</p>
+
+        <h3>Glossário rápido</h3>
+        <ul>
+            <li><strong>Fila:</strong> músicas aguardando reprodução pelo DJ.</li>
+            <li><strong>Pedido:</strong> música enviada do celular; ainda pode depender de aprovação.</li>
+            <li><strong>Livro de Segurança:</strong> registros persistentes de músicas associadas à fila para consulta e recolocação.</li>
+            <li><strong>Status da música:</strong> informação compartilhada que identifica o cantor e a faixa ativa para votação e fotos.</li>
+            <li><strong>Firebase:</strong> serviço de nuvem usado por esta instalação para sincronizar informações entre o painel e os celulares.</li>
+            <li><strong>Armazenamento local:</strong> dados guardados no navegador/dispositivo atual; podem não acompanhar o usuário em outro aparelho.</li>
+        </ul>
         <button onclick="fecharManual()" style="width: 100%; margin-top: 25px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
     </div>
 
@@ -830,32 +1011,11 @@
         // ==========================
         let popUpFila = null;
 
-        // Os eventos são tratados pelo painel principal; confirmações e avisos são
-        // exibidos pela própria Central para evitar diálogos bloqueados entre janelas.
-        function confirmarAcaoCentralFila(mensagem) {
-            try {
-                if (!popUpFila || popUpFila.closed) {
-                    window.alert('A Central de Segurança foi fechada. Abra-a novamente e tente outra vez.');
-                    return false;
-                }
-                return popUpFila.confirm(mensagem);
-            } catch (erro) {
-                window.alert('Não foi possível abrir a confirmação da Central de Segurança.');
-                return false;
-            }
-        }
-
-        function avisarErroCentralFila(mensagem) {
-            try {
-                if (popUpFila && !popUpFila.closed) popUpFila.alert(mensagem);
-                else window.alert(mensagem);
-            } catch (erro) {
-                window.alert(mensagem);
-            }
-        }
-
+        // Esta rotina roda na janela principal: os eventos dos botões do pop-up
+        // são registrados aqui e mantêm este escopo, sem depender de window.opener.
         function processarAcaoCentralFila(acao, registro) {
             if (acao === 'excluir') {
+                
                 if (!registro || typeof registro !== 'object') return;
                 const indice = historicoPopUpPermanente.findIndex(item =>
                     item.videoId === registro.videoId &&
@@ -865,35 +1025,36 @@
                 );
                 if (indice < 0) {
                     atualizarPopUpFila();
-                    avisarErroCentralFila('Este registro não está mais no histórico. A Central foi atualizada.');
                     return;
                 }
                 const musica = historicoPopUpPermanente[indice];
-                if (!confirmarAcaoCentralFila(`Excluir "${musica.titulo}" — ${musica.cantor} do Livro de Segurança?`)) return;
+                if (!popUpFila || popUpFila.closed || !popUpFila.confirm(`Excluir "${musica.titulo}" — ${musica.cantor} do Livro de Segurança?`)) return;
                 const atualizado = historicoPopUpPermanente.filter((_, i) => i !== indice);
                 try {
                     localStorage.setItem('historicoPopUpPermanente', JSON.stringify(atualizado));
                     historicoPopUpPermanente = atualizado;
                     atualizarPopUpFila();
                 } catch (erro) {
-                    avisarErroCentralFila('Não foi possível salvar a exclusão. O histórico não foi alterado.');
+                    window.alert('Não foi possível salvar a exclusão. O histórico não foi alterado.');
                 }
                 return;
             }
 
             if (acao === 'limpar') {
-                if (!confirmarAcaoCentralFila('Deseja apagar todos os registros do Livro de Segurança? A fila atual não será alterada.')) return;
+                if (!popUpFila || popUpFila.closed || !popUpFila.confirm('Deseja apagar todos os registros do Livro de Segurança? A fila atual não será alterada.')) return;
                 try {
                     localStorage.setItem('historicoPopUpPermanente', JSON.stringify([]));
                     historicoPopUpPermanente = [];
                     atualizarPopUpFila();
                 } catch (erro) {
-                    avisarErroCentralFila('Não foi possível salvar a limpeza. O histórico não foi alterado.');
+                    window.alert('Não foi possível salvar a limpeza. O histórico não foi alterado.');
                 }
             }
         }
 
         function enviarAcaoCentralFila(acao, registro) {
+            // Não encaminha via window.opener: o listener do botão é criado no painel,
+            // portanto window.opener apontaria para a própria janela (ou seria null).
             processarAcaoCentralFila(acao, registro);
         }
 
@@ -1078,7 +1239,7 @@
                 if (audioCtx && audioCtx.state !== 'closed') await audioCtx.close();
                 audioCtx = null; analyser = null; micAtivo = false;
                 if (intervaloMic) clearInterval(intervaloMic);
-                btn.innerHTML = "🎙️"; btn.title = "Avaliador desligado. Clique para ligar o microfone."; btn.style.background = "#e52d27"; 
+                btn.innerHTML = "🎙️"; btn.title = "Avaliador de áudio desligado"; btn.setAttribute("aria-label", "Ligar avaliador de áudio"); btn.style.background = "#e52d27"; 
             } else {
                 try {
                     streamMic = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -1088,7 +1249,7 @@
                     audioCtx.createMediaStreamSource(streamMic).connect(analyser);
                     analyser.fftSize = 256; dataArray = new Uint8Array(analyser.frequencyBinCount);
                     micAtivo = true;
-                    btn.innerHTML = "🎙️"; btn.title = "Avaliador ligado. Clique para desligar o microfone."; btn.style.background = "#17a2b8"; 
+                    btn.innerHTML = "🎙️"; btn.title = "Avaliador de áudio ligado"; btn.setAttribute("aria-label", "Desligar avaliador de áudio"); btn.style.background = "#17a2b8"; 
                     if (intervaloMic) clearInterval(intervaloMic);
                     intervaloMic = setInterval(() => {
                         if (captando && analyser && micAtivo) {
@@ -1097,7 +1258,7 @@
                             somaEnergia += (soma / dataArray.length); qtdLeituras++;
                         }
                     }, 200);
-                } catch (err) { btn.innerHTML = "🎙️"; btn.title = "Microfone bloqueado. Verifique a permissão do navegador."; btn.style.background = "#e52d27"; }
+                } catch (err) { btn.innerHTML = "🎙️"; btn.title = "Microfone bloqueado: verifique a permissão do navegador"; btn.setAttribute("aria-label", "Microfone bloqueado"); btn.style.background = "#e52d27"; }
             }
         }
         
