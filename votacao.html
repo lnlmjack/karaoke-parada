@@ -150,10 +150,10 @@
         <p class="cantores-salvos-titulo">Cantores usados recentemente</p>
         <div id="lista-cantores-salvos"></div>
         <div id="cantores-salvos-vazio" class="cantores-salvos-vazio" style="display:none;">Nenhum nome salvo ainda.</div>
-        <div class="botoes-modal-cantor"><button id="btn-confirmar-pedido" onclick="confirmarPedidoComCantor()" class="btn-confirmar">Confirmar</button><button onclick="fecharModalCantor()" class="btn-cancelar">Cancelar</button></div>
+        <div class="botoes-modal-cantor"><button onclick="confirmarPedidoComCantor()" class="btn-confirmar">Confirmar</button><button onclick="fecharModalCantor()" class="btn-cancelar">Cancelar</button></div>
     </div>
     <datalist id="lista-cantores-datalist"></datalist>
-    <div class="versao-app-cliente">v2.06</div>
+    <div class="versao-app-cliente">v2.07</div>
     <div id="notificacao">✅ Pedido enviado ao DJ!</div>
     <script>
         const firebaseConfig = {
@@ -168,12 +168,21 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4';
+        let idsVideosBloqueados = new Set();
+        try {
+            const idsSalvos = JSON.parse(localStorage.getItem('idsVideosBloqueados') || '[]');
+            if (Array.isArray(idsSalvos)) idsSalvos.forEach(id => idsVideosBloqueados.add(String(id)));
+        } catch (erro) {}
+        database.ref('configSistema/videosBloqueados').on('value', snapshot => {
+            const bloqueios = snapshot.val() || {};
+            idsVideosBloqueados = new Set(Object.keys(bloqueios).filter(id => !!bloqueios[id]));
+            try { localStorage.setItem('idsVideosBloqueados', JSON.stringify([...idsVideosBloqueados])); } catch (erro) {}
+        });
         const caminhoCantoresFirebase = 'configSistema/cantoresSalvos';
         let idCantorAtual = null;
         let votoPendente = null;
         let musicasCatalogo = [];
         let musicaPendenteYouTube = null;
-        let enviandoPedidoMusica = false;
         let cantoresSalvos = JSON.parse(localStorage.getItem('cantoresSalvos')) || [];
         let canaisFavoritos = ["Muramatsu Karaoke", "Tequila Karaoke", "Versão Karaokê"];
 
@@ -373,8 +382,10 @@
             const url=`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${query}&type=video&key=${API_KEY}`;
             try {
                 const res=await fetch(url); const dados=await res.json(); div.innerHTML='';
-                if (!dados.items || dados.items.length===0) { div.innerHTML='<p style="color:#e52d27; font-size:16px;">Música não encontrada.</p>'; return; }
-                const itensOrdenados=[...dados.items].sort((a,b) => {
+                const videosDisponiveis=(Array.isArray(dados.items) ? dados.items : [])
+                    .filter(v => !idsVideosBloqueados.has(String(v.id?.videoId || '')));
+                if (videosDisponiveis.length===0) { div.innerHTML='<p style="color:#e52d27; font-size:16px;">Nenhum vídeo disponível encontrado. Tente outro termo.</p>'; return; }
+                const itensOrdenados=[...videosDisponiveis].sort((a,b) => {
                     const indexA=canaisFavoritos.findIndex(c => a.snippet.title.toLowerCase().includes(c.toLowerCase()) || a.snippet.channelTitle.toLowerCase().includes(c.toLowerCase()));
                     const indexB=canaisFavoritos.findIndex(c => b.snippet.title.toLowerCase().includes(c.toLowerCase()) || b.snippet.channelTitle.toLowerCase().includes(c.toLowerCase()));
                     if(indexA!==-1 && indexB!==-1) return indexA-indexB; if(indexA!==-1) return -1; if(indexB!==-1) return 1; return 0;
@@ -391,32 +402,17 @@
             atualizarDatalistCantores(); document.getElementById('fundo-modal-cantor').style.display='block';
             document.getElementById('modal-cantor').style.display='block'; document.getElementById('input-nome-cantor').focus();
         }
-        function fecharModalCantor() {
-            if (enviandoPedidoMusica) return;
-            musicaPendenteYouTube=null;
-            document.getElementById('fundo-modal-cantor').style.display='none';
-            document.getElementById('modal-cantor').style.display='none';
-            const botao=document.getElementById('btn-confirmar-pedido');
-            if (botao) { botao.disabled=false; botao.textContent='Confirmar'; botao.style.cursor='pointer'; }
-        }
+        function fecharModalCantor() { musicaPendenteYouTube=null; document.getElementById('fundo-modal-cantor').style.display='none'; document.getElementById('modal-cantor').style.display='none'; }
         async function confirmarPedidoComCantor() {
-            if (!musicaPendenteYouTube || enviandoPedidoMusica) return;
-            enviandoPedidoMusica=true;
-            const botao=document.getElementById('btn-confirmar-pedido');
-            if (botao) { botao.disabled=true; botao.textContent='Enviando...'; botao.style.cursor='wait'; }
             const nomeCantor=document.getElementById('input-nome-cantor').value.trim() || 'Convidados';
-            try {
-                await adicionarCantorSalvo(nomeCantor);
-                await database.ref('pedidos').push({videoId:musicaPendenteYouTube.videoId,titulo:musicaPendenteYouTube.titulo,cantor:nomeCantor});
-                document.getElementById('campoBusca').value=''; document.getElementById('resultados').innerHTML='';
-                enviandoPedidoMusica=false;
-                fecharModalCantor(); mostrarAba('menu');
-                const notif=document.getElementById('notificacao'); notif.style.display='block'; setTimeout(()=>notif.style.display='none',3000);
-            } catch(err) {
-                alert('Não foi possível enviar o pedido. Verifique a conexão e tente novamente.');
-            } finally {
-                enviandoPedidoMusica=false;
-                if (botao) { botao.disabled=false; botao.textContent='Confirmar'; botao.style.cursor='pointer'; }
+            if (musicaPendenteYouTube) {
+                try {
+                    await adicionarCantorSalvo(nomeCantor);
+                    await database.ref('pedidos').push({videoId:musicaPendenteYouTube.videoId,titulo:musicaPendenteYouTube.titulo,cantor:nomeCantor});
+                    document.getElementById('campoBusca').value=''; document.getElementById('resultados').innerHTML='';
+                    fecharModalCantor(); mostrarAba('menu');
+                    const notif=document.getElementById('notificacao'); notif.style.display='block'; setTimeout(()=>notif.style.display='none',3000);
+                } catch(err) { alert('Não foi possível enviar o pedido. Verifique a conexão e tente novamente.'); }
             }
         }
         function processarFotoNativa(input) {
