@@ -327,7 +327,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v2.24</span>
+        <span>v2.25</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
@@ -362,7 +362,7 @@
             <li>Permita pop-ups para abrir a tela da TV e a Central de Segurança.</li>
             <li>Permita acesso ao microfone se quiser usar o avaliador de ambiente.</li>
             <li>O celular precisa de conexão com a internet para buscar no YouTube, enviar pedidos/votos e sincronizar fotos.</li>
-            <li>A versão do sistema aparece discretamente no canto inferior direito do painel. Após esta atualização, deve mostrar <strong>v2.24</strong>.</li>
+            <li>A versão do sistema aparece discretamente no canto inferior direito do painel. Após esta atualização, deve mostrar <strong>v2.25</strong>.</li>
         </ul>
 
         <h3 id="manual-acesso">2. Acesso e perfis</h3>
@@ -422,7 +422,7 @@
             <li><strong>➕ Recolocar:</strong> devolve aquela música à fila principal, preservando o cantor e o título. A operação deve ser confirmada visualmente no painel; se a faixa estiver no Livro por ter falhado, substitua o vídeo incorreto antes de tentar tocá-la novamente.</li>
             <li><strong>🗑️ Excluir individual:</strong> apaga somente o registro escolhido do Livro de Segurança, após confirmação. Não deve retirar outra música nem mexer na fila.</li>
             <li><strong>Limpar Livro de Segurança:</strong> remove todos os registros do Livro após confirmação. A fila atual fica como está.</li>
-            <li>O Livro de Segurança e a fila são conjuntos diferentes: apagar o Livro não é o mesmo que limpar a fila.</li>
+            <li>O Livro de Segurança, a fila e a lista de vídeos bloqueados são conjuntos diferentes. A Central também mostra os vídeos bloqueados pelo ID; use Liberar para permitir um vídeo novamente ou Limpar vídeos bloqueados para remover toda a lista, sem mexer na fila.</li>
             <li>Se a janela não abrir, autorize pop-ups para o site. Mantenha o painel original aberto enquanto usa a Central.</li>
         </ul>
 
@@ -1036,6 +1036,21 @@
                     window.alert('Não foi possível salvar a limpeza. O histórico não foi alterado.');
                 }
             }
+            if (acao === 'desbloquear-video') {
+                const id = String(registro || '');
+                if (!/^[A-Za-z0-9_-]{11}$/.test(id) || !popUpFila || popUpFila.closed) return;
+                if (!popUpFila.confirm(`Remover o vídeo ${id} da lista de bloqueados?`)) return;
+                database.ref(CAMINHO_VIDEOS_BLOQUEADOS).child(id).remove()
+                    .then(() => popUpFila && !popUpFila.closed && popUpFila.alert('Vídeo removido da lista de bloqueados.'))
+                    .catch(() => popUpFila && !popUpFila.closed && popUpFila.alert('Não foi possível remover o vídeo. Verifique a conexão.'));
+                return;
+            }
+            if (acao === 'limpar-videos-bloqueados') {
+                if (!popUpFila || popUpFila.closed || !popUpFila.confirm('Apagar todos os vídeos da lista de bloqueados? Isso não altera a fila de músicas.')) return;
+                database.ref(CAMINHO_VIDEOS_BLOQUEADOS).remove()
+                    .then(() => popUpFila && !popUpFila.closed && popUpFila.alert('Lista de vídeos bloqueados limpa.'))
+                    .catch(() => popUpFila && !popUpFila.closed && popUpFila.alert('Não foi possível limpar a lista. Verifique a conexão.'));
+            }
         }
 
         function enviarAcaoCentralFila(acao, registro) {
@@ -1067,6 +1082,10 @@
                     .btn-excluir-popup:hover { background: #b31217; color: #fff; border-color: #e52d27; }
                     .btn-limpar-popup { background: transparent; border: 1px solid #555; color: #aaa; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; margin-top: 15px; transition: 0.2s;}
                     .btn-limpar-popup:hover { background: #e52d27; color: #fff; border-color: #e52d27; }
+                    .video-bloqueado { background:#241919; border-left:4px solid #e52d27; margin:8px 0; padding:10px; border-radius:5px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+                    .video-bloqueado-info { flex:1; min-width:0; overflow-wrap:anywhere; font-size:12px; color:#ccc; }
+                    .video-bloqueado-info strong { display:block; color:#fff; font-size:13px; margin-bottom:3px; }
+                    .btn-desbloquear { background:#245a32; color:#fff; border:1px solid #39864d; padding:6px 8px; border-radius:4px; cursor:pointer; font-weight:bold; font-size:11px; flex-shrink:0; }
                 </style></head><body>
                 <h2>🛡️ Central de Segurança da Fila</h2>
                 <div id="conteudo-popup">Carregando...</div>
@@ -1135,12 +1154,26 @@
                 `;
             }).join('');
 
+            const videosBloqueadosHtml = Object.entries(videosBloqueadosDetalhes)
+                .sort((a, b) => Number(b[1]?.bloqueadoEm || 0) - Number(a[1]?.bloqueadoEm || 0))
+                .map(([id, registro]) => {
+                    const titulo = escaparTextoFila(registro?.titulo || 'Título não registrado');
+                    const cantor = escaparTextoFila(registro?.cantor || 'Cantor não registrado');
+                    const quando = registro?.bloqueadoEm ? new Date(registro.bloqueadoEm).toLocaleString('pt-BR') : 'Data não registrada';
+                    const codigo = registro?.codigoErro == null ? 'não informado' : escaparTextoFila(registro.codigoErro);
+                    return `<div class="video-bloqueado"><div class="video-bloqueado-info"><strong>${titulo}</strong>🎤 ${cantor}<br>ID: ${id}<br>Bloqueado em ${escaparTextoFila(quando)} · erro ${codigo}</div><button class="btn-desbloquear" data-video-id="${id}" type="button">Liberar</button></div>`;
+                }).join('');
+
             div.innerHTML = `
                 <h3>⏳ Presentes na Fila Original (${filaDeReproducao.length})</h3>
                 ${naFilaAtualHtml || "<p style='color:#777; font-size:12px;'>Nenhuma música na fila agora.</p>"}
                 <h3>📋 Histórico Geral / Já Tocadas (${outrasMusicas.length})</h3>
                 <p style="font-size:11px; color:#aaa; margin:0 0 10px 0;">Estas músicas não somem mesmo ao limpar a fila. Clique em Recolocar para reinseri-las:</p>
                 ${outrasHtml || "<p style='color:#777; font-size:12px;'>Nenhuma música no histórico ainda.</p>"}
+                <h3>🚫 Vídeos bloqueados (${Object.keys(videosBloqueadosDetalhes).length})</h3>
+                <p style="font-size:11px; color:#aaa; margin:0 0 10px 0;">Vídeos que apresentaram erro. Eles não aparecem nas próximas buscas. Use Liberar para permitir novamente.</p>
+                ${videosBloqueadosHtml || "<p style='color:#777; font-size:12px;'>Nenhum vídeo bloqueado.</p>"}
+                ${Object.keys(videosBloqueadosDetalhes).length ? '<div style="text-align:center;"><button id="btn-limpar-videos-bloqueados" class="btn-limpar-popup" type="button">🧹 Limpar vídeos bloqueados</button></div>' : ''}
                 <div style="text-align: center; margin-top: 25px; padding-bottom: 25px;">
                     <button id="btn-limpar-popup-seguranca" class="btn-limpar-popup" type="button">🗑️ Limpar Livro de Segurança</button>
                 </div>
@@ -1148,6 +1181,14 @@
 
             const btnLimpar = popUpFila.document.getElementById('btn-limpar-popup-seguranca');
             if (btnLimpar) btnLimpar.addEventListener('click', () => enviarAcaoCentralFila('limpar'));
+
+            const btnLimparVideos = popUpFila.document.getElementById('btn-limpar-videos-bloqueados');
+            if (btnLimparVideos) btnLimparVideos.addEventListener('click', () => enviarAcaoCentralFila('limpar-videos-bloqueados'));
+            popUpFila.document.querySelectorAll('.btn-desbloquear').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    enviarAcaoCentralFila('desbloquear-video', this.getAttribute('data-video-id'));
+                });
+            });
 
             popUpFila.document.querySelectorAll('.btn-excluir-popup').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -1194,27 +1235,31 @@
             const idsSalvos = JSON.parse(localStorage.getItem('idsVideosBloqueados') || '[]');
             if (Array.isArray(idsSalvos)) idsSalvos.forEach(id => idsVideosBloqueados.add(String(id)));
         } catch (erro) {}
+        let videosBloqueadosDetalhes = {};
         database.ref(CAMINHO_VIDEOS_BLOQUEADOS).on('value', snapshot => {
             const bloqueios = snapshot.val() || {};
-            const idsNuvem = Object.keys(bloqueios).filter(id => !!bloqueios[id]);
-            idsNuvem.forEach(id => idsVideosBloqueados.add(String(id)));
+            videosBloqueadosDetalhes = Object.fromEntries(
+                Object.entries(bloqueios).filter(([id, registro]) => /^[A-Za-z0-9_-]{11}$/.test(id) && !!registro)
+            );
+            idsVideosBloqueados = new Set(Object.keys(videosBloqueadosDetalhes));
             try { localStorage.setItem('idsVideosBloqueados', JSON.stringify([...idsVideosBloqueados])); } catch (erro) {}
-            [...idsVideosBloqueados].forEach(id => {
-                if (!bloqueios[id] && /^[A-Za-z0-9_-]{11}$/.test(id)) {
-                    database.ref(CAMINHO_VIDEOS_BLOQUEADOS).child(id).transaction(atual =>
-                        atual || { bloqueadoEm: Date.now(), codigoErro: null }
-                    ).catch(erro => console.warn('Não foi possível sincronizar o vídeo bloqueado na nuvem:', erro));
-                }
-            });
+            atualizarPopUpFila();
         });
-        function bloquearVideoComFalha(videoId, codigoErro) {
+        function bloquearVideoComFalha(videoId, codigoErro, musica = {}) {
             const id = String(videoId || '').trim();
             if (!/^[A-Za-z0-9_-]{11}$/.test(id)) return;
+            const registro = {
+                bloqueadoEm: Date.now(),
+                codigoErro: Number.isFinite(codigoErro) ? codigoErro : null,
+                titulo: String(musica.titulo || ''),
+                cantor: String(musica.cantor || '')
+            };
             idsVideosBloqueados.add(id);
+            videosBloqueadosDetalhes[id] = registro;
             try { localStorage.setItem('idsVideosBloqueados', JSON.stringify([...idsVideosBloqueados])); } catch (erro) {}
-            database.ref(CAMINHO_VIDEOS_BLOQUEADOS).child(id).transaction(atual =>
-                atual || { bloqueadoEm: Date.now(), codigoErro: Number.isFinite(codigoErro) ? codigoErro : null }
-            ).catch(erro => console.warn('Não foi possível sincronizar o vídeo bloqueado na nuvem:', erro));
+            atualizarPopUpFila();
+            database.ref(CAMINHO_VIDEOS_BLOQUEADOS).child(id).transaction(atual => atual || registro)
+                .catch(erro => console.warn('Não foi possível sincronizar o vídeo bloqueado na nuvem:', erro));
         }
 
         function toggleBloqueioSistema() {
@@ -1790,7 +1835,7 @@
             const falhou = musicaAtual;
             if (!falhou || erroTratadoDaFilaId === falhou.filaId) return;
             erroTratadoDaFilaId = falhou.filaId;
-            bloquearVideoComFalha(falhou.videoId, evento?.data);
+            bloquearVideoComFalha(falhou.videoId, evento?.data, falhou);
             erroNoPlayer = true;
             captando = false;
             clearTimeout(timerNota);
