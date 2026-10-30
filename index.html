@@ -168,7 +168,6 @@
             <button class="btn-aba" onclick="mudarAba('usuarios', this)">👥 Usuários</button>
             <button class="btn-aba" onclick="mudarAba('transicao', this)">⏳ Transição / Pausa</button>
             <button class="btn-aba" onclick="mudarAba('cantores', this)">🎤 Cantores recentes</button>
-            <button class="btn-aba" onclick="mudarAba('videos-bloqueados', this)">🚫 Vídeos bloqueados</button>
         </div>
         <div id="aba-canais" class="conteudo-aba ativo">
             <div style="max-height: 150px; overflow-y: auto;">
@@ -221,16 +220,6 @@
                 </table>
             </div>
             <p id="mensagem-cantores-vazios" style="display:none; color:#777; text-align:center; font-size:13px;">A lista está vazia.</p>
-        </div>
-        <div id="aba-videos-bloqueados" class="conteudo-aba">
-            <p style="color:#aaa; font-size:13px; line-height:1.5;">Vídeos que apresentaram erro no player são bloqueados automaticamente e deixam de aparecer nas próximas buscas. A lista é sincronizada pelo Firebase.</p>
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin:10px 0;">
-                <strong style="color:#ff6b6b;">Vídeos bloqueados (<span id="contador-videos-bloqueados">0</span>)</strong>
-                <button onclick="limparVideosBloqueados()" style="padding:7px 10px; background:#b31217; color:#fff; border:1px solid #ff5252; border-radius:5px; font-weight:bold; cursor:pointer;">🗑️ Limpar lista</button>
-            </div>
-            <div id="lista-videos-bloqueados" style="max-height:300px; overflow:auto; border:1px solid #333; border-radius:6px; background:#111; padding:8px;">
-                <p style="color:#777; text-align:center; font-size:13px;">Carregando lista...</p>
-            </div>
         </div>
         <button onclick="fecharModalConfig()" style="width: 100%; margin-top: 15px; padding: 10px; background: #333; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Fechar</button>
     </div>
@@ -476,14 +465,13 @@
             <li>O botão de foto no celular só funciona quando há um cantor válido no palco; aguarde o nome da pessoa aparecer.</li>
         </ul>
 
-        <h3 id="manual-config">12. Configurações: canais, usuários, pausa, cantores e vídeos bloqueados</h3>
-        <p>O acesso a <strong>⚙️ Configurações</strong> é reservado ao administrador. Há abas para Canais Favoritos, Usuários, Transição/Pausa, Cantores recentes e Vídeos bloqueados.</p>
+        <h3 id="manual-config">12. Configurações: canais, usuários, pausa e cantores</h3>
+        <p>O acesso a <strong>⚙️ Configurações</strong> é reservado ao administrador. Há abas para Canais Favoritos, Usuários, Transição/Pausa e Cantores recentes.</p>
         <ul>
             <li><strong>Canais Favoritos:</strong> adicione nomes de canais para priorizá-los nos resultados de busca; use subir/descer para definir a prioridade ou excluir um canal. As alterações são gravadas localmente e sincronizadas com o celular.</li>
             <li><strong>Usuários:</strong> permite cadastrar, editar e excluir operadores conforme as opções disponíveis. Confirme com cuidado para não remover o único acesso administrativo.</li>
             <li><strong>Transição/Pausa:</strong> define quantos segundos a TV espera antes de iniciar a próxima música. A contagem informa o cantor e o título que estão prestes a tocar.</li>
             <li><strong>Cantores recentes:</strong> apresenta nomes usados na votação. O administrador pode remover um nome ou limpar a lista sincronizada. A alteração é propagada aos celulares conectados.</li>
-            <li><strong>Vídeos bloqueados:</strong> mostra os IDs que falharam no player, a música/cantor quando disponíveis, a data do registro e o código de erro do YouTube. É possível abrir o vídeo, liberar um ID individualmente ou limpar toda a lista.</li>
             <li><strong>Botão Sistema Liberado/Bloqueado:</strong> quando bloqueado, os celulares exibem a tela de aviso/propaganda e deixam de oferecer normalmente pedidos e votação; desbloqueie para retomar.</li>
         </ul>
 
@@ -787,7 +775,6 @@
             renderizarTabelaUsuarios();
             document.getElementById('input-tempo-pausa').value = tempoPausaSegundos;
             renderizarTabelaCantores();
-            renderizarVideosBloqueados();
             document.getElementById('fundo-modal-config').style.display = 'block';
             document.getElementById('modal-config').style.display = 'block';
         }
@@ -1200,111 +1187,7 @@
                 atualizarTelaFila(false);
             }
         }).catch(erro => console.warn('Backup da fila indisponível na inicialização; a fila local foi mantida:', erro));
-        const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4';
-        const CAMINHO_VIDEOS_BLOQUEADOS = 'configSistema/videosBloqueados';
-        let videosBloqueados = {};
-        let idsVideosBloqueados = new Set();
-        try {
-            const idsSalvos = JSON.parse(localStorage.getItem('idsVideosBloqueados') || '[]');
-            if (Array.isArray(idsSalvos)) idsSalvos.forEach(id => {
-                if (/^[A-Za-z0-9_-]{11}$/.test(String(id))) idsVideosBloqueados.add(String(id));
-            });
-        } catch (erro) {}
-
-        database.ref(CAMINHO_VIDEOS_BLOQUEADOS).on('value', snapshot => {
-            const registros = snapshot.val() || {};
-            videosBloqueados = registros && typeof registros === 'object' ? registros : {};
-            idsVideosBloqueados = new Set(Object.keys(videosBloqueados).filter(id =>
-                /^[A-Za-z0-9_-]{11}$/.test(id) && !!videosBloqueados[id]
-            ));
-            try { localStorage.setItem('idsVideosBloqueados', JSON.stringify([...idsVideosBloqueados])); } catch (erro) {}
-            renderizarVideosBloqueados();
-        });
-
-        function bloquearVideoComFalha(musica, codigoErro) {
-            const id = String(musica?.videoId || '').trim();
-            if (!/^[A-Za-z0-9_-]{11}$/.test(id)) return;
-            const registro = {
-                videoId: id,
-                titulo: String(musica?.titulo || 'Música sem título'),
-                cantor: String(musica?.cantor || 'Convidados'),
-                bloqueadoEm: Date.now(),
-                codigoErro: Number.isFinite(Number(codigoErro)) ? Number(codigoErro) : null
-            };
-            idsVideosBloqueados.add(id);
-            videosBloqueados[id] = { ...videosBloqueados[id], ...registro };
-            try { localStorage.setItem('idsVideosBloqueados', JSON.stringify([...idsVideosBloqueados])); } catch (erro) {}
-            renderizarVideosBloqueados();
-            database.ref(CAMINHO_VIDEOS_BLOQUEADOS).child(id).transaction(atual => atual || registro)
-                .catch(erro => console.warn('Não foi possível salvar o vídeo bloqueado na nuvem:', erro));
-        }
-
-        function escaparHtmlVideoBloqueado(valor) {
-            return String(valor ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-        }
-
-        function dataHoraVideoBloqueado(valor) {
-            const instante = Number(valor || 0);
-            if (!instante || Number.isNaN(instante)) return 'Data não registrada';
-            const data = new Date(instante);
-            const dataFmt = data.toLocaleDateString('pt-BR');
-            const horaFmt = data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            return `${dataFmt} ${horaFmt}`;
-        }
-
-        function renderizarVideosBloqueados() {
-            const area = document.getElementById('lista-videos-bloqueados');
-            const contador = document.getElementById('contador-videos-bloqueados');
-            if (!area) return;
-            const registros = [...idsVideosBloqueados].map(id => ({ id, ...(videosBloqueados[id] || {}) }));
-            if (contador) contador.textContent = String(registros.length);
-            if (!registros.length) {
-                area.innerHTML = '<p style="color:#777; text-align:center; font-size:13px;">Nenhum vídeo bloqueado.</p>';
-                return;
-            }
-            area.innerHTML = registros.map(item => {
-                const id = escaparHtmlVideoBloqueado(item.id);
-                const titulo = escaparHtmlVideoBloqueado(item.titulo || 'Título não registrado');
-                const cantor = escaparHtmlVideoBloqueado(item.cantor || 'Cantor não registrado');
-                const dataHora = escaparHtmlVideoBloqueado(dataHoraVideoBloqueado(item.bloqueadoEm));
-                const codigo = item.codigoErro === null || item.codigoErro === undefined || item.codigoErro === ''
-                    ? 'não informado'
-                    : escaparHtmlVideoBloqueado(item.codigoErro);
-                return `<div style="background:#222; border:1px solid #444; border-left:4px solid #e52d27; border-radius:6px; padding:10px; margin:7px 0;">
-                    <strong style="display:block; color:#fff; overflow-wrap:anywhere;">${titulo}</strong>
-                    <span style="display:block; color:#aaa; font-size:12px; margin-top:3px;">🎤 ${cantor}</span>
-                    <span style="display:block; color:#00d2ff; font-size:11px; margin-top:5px; overflow-wrap:anywhere;">ID: ${id}</span>
-                    <span style="display:block; color:#999; font-size:11px; margin-top:3px;">Bloqueado em: ${dataHora} · Erro YouTube: ${codigo}</span>
-                    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
-                        <a href="https://www.youtube.com/watch?v=${id}" target="_blank" rel="noopener noreferrer" style="padding:6px 9px; background:#007bff; color:#fff; border-radius:4px; text-decoration:none; font-size:11px; font-weight:bold;">▶️ Abrir vídeo</a>
-                        <button onclick="liberarVideoBloqueado('${id}')" style="padding:6px 9px; background:#28a745; color:#fff; border:0; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">✅ Liberar vídeo</button>
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-        function liberarVideoBloqueado(videoId) {
-            const id = String(videoId || '').trim();
-            if (!idsVideosBloqueados.has(id)) return;
-            if (!confirm(`Remover o vídeo ${id} da lista de bloqueados?`)) return;
-            database.ref(CAMINHO_VIDEOS_BLOQUEADOS).child(id).remove().then(() => {
-                idsVideosBloqueados.delete(id);
-                delete videosBloqueados[id];
-                try { localStorage.setItem('idsVideosBloqueados', JSON.stringify([...idsVideosBloqueados])); } catch (erro) {}
-                renderizarVideosBloqueados();
-            }).catch(erro => alert('Não foi possível liberar o vídeo. Verifique a conexão.'));
-        }
-
-        function limparVideosBloqueados() {
-            if (!idsVideosBloqueados.size) return alert('A lista de vídeos bloqueados já está vazia.');
-            if (!confirm('Remover todos os vídeos da lista de bloqueados? Eles poderão aparecer novamente nas buscas.')) return;
-            database.ref(CAMINHO_VIDEOS_BLOQUEADOS).remove().then(() => {
-                idsVideosBloqueados.clear();
-                videosBloqueados = {};
-                try { localStorage.setItem('idsVideosBloqueados', '[]'); } catch (erro) {}
-                renderizarVideosBloqueados();
-            }).catch(erro => alert('Não foi possível limpar a lista. Verifique a conexão.'));
-        }
+        const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4'; 
 
         function toggleBloqueioSistema() {
             database.ref('configSistema/bloqueado').once('value').then(snap => {
@@ -1482,6 +1365,21 @@
         let musicaFalhaPendente = null;
         let transicaoFilaTimer = null;
         let timerOperacaoFila = null;
+        let idReproducaoAtual = 0;
+        let reproducaoConfirmada = false;
+        let inicioReproducaoConfirmada = 0;
+        let temporizadorBuffering = null;
+        let temporizadorInicioPlayer = null;
+        let temporizadorRoletaNota = null;
+
+        function limparTemporizadoresReproducao() {
+            if (temporizadorBuffering) clearTimeout(temporizadorBuffering);
+            if (temporizadorInicioPlayer) clearTimeout(temporizadorInicioPlayer);
+            if (temporizadorRoletaNota) clearInterval(temporizadorRoletaNota);
+            temporizadorBuffering = null;
+            temporizadorInicioPlayer = null;
+            temporizadorRoletaNota = null;
+        }
         let erroTratadoDaFilaId = null;
         let operacaoFilaEmAndamento = false;
         let audioCtx; let analyser; let dataArray; let captando = false; 
@@ -1879,7 +1777,11 @@
             const falhou = musicaAtual;
             if (!falhou || erroTratadoDaFilaId === falhou.filaId) return;
             erroTratadoDaFilaId = falhou.filaId;
-            bloquearVideoComFalha(falhou, evento?.data);
+            idReproducaoAtual++;
+            limparTemporizadoresReproducao();
+            reproducaoConfirmada = false;
+            inicioReproducaoConfirmada = 0;
+            try { if (player && typeof player.pauseVideo === 'function') player.pauseVideo(); } catch (erro) {}
             erroNoPlayer = true;
             captando = false;
             clearTimeout(timerNota);
@@ -1964,10 +1866,25 @@
                 videoId: '', playerVars: { 'autoplay': 1, 'controls': 1, 'fs': 0 }, 
                 events: { 
                     'onStateChange': e => {
-                        if (e.data === 1) {
+                        const tokenReproducao = idReproducaoAtual;
+                        if (e.data === 1 && musicaAtual && !musicaFalhaPendente) {
+                            reproducaoConfirmada = true;
+                            inicioReproducaoConfirmada = Date.now();
+                            if (temporizadorBuffering) clearTimeout(temporizadorBuffering);
+                            if (temporizadorInicioPlayer) clearTimeout(temporizadorInicioPlayer);
+                            temporizadorBuffering = null;
+                            temporizadorInicioPlayer = null;
                             ocultarErroMusicaTV();
-                        } else if (e.data === 0 && musicaAtual && !musicaFalhaPendente) {
-                            gerarNotaFinal();
+                        } else if (e.data === 3 && musicaAtual && !musicaFalhaPendente) {
+                            if (temporizadorBuffering) clearTimeout(temporizadorBuffering);
+                            temporizadorBuffering = setTimeout(() => {
+                                if (tokenReproducao !== idReproducaoAtual || !musicaAtual || musicaFalhaPendente) return;
+                                if (player && typeof player.getPlayerState === 'function' && player.getPlayerState() === 3) {
+                                    tratarErroReproducao({ data: 'buffering_timeout' });
+                                }
+                            }, 25000);
+                        } else if (e.data === 0 && musicaAtual && !musicaFalhaPendente && reproducaoConfirmada && Date.now() - inicioReproducaoConfirmada >= 5000) {
+                            gerarNotaFinal(tokenReproducao);
                         }
                     },
                     'onError': e => {
@@ -1986,8 +1903,8 @@
                     let cur = player.getCurrentTime();
                     let dur = player.getDuration();
                     
-                    if (dur > 5 && cur > 0 && (dur - cur) <= 0.8 && st === 1) {
-                        gerarNotaFinal();
+                    if (reproducaoConfirmada && Date.now() - inicioReproducaoConfirmada >= 5000 && dur > 5 && cur > 0.5 && (dur - cur) <= 0.8 && st === 1) {
+                        gerarNotaFinal(idReproducaoAtual);
                     }
                 }
             }, 400);
@@ -1995,9 +1912,14 @@
 
         let notaJaGeradaNestaMusica = false;
 
-        function gerarNotaFinal() {
-            if (notaJaGeradaNestaMusica) return;
+        function gerarNotaFinal(tokenReproducao = idReproducaoAtual) {
+            if (tokenReproducao !== idReproducaoAtual || !musicaAtual || !reproducaoConfirmada || notaJaGeradaNestaMusica) return;
             notaJaGeradaNestaMusica = true;
+            reproducaoConfirmada = false;
+            if (temporizadorBuffering) clearTimeout(temporizadorBuffering);
+            if (temporizadorInicioPlayer) clearTimeout(temporizadorInicioPlayer);
+            temporizadorBuffering = null;
+            temporizadorInicioPlayer = null;
             limparFaixaEmReproducao();
 
             captando = false; 
@@ -2039,6 +1961,7 @@
             atualizarTelaRanking();
 
             database.ref('fotosDia').once('value', (snapshot) => {
+                if (tokenReproducao !== idReproducaoAtual) return;
                 let fotoEncontrada = null;
                 let maiorTimestamp = 0;
                 let cantorAtualBusca = nomeDoCantor.toLowerCase();
@@ -2078,13 +2001,15 @@
                         let valorEl = tvDoc.getElementById('nota-valor');
                         valorEl.style.color = '#fff';
                         
-                        let intervaloRoleta = setInterval(() => {
+                        temporizadorRoletaNota = setInterval(() => {
+                            if (tokenReproducao !== idReproducaoAtual) return;
                             if(valorEl) valorEl.innerText = Math.floor(Math.random() * 41) + 60; 
                         }, 50);
 
                         setTimeout(() => {
-                            if (!telaTV || telaTV.closed) return;
-                            clearInterval(intervaloRoleta);
+                            if (tokenReproducao !== idReproducaoAtual || !telaTV || telaTV.closed) return;
+                            if (temporizadorRoletaNota) clearInterval(temporizadorRoletaNota);
+                            temporizadorRoletaNota = null;
                             tvDoc.getElementById('nota-loading').style.display = 'none';
                             
                             if (valorEl) {
@@ -2104,6 +2029,7 @@
 
             clearTimeout(timerNota);
             timerNota = setTimeout(() => {
+                if (tokenReproducao !== idReproducaoAtual) return;
                 if (telaTV && !telaTV.closed) {
                     let tn = telaTV.document.getElementById('tela-nota');
                     if(tn) tn.style.display = 'none';
@@ -2126,10 +2052,6 @@
             div.innerHTML = '';
             const videoId = extrairVideoId(termoOriginal);
             if (videoId) {
-                if (idsVideosBloqueados.has(videoId)) {
-                    div.innerHTML = '<p style="color:#e52d27">Este vídeo está bloqueado porque já apresentou falha. Pesquise ou escolha outra versão.</p>';
-                    return;
-                }
                 if (musicaFalhaPendente) {
                     selecionarVideoSubstituto(videoId);
                     return;
@@ -2144,10 +2066,9 @@
                 const res = await fetch(url);
                 const dados = await res.json();
                 if (!res.ok || dados.error) throw new Error(dados.error?.message || `Erro HTTP ${res.status}`);
-                const itens = (Array.isArray(dados.items) ? dados.items : [])
-                    .filter(v => !idsVideosBloqueados.has(String(v.id?.videoId || '')));
+                const itens = Array.isArray(dados.items) ? dados.items : [];
                 if (!itens.length) {
-                    div.innerHTML = '<p style="color:#e52d27">Nenhum vídeo disponível encontrado. Tente outro termo.</p>';
+                    div.innerHTML = '<p style="color:#e52d27">Nenhum vídeo encontrado. Tente outro termo.</p>';
                     return;
                 }
                 let itensOrdenados = [...itens].sort((a, b) => {
@@ -2233,54 +2154,93 @@
             return m.videoId;
         }
 
-        async function executarInicioMusica(m) {
-            salvarFaixaEmReproducao(m);
+        async function executarInicioMusica(m, tokenReproducao = idReproducaoAtual) {
             clearTimeout(timerNota);
+            limparTemporizadoresReproducao();
             notaJaGeradaNestaMusica = false;
+            reproducaoConfirmada = false;
+            inicioReproducaoConfirmada = 0;
+            captando = false;
+
+            let videoIdReal = await resolverVideoIdValido(m);
+            if (tokenReproducao !== idReproducaoAtual) return;
+            if (!player || typeof player.loadVideoById !== 'function') {
+                console.error('O player ainda não está pronto; a faixa permanece aguardando.');
+                return;
+            }
+
+            m.videoId = videoIdReal;
             m.timestampInicio = Date.now();
+            musicaAtual = m;
+            salvarFaixaEmReproducao(m);
+            erroNoPlayer = false;
 
             if (telaTV && !telaTV.closed) {
                 let tn = telaTV.document.getElementById('tela-nota');
                 let ta = telaTV.document.getElementById('tela-aguardando');
                 if (tn) tn.style.display = 'none';
                 if (ta) ta.style.display = 'none';
+                const telaErro = telaTV.document.getElementById('tela-erro-musica');
+                if (telaErro) telaErro.style.display = 'none';
             }
             database.ref('votosAtual').remove();
             database.ref('statusAtual').set({ cantor: m.cantor, titulo: m.titulo, id: Date.now() });
-            musicaAtual = m; historicoDeReproducao.push(m);
+            historicoDeReproducao.push(m);
             atualizarTelaFila(); atualizarTelaHistorico(); atualizarTelaRanking();
-            
+
             if (telaTV && !telaTV.closed && m.cantor !== "Convidados") {
                 let overlay = telaTV.document.getElementById('cantor-overlay');
                 if (overlay) {
                     overlay.innerHTML = `<div style="display:inline-block; vertical-align:middle;"><span class="aviso">Com a Voz</span><p class="nome">${m.cantor}</p></div>`;
-                    overlay.style.top = '-200px'; 
-                    setTimeout(() => overlay.style.top = '20px', 100);
+                    overlay.style.top = '-200px';
+                    setTimeout(() => {
+                        if (tokenReproducao === idReproducaoAtual && musicaAtual === m) overlay.style.top = '20px';
+                    }, 100);
                 }
             }
-            captando = true; somaEnergia = 0; qtdLeituras = 0; notaForcadaPeloDJ = null; 
-            atualizarDisplayNotaForcada(); erroNoPlayer = false;
+            captando = true; somaEnergia = 0; qtdLeituras = 0; notaForcadaPeloDJ = null;
+            atualizarDisplayNotaForcada();
 
-            let videoIdReal = await resolverVideoIdValido(m);
-            m.videoId = videoIdReal;
-
-            if (player && typeof player.loadVideoById === 'function') {
+            try {
                 player.loadVideoById(videoIdReal);
                 player.playVideo();
+                temporizadorInicioPlayer = setTimeout(() => {
+                    if (tokenReproducao !== idReproducaoAtual || !musicaAtual || reproducaoConfirmada || musicaFalhaPendente) return;
+                    if (player && typeof player.getPlayerState === 'function' && player.getPlayerState() === 3) {
+                        tratarErroReproducao({ data: 'buffering_timeout_inicio' });
+                    }
+                }, 45000);
+            } catch (erro) {
+                console.error('Não foi possível iniciar o vídeo:', erro);
+                tratarErroReproducao({ data: 'falha_ao_iniciar' });
             }
         }
 
         function iniciarMusica(m) {
             if (!m) return;
+            const tokenReproducao = ++idReproducaoAtual;
+            clearTimeout(timerNota);
+            limparTemporizadoresReproducao();
+            if (player && typeof player.pauseVideo === 'function') {
+                try { player.pauseVideo(); } catch (erro) {}
+            }
+            musicaAtual = null;
+            reproducaoConfirmada = false;
+            inicioReproducaoConfirmada = 0;
+            captando = false;
             if (transicaoFilaTimer) {
                 clearInterval(transicaoFilaTimer);
                 transicaoFilaTimer = null;
+            }
+            if (telaTV && !telaTV.closed) {
+                const telaNota = telaTV.document.getElementById('tela-nota');
+                if (telaNota) telaNota.style.display = 'none';
             }
             if (tempoPausaSegundos > 0 && telaTV && !telaTV.closed) {
                 let tempoRestante = tempoPausaSegundos;
                 let transicaoEl = telaTV.document.getElementById('tela-transicao');
                 if (!transicaoEl) {
-                    executarInicioMusica(m);
+                    executarInicioMusica(m, tokenReproducao);
                     return;
                 }
                 let cantorEl = telaTV.document.getElementById('transicao-cantor-nome');
@@ -2292,16 +2252,21 @@
                 telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
 
                 transicaoFilaTimer = setInterval(() => {
+                    if (tokenReproducao !== idReproducaoAtual) {
+                        clearInterval(transicaoFilaTimer);
+                        transicaoFilaTimer = null;
+                        return;
+                    }
                     tempoRestante--;
                     if (tempoRestante > 0) contadorEl.innerText = tempoRestante;
                     else {
                         clearInterval(transicaoFilaTimer);
                         transicaoFilaTimer = null;
                         transicaoEl.style.display = 'none';
-                        executarInicioMusica(m);
+                        executarInicioMusica(m, tokenReproducao);
                     }
                 }, 1000);
-            } else { executarInicioMusica(m); }
+            } else { executarInicioMusica(m, tokenReproducao); }
         }
 
         function tocarMusicaEspecifica(i) {
