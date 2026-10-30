@@ -15,12 +15,32 @@
         .container { max-width: 1600px; margin: 0 auto; position: relative; }
         
         .topo-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
-        .resumo-fila-topo { display: inline-flex; align-items: center; gap: 6px; margin: 8px 0 0 10px; padding: 6px 10px; border: 1px solid #00d2ff; border-radius: 18px; background: #14212b; color: #bdefff; font-size: 13px; font-weight: bold; vertical-align: middle; }
-        .resumo-fila-topo .fila-sem-duracao { color: #ffcc80; font-size: 11px; font-weight: normal; }
-        .botoes-fila { display: flex; flex: 0 0 auto; gap: 3px; flex-wrap: wrap; justify-content: flex-end; max-width: 190px; }
-        .btn-excluir-fila { color: #ff8a80 !important; background: #3a2020 !important; border: 1px solid #754040 !important; border-radius: 5px; padding: 5px 7px !important; font-size: 13px !important; font-weight: bold; }
-        .btn-excluir-fila:hover { color: #fff !important; background: #b31217 !important; border-color: #ff5252 !important; }
-        @media (max-width: 600px) { .resumo-fila-topo { display: flex; width: fit-content; margin: 8px 0 0; } .botoes-fila { max-width: 150px; } }
+        .resumo-fila-topo, .resumo-fila-painel { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; width: fit-content; max-width: 100%; box-sizing: border-box; padding: 9px 12px; border: 1px solid #00d2ff; border-radius: 10px; background: linear-gradient(135deg, #14212b, #182a35); color: #e8f9ff; font-size: 13px; line-height: 1.35; font-weight: 600; }
+        .resumo-fila-topo { margin: 10px 0 0; box-shadow: 0 3px 12px rgba(0,210,255,.10); }
+        .resumo-fila-painel { margin: 0 0 12px; }
+        .resumo-fila-topo strong, .resumo-fila-painel strong { color: #fff; font-size: 14px; }
+        .resumo-fila-topo .fila-sem-duracao, .resumo-fila-painel .fila-sem-duracao { color: #ffcc80; font-size: 11px; font-weight: normal; flex-basis: 100%; }
+        .item-fila-musica { display: grid; grid-template-columns: minmax(0, 1fr); align-items: stretch; gap: 10px; width: 100%; box-sizing: border-box; }
+        .item-fila-musica .titulo-musica { min-width: 0; overflow-wrap: anywhere; line-height: 1.35; }
+        .item-fila-musica .botoes-fila { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 5px; width: 100%; min-width: 0; }
+        .item-fila-musica .btn-fila-acao { display: inline-flex; align-items: center; justify-content: center; gap: 3px; min-width: 0; width: 100%; min-height: 36px; box-sizing: border-box; padding: 4px; border: 1px solid #505762; border-radius: 6px; background: #252b33; color: #fff; font-size: 15px; line-height: 1; cursor: pointer; }
+        .item-fila-musica .btn-fila-acao:hover:not(:disabled) { background: #394553; border-color: #00d2ff; transform: translateY(-1px); }
+        .item-fila-musica .btn-fila-acao:disabled { opacity: .35; cursor: not-allowed; }
+        .item-fila-musica .btn-excluir-fila { background: #3a2020; border-color: #754040; color: #ff8a80; }
+        .item-fila-musica .btn-excluir-fila:hover { background: #b31217; border-color: #ff5252; color: #fff; }
+        .item-fila-musica .btn-excluir-fila span { display: none; }
+        .painel { min-width: 0; box-sizing: border-box; }
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .paineis { grid-template-columns: minmax(0, 1fr); }
+            .painel { width: 100%; }
+            .topo-header > div:first-child { min-width: 0; max-width: 100%; }
+            .topo-header h1 { overflow-wrap: anywhere; font-size: clamp(20px, 6vw, 28px); }
+            .resumo-fila-topo, .resumo-fila-painel { width: 100%; gap: 6px 10px; }
+            .item-fila-musica .botoes-fila { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+            .item-fila-musica .btn-fila-acao { min-height: 38px; font-size: 16px; }
+            .item-fila-musica .btn-excluir-fila span { display: inline; font-size: 11px; }
+        }
         .topo-botoes-acao { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         
         .btn-topo-acao { padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; border: 1px solid #555; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px; }
@@ -300,6 +320,7 @@
                         <button class="btn-limpar-painel" onclick="limparFila()">🗑️ Limpar</button>
                     </div>
                 </h3>
+                <div id="resumo-fila-painel" class="resumo-fila-painel" aria-live="polite">🎵 Fila: 0 músicas · ⏱️ Duração total: 0 min</div>
                 <div id="fila"></div>
             </div>
             
@@ -336,7 +357,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v2.29</span>
+        <span>v2.30</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
@@ -371,7 +392,7 @@
             <li>Permita pop-ups para abrir a tela da TV e a Central de Segurança.</li>
             <li>Permita acesso ao microfone se quiser usar o avaliador de ambiente.</li>
             <li>O celular precisa de conexão com a internet para buscar no YouTube, enviar pedidos/votos e sincronizar fotos.</li>
-            <li>A versão do sistema aparece discretamente no canto inferior direito do painel. Após esta atualização, deve mostrar <strong>v2.29</strong>.</li>
+            <li>A versão do sistema aparece discretamente no canto inferior direito do painel. Após esta atualização, deve mostrar <strong>v2.30</strong>.</li>
         </ul>
 
         <h3 id="manual-acesso">2. Acesso e perfis</h3>
@@ -2144,25 +2165,27 @@
         }
 
         function formatarDuracaoTotalFila(segundos) {
-            const total = Math.max(0, Math.floor(segundos || 0));
-            const horas = Math.floor(total / 3600);
-            const minutos = Math.floor((total % 3600) / 60);
+            const totalMinutos = Math.max(0, Math.round((segundos || 0) / 60));
+            const horas = Math.floor(totalMinutos / 60);
+            const minutos = totalMinutos % 60;
             if (horas) return `${horas}h ${String(minutos).padStart(2, '0')}min`;
-            return `${minutos} min`;
+            return totalMinutos === 0 && segundos > 0 ? '<1 min' : `${totalMinutos} min`;
         }
 
         const idsDuracaoFilaConsultados = new Set();
 
         function atualizarResumoFilaTopo() {
-            const resumo = document.getElementById('resumo-fila-topo');
-            if (!resumo) return;
+            const quantidade = filaDeReproducao.length;
             const totalSegundos = filaDeReproducao.reduce((total, item) => {
                 const duracao = obterDuracaoSegundosFila(item);
                 return total + (duracao === null ? 0 : duracao);
             }, 0);
             const semDuracao = filaDeReproducao.filter(item => obterDuracaoSegundosFila(item) === null).length;
-            const quantidade = filaDeReproducao.length;
-            resumo.innerHTML = `🎵 Fila: ${quantidade} ${quantidade === 1 ? 'música' : 'músicas'} · ⏱️ ${formatarDuracaoTotalFila(totalSegundos)}${semDuracao ? ` <span class="fila-sem-duracao">(${semDuracao} ${semDuracao === 1 ? 'sem duração' : 'sem duração'})</span>` : ''}`;
+            const textoResumo = `<span>🎵 <strong>${quantidade} ${quantidade === 1 ? 'música' : 'músicas'}</strong> na fila</span><span>⏱️ Duração total: <strong>${formatarDuracaoTotalFila(totalSegundos)}</strong></span>${semDuracao ? `<span class="fila-sem-duracao">⚠️ ${semDuracao} ${semDuracao === 1 ? 'música sem duração disponível' : 'músicas sem duração disponível'}; o total considera as durações conhecidas.</span>` : ''}`;
+            ['resumo-fila-topo', 'resumo-fila-painel'].forEach(id => {
+                const resumo = document.getElementById(id);
+                if (resumo) resumo.innerHTML = textoResumo;
+            });
         }
 
         async function preencherDuracoesPendentesDaFila() {
@@ -2515,15 +2538,15 @@
                 const duracaoItem = obterDuracaoSegundosFila(item);
                 const textoDuracao = duracaoItem === null ? '⏱️ duração pendente' : `⏱️ ${formatarDuracaoTotalFila(duracaoItem)}`;
                 return `
-                <div class="item-fila">
-                    <span class="titulo-musica"><strong>${i+1}º</strong> - ${escaparTextoFila(item.titulo)} <br> <span class="nome-cantor">🎤 Voz: ${escaparTextoFila(item.cantor)}</span><span class="duracao-item-fila" style="display:block;color:#9be7ff;font-size:11px;margin-top:4px;">${textoDuracao}</span></span>
-                    <div class="botoes-fila">
-                        <button class="btn-acao" onclick="editarCantorFila(${i})" title="Editar cantor" aria-label="Editar cantor">✏️</button>
-                        <button class="btn-acao" onclick="tocarMusicaEspecifica(${i})" title="Tocar agora" aria-label="Tocar agora">▶️</button>
-                        ${i > 0 ? `<button class="btn-acao" onclick="moverMusica(${i}, -1)" title="Subir" aria-label="Subir">⬆️</button>` : ''}
-                        ${i < filaDeReproducao.length - 1 ? `<button class="btn-acao" onclick="moverMusica(${i}, 1)" title="Descer" aria-label="Descer">⬇️</button>` : ''}
-                        <button class="btn-acao" onclick="moverMusicaParaPosicao(${i})" title="Mover para uma posição escolhida" aria-label="Mover para posição">↕️</button>
-                        <button class="btn-acao btn-excluir-fila" onclick="removerMusica(${i})" title="Excluir esta música da fila" aria-label="Excluir esta música da fila">🗑️</button>
+                <div class="item-fila item-fila-musica">
+                    <span class="titulo-musica"><strong>${i+1}º</strong> - ${escaparTextoFila(item.titulo)}<br><span class="nome-cantor">🎤 Voz: ${escaparTextoFila(item.cantor)}</span><span class="duracao-item-fila" style="display:block;color:#9be7ff;font-size:11px;margin-top:4px;">${textoDuracao}</span></span>
+                    <div class="botoes-fila" role="group" aria-label="Ações para ${escaparTextoFila(item.titulo)}">
+                        <button class="btn-fila-acao" onclick="editarCantorFila(${i})" title="Editar cantor" aria-label="Editar cantor">✏️</button>
+                        <button class="btn-fila-acao" onclick="tocarMusicaEspecifica(${i})" title="Tocar agora" aria-label="Tocar agora">▶️</button>
+                        <button class="btn-fila-acao" onclick="moverMusica(${i}, -1)" title="Subir uma posição" aria-label="Subir uma posição" ${i === 0 ? 'disabled' : ''}>⬆️</button>
+                        <button class="btn-fila-acao" onclick="moverMusica(${i}, 1)" title="Descer uma posição" aria-label="Descer uma posição" ${i === filaDeReproducao.length - 1 ? 'disabled' : ''}>⬇️</button>
+                        <button class="btn-fila-acao" onclick="moverMusicaParaPosicao(${i})" title="Mover para uma posição escolhida" aria-label="Mover para posição">↕️</button>
+                        <button class="btn-fila-acao btn-excluir-fila" onclick="removerMusica(${i})" title="Excluir esta música da fila" aria-label="Excluir esta música da fila">🗑️ <span>Excluir</span></button>
                     </div>
                 </div>`;
             }).join('');
