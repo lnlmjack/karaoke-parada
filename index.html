@@ -20,10 +20,62 @@
         .resumo-fila-painel { margin: 0 0 12px; }
         .resumo-fila-topo strong, .resumo-fila-painel strong { color: #fff; font-size: 14px; }
         .resumo-fila-topo .fila-sem-duracao, .resumo-fila-painel .fila-sem-duracao { color: #ffcc80; font-size: 11px; font-weight: normal; flex-basis: 100%; }
-        .item-fila-musica { display: grid; grid-template-columns: minmax(0, 1fr); align-items: stretch; gap: 10px; width: 100%; box-sizing: border-box; }
-        .item-fila-musica .titulo-musica { min-width: 0; overflow-wrap: anywhere; line-height: 1.35; }
-        .item-fila-musica .botoes-fila { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 5px; width: 100%; min-width: 0; }
-        .item-fila-musica .btn-fila-acao { display: inline-flex; align-items: center; justify-content: center; gap: 3px; min-width: 0; width: 100%; min-height: 36px; box-sizing: border-box; padding: 4px; border: 1px solid #505762; border-radius: 6px; background: #252b33; color: #fff; font-size: 15px; line-height: 1; cursor: pointer; }
+        /* Cartão da fila: força os dados da música a ocuparem toda a largura.
+           A regra abaixo é mais específica que .item-fila (declarada mais adiante),
+           evitando que os controles comprimam o título em uma coluna estreita. */
+        .item-fila.item-fila-musica {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            align-items: stretch;
+            gap: 10px;
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+        }
+        .item-fila.item-fila-musica .titulo-musica {
+            display: block;
+            width: 100%;
+            min-width: 0;
+            flex: none;
+            font-size: 15px;
+            line-height: 1.45;
+            white-space: normal;
+            word-break: normal;
+            overflow-wrap: anywhere;
+        }
+        .item-fila.item-fila-musica .nome-cantor {
+            margin-top: 5px;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+        .item-fila.item-fila-musica .duracao-item-fila {
+            line-height: 1.4;
+        }
+        .item-fila-musica .botoes-fila {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 6px;
+            width: 100%;
+            min-width: 0;
+        }
+        .item-fila-musica .btn-fila-acao {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            min-width: 0;
+            width: 100%;
+            min-height: 38px;
+            box-sizing: border-box;
+            padding: 4px;
+            border: 1px solid #505762;
+            border-radius: 6px;
+            background: #252b33;
+            color: #fff;
+            font-size: 15px;
+            line-height: 1;
+            cursor: pointer;
+        }
         .item-fila-musica .btn-fila-acao:hover:not(:disabled) { background: #394553; border-color: #00d2ff; transform: translateY(-1px); }
         .item-fila-musica .btn-fila-acao:disabled { opacity: .35; cursor: not-allowed; }
         .item-fila-musica .btn-excluir-fila { background: #3a2020; border-color: #754040; color: #ff8a80; }
@@ -357,7 +409,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v2.30</span>
+        <span>v2.31</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
@@ -392,7 +444,7 @@
             <li>Permita pop-ups para abrir a tela da TV e a Central de Segurança.</li>
             <li>Permita acesso ao microfone se quiser usar o avaliador de ambiente.</li>
             <li>O celular precisa de conexão com a internet para buscar no YouTube, enviar pedidos/votos e sincronizar fotos.</li>
-            <li>A versão do sistema aparece discretamente no canto inferior direito do painel. Após esta atualização, deve mostrar <strong>v2.30</strong>.</li>
+            <li>A versão do sistema aparece discretamente no canto inferior direito do painel. Após esta atualização, deve mostrar <strong>v2.31</strong>.</li>
         </ul>
 
         <h3 id="manual-acesso">2. Acesso e perfis</h3>
