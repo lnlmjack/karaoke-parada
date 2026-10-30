@@ -15,6 +15,12 @@
         .container { max-width: 1600px; margin: 0 auto; position: relative; }
         
         .topo-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
+        .resumo-fila-topo { display: inline-flex; align-items: center; gap: 6px; margin: 8px 0 0 10px; padding: 6px 10px; border: 1px solid #00d2ff; border-radius: 18px; background: #14212b; color: #bdefff; font-size: 13px; font-weight: bold; vertical-align: middle; }
+        .resumo-fila-topo .fila-sem-duracao { color: #ffcc80; font-size: 11px; font-weight: normal; }
+        .botoes-fila { display: flex; flex: 0 0 auto; gap: 3px; flex-wrap: wrap; justify-content: flex-end; max-width: 190px; }
+        .btn-excluir-fila { color: #ff8a80 !important; background: #3a2020 !important; border: 1px solid #754040 !important; border-radius: 5px; padding: 5px 7px !important; font-size: 13px !important; font-weight: bold; }
+        .btn-excluir-fila:hover { color: #fff !important; background: #b31217 !important; border-color: #ff5252 !important; }
+        @media (max-width: 600px) { .resumo-fila-topo { display: flex; width: fit-content; margin: 8px 0 0; } .botoes-fila { max-width: 150px; } }
         .topo-botoes-acao { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         
         .btn-topo-acao { padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; border: 1px solid #555; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px; }
@@ -246,7 +252,10 @@
 
     <div class="container">
         <div class="topo-header">
-            <h1 style="margin: 0; padding: 0;">🎛️ Painel de Controle - Karaokê <span id="info-operador" style="font-size: 14px; color: #00d2ff; font-weight: normal; margin-left: 15px; background: #222; padding: 4px 10px; border-radius: 6px; border: 1px solid #444;">👤 Operador: --</span></h1>
+            <div>
+                <h1 style="margin: 0; padding: 0;">🎛️ Painel de Controle - Karaokê <span id="info-operador" style="font-size: 14px; color: #00d2ff; font-weight: normal; margin-left: 15px; background: #222; padding: 4px 10px; border-radius: 6px; border: 1px solid #444;">👤 Operador: --</span></h1>
+                <div id="resumo-fila-topo" class="resumo-fila-topo" aria-live="polite">🎵 Fila: 0 músicas · ⏱️ 0 min</div>
+            </div>
             <div class="topo-botoes-acao">
                 <button id="btn-toggle-bloqueio" class="btn-topo-acao" onclick="toggleBloqueioSistema()" title="Bloquear ou Desbloquear Pedidos nos Celulares">🔓 Sistema Liberado</button>
                 <button id="btn-central-fotos" class="btn-topo-acao" onclick="abrirCentralFotos()" title="Central de Gerenciamento de Fotos">📸 Gerenciar Fotos</button>
@@ -327,7 +336,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v2.28</span>
+        <span>v2.29</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
@@ -362,7 +371,7 @@
             <li>Permita pop-ups para abrir a tela da TV e a Central de Segurança.</li>
             <li>Permita acesso ao microfone se quiser usar o avaliador de ambiente.</li>
             <li>O celular precisa de conexão com a internet para buscar no YouTube, enviar pedidos/votos e sincronizar fotos.</li>
-            <li>A versão do sistema aparece discretamente no canto inferior direito do painel. Após esta atualização, deve mostrar <strong>v2.28</strong>.</li>
+            <li>A versão do sistema aparece discretamente no canto inferior direito do painel. Após esta atualização, deve mostrar <strong>v2.29</strong>.</li>
         </ul>
 
         <h3 id="manual-acesso">2. Acesso e perfis</h3>
@@ -403,7 +412,7 @@
         </ul>
 
         <h3 id="manual-fila">6. Fila, ordem e reprodução</h3>
-        <p>A fila mostra as músicas ainda aguardando. Cada linha oferece controles próprios:</p>
+        <p>A fila mostra as músicas ainda aguardando. No topo do painel aparecem a quantidade de músicas e a duração total estimada; cada linha mostra a própria duração quando disponível e oferece controles individuais:</p>
         <ul>
             <li><strong>✏️ Editar cantor:</strong> corrige o nome associado à música e adiciona o novo nome à lista recente.</li>
             <li><strong>▶️ Tocar agora:</strong> começa a faixa escolhida após a pausa/transição configurada. Se outra estiver tocando, ela é devolvida à fila para não ser perdida.</li>
@@ -1576,8 +1585,8 @@
             `;
         }
 
-        function abrirModalCantor(videoId, titulo) {
-            musicaPendente = { videoId, titulo };
+        function abrirModalCantor(videoId, titulo, duracaoSegundos = null) {
+            musicaPendente = { videoId, titulo, duracaoSegundos: Number.isFinite(duracaoSegundos) ? duracaoSegundos : null };
             const inputCantor = document.getElementById('input-nome-cantor');
             if(inputCantor) inputCantor.value = '';
             renderizarCantoresSalvos();
@@ -1597,7 +1606,7 @@
             if (cantor === "") cantor = "Convidados";
             salvarCantorAutomaticamente(cantor);
             if (musicaPendente) {
-                let nova = novaMusicaNaFila({ videoId: musicaPendente.videoId, titulo: musicaPendente.titulo, cantor: cantor });
+                let nova = novaMusicaNaFila({ videoId: musicaPendente.videoId, titulo: musicaPendente.titulo, cantor: cantor, duracaoSegundos: musicaPendente.duracaoSegundos });
                 if (noTopo) {
                     filaDeReproducao.unshift(nova);
                 } else {
@@ -1892,7 +1901,7 @@
             return String(valor ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         }
 
-        function selecionarVideoSubstituto(videoId) {
+        function selecionarVideoSubstituto(videoId, duracaoSegundos = null) {
             if (!musicaFalhaPendente || !videoId) return false;
             const indice = filaDeReproducao.findIndex(item => item.filaId === musicaFalhaPendente.filaId);
             if (indice < 0) {
@@ -1903,6 +1912,7 @@
 
             const [faixa] = filaDeReproducao.splice(indice, 1);
             faixa.videoId = videoId;
+            if (Number.isFinite(duracaoSegundos)) faixa.duracaoSegundos = duracaoSegundos;
             // Mantém o título original pedido e o cantor original; substitui somente o vídeo.
             filaDeReproducao.unshift(faixa);
             musicaFalhaPendente = null;
@@ -2127,6 +2137,75 @@
             return { texto: horas ? `${hhmmss[0]}:${hhmmss[1]}:${hhmmss[2]}` : `${minutos}:${String(segundos).padStart(2, '0')}`, segundos: total };
         }
 
+        function obterDuracaoSegundosFila(item) {
+            if (Number.isFinite(item?.duracaoSegundos) && item.duracaoSegundos >= 0) return item.duracaoSegundos;
+            const duracao = formatarDuracaoVideo(item?.duracaoIso || item?.duracao);
+            return duracao.segundos;
+        }
+
+        function formatarDuracaoTotalFila(segundos) {
+            const total = Math.max(0, Math.floor(segundos || 0));
+            const horas = Math.floor(total / 3600);
+            const minutos = Math.floor((total % 3600) / 60);
+            if (horas) return `${horas}h ${String(minutos).padStart(2, '0')}min`;
+            return `${minutos} min`;
+        }
+
+        const idsDuracaoFilaConsultados = new Set();
+
+        function atualizarResumoFilaTopo() {
+            const resumo = document.getElementById('resumo-fila-topo');
+            if (!resumo) return;
+            const totalSegundos = filaDeReproducao.reduce((total, item) => {
+                const duracao = obterDuracaoSegundosFila(item);
+                return total + (duracao === null ? 0 : duracao);
+            }, 0);
+            const semDuracao = filaDeReproducao.filter(item => obterDuracaoSegundosFila(item) === null).length;
+            const quantidade = filaDeReproducao.length;
+            resumo.innerHTML = `🎵 Fila: ${quantidade} ${quantidade === 1 ? 'música' : 'músicas'} · ⏱️ ${formatarDuracaoTotalFila(totalSegundos)}${semDuracao ? ` <span class="fila-sem-duracao">(${semDuracao} ${semDuracao === 1 ? 'sem duração' : 'sem duração'})</span>` : ''}`;
+        }
+
+        async function preencherDuracoesPendentesDaFila() {
+            if (typeof API_KEY === 'undefined' || !filaDeReproducao.length) return;
+            const pendentes = filaDeReproducao.filter(item => {
+                const id = String(item.videoId || '');
+                return /^[A-Za-z0-9_-]{11}$/.test(id) && obterDuracaoSegundosFila(item) === null && !idsDuracaoFilaConsultados.has(id);
+            });
+            if (!pendentes.length) return;
+            const ids = [...new Set(pendentes.map(item => String(item.videoId)))];
+            ids.forEach(id => idsDuracaoFilaConsultados.add(id));
+            for (let inicio = 0; inicio < ids.length; inicio += 50) {
+                const lote = ids.slice(inicio, inicio + 50);
+                try {
+                    const url = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${encodeURIComponent(lote.join(','))}&key=${API_KEY}`;
+                    const resposta = await fetch(url);
+                    const dados = await resposta.json();
+                    if (!resposta.ok || dados.error) continue;
+                    const duracoes = new Map((dados.items || []).map(video => [video.id, formatarDuracaoVideo(video.contentDetails?.duration).segundos]));
+                    let alterou = false;
+                    filaDeReproducao.forEach(item => {
+                        const segundos = duracoes.get(String(item.videoId || ''));
+                        if (segundos !== undefined && segundos !== null && obterDuracaoSegundosFila(item) === null) {
+                            item.duracaoSegundos = segundos;
+                            alterou = true;
+                        }
+                    });
+                    atualizarResumoFilaTopo();
+                    if (alterou) {
+                        persistirFilaLocal();
+                        database.ref('backupFila').set(filaDeReproducao).catch(erro => console.warn('Não foi possível sincronizar as durações da fila:', erro));
+                        const divFila = document.getElementById('fila');
+                        if (divFila) divFila.querySelectorAll('.duracao-item-fila').forEach((el, i) => {
+                            const segundos = obterDuracaoSegundosFila(filaDeReproducao[i]);
+                            if (segundos !== null) el.textContent = `⏱️ ${formatarDuracaoTotalFila(segundos)}`;
+                        });
+                    }
+                } catch (erro) {
+                    console.warn('Não foi possível consultar a duração de algumas músicas da fila:', erro);
+                }
+            }
+        }
+
         let buscaYouTubeAtual = 0;
 
         async function buscarNoYouTube() {
@@ -2207,9 +2286,9 @@
                     d.innerHTML = `<img src="${escaparTextoFila(thumbnail)}" alt="Miniatura"><div class="info-resultado"><span class="titulo-video">${tituloVid}</span><span class="nome-canal">${nomeCanalVid}</span><span class="duracao-video" style="color:${duracaoCurta ? '#ffb74d' : '#9be7ff'};font-size:12px;font-weight:bold;margin-top:5px;">⏱ ${escaparTextoFila(duracao.texto)}${detalheDuracao}</span></div>`;
                     d.onclick = () => {
                         if (musicaFalhaPendente) {
-                            selecionarVideoSubstituto(v.id.videoId);
+                            selecionarVideoSubstituto(v.id.videoId, duracao.segundos);
                         } else {
-                            abrirModalCantor(v.id.videoId, v.snippet.title);
+                            abrirModalCantor(v.id.videoId, v.snippet.title, duracao.segundos);
                         }
                     };
                     div.appendChild(d);
@@ -2223,6 +2302,8 @@
 
         function removerMusica(i) {
             if (!Number.isInteger(i) || i < 0 || i >= filaDeReproducao.length) return;
+            const musicaRemovida = filaDeReproducao[i];
+            if (!confirm(`Excluir “${musicaRemovida.titulo}” — ${musicaRemovida.cantor} da fila?`)) return;
             filaDeReproducao.splice(i, 1);
             atualizarTelaFila();
         }
@@ -2427,21 +2508,26 @@
                 });
             }
 
+            atualizarResumoFilaTopo();
             const divFila = document.getElementById('fila');
             if(!divFila) return;
-            divFila.innerHTML = filaDeReproducao.map((item, i) => `
+            divFila.innerHTML = filaDeReproducao.map((item, i) => {
+                const duracaoItem = obterDuracaoSegundosFila(item);
+                const textoDuracao = duracaoItem === null ? '⏱️ duração pendente' : `⏱️ ${formatarDuracaoTotalFila(duracaoItem)}`;
+                return `
                 <div class="item-fila">
-                    <span class="titulo-musica"><strong>${i+1}º</strong> - ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span></span>
-                    <div class="botoes-acao">
-                        <button class="btn-acao" onclick="editarCantorFila(${i})" title="Editar Cantor">✏️</button>
-                        <button class="btn-acao" onclick="tocarMusicaEspecifica(${i})" title="Tocar Agora">▶️</button>
-                        ${i > 0 ? `<button class="btn-acao" onclick="moverMusica(${i}, -1)" title="Subir">⬆️</button>` : ''}
-                        ${i < filaDeReproducao.length - 1 ? `<button class="btn-acao" onclick="moverMusica(${i}, 1)" title="Descer">⬇️</button>` : ''}
-                        <button class="btn-acao" onclick="moverMusicaParaPosicao(${i})" title="Mover para uma posição escolhida">↕️</button>
-                        <button class="btn-acao" onclick="removerMusica(${i})" title="Remover">❌</button>
+                    <span class="titulo-musica"><strong>${i+1}º</strong> - ${escaparTextoFila(item.titulo)} <br> <span class="nome-cantor">🎤 Voz: ${escaparTextoFila(item.cantor)}</span><span class="duracao-item-fila" style="display:block;color:#9be7ff;font-size:11px;margin-top:4px;">${textoDuracao}</span></span>
+                    <div class="botoes-fila">
+                        <button class="btn-acao" onclick="editarCantorFila(${i})" title="Editar cantor" aria-label="Editar cantor">✏️</button>
+                        <button class="btn-acao" onclick="tocarMusicaEspecifica(${i})" title="Tocar agora" aria-label="Tocar agora">▶️</button>
+                        ${i > 0 ? `<button class="btn-acao" onclick="moverMusica(${i}, -1)" title="Subir" aria-label="Subir">⬆️</button>` : ''}
+                        ${i < filaDeReproducao.length - 1 ? `<button class="btn-acao" onclick="moverMusica(${i}, 1)" title="Descer" aria-label="Descer">⬇️</button>` : ''}
+                        <button class="btn-acao" onclick="moverMusicaParaPosicao(${i})" title="Mover para uma posição escolhida" aria-label="Mover para posição">↕️</button>
+                        <button class="btn-acao btn-excluir-fila" onclick="removerMusica(${i})" title="Excluir esta música da fila" aria-label="Excluir esta música da fila">🗑️</button>
                     </div>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
+            preencherDuracoesPendentesDaFila();
             
             if (telaTV && !telaTV.closed) {
                 let proxOverlay = telaTV.document.getElementById('proximo-overlay');
