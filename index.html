@@ -1365,21 +1365,6 @@
         let musicaFalhaPendente = null;
         let transicaoFilaTimer = null;
         let timerOperacaoFila = null;
-        let idReproducaoAtual = 0;
-        let reproducaoConfirmada = false;
-        let inicioReproducaoConfirmada = 0;
-        let temporizadorBuffering = null;
-        let temporizadorInicioPlayer = null;
-        let temporizadorRoletaNota = null;
-
-        function limparTemporizadoresReproducao() {
-            if (temporizadorBuffering) clearTimeout(temporizadorBuffering);
-            if (temporizadorInicioPlayer) clearTimeout(temporizadorInicioPlayer);
-            if (temporizadorRoletaNota) clearInterval(temporizadorRoletaNota);
-            temporizadorBuffering = null;
-            temporizadorInicioPlayer = null;
-            temporizadorRoletaNota = null;
-        }
         let erroTratadoDaFilaId = null;
         let operacaoFilaEmAndamento = false;
         let audioCtx; let analyser; let dataArray; let captando = false; 
@@ -1777,11 +1762,6 @@
             const falhou = musicaAtual;
             if (!falhou || erroTratadoDaFilaId === falhou.filaId) return;
             erroTratadoDaFilaId = falhou.filaId;
-            idReproducaoAtual++;
-            limparTemporizadoresReproducao();
-            reproducaoConfirmada = false;
-            inicioReproducaoConfirmada = 0;
-            try { if (player && typeof player.pauseVideo === 'function') player.pauseVideo(); } catch (erro) {}
             erroNoPlayer = true;
             captando = false;
             clearTimeout(timerNota);
@@ -1866,25 +1846,22 @@
                 videoId: '', playerVars: { 'autoplay': 1, 'controls': 1, 'fs': 0 }, 
                 events: { 
                     'onStateChange': e => {
-                        const tokenReproducao = idReproducaoAtual;
-                        if (e.data === 1 && musicaAtual && !musicaFalhaPendente) {
-                            reproducaoConfirmada = true;
-                            inicioReproducaoConfirmada = Date.now();
-                            if (temporizadorBuffering) clearTimeout(temporizadorBuffering);
-                            if (temporizadorInicioPlayer) clearTimeout(temporizadorInicioPlayer);
-                            temporizadorBuffering = null;
-                            temporizadorInicioPlayer = null;
+                        if (e.data === 1) {
                             ocultarErroMusicaTV();
-                        } else if (e.data === 3 && musicaAtual && !musicaFalhaPendente) {
-                            if (temporizadorBuffering) clearTimeout(temporizadorBuffering);
-                            temporizadorBuffering = setTimeout(() => {
-                                if (tokenReproducao !== idReproducaoAtual || !musicaAtual || musicaFalhaPendente) return;
-                                if (player && typeof player.getPlayerState === 'function' && player.getPlayerState() === 3) {
-                                    tratarErroReproducao({ data: 'buffering_timeout' });
-                                }
-                            }, 25000);
-                        } else if (e.data === 0 && musicaAtual && !musicaFalhaPendente && reproducaoConfirmada && Date.now() - inicioReproducaoConfirmada >= 5000) {
-                            gerarNotaFinal(tokenReproducao);
+                            // A tela de espera pode ter sido exibida quando o player terminou de inicializar,
+                            // depois que o áudio já havia começado. O estado PLAYING é a confirmação real
+                            // de reprodução; então removemos os overlays que poderiam cobrir o vídeo.
+                            if (telaTV && !telaTV.closed) {
+                                const tvDoc = telaTV.document;
+                                const aguardando = tvDoc.getElementById('tela-aguardando');
+                                const transicao = tvDoc.getElementById('tela-transicao');
+                                const nota = tvDoc.getElementById('tela-nota');
+                                if (aguardando) aguardando.style.display = 'none';
+                                if (transicao) transicao.style.display = 'none';
+                                if (nota) nota.style.display = 'none';
+                            }
+                        } else if (e.data === 0 && musicaAtual && !musicaFalhaPendente) {
+                            gerarNotaFinal();
                         }
                     },
                     'onError': e => {
@@ -1894,7 +1871,11 @@
             });
             const bTv = document.getElementById('botaoTV');
             if(bTv) { bTv.innerHTML = "✅ TELA CONECTADA!"; bTv.style.background = "#17a2b8"; }
-            if (telaTV && !telaTV.closed) telaTV.document.getElementById('tela-aguardando').style.display = 'flex';
+            if (telaTV && !telaTV.closed) {
+                const aguardando = telaTV.document.getElementById('tela-aguardando');
+                // Não reapresenta a espera se uma faixa já começou ou está na contagem de transição.
+                if (aguardando) aguardando.style.display = (musicaAtual || transicaoFilaTimer || musicaFalhaPendente) ? 'none' : 'flex';
+            }
 
             if (monitorFimMusica) clearInterval(monitorFimMusica);
             monitorFimMusica = setInterval(() => {
@@ -1903,8 +1884,8 @@
                     let cur = player.getCurrentTime();
                     let dur = player.getDuration();
                     
-                    if (reproducaoConfirmada && Date.now() - inicioReproducaoConfirmada >= 5000 && dur > 5 && cur > 0.5 && (dur - cur) <= 0.8 && st === 1) {
-                        gerarNotaFinal(idReproducaoAtual);
+                    if (dur > 5 && cur > 0 && (dur - cur) <= 0.8 && st === 1) {
+                        gerarNotaFinal();
                     }
                 }
             }, 400);
@@ -1912,14 +1893,9 @@
 
         let notaJaGeradaNestaMusica = false;
 
-        function gerarNotaFinal(tokenReproducao = idReproducaoAtual) {
-            if (tokenReproducao !== idReproducaoAtual || !musicaAtual || !reproducaoConfirmada || notaJaGeradaNestaMusica) return;
+        function gerarNotaFinal() {
+            if (notaJaGeradaNestaMusica) return;
             notaJaGeradaNestaMusica = true;
-            reproducaoConfirmada = false;
-            if (temporizadorBuffering) clearTimeout(temporizadorBuffering);
-            if (temporizadorInicioPlayer) clearTimeout(temporizadorInicioPlayer);
-            temporizadorBuffering = null;
-            temporizadorInicioPlayer = null;
             limparFaixaEmReproducao();
 
             captando = false; 
@@ -1961,7 +1937,6 @@
             atualizarTelaRanking();
 
             database.ref('fotosDia').once('value', (snapshot) => {
-                if (tokenReproducao !== idReproducaoAtual) return;
                 let fotoEncontrada = null;
                 let maiorTimestamp = 0;
                 let cantorAtualBusca = nomeDoCantor.toLowerCase();
@@ -2001,15 +1976,13 @@
                         let valorEl = tvDoc.getElementById('nota-valor');
                         valorEl.style.color = '#fff';
                         
-                        temporizadorRoletaNota = setInterval(() => {
-                            if (tokenReproducao !== idReproducaoAtual) return;
+                        let intervaloRoleta = setInterval(() => {
                             if(valorEl) valorEl.innerText = Math.floor(Math.random() * 41) + 60; 
                         }, 50);
 
                         setTimeout(() => {
-                            if (tokenReproducao !== idReproducaoAtual || !telaTV || telaTV.closed) return;
-                            if (temporizadorRoletaNota) clearInterval(temporizadorRoletaNota);
-                            temporizadorRoletaNota = null;
+                            if (!telaTV || telaTV.closed) return;
+                            clearInterval(intervaloRoleta);
                             tvDoc.getElementById('nota-loading').style.display = 'none';
                             
                             if (valorEl) {
@@ -2029,7 +2002,6 @@
 
             clearTimeout(timerNota);
             timerNota = setTimeout(() => {
-                if (tokenReproducao !== idReproducaoAtual) return;
                 if (telaTV && !telaTV.closed) {
                     let tn = telaTV.document.getElementById('tela-nota');
                     if(tn) tn.style.display = 'none';
@@ -2154,93 +2126,54 @@
             return m.videoId;
         }
 
-        async function executarInicioMusica(m, tokenReproducao = idReproducaoAtual) {
-            clearTimeout(timerNota);
-            limparTemporizadoresReproducao();
-            notaJaGeradaNestaMusica = false;
-            reproducaoConfirmada = false;
-            inicioReproducaoConfirmada = 0;
-            captando = false;
-
-            let videoIdReal = await resolverVideoIdValido(m);
-            if (tokenReproducao !== idReproducaoAtual) return;
-            if (!player || typeof player.loadVideoById !== 'function') {
-                console.error('O player ainda não está pronto; a faixa permanece aguardando.');
-                return;
-            }
-
-            m.videoId = videoIdReal;
-            m.timestampInicio = Date.now();
-            musicaAtual = m;
+        async function executarInicioMusica(m) {
             salvarFaixaEmReproducao(m);
-            erroNoPlayer = false;
+            clearTimeout(timerNota);
+            notaJaGeradaNestaMusica = false;
+            m.timestampInicio = Date.now();
 
             if (telaTV && !telaTV.closed) {
                 let tn = telaTV.document.getElementById('tela-nota');
                 let ta = telaTV.document.getElementById('tela-aguardando');
                 if (tn) tn.style.display = 'none';
                 if (ta) ta.style.display = 'none';
-                const telaErro = telaTV.document.getElementById('tela-erro-musica');
-                if (telaErro) telaErro.style.display = 'none';
             }
             database.ref('votosAtual').remove();
             database.ref('statusAtual').set({ cantor: m.cantor, titulo: m.titulo, id: Date.now() });
-            historicoDeReproducao.push(m);
+            musicaAtual = m; historicoDeReproducao.push(m);
             atualizarTelaFila(); atualizarTelaHistorico(); atualizarTelaRanking();
-
+            
             if (telaTV && !telaTV.closed && m.cantor !== "Convidados") {
                 let overlay = telaTV.document.getElementById('cantor-overlay');
                 if (overlay) {
                     overlay.innerHTML = `<div style="display:inline-block; vertical-align:middle;"><span class="aviso">Com a Voz</span><p class="nome">${m.cantor}</p></div>`;
-                    overlay.style.top = '-200px';
-                    setTimeout(() => {
-                        if (tokenReproducao === idReproducaoAtual && musicaAtual === m) overlay.style.top = '20px';
-                    }, 100);
+                    overlay.style.top = '-200px'; 
+                    setTimeout(() => overlay.style.top = '20px', 100);
                 }
             }
-            captando = true; somaEnergia = 0; qtdLeituras = 0; notaForcadaPeloDJ = null;
-            atualizarDisplayNotaForcada();
+            captando = true; somaEnergia = 0; qtdLeituras = 0; notaForcadaPeloDJ = null; 
+            atualizarDisplayNotaForcada(); erroNoPlayer = false;
 
-            try {
+            let videoIdReal = await resolverVideoIdValido(m);
+            m.videoId = videoIdReal;
+
+            if (player && typeof player.loadVideoById === 'function') {
                 player.loadVideoById(videoIdReal);
                 player.playVideo();
-                temporizadorInicioPlayer = setTimeout(() => {
-                    if (tokenReproducao !== idReproducaoAtual || !musicaAtual || reproducaoConfirmada || musicaFalhaPendente) return;
-                    if (player && typeof player.getPlayerState === 'function' && player.getPlayerState() === 3) {
-                        tratarErroReproducao({ data: 'buffering_timeout_inicio' });
-                    }
-                }, 45000);
-            } catch (erro) {
-                console.error('Não foi possível iniciar o vídeo:', erro);
-                tratarErroReproducao({ data: 'falha_ao_iniciar' });
             }
         }
 
         function iniciarMusica(m) {
             if (!m) return;
-            const tokenReproducao = ++idReproducaoAtual;
-            clearTimeout(timerNota);
-            limparTemporizadoresReproducao();
-            if (player && typeof player.pauseVideo === 'function') {
-                try { player.pauseVideo(); } catch (erro) {}
-            }
-            musicaAtual = null;
-            reproducaoConfirmada = false;
-            inicioReproducaoConfirmada = 0;
-            captando = false;
             if (transicaoFilaTimer) {
                 clearInterval(transicaoFilaTimer);
                 transicaoFilaTimer = null;
-            }
-            if (telaTV && !telaTV.closed) {
-                const telaNota = telaTV.document.getElementById('tela-nota');
-                if (telaNota) telaNota.style.display = 'none';
             }
             if (tempoPausaSegundos > 0 && telaTV && !telaTV.closed) {
                 let tempoRestante = tempoPausaSegundos;
                 let transicaoEl = telaTV.document.getElementById('tela-transicao');
                 if (!transicaoEl) {
-                    executarInicioMusica(m, tokenReproducao);
+                    executarInicioMusica(m);
                     return;
                 }
                 let cantorEl = telaTV.document.getElementById('transicao-cantor-nome');
@@ -2252,21 +2185,16 @@
                 telaTV.document.getElementById('cantor-overlay').style.top = '-200px';
 
                 transicaoFilaTimer = setInterval(() => {
-                    if (tokenReproducao !== idReproducaoAtual) {
-                        clearInterval(transicaoFilaTimer);
-                        transicaoFilaTimer = null;
-                        return;
-                    }
                     tempoRestante--;
                     if (tempoRestante > 0) contadorEl.innerText = tempoRestante;
                     else {
                         clearInterval(transicaoFilaTimer);
                         transicaoFilaTimer = null;
                         transicaoEl.style.display = 'none';
-                        executarInicioMusica(m, tokenReproducao);
+                        executarInicioMusica(m);
                     }
                 }, 1000);
-            } else { executarInicioMusica(m, tokenReproducao); }
+            } else { executarInicioMusica(m); }
         }
 
         function tocarMusicaEspecifica(i) {
