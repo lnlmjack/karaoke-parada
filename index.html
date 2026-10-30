@@ -327,7 +327,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v2.27</span>
+        <span>v2.28</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
@@ -362,7 +362,7 @@
             <li>Permita pop-ups para abrir a tela da TV e a Central de Segurança.</li>
             <li>Permita acesso ao microfone se quiser usar o avaliador de ambiente.</li>
             <li>O celular precisa de conexão com a internet para buscar no YouTube, enviar pedidos/votos e sincronizar fotos.</li>
-            <li>A versão do sistema aparece discretamente no canto inferior direito do painel. Após esta atualização, deve mostrar <strong>v2.27</strong>.</li>
+            <li>A versão do sistema aparece discretamente no canto inferior direito do painel. Após esta atualização, deve mostrar <strong>v2.28</strong>.</li>
         </ul>
 
         <h3 id="manual-acesso">2. Acesso e perfis</h3>
@@ -383,7 +383,7 @@
         </ul>
 
         <h3 id="manual-busca">4. Busca do DJ e inclusão direta</h3>
-        <p>Na caixa <strong>Busca do DJ</strong>, cole um link do YouTube ou digite o título/artista. Ao digitar, o painel consulta vídeos e destaca canais favoritos configurados. Selecione o resultado correto para abrir a escolha de cantor.</p>
+        <p>Na caixa <strong>Busca do DJ</strong>, cole um link do YouTube ou digite o título/artista. Ao digitar, o painel consulta vídeos, mostra claramente a duração e ordena os canais favoritos conforme a sequência configurada. Vídeos com menos de 3 minutos recebem um alerta visual para você conferir se estão completos. Selecione o resultado correto para abrir a escolha de cantor.</p>
         <ul>
             <li><strong>Link direto:</strong> se o endereço contiver um ID de vídeo reconhecível, o painel passa diretamente à escolha do cantor.</li>
             <li><strong>Busca por texto:</strong> confira título e canal antes de escolher. Um resultado pode ser uma versão errada, bloqueada ou indisponível; prefira karaokês cuja reprodução já tenha sido verificada.</li>
@@ -407,7 +407,7 @@
         <ul>
             <li><strong>✏️ Editar cantor:</strong> corrige o nome associado à música e adiciona o novo nome à lista recente.</li>
             <li><strong>▶️ Tocar agora:</strong> começa a faixa escolhida após a pausa/transição configurada. Se outra estiver tocando, ela é devolvida à fila para não ser perdida.</li>
-            <li><strong>⬆️ / ⬇️ Mover:</strong> altera a posição sem excluir a música.</li>
+            <li><strong>⬆️ / ⬇️ Mover:</strong> altera a posição sem excluir a música; o botão ↕️ permite informar diretamente a posição desejada.</li>
             <li><strong>❌ Remover:</strong> retira apenas a música selecionada da fila.</li>
             <li><strong>Limpar:</strong> esvazia a fila depois de confirmação. É uma ação intencional e não deve ser usada como forma de recuperar falhas.</li>
             <li><strong>🔙 Restaurar:</strong> mescla o backup local e o da nuvem com a fila atual. A rotina procura preservar as músicas existentes e não substitui simplesmente a fila inteira.</li>
@@ -2112,9 +2112,27 @@
             return match ? match[1] : null;
         }
 
+        function normalizarTextoBusca(valor) {
+            return String(valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('pt-BR').trim();
+        }
+
+        function formatarDuracaoVideo(duracaoIso) {
+            const partes = String(duracaoIso || '').match(/^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/);
+            if (!partes) return { texto: 'Duração indisponível', segundos: null };
+            const horas = Number(partes[1] || 0);
+            const minutos = Number(partes[2] || 0);
+            const segundos = Number(partes[3] || 0);
+            const total = horas * 3600 + minutos * 60 + segundos;
+            const hhmmss = [horas, minutos, segundos].map((n, i) => String(n).padStart(i === 0 && horas === 0 ? 1 : 2, '0'));
+            return { texto: horas ? `${hhmmss[0]}:${hhmmss[1]}:${hhmmss[2]}` : `${minutos}:${String(segundos).padStart(2, '0')}`, segundos: total };
+        }
+
+        let buscaYouTubeAtual = 0;
+
         async function buscarNoYouTube() {
             const termoOriginal = document.getElementById('campoBusca').value.trim();
             if (!termoOriginal) return;
+            const requisicaoBusca = ++buscaYouTubeAtual;
             const div = document.getElementById('resultados');
             div.innerHTML = '';
             const videoId = extrairVideoId(termoOriginal);
@@ -2132,7 +2150,7 @@
             }
 
             div.innerHTML = '<p style="color:#00d2ff;">Buscando vídeos no YouTube...</p>';
-            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(termoOriginal + " karaoke -oficial -clipe -live")}&type=video&key=${API_KEY}`;
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&q=${encodeURIComponent(termoOriginal + " karaoke -oficial -clipe -live")}&type=video&key=${API_KEY}`;
             try {
                 const res = await fetch(url);
                 const dados = await res.json();
@@ -2140,26 +2158,53 @@
                 const itens = (Array.isArray(dados.items) ? dados.items : [])
                     .filter(v => !idsVideosBloqueados.has(String(v.id?.videoId || '')));
                 if (!itens.length) {
+                    if (requisicaoBusca !== buscaYouTubeAtual) return;
                     div.innerHTML = '<p style="color:#e52d27">Nenhum vídeo encontrado. Tente outro termo.</p>';
                     return;
                 }
-                let itensOrdenados = [...itens].sort((a, b) => {
-                    let tituloA = a.snippet.title.toLowerCase(); let canalA = a.snippet.channelTitle.toLowerCase();
-                    let indexA = canaisFavoritos.findIndex(c => tituloA.includes(c.toLowerCase()) || canalA.includes(c.toLowerCase()));
-                    let tituloB = b.snippet.title.toLowerCase(); let canalB = b.snippet.channelTitle.toLowerCase();
-                    let indexB = canaisFavoritos.findIndex(c => tituloB.includes(c.toLowerCase()) || canalB.includes(c.toLowerCase()));
-                    if (indexA !== -1 && indexB !== -1) return indexA - indexB;
-                    if (indexA !== -1) return -1;
-                    if (indexB !== -1) return 1;
-                    return 0;
-                });
+
+                let duracoesPorId = {};
+                try {
+                    const ids = itens.map(v => v.id?.videoId).filter(Boolean);
+                    if (ids.length) {
+                        const urlDuracoes = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${encodeURIComponent(ids.join(','))}&key=${API_KEY}`;
+                        const respostaDuracoes = await fetch(urlDuracoes);
+                        const dadosDuracoes = await respostaDuracoes.json();
+                        if (respostaDuracoes.ok && !dadosDuracoes.error) {
+                            duracoesPorId = Object.fromEntries((dadosDuracoes.items || []).map(item => [item.id, item.contentDetails?.duration || '']));
+                        }
+                    }
+                } catch (erroDuracao) {
+                    console.warn('Não foi possível consultar a duração dos vídeos:', erroDuracao);
+                }
+                if (requisicaoBusca !== buscaYouTubeAtual) return;
+
+                const indicePreferencia = video => {
+                    const titulo = normalizarTextoBusca(video.snippet?.title);
+                    const canal = normalizarTextoBusca(video.snippet?.channelTitle);
+                    return canaisFavoritos.findIndex(nome => {
+                        const favorito = normalizarTextoBusca(nome);
+                        return favorito && (canal.includes(favorito) || titulo.includes(favorito));
+                    });
+                };
+                const itensOrdenados = itens.map((video, ordemOriginal) => ({ video, ordemOriginal, preferencia: indicePreferencia(video) }))
+                    .sort((a, b) => {
+                        const prioridadeA = a.preferencia < 0 ? Number.MAX_SAFE_INTEGER : a.preferencia;
+                        const prioridadeB = b.preferencia < 0 ? Number.MAX_SAFE_INTEGER : b.preferencia;
+                        return prioridadeA - prioridadeB || a.ordemOriginal - b.ordemOriginal;
+                    })
+                    .map(item => item.video);
 
                 itensOrdenados.forEach(v => {
-                    const thumbnail = v.snippet.thumbnails.default.url;
-                    const tituloVid = v.snippet.title; const nomeCanalVid = v.snippet.channelTitle;
-                    const d = document.createElement('div'); 
-                    d.className = 'item-resultado'; 
-                    d.innerHTML = `<img src="${thumbnail}" alt="Thumb"><div class="info-resultado"><span class="titulo-video">${tituloVid}</span><span class="nome-canal">${nomeCanalVid}</span></div>`; 
+                    const thumbnail = v.snippet.thumbnails?.medium?.url || v.snippet.thumbnails?.default?.url || '';
+                    const tituloVid = escaparTextoFila(v.snippet.title || 'Vídeo sem título');
+                    const nomeCanalVid = escaparTextoFila(v.snippet.channelTitle || 'Canal não informado');
+                    const duracao = formatarDuracaoVideo(duracoesPorId[v.id.videoId]);
+                    const duracaoCurta = duracao.segundos !== null && duracao.segundos < 180;
+                    const detalheDuracao = duracaoCurta ? ' · confira se a música está completa' : '';
+                    const d = document.createElement('div');
+                    d.className = 'item-resultado';
+                    d.innerHTML = `<img src="${escaparTextoFila(thumbnail)}" alt="Miniatura"><div class="info-resultado"><span class="titulo-video">${tituloVid}</span><span class="nome-canal">${nomeCanalVid}</span><span class="duracao-video" style="color:${duracaoCurta ? '#ffb74d' : '#9be7ff'};font-size:12px;font-weight:bold;margin-top:5px;">⏱ ${escaparTextoFila(duracao.texto)}${detalheDuracao}</span></div>`;
                     d.onclick = () => {
                         if (musicaFalhaPendente) {
                             selecionarVideoSubstituto(v.id.videoId);
@@ -2170,6 +2215,7 @@
                     div.appendChild(d);
                 });
             } catch (err) {
+                if (requisicaoBusca !== buscaYouTubeAtual) return;
                 console.error('Erro ao pesquisar no YouTube:', err);
                 div.innerHTML = `<p style="color:#e52d27">Não foi possível buscar agora. ${escaparTextoFila(err.message || '')}</p>`;
             }
@@ -2184,6 +2230,20 @@
             const destino = i + d;
             if (!Number.isInteger(i) || i < 0 || i >= filaDeReproducao.length || destino < 0 || destino >= filaDeReproducao.length) return;
             [filaDeReproducao[i], filaDeReproducao[destino]] = [filaDeReproducao[destino], filaDeReproducao[i]];
+            atualizarTelaFila();
+        }
+
+        function moverMusicaParaPosicao(i) {
+            if (!Number.isInteger(i) || i < 0 || i >= filaDeReproducao.length) return;
+            const posicaoInformada = prompt(`Mover "${filaDeReproducao[i].titulo}" para qual posição? Digite um número de 1 a ${filaDeReproducao.length}:`, String(i + 1));
+            if (posicaoInformada === null) return;
+            const posicao = Number.parseInt(posicaoInformada, 10);
+            if (!Number.isInteger(posicao) || posicao < 1 || posicao > filaDeReproducao.length) {
+                alert(`Posição inválida. Digite um número entre 1 e ${filaDeReproducao.length}.`);
+                return;
+            }
+            const [musica] = filaDeReproducao.splice(i, 1);
+            filaDeReproducao.splice(posicao - 1, 0, musica);
             atualizarTelaFila();
         }
 
@@ -2377,6 +2437,7 @@
                         <button class="btn-acao" onclick="tocarMusicaEspecifica(${i})" title="Tocar Agora">▶️</button>
                         ${i > 0 ? `<button class="btn-acao" onclick="moverMusica(${i}, -1)" title="Subir">⬆️</button>` : ''}
                         ${i < filaDeReproducao.length - 1 ? `<button class="btn-acao" onclick="moverMusica(${i}, 1)" title="Descer">⬇️</button>` : ''}
+                        <button class="btn-acao" onclick="moverMusicaParaPosicao(${i})" title="Mover para uma posição escolhida">↕️</button>
                         <button class="btn-acao" onclick="removerMusica(${i})" title="Remover">❌</button>
                     </div>
                 </div>
