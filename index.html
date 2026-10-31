@@ -225,6 +225,16 @@
         .login-btn { width: 100%; padding: 15px; background: #e52d27; color: white; font-size: 18px; font-weight: bold; border: 2px solid #fff; border-radius: 6px; cursor: pointer; transition: 0.2s; margin-top: 5px; }
         .login-btn:hover { background: #c21a15; }
     </style>
+
+    <style id="controles-tom-css">
+      .controles-tom { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:0 0 14px; padding:10px 12px; background:#1b1b1b; border:1px solid #383838; border-radius:8px; }
+      .controles-tom strong { color:#ffeb3b; margin-right:4px; }
+      .controles-tom button { background:#303030; color:#fff; border:1px solid #555; border-radius:6px; padding:8px 14px; font-weight:bold; cursor:pointer; }
+      .controles-tom button:hover { background:#444; border-color:#00d2ff; }
+      .controles-tom button.tom-reset { background:#14532d; border-color:#267346; }
+      #tom-status { color:#bbb; font-size:12px; flex:1 1 220px; }
+    </style>
+
 </head>
 <body>
 
@@ -343,6 +353,14 @@
             <button id="botaoMic" class="btn-topo btn-mic" onclick="toggleMicrofone()" title="Ligar/desligar avaliador de áudio" aria-label="Ligar/desligar avaliador de áudio">🎙️</button>
         </div>
 
+        <div class="controles-tom" role="group" aria-label="Controles de tom da extensão Transpose">
+            <strong>🎵 TOM</strong>
+            <button type="button" onclick="controlarTomKaraoke('transposeDown')" title="Baixar um semitom">− 1 semitom</button>
+            <button type="button" onclick="controlarTomKaraoke('transposeUp')" title="Subir um semitom">+ 1 semitom</button>
+            <button type="button" class="tom-reset" onclick="controlarTomKaraoke('resetTranspose')" title="Voltar ao tom original">Tom original</button>
+            <span id="tom-status" role="status" aria-live="polite">Aguardando extensão Transpose…</span>
+        </div>
+
         <div class="canais-preferidos" id="container-chips-canais"></div>
 
         <div class="area-busca">
@@ -409,7 +427,7 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v2.31</span>
+        <span>v2.32</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
@@ -444,7 +462,7 @@
             <li>Permita pop-ups para abrir a tela da TV e a Central de Segurança.</li>
             <li>Permita acesso ao microfone se quiser usar o avaliador de ambiente.</li>
             <li>O celular precisa de conexão com a internet para buscar no YouTube, enviar pedidos/votos e sincronizar fotos.</li>
-            <li>A versão do sistema aparece discretamente no canto inferior direito do painel. Após esta atualização, deve mostrar <strong>v2.31</strong>.</li>
+            <li>A versão do sistema aparece discretamente no canto inferior direito do painel. Após esta atualização, deve mostrar <strong>v2.32</strong>.</li>
         </ul>
 
         <h3 id="manual-acesso">2. Acesso e perfis</h3>
@@ -2765,4 +2783,36 @@
         atualizarTelaFila(true); atualizarTelaHistorico(); atualizarTelaRanking();
     </script>
 </body>
+
+<script id="controle-remoto-tom">
+(() => {
+    const TRANSPOSE_EXTENSION_ID = 'niniidkpolaidjbphcocfaebfgochdia';
+    const allowedActions = new Set(['transposeDown', 'transposeUp', 'resetTranspose']);
+    window.controlarTomKaraoke = async (action) => {
+        const status = document.getElementById('tom-status');
+        if (!allowedActions.has(action)) return;
+        if (!globalThis.chrome?.runtime?.sendMessage) {
+            status.textContent = 'Abra este painel no Chrome com a extensão instalada.';
+            return;
+        }
+        status.textContent = 'Enviando comando à Transpose…';
+        try {
+            const response = await chrome.runtime.sendMessage(TRANSPOSE_EXTENSION_ID, {
+                type: 'karaoke-pitch-remote-v1',
+                action
+            });
+            if (response?.status !== 'ok') {
+                throw new Error(response?.message || 'A extensão não confirmou o comando.');
+            }
+            status.textContent = action === 'resetTranspose'
+                ? 'Tom original solicitado.'
+                : action === 'transposeUp' ? 'Tom aumentado em 1 semitom.' : 'Tom reduzido em 1 semitom.';
+        } catch (error) {
+            status.textContent = 'Transpose sem resposta. Confirme a extensão ativa e a música tocando.';
+            console.warn('Falha ao enviar comando de tom à extensão Transpose:', error);
+        }
+    };
+})();
+</script>
+
 </html>
