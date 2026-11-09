@@ -41,7 +41,7 @@
         .chip-canal .ordem-badge { background: rgba(0,0,0,0.5); padding: 1px 3px; border-radius: 6px; font-size: 8px; color: #ffeb3b; }
 
         .paineis { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
-        .painel { background: #1e1e1e; padding: 15px; border-radius: 8px; height: 450px; overflow-y: auto; position: relative;}
+        .painel { background: #1e1e1e; padding: 15px; border-radius: 8px; height: 450px; overflow-y: auto; overflow-x: hidden; position: relative; min-width: 0; box-sizing: border-box;}
         
         .item-resultado, .item-fila, .item-historico, .item-ranking { margin: 10px 0; padding: 12px; background: #333; border-radius: 5px; }
         .item-resultado { cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px; position: relative; } 
@@ -51,18 +51,21 @@
         .info-resultado { flex: 1; display: flex; flex-direction: column; }
         .info-resultado .titulo-video { font-size: 13px; font-weight: bold; line-height: 1.2; }
         .info-resultado .nome-canal { font-size: 11px; color: #00d2ff; margin-top: 4px; font-weight: bold; }
-        .duracao-video { display: inline-block; margin-top: 6px; color: #8ef0a4; font-size: 12px; font-weight: bold; }
-        .duracao-video.curta { color: #ffb74d; }
+        .duracao-video { display: block; margin-top: 5px; color: #ffd54f; font-size: 12px; font-weight: bold; }
+        .fila-resumo { margin: 0 0 10px; padding: 9px 10px; background: #14232c; border: 1px solid #245568; border-radius: 6px; color: #dff7ff; font-size: 13px; line-height: 1.45; }
+        .fila-resumo strong { color: #00d2ff; }
+        .fila-resumo.incompleto { border-color: #8a6d1f; background: #29230f; color: #ffe9a8; }
+        .aviso-busca-bloqueios { margin: 8px 0; padding: 8px; border-radius: 5px; background: #33220e; border: 1px solid #9b5d13; color: #ffd18a; font-size: 12px; }
         
-        .fila-resumo { margin: 0 0 8px; padding: 9px 11px; background: #101820; border: 1px solid #34495e; border-radius: 6px; color: #d7e8f5; font-size: 13px; line-height: 1.5; }
-        .fila-alerta { display: none; margin: 0 0 10px; padding: 10px 12px; border: 1px solid #ffc107; border-radius: 6px; background: #382a05; color: #ffe082; font-size: 13px; font-weight: bold; line-height: 1.45; }
-        .fila-alerta.excedida { border-color: #ff5252; background: #3a1111; color: #ffb3b3; }
-        .item-fila { border-left: 5px solid #e52d27; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-        .titulo-musica { flex: 1; min-width: 0; font-size: 14px; } .nome-cantor { color: #aaa; font-size: 12px; display: block; font-style: italic; }
-        .duracao-fila { color: #8ef0a4; font-size: 11px; display: block; margin-top: 4px; }
-        .botoes-acao { display: flex; gap: 3px; flex-wrap: wrap; justify-content: flex-end; } .btn-acao { background: transparent; border: none; cursor: pointer; font-size: 16px; padding: 5px; transition: 0.2s;} .btn-acao:hover { transform: scale(1.2); }
-        .btn-mover-posicao { color: #ffd54f; font-size: 13px; font-weight: bold; min-width: 32px; }
-        @media (max-width: 600px) { .fila-resumo, .fila-alerta { font-size: 12px; } .item-fila { align-items: flex-start; } }
+        .item-fila { border-left: 5px solid #e52d27; display: block; min-width: 0; overflow: hidden; box-sizing: border-box; }
+        .fila-dados { display: block; min-width: 0; width: 100%; }
+        .fila-titulo { font-size: 15px; line-height: 1.35; font-weight: bold; overflow-wrap: anywhere; word-break: normal; }
+        .titulo-musica { display: block; width: 100%; min-width: 0; font-size: 14px; line-height: 1.4; overflow-wrap: anywhere; box-sizing: border-box; }
+        .nome-cantor { color: #aaa; font-size: 12px; display: block; font-style: italic; margin-top: 5px; overflow-wrap: anywhere; }
+        .botoes-acao { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 7px; width: 100%; min-width: 0; margin-top: 10px; }
+        .btn-acao { flex: 0 0 36px; width: 36px; height: 34px; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; background: #444; color: #fff; border: 1px solid #555; border-radius: 5px; cursor: pointer; font-size: 16px; padding: 0; transition: 0.2s; }
+        .btn-acao:hover { transform: translateY(-1px); background: #555; border-color: #00d2ff; }
+        .btn-mover-posicao { flex: 0 0 auto; width: auto; padding: 0 9px; font-size: 12px; font-weight: bold; }
         
         .item-historico { border-left: 5px solid #28a745; color: #888; font-size: 14px; background: #222; }
         .item-ranking { border-left: 5px solid #ffeb3b; background: #222; font-size: 14px; display: flex; flex-direction: column; align-items: stretch; transition: 0.2s; }
@@ -176,6 +179,7 @@
             <button class="btn-aba" onclick="mudarAba('usuarios', this)">👥 Usuários</button>
             <button class="btn-aba" onclick="mudarAba('transicao', this)">⏳ Transição / Pausa</button>
             <button class="btn-aba" onclick="mudarAba('cantores', this)">🎤 Cantores recentes</button>
+            <button class="btn-aba" onclick="mudarAba('videos-bloqueados', this)">🚫 Vídeos com erro</button>
         </div>
         <div id="aba-canais" class="conteudo-aba ativo">
             <div style="max-height: 150px; overflow-y: auto;">
@@ -215,10 +219,11 @@
                 <button onclick="salvarTempoPausa()" style="width: 100%; padding: 8px; background: #007bff; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Salvar Tempo</button>
             </div>
             <div class="form-novo-canal">
-                <strong>Horário limite do karaokê:</strong>
-                <p style="color:#aaa; font-size:12px; margin:6px 0 8px;">O painel calcula a previsão usando o horário local do notebook e avisa se a fila estimada passar deste limite.</p>
-                <input type="time" id="input-horario-fechamento" value="22:00">
-                <button onclick="salvarHorarioFechamento()" style="width: 100%; padding: 8px; background: #b31217; color: #fff; border: 1px solid #ff5252; border-radius: 5px; font-weight: bold; cursor: pointer;">Salvar horário limite</button>
+                <strong>⏰ Horário limite para pedidos e votos:</strong>
+                <p style="color:#bbb;font-size:12px;line-height:1.45;margin:7px 0;">No horário definido, os celulares entram automaticamente na tela de bloqueio. O relógio usado é o deste computador.</p>
+                <input type="time" id="input-horario-limite" value="22:00" aria-label="Horário limite">
+                <button onclick="salvarHorarioLimite()" style="width: 100%; padding: 8px; background: #b31217; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Salvar horário limite</button>
+                <p id="status-horario-limite" style="margin:8px 0 0;color:#aaa;font-size:12px;"></p>
             </div>
         </div>
         <div id="aba-cantores" class="conteudo-aba">
@@ -234,6 +239,20 @@
                 </table>
             </div>
             <p id="mensagem-cantores-vazios" style="display:none; color:#777; text-align:center; font-size:13px;">A lista está vazia.</p>
+        </div>
+        <div id="aba-videos-bloqueados" class="conteudo-aba">
+            <p style="color:#bbb;font-size:13px;line-height:1.5;">Vídeos que falharam por indisponibilidade ou restrição de incorporação são ocultados das próximas buscas. Falhas de rede/player não entram nesta lista.</p>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:10px 0;">
+                <strong style="color:#ff8a80;">Vídeos marcados</strong>
+                <button onclick="limparVideosComFalha()" style="padding:7px 10px;background:#b31217;color:#fff;border:1px solid #ff5252;border-radius:5px;font-weight:bold;cursor:pointer;">🗑️ Limpar lista</button>
+            </div>
+            <div style="max-height:300px;overflow:auto;border:1px solid #333;border-radius:6px;background:#111;">
+                <table class="tabela-usuarios" style="margin:0;">
+                    <thead><tr><th>Vídeo / ID</th><th>Marcado em</th><th style="text-align:right;">Ação</th></tr></thead>
+                    <tbody id="tabela-videos-bloqueados"></tbody>
+                </table>
+            </div>
+            <p id="mensagem-videos-bloqueados-vazios" style="display:none;color:#777;text-align:center;font-size:13px;">Nenhum vídeo marcado com falha.</p>
         </div>
         <button onclick="fecharModalConfig()" style="width: 100%; margin-top: 15px; padding: 10px; background: #333; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Fechar</button>
     </div>
@@ -305,8 +324,7 @@
                         <button class="btn-limpar-painel" onclick="limparFila()">🗑️ Limpar</button>
                     </div>
                 </h3>
-                <div id="resumo-fila" class="fila-resumo" aria-live="polite">🎵 0 músicas na fila · duração confirmada: 0 min</div>
-                <div id="aviso-fechamento-fila" class="fila-alerta" role="alert" aria-live="assertive"></div>
+                <div id="resumo-fila" class="fila-resumo" aria-live="polite"></div>
                 <div id="fila"></div>
             </div>
             
@@ -552,8 +570,6 @@
         ];
 
         let tempoPausaSegundos = parseInt(localStorage.getItem('tempoPausaSegundos')) || 5;
-        let horarioFechamento = localStorage.getItem('horarioFechamento') || '22:00';
-        const duracoesVideoCache = lerJsonLocal('duracoesVideoCache', {});
         let cantoresSalvos = JSON.parse(localStorage.getItem('cantoresSalvos')) || [];
         let historicoPopUpPermanente = JSON.parse(localStorage.getItem('historicoPopUpPermanente')) || [];
 
@@ -792,8 +808,10 @@
             renderizarTabelaCanais();
             renderizarTabelaUsuarios();
             document.getElementById('input-tempo-pausa').value = tempoPausaSegundos;
-            document.getElementById('input-horario-fechamento').value = horarioFechamento;
+            document.getElementById('input-horario-limite').value = horarioLimiteVotacao;
+            atualizarTextoHorarioLimite();
             renderizarTabelaCantores();
+            renderizarVideosComFalha();
             document.getElementById('fundo-modal-config').style.display = 'block';
             document.getElementById('modal-config').style.display = 'block';
         }
@@ -810,16 +828,6 @@
             tempoPausaSegundos = val;
             localStorage.setItem('tempoPausaSegundos', tempoPausaSegundos);
             alert("Tempo de pausa salvo com sucesso!");
-            verificarAvisoFechamentoFila();
-        }
-
-        function salvarHorarioFechamento() {
-            const valor = document.getElementById('input-horario-fechamento').value;
-            if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(valor)) return alert('Informe um horário válido.');
-            horarioFechamento = valor;
-            localStorage.setItem('horarioFechamento', horarioFechamento);
-            verificarAvisoFechamentoFila();
-            alert(`Horário limite salvo: ${horarioFechamento}.`);
         }
 
         function renderizarTabelaCanais() {
@@ -1217,164 +1225,152 @@
             }
         }).catch(erro => console.warn('Backup da fila indisponível na inicialização; a fila local foi mantida:', erro));
         const API_KEY = 'AIzaSyALlAfsayUGb0Y7CJrfinrPUqE6_QbEyU4';
+        const caminhoVideosComFalha = 'configSistema/videosComFalha';
+        const caminhoHorarioLimite = 'configSistema/horarioLimiteVotacao';
+        let videosComFalha = {};
+        let horarioLimiteVotacao = localStorage.getItem('horarioLimiteVotacao') || '22:00';
+        let verificacaoHorarioEmAndamento = false;
+        const codigosErroVideoPermanente = new Set([2, 100, 101, 150]);
 
-        function converterDuracaoISO8601(valor) {
-            const correspondencia = String(valor || '').match(/^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?$/);
-            if (!correspondencia) return null;
-            const segundos = (Number(correspondencia[1] || 0) * 3600) + (Number(correspondencia[2] || 0) * 60) + Number(correspondencia[3] || 0);
-            return segundos > 0 ? Math.round(segundos) : null;
+        function horaLimiteValida(valor) {
+            return typeof valor === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(valor);
         }
 
-        function formatarDuracaoRelogio(segundos) {
-            if (!Number.isFinite(Number(segundos)) || Number(segundos) <= 0) return 'Duração indisponível';
-            const total = Math.round(Number(segundos));
-            const horas = Math.floor(total / 3600);
-            const minutos = Math.floor((total % 3600) / 60);
-            const resto = total % 60;
-            return horas > 0
-                ? `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(resto).padStart(2, '0')}`
-                : `${String(minutos).padStart(2, '0')}:${String(resto).padStart(2, '0')}`;
+        function atualizarTextoHorarioLimite() {
+            const status = document.getElementById('status-horario-limite');
+            const input = document.getElementById('input-horario-limite');
+            if (input && input.value !== horarioLimiteVotacao) input.value = horarioLimiteVotacao;
+            if (status) status.textContent = `Bloqueio automático programado para ${horarioLimiteVotacao} (horário local).`;
         }
 
-        function formatarDuracaoEmMinutos(segundos) {
-            const totalMinutos = Math.ceil(Math.max(0, Number(segundos) || 0) / 60);
-            if (totalMinutos < 60) return `${totalMinutos} min`;
-            return `${totalMinutos} min (${Math.floor(totalMinutos / 60)}h ${String(totalMinutos % 60).padStart(2, '0')}min)`;
+        function salvarHorarioLimite() {
+            const input = document.getElementById('input-horario-limite');
+            const valor = input ? input.value : '';
+            if (!horaLimiteValida(valor)) return alert('Escolha um horário válido.');
+            horarioLimiteVotacao = valor;
+            localStorage.setItem('horarioLimiteVotacao', valor);
+            atualizarTextoHorarioLimite();
+            database.ref(caminhoHorarioLimite).set(valor).then(() => {
+                verificarLimiteHorario();
+                alert(`Horário limite salvo: ${valor}. Os pedidos e votos serão bloqueados nesse horário.`);
+            }).catch(erro => {
+                console.error('Não foi possível sincronizar o horário limite:', erro);
+                alert('O horário foi salvo neste navegador, mas não sincronizou com a nuvem. Verifique a conexão.');
+            });
         }
 
-        function lerDuracaoItem(musica) {
-            if (!musica) return null;
-            const salva = Number(musica.duracaoSegundos);
-            if (Number.isFinite(salva) && salva > 0) return salva;
-            const cache = duracoesVideoCache[String(musica.videoId || '')];
-            return Number.isFinite(Number(cache)) && Number(cache) > 0 ? Number(cache) : null;
-        }
-
-        function salvarCacheDuracoes() {
-            try { localStorage.setItem('duracaoVideosCache', JSON.stringify(duracoesVideoCache)); }
-            catch (erro) { console.warn('Não foi possível salvar o cache das durações:', erro); }
-        }
-
-        async function consultarDuracoesYouTube(videoIds) {
-            const ids = [...new Set((videoIds || []).map(id => String(id || '')).filter(id => /^[A-Za-z0-9_-]{11}$/.test(id)))];
-            const faltantes = ids.filter(id => !Object.prototype.hasOwnProperty.call(duracoesVideoCache, id));
-            for (let inicio = 0; inicio < faltantes.length; inicio += 50) {
-                const lote = faltantes.slice(inicio, inicio + 50);
-                const url = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${encodeURIComponent(lote.join(','))}&key=${API_KEY}`;
-                const resposta = await fetch(url);
-                const dados = await resposta.json();
-                if (!resposta.ok || dados.error) throw new Error(dados.error?.message || `Erro HTTP ${resposta.status}`);
-                const encontrados = new Set();
-                (Array.isArray(dados.items) ? dados.items : []).forEach(video => {
-                    const segundos = converterDuracaoISO8601(video.contentDetails?.duration);
-                    duracoesVideoCache[video.id] = segundos;
-                    encontrados.add(video.id);
-                });
-                lote.forEach(id => { if (!encontrados.has(id)) duracoesVideoCache[id] = null; });
-            }
-            if (faltantes.length) salvarCacheDuracoes();
-            return duracoesVideoCache;
-        }
-
-        function calcularPrevisaoFila() {
+        function verificarLimiteHorario() {
+            if (!horaLimiteValida(horarioLimiteVotacao) || verificacaoHorarioEmAndamento) return;
             const agora = new Date();
-            let segundosPrevistos = 0;
-            let musicasSemDuracao = 0;
-            let quantidadeEmExecucao = 0;
-            const emTransicao = Boolean(musicaEmTransicao);
-            const faixaAtiva = musicaEmTransicao || musicaAtual;
-
-            if (faixaAtiva) {
-                quantidadeEmExecucao = 1;
-                if (emTransicao) segundosPrevistos += Math.max(0, segundosRestantesTransicao || 0);
-                let restanteAtiva = null;
-                if (!emTransicao && player && typeof player.getDuration === 'function' && typeof player.getCurrentTime === 'function') {
-                    try {
-                        const duracaoPlayer = Number(player.getDuration());
-                        const tempoPlayer = Number(player.getCurrentTime());
-                        if (duracaoPlayer > 0) restanteAtiva = Math.max(0, duracaoPlayer - (Number.isFinite(tempoPlayer) ? tempoPlayer : 0));
-                    } catch (erro) {}
+            const minutosAgora = agora.getHours() * 60 + agora.getMinutes();
+            const [horaCorte, minutoCorte] = horarioLimiteVotacao.split(':').map(Number);
+            if (minutosAgora < horaCorte * 60 + minutoCorte) return;
+            verificacaoHorarioEmAndamento = true;
+            const chaveDia = `bloqueioAutomaticoVotacao_${agora.getFullYear()}-${String(agora.getMonth()+1).padStart(2,'0')}-${String(agora.getDate()).padStart(2,'0')}`;
+            database.ref('configSistema/bloqueado').once('value').then(snapshot => {
+                const jaBloqueado = !!snapshot.val();
+                if (jaBloqueado) {
+                    localStorage.setItem(chaveDia, '1');
+                    return null;
                 }
-                if (restanteAtiva === null) restanteAtiva = lerDuracaoItem(faixaAtiva);
-                if (restanteAtiva === null) musicasSemDuracao++;
-                else segundosPrevistos += restanteAtiva;
+                return database.ref('configSistema/bloqueado').set(true).then(() => {
+                    if (localStorage.getItem(chaveDia) !== '1') {
+                        localStorage.setItem(chaveDia, '1');
+                        alert(`Horário limite atingido (${horarioLimiteVotacao}). Os pedidos e votos nos celulares foram bloqueados. A música que já está tocando não será interrompida.`);
+                    }
+                });
+            }).catch(erro => console.error('Falha ao aplicar o bloqueio automático do horário:', erro))
+              .finally(() => { verificacaoHorarioEmAndamento = false; });
+        }
+
+        database.ref(caminhoHorarioLimite).on('value', snapshot => {
+            const valor = snapshot.val();
+            if (horaLimiteValida(valor)) {
+                horarioLimiteVotacao = valor;
+                localStorage.setItem('horarioLimiteVotacao', valor);
             }
+            atualizarTextoHorarioLimite();
+            verificarLimiteHorario();
+        });
+        setInterval(verificarLimiteHorario, 15000);
 
-            let duracaoFilaConhecida = 0;
-            let semDuracaoNaFila = 0;
-            filaDeReproducao.forEach(musica => {
-                const duracao = lerDuracaoItem(musica);
-                if (duracao === null) {
-                    semDuracaoNaFila++;
-                    musicasSemDuracao++;
-                } else {
-                    duracaoFilaConhecida += duracao;
-                    segundosPrevistos += duracao;
-                }
-            });
+        function normalizarVideosComFalha(dado) {
+            if (!dado || typeof dado !== 'object' || Array.isArray(dado)) return {};
+            return Object.fromEntries(Object.entries(dado).filter(([id, info]) => /^[A-Za-z0-9_-]{11}$/.test(id) && info && typeof info === 'object'));
+        }
 
-            const musicasPrevistas = quantidadeEmExecucao + filaDeReproducao.length;
-            if (faixaAtiva || filaDeReproducao.length) {
-                segundosPrevistos += filaDeReproducao.length * Math.max(0, tempoPausaSegundos);
-                segundosPrevistos += Math.max(0, musicasPrevistas - 1) * 12;
-            }
+        videosComFalha = normalizarVideosComFalha(lerJsonLocal('videosComFalha', {}));
+        database.ref(caminhoVideosComFalha).on('value', snapshot => {
+            const local = normalizarVideosComFalha(lerJsonLocal('videosComFalha', {}));
+            const remoto = normalizarVideosComFalha(snapshot.val());
+            videosComFalha = snapshot.exists() ? remoto : local;
+            localStorage.setItem('videosComFalha', JSON.stringify(videosComFalha));
+            if (!snapshot.exists() && Object.keys(local).length) database.ref(caminhoVideosComFalha).set(local).catch(() => {});
+            renderizarVideosComFalha();
+        });
 
-            const fimPrevisto = new Date(agora.getTime() + segundosPrevistos * 1000);
-            const [horaLimite, minutoLimite] = (horarioFechamento || '22:00').split(':').map(Number);
-            const limiteHoje = new Date(agora);
-            limiteHoje.setHours(Number.isFinite(horaLimite) ? horaLimite : 22, Number.isFinite(minutoLimite) ? minutoLimite : 0, 0, 0);
+        function formatarDuracao(segundos) {
+            const total = Number(segundos);
+            if (!Number.isFinite(total) || total <= 0) return 'Duração não obtida';
+            const t = Math.floor(total), h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), s = t % 60;
+            return h ? `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}` : `${m}:${String(s).padStart(2,'0')}`;
+        }
 
-            return {
-                agora,
-                fimPrevisto,
-                limiteHoje,
-                excedeLimite: musicasPrevistas > 0 && fimPrevisto.getTime() > limiteHoje.getTime(),
-                musicasPrevistas,
-                musicasSemDuracao,
-                semDuracaoNaFila,
-                duracaoFilaConhecida
+        function duracaoIsoParaSegundos(iso) {
+            const match = /^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/.exec(iso || '');
+            return match ? (Number(match[1]||0)*3600 + Number(match[2]||0)*60 + Number(match[3]||0)) : null;
+        }
+
+        async function obterDuracoesVideos(ids) {
+            const unicos = [...new Set((ids || []).filter(id => /^[A-Za-z0-9_-]{11}$/.test(id)))];
+            if (!unicos.length) return {};
+            const url = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${unicos.join(',')}&key=${API_KEY}`;
+            const resposta = await fetch(url);
+            const dados = await resposta.json();
+            if (!resposta.ok || dados.error) throw new Error(dados.error?.message || `Erro HTTP ${resposta.status}`);
+            const mapa = {};
+            (dados.items || []).forEach(video => { mapa[video.id] = duracaoIsoParaSegundos(video.contentDetails?.duration); });
+            return mapa;
+        }
+
+        function renderizarVideosComFalha() {
+            const tbody = document.getElementById('tabela-videos-bloqueados');
+            const vazio = document.getElementById('mensagem-videos-bloqueados-vazios');
+            if (!tbody) return;
+            const lista = Object.entries(videosComFalha).sort((a,b) => (b[1].timestamp||0)-(a[1].timestamp||0));
+            tbody.innerHTML = lista.map(([id, item]) => {
+                const data = item.timestamp ? new Date(item.timestamp).toLocaleString('pt-BR') : '—';
+                return `<tr><td><strong>${escaparTextoFila(item.titulo || 'Vídeo sem título')}</strong><br><small style="color:#aaa;">${escaparTextoFila(item.canal || 'Canal não identificado')} · ${id}</small></td><td>${data}</td><td style="text-align:right;"><button onclick="liberarVideoComFalha('${id}')" style="background:transparent;border:0;color:#65d982;cursor:pointer;font-weight:bold;">Liberar</button></td></tr>`;
+            }).join('');
+            if (vazio) vazio.style.display = lista.length ? 'none' : 'block';
+        }
+
+        function liberarVideoComFalha(videoId) {
+            if (!videosComFalha[videoId] || !confirm(`Liberar este vídeo para voltar a aparecer nas buscas?\n${videosComFalha[videoId].titulo || videoId}`)) return;
+            database.ref(caminhoVideosComFalha).child(videoId).remove().catch(erro => alert('Não foi possível sincronizar a liberação. Verifique a conexão.'));
+        }
+
+        function limparVideosComFalha() {
+            if (!Object.keys(videosComFalha).length) return alert('A lista de vídeos com erro já está vazia.');
+            if (!confirm('Apagar a lista inteira e permitir que esses vídeos voltem às buscas?')) return;
+            database.ref(caminhoVideosComFalha).remove().catch(erro => alert('Não foi possível limpar a lista na nuvem. Verifique a conexão.'));
+        }
+
+        function registrarVideoComFalha(musica, evento) {
+            const codigo = Number(evento?.data);
+            if (!musica?.videoId || !codigosErroVideoPermanente.has(codigo)) return;
+            const videoId = String(musica.videoId);
+            if (!/^[A-Za-z0-9_-]{11}$/.test(videoId)) return;
+            const info = {
+                titulo: String(musica.titulo || 'Vídeo sem título'),
+                canal: String(musica.canal || 'Canal não identificado'),
+                codigoErro: codigo,
+                timestamp: Date.now()
             };
-        }
-
-        function formatarHoraLocal(data) {
-            return `${String(data.getHours()).padStart(2, '0')}:${String(data.getMinutes()).padStart(2, '0')}`;
-        }
-
-        function renderizarResumoFila() {
-            const resumo = document.getElementById('resumo-fila');
-            const aviso = document.getElementById('aviso-fechamento-fila');
-            if (!resumo || !aviso) return;
-
-            const quantidade = filaDeReproducao.length;
-            let segundosConhecidos = 0;
-            let semDuracao = 0;
-            filaDeReproducao.forEach(musica => {
-                const duracao = lerDuracaoItem(musica);
-                if (duracao === null) semDuracao++;
-                else segundosConhecidos += duracao;
-            });
-            const rotuloMusicas = quantidade === 1 ? 'música' : 'músicas';
-            resumo.textContent = `🎵 ${quantidade} ${rotuloMusicas} na fila · duração confirmada: ${formatarDuracaoEmMinutos(segundosConhecidos)}${semDuracao ? ` · ${semDuracao} ${semDuracao === 1 ? 'sem duração' : 'sem duração'}` : ''}`;
-
-            const previsao = calcularPrevisaoFila();
-            aviso.className = 'fila-alerta';
-            aviso.style.display = 'none';
-            let mensagem = '';
-            if (previsao.excedeLimite) {
-                aviso.classList.add('excedida');
-                mensagem = `⚠️ A previsão da fila termina às ${formatarHoraLocal(previsao.fimPrevisto)}, depois do limite de ${horarioFechamento}. O cálculo usa o horário atual do notebook, as durações conhecidas e as pausas configuradas.${previsao.musicasSemDuracao ? ` Atenção: ${previsao.musicasSemDuracao} música(s) ainda sem duração; o horário real pode ser mais tarde.` : ''}`;
-            } else if (previsao.musicasSemDuracao > 0 && previsao.musicasPrevistas > 0) {
-                mensagem = `⏳ Não dá para garantir que a programação termine até ${horarioFechamento}: ${previsao.musicasSemDuracao} música(s) ainda está(ão) sem duração confirmada. A previsão parcial é ${formatarHoraLocal(previsao.fimPrevisto)}.`;
-            }
-            if (mensagem) {
-                aviso.textContent = mensagem;
-                aviso.style.display = 'block';
-            }
-            avisoFechamentoAtivo = previsao.excedeLimite;
-        }
-
-        function verificarAvisoFechamentoFila() {
-            renderizarResumoFila();
+            videosComFalha[videoId] = info;
+            localStorage.setItem('videosComFalha', JSON.stringify(videosComFalha));
+            renderizarVideosComFalha();
+            database.ref(caminhoVideosComFalha).child(videoId).set(info).catch(erro => console.warn('O vídeo ficou marcado neste navegador, mas não sincronizou com a nuvem:', erro));
         }
 
         function toggleBloqueioSistema() {
@@ -1550,10 +1546,6 @@
         let musicaPendente = null; 
 
         let player; let telaTV; let monitorTV; let musicaAtual = null; let timerNota;
-        let musicaEmTransicao = null;
-        let segundosRestantesTransicao = 0;
-        let consultaDuracaoFilaAtiva = false;
-        let avisoFechamentoAtivo = false;
         let musicaFalhaPendente = null;
         let transicaoFilaTimer = null;
         let timerOperacaoFila = null;
@@ -1690,9 +1682,8 @@
             `;
         }
 
-        function abrirModalCantor(videoId, titulo, duracaoSegundos = null) {
-            const segundos = Number(duracaoSegundos);
-            musicaPendente = { videoId, titulo, duracaoSegundos: Number.isFinite(segundos) && segundos > 0 ? segundos : null };
+        function abrirModalCantor(videoId, titulo, canal = '', duracaoSegundos = null) {
+            musicaPendente = { videoId, titulo, canal, duracaoSegundos };
             const inputCantor = document.getElementById('input-nome-cantor');
             if(inputCantor) inputCantor.value = '';
             renderizarCantoresSalvos();
@@ -1712,8 +1703,7 @@
             if (cantor === "") cantor = "Convidados";
             salvarCantorAutomaticamente(cantor);
             if (musicaPendente) {
-                const duracaoSegundos = musicaPendente.duracaoSegundos || lerDuracaoItem(musicaPendente);
-                let nova = novaMusicaNaFila({ videoId: musicaPendente.videoId, titulo: musicaPendente.titulo, cantor: cantor, duracaoSegundos });
+                let nova = novaMusicaNaFila({ videoId: musicaPendente.videoId, titulo: musicaPendente.titulo, cantor: cantor, canal: musicaPendente.canal || '', duracaoSegundos: musicaPendente.duracaoSegundos || null });
                 if (noTopo) {
                     filaDeReproducao.unshift(nova);
                 } else {
@@ -1956,6 +1946,7 @@
             const falhou = musicaAtual;
             if (!falhou || erroTratadoDaFilaId === falhou.filaId) return;
             erroTratadoDaFilaId = falhou.filaId;
+            registrarVideoComFalha(falhou, evento);
             erroNoPlayer = true;
             captando = false;
             clearTimeout(timerNota);
@@ -2002,8 +1993,12 @@
             return String(valor ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         }
 
-        function selecionarVideoSubstituto(videoId, duracaoSegundos = null) {
+        function selecionarVideoSubstituto(videoId, canal = '', duracaoSegundos = null) {
             if (!musicaFalhaPendente || !videoId) return false;
+            if (videosComFalha[videoId]) {
+                alert('Este vídeo já foi marcado por falha e não será usado como substituto. Escolha outro resultado.');
+                return false;
+            }
             const indice = filaDeReproducao.findIndex(item => item.filaId === musicaFalhaPendente.filaId);
             if (indice < 0) {
                 alert('A música pendente não está mais na fila. A fila foi mantida sem alterações.');
@@ -2013,8 +2008,8 @@
 
             const [faixa] = filaDeReproducao.splice(indice, 1);
             faixa.videoId = videoId;
-            const segundosSubstituto = Number(duracaoSegundos);
-            faixa.duracaoSegundos = Number.isFinite(segundosSubstituto) && segundosSubstituto > 0 ? segundosSubstituto : null;
+            faixa.canal = canal || faixa.canal || '';
+            faixa.duracaoSegundos = duracaoSegundos || faixa.duracaoSegundos || null;
             // Mantém o título original pedido e o cantor original; substitui somente o vídeo.
             filaDeReproducao.unshift(faixa);
             musicaFalhaPendente = null;
@@ -2204,8 +2199,12 @@
             div.innerHTML = '';
             const videoId = extrairVideoId(termoOriginal);
             if (videoId) {
+                if (videosComFalha[videoId]) {
+                    div.innerHTML = `<p style="color:#ff8a80;font-weight:bold;">🚫 Este vídeo está marcado como indisponível/erro (${escaparTextoFila(videosComFalha[videoId].titulo || videoId)}). Escolha outro vídeo.</p>`;
+                    return;
+                }
                 if (musicaFalhaPendente) {
-                    selecionarVideoSubstituto(videoId, duracoesVideoCache[videoId]);
+                    selecionarVideoSubstituto(videoId);
                     return;
                 }
                 abrirModalCantor(videoId, "Música via Link");
@@ -2223,13 +2222,17 @@
                     div.innerHTML = '<p style="color:#e52d27">Nenhum vídeo encontrado. Tente outro termo.</p>';
                     return;
                 }
-                try {
-                    await consultarDuracoesYouTube(itens.map(item => item.id?.videoId));
-                } catch (erroDuracao) {
-                    console.warn('Não foi possível consultar as durações dos resultados:', erroDuracao);
+                const itensDisponiveis = itens.filter(v => !videosComFalha[v.id.videoId]);
+                const totalOcultados = itens.length - itensDisponiveis.length;
+                if (!itensDisponiveis.length) {
+                    div.innerHTML = `<div class="aviso-busca-bloqueios">🚫 Todos os ${itens.length} resultados desta busca já foram marcados por falha. Tente outro termo ou libere um vídeo em Configurações → Vídeos com erro.</div>`;
+                    return;
                 }
-
-                let itensOrdenados = [...itens].sort((a, b) => {
+                if (totalOcultados) div.innerHTML = `<div class="aviso-busca-bloqueios">🚫 ${totalOcultados} vídeo(s) marcado(s) por falha foram ocultados desta busca.</div>`;
+                let mapaDuracoes = {};
+                try { mapaDuracoes = await obterDuracoesVideos(itensDisponiveis.map(v => v.id.videoId)); }
+                catch (erroDuracao) { console.warn('Durações dos vídeos indisponíveis:', erroDuracao); }
+                let itensOrdenados = [...itensDisponiveis].sort((a, b) => {
                     let tituloA = a.snippet.title.toLowerCase(); let canalA = a.snippet.channelTitle.toLowerCase();
                     let indexA = canaisFavoritos.findIndex(c => tituloA.includes(c.toLowerCase()) || canalA.includes(c.toLowerCase()));
                     let tituloB = b.snippet.title.toLowerCase(); let canalB = b.snippet.channelTitle.toLowerCase();
@@ -2243,17 +2246,15 @@
                 itensOrdenados.forEach(v => {
                     const thumbnail = v.snippet.thumbnails.default.url;
                     const tituloVid = v.snippet.title; const nomeCanalVid = v.snippet.channelTitle;
-                    const d = document.createElement('div'); 
-                    d.className = 'item-resultado'; 
-                    const duracaoSegundos = lerDuracaoItem({ videoId: v.id.videoId });
-                    const textoDuracao = duracaoSegundos === null ? '⏱ Duração indisponível' : `⏱ Duração: ${formatarDuracaoRelogio(duracaoSegundos)}`;
-                    const avisoCurta = duracaoSegundos !== null && duracaoSegundos < 120 ? ' · ⚠️ vídeo curto' : '';
-                    d.innerHTML = `<img src="${thumbnail}" alt="Thumb"><div class="info-resultado"><span class="titulo-video">${tituloVid}</span><span class="nome-canal">${nomeCanalVid}</span><span class="duracao-video${duracaoSegundos !== null && duracaoSegundos < 120 ? ' curta' : ''}">${textoDuracao}${avisoCurta}</span></div>`;
+                    const duracaoSegundos = mapaDuracoes[v.id.videoId] || null;
+                    const d = document.createElement('div');
+                    d.className = 'item-resultado';
+                    d.innerHTML = `<img src="${thumbnail}" alt="Thumb"><div class="info-resultado"><span class="titulo-video">${tituloVid}</span><span class="nome-canal">${nomeCanalVid}</span><span class="duracao-video">⏱️ Duração: ${formatarDuracao(duracaoSegundos)}</span></div>`;
                     d.onclick = () => {
                         if (musicaFalhaPendente) {
-                            selecionarVideoSubstituto(v.id.videoId, duracaoSegundos);
+                            selecionarVideoSubstituto(v.id.videoId, nomeCanalVid, duracaoSegundos);
                         } else {
-                            abrirModalCantor(v.id.videoId, v.snippet.title, duracaoSegundos);
+                            abrirModalCantor(v.id.videoId, v.snippet.title, nomeCanalVid, duracaoSegundos);
                         }
                     };
                     div.appendChild(d);
@@ -2276,19 +2277,20 @@
             atualizarTelaFila();
         }
 
-        function moverMusicaParaPosicao(i) {
-            if (!Number.isInteger(i) || i < 0 || i >= filaDeReproducao.length) return;
-            const resposta = prompt(`Informe a posição desejada (1 a ${filaDeReproducao.length}):`, String(i + 1));
-            if (resposta === null) return;
-            const posicao = Number.parseInt(resposta, 10);
-            if (!Number.isInteger(posicao) || posicao < 1 || posicao > filaDeReproducao.length) {
-                alert(`Digite uma posição entre 1 e ${filaDeReproducao.length}.`);
+        function moverMusicaParaPosicao(indice, posicao) {
+            const destino = Number.parseInt(posicao, 10) - 1;
+            if (!Number.isInteger(indice) || indice < 0 || indice >= filaDeReproducao.length || !Number.isInteger(destino) || destino < 0 || destino >= filaDeReproducao.length) {
+                alert(`Informe uma posição entre 1 e ${filaDeReproducao.length}.`);
                 return;
             }
-            if (posicao === i + 1) return;
-            const [musica] = filaDeReproducao.splice(i, 1);
-            filaDeReproducao.splice(posicao - 1, 0, musica);
+            const [musica] = filaDeReproducao.splice(indice, 1);
+            filaDeReproducao.splice(destino, 0, musica);
             atualizarTelaFila();
+        }
+
+        function pedirPosicaoMusica(indice) {
+            const resposta = prompt(`Mover “${filaDeReproducao[indice]?.titulo || 'música'}” para qual posição? (1 a ${filaDeReproducao.length})`, String(indice + 1));
+            if (resposta !== null) moverMusicaParaPosicao(indice, resposta);
         }
 
         function editarCantorFila(i) {
@@ -2331,8 +2333,6 @@
         }
 
         async function executarInicioMusica(m) {
-            musicaEmTransicao = null;
-            segundosRestantesTransicao = 0;
             salvarFaixaEmReproducao(m);
             clearTimeout(timerNota);
             notaJaGeradaNestaMusica = false;
@@ -2371,8 +2371,6 @@
 
         function iniciarMusica(m) {
             if (!m) return;
-            musicaEmTransicao = m;
-            segundosRestantesTransicao = Math.max(0, tempoPausaSegundos);
             if (transicaoFilaTimer) {
                 clearInterval(transicaoFilaTimer);
                 transicaoFilaTimer = null;
@@ -2394,8 +2392,6 @@
 
                 transicaoFilaTimer = setInterval(() => {
                     tempoRestante--;
-                    segundosRestantesTransicao = Math.max(0, tempoRestante);
-                    renderizarResumoFila();
                     if (tempoRestante > 0) contadorEl.innerText = tempoRestante;
                     else {
                         clearInterval(transicaoFilaTimer);
@@ -2468,36 +2464,23 @@
             if(!divFila) return;
             divFila.innerHTML = filaDeReproducao.map((item, i) => `
                 <div class="item-fila">
-                    <span class="titulo-musica"><strong>${i+1}º</strong> - ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span><span class="duracao-fila">⏱ ${formatarDuracaoRelogio(lerDuracaoItem(item))}</span></span>
+                    <div class="fila-dados">
+                        <div class="fila-titulo">${i+1}º — ${escaparTextoFila(item.titulo)}</div>
+                        <span class="nome-cantor">🎤 Voz: ${escaparTextoFila(item.cantor)}</span>
+                        <span class="duracao-video">⏱️ Duração: ${formatarDuracao(item.duracaoSegundos)}</span>
+                    </div>
                     <div class="botoes-acao">
-                        <button class="btn-acao" onclick="editarCantorFila(${i})" title="Editar Cantor">✏️</button>
-                        <button class="btn-acao btn-mover-posicao" onclick="moverMusicaParaPosicao(${i})" title="Mover para posição escolhida">Pos.</button>
-                        <button class="btn-acao" onclick="tocarMusicaEspecifica(${i})" title="Tocar Agora">▶️</button>
-                        ${i > 0 ? `<button class="btn-acao" onclick="moverMusica(${i}, -1)" title="Subir">⬆️</button>` : ''}
-                        ${i < filaDeReproducao.length - 1 ? `<button class="btn-acao" onclick="moverMusica(${i}, 1)" title="Descer">⬇️</button>` : ''}
-                        <button class="btn-acao" onclick="removerMusica(${i})" title="Remover">❌</button>
+                        <button class="btn-acao" onclick="editarCantorFila(${i})" title="Editar cantor" aria-label="Editar cantor">✏️</button>
+                        <button class="btn-acao" onclick="tocarMusicaEspecifica(${i})" title="Tocar agora" aria-label="Tocar agora">▶️</button>
+                        <button class="btn-acao btn-mover-posicao" onclick="pedirPosicaoMusica(${i})" title="Mover para uma posição escolhida">↕ Posição</button>
+                        ${i > 0 ? `<button class="btn-acao" onclick="moverMusica(${i}, -1)" title="Subir" aria-label="Subir">⬆️</button>` : ''}
+                        ${i < filaDeReproducao.length - 1 ? `<button class="btn-acao" onclick="moverMusica(${i}, 1)" title="Descer" aria-label="Descer">⬇️</button>` : ''}
+                        <button class="btn-acao" onclick="removerMusica(${i})" title="Remover" aria-label="Remover">❌</button>
                     </div>
                 </div>
             `).join('');
-            renderizarResumoFila();
-            const idsSemDuracao = filaDeReproducao
-                .filter(item => lerDuracaoItem(item) === null && /^[A-Za-z0-9_-]{11}$/.test(String(item.videoId || '')) && !Object.prototype.hasOwnProperty.call(duracoesVideoCache, String(item.videoId)))
-                .map(item => String(item.videoId));
-            if (idsSemDuracao.length && !consultaDuracaoFilaAtiva) {
-                consultaDuracaoFilaAtiva = true;
-                consultarDuracoesYouTube(idsSemDuracao).then(cache => {
-                    filaDeReproducao.forEach(item => {
-                        const duracao = Number(cache[String(item.videoId || '')]);
-                        if (Number.isFinite(duracao) && duracao > 0) item.duracaoSegundos = duracao;
-                    });
-                    consultaDuracaoFilaAtiva = false;
-                    atualizarTelaFila(false);
-                }).catch(erro => {
-                    consultaDuracaoFilaAtiva = false;
-                    console.warn('Não foi possível consultar algumas durações da fila:', erro);
-                    renderizarResumoFila();
-                });
-            }
+            atualizarResumoFila();
+            buscarDuracoesPendentesFila();
             
             if (telaTV && !telaTV.closed) {
                 let proxOverlay = telaTV.document.getElementById('proximo-overlay');
@@ -2518,6 +2501,42 @@
             }
             
             atualizarPopUpFila();
+        }
+
+        function atualizarResumoFila() {
+            const el = document.getElementById('resumo-fila');
+            if (!el) return;
+            const total = filaDeReproducao.length;
+            const duracoes = filaDeReproducao.map(m => Number(m.duracaoSegundos)).filter(s => Number.isFinite(s) && s > 0);
+            const soma = duracoes.reduce((a,b) => a+b, 0);
+            const ausentes = total - duracoes.length;
+            el.classList.toggle('incompleto', ausentes > 0);
+            el.innerHTML = `<strong>${total}</strong> ${total === 1 ? 'música' : 'músicas'} na fila · <strong>${formatarDuracao(soma)}</strong> de duração estimada${ausentes ? `<br>⚠️ Duração não obtida para ${ausentes} ${ausentes === 1 ? 'música' : 'músicas'}; o total está incompleto.` : ''}`;
+        }
+
+        const idsComDuracaoEmConsulta = new Set();
+        async function buscarDuracoesPendentesFila() {
+            const faltantes = [...new Set(filaDeReproducao.filter(m => !Number(m.duracaoSegundos) && /^[A-Za-z0-9_-]{11}$/.test(m.videoId) && !idsComDuracaoEmConsulta.has(m.videoId)).map(m => m.videoId))];
+            if (!faltantes.length) return;
+            faltantes.forEach(id => idsComDuracaoEmConsulta.add(id));
+            try {
+                const mapa = await obterDuracoesVideos(faltantes);
+                let mudou = false;
+                filaDeReproducao.forEach(m => {
+                    if (mapa[m.videoId] && !Number(m.duracaoSegundos)) { m.duracaoSegundos = mapa[m.videoId]; mudou = true; }
+                });
+                if (mudou) {
+                    persistirFilaLocal();
+                    database.ref('backupFila').set(filaDeReproducao).catch(erro => console.warn('Não foi possível salvar as durações da fila:', erro));
+                    const filaEl = document.getElementById('fila');
+                    if (filaEl) {
+                        filaEl.innerHTML = '';
+                        atualizarTelaFila(true);
+                    }
+                }
+            } catch (erro) {
+                console.warn('Não foi possível obter algumas durações da fila:', erro);
+            }
         }
 
         function atualizarTelaHistorico() { 
@@ -2658,8 +2677,6 @@
         }
 
         atualizarTelaFila(true); atualizarTelaHistorico(); atualizarTelaRanking();
-        setInterval(verificarAvisoFechamentoFila, 30000);
-        verificarAvisoFechamentoFila();
     </script>
 </body>
 </html>
