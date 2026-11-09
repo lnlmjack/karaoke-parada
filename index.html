@@ -32,14 +32,6 @@
         .btn-mic:hover { filter: brightness(1.2); }
         .area-botoes-topo .btn-mic { flex: 0 0 44px; width: 44px; min-width: 44px; height: 44px; padding: 0; border-radius: 50%; font-size: 18px; }
 
-        .controle-tom { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 15px; padding: 10px 12px; background: #1d1d1d; border: 1px solid #444; border-radius: 8px; }
-        .controle-tom strong { color: #ffd54f; margin-right: 4px; }
-        .controle-tom button { padding: 8px 14px; border: 1px solid #555; border-radius: 6px; color: #fff; background: #333; font-weight: bold; cursor: pointer; }
-        .controle-tom button:hover { background: #444; border-color: #00d2ff; }
-        #status-controle-tom { color: #bbb; font-size: 13px; margin-left: 4px; }
-        #status-controle-tom.ok { color: #65d982; } #status-controle-tom.erro { color: #ff7777; }
-        @media (max-width: 600px) { .controle-tom { gap: 6px; } .controle-tom button { padding: 8px 10px; } #status-controle-tom { flex-basis: 100%; margin: 2px 0 0; } }
-
         .area-busca { display: flex; gap: 10px; margin-bottom: 15px; }
         input { flex: 1; padding: 12px; border-radius: 5px; border: none; font-size: 16px; }
         .btn-buscar { padding: 12px 25px; background: #e52d27; color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer;}
@@ -59,6 +51,7 @@
         .info-resultado { flex: 1; display: flex; flex-direction: column; }
         .info-resultado .titulo-video { font-size: 13px; font-weight: bold; line-height: 1.2; }
         .info-resultado .nome-canal { font-size: 11px; color: #00d2ff; margin-top: 4px; font-weight: bold; }
+        .info-resultado .duracao-video { font-size: 11px; color: #ffd54f; margin-top: 4px; font-weight: bold; }
         
         .item-fila { border-left: 5px solid #e52d27; display: flex; justify-content: space-between; align-items: center; }
         .titulo-musica { flex: 1; font-size: 14px; } .nome-cantor { color: #aaa; font-size: 12px; display: block; font-style: italic; }
@@ -270,14 +263,6 @@
             <button id="botaoMic" class="btn-topo btn-mic" onclick="toggleMicrofone()" title="Ligar/desligar avaliador de áudio" aria-label="Ligar/desligar avaliador de áudio">🎙️</button>
         </div>
 
-        <div class="controle-tom" aria-label="Controle de tom da música">
-            <strong>🎼 Tom:</strong>
-            <button type="button" onclick="controlarTomTranspose('transposeDown')" title="Diminuir um semitom">−1 semitom</button>
-            <button type="button" onclick="controlarTomTranspose('transposeUp')" title="Aumentar um semitom">+1 semitom</button>
-            <button type="button" onclick="controlarTomTranspose('resetTranspose')" title="Voltar ao tom original">Tom original</button>
-            <span id="status-controle-tom" role="status" aria-live="polite">Aguardando conexão com a extensão Transpose.</span>
-        </div>
-
         <div class="canais-preferidos" id="container-chips-canais"></div>
 
         <div class="area-busca">
@@ -307,6 +292,7 @@
                         <button class="btn-limpar-painel" onclick="limparFila()">🗑️ Limpar</button>
                     </div>
                 </h3>
+                <div id="resumo-fila" style="margin: 8px 0 10px; padding: 8px 10px; background:#111; border:1px solid #333; border-radius:6px; color:#ddd; font-size:13px;">0 músicas na fila · 0 min estimados</div>
                 <div id="fila"></div>
             </div>
             
@@ -1232,34 +1218,6 @@
         function abrirManual() { document.getElementById('fundo-modal-manual').style.display = 'block'; document.getElementById('modal-manual-conteudo').style.display = 'block'; }
         function fecharManual() { document.getElementById('fundo-modal-manual').style.display = 'none'; document.getElementById('modal-manual-conteudo').style.display = 'none'; }
 
-        const ID_EXTENSAO_TRANSPOSE = 'niniidkpolaidjbphcocfaebfgochdia';
-        async function controlarTomTranspose(action) {
-            const status = document.getElementById('status-controle-tom');
-            const mensagens = {
-                transposeDown: 'Aplicando −1 semitom…',
-                transposeUp: 'Aplicando +1 semitom…',
-                resetTranspose: 'Voltando ao tom original…'
-            };
-            if (!['transposeDown', 'transposeUp', 'resetTranspose'].includes(action)) return;
-            status.className = '';
-            status.textContent = mensagens[action];
-            try {
-                if (!globalThis.chrome?.runtime?.sendMessage) throw new Error('Abra o painel pelo endereço oficial do sistema no Chrome.');
-                const resposta = await chrome.runtime.sendMessage(ID_EXTENSAO_TRANSPOSE, {
-                    type: 'karaoke-pitch-remote-v1', action
-                });
-                if (resposta?.status === 'ok' || resposta?.status === 'success') {
-                    status.className = 'ok';
-                    status.textContent = action === 'resetTranspose' ? 'Tom original restaurado.' : 'Ajuste de tom aplicado.';
-                } else {
-                    throw new Error(resposta?.message || 'A extensão não confirmou o ajuste. Abra o player do Transpose e tente novamente.');
-                }
-            } catch (erro) {
-                status.className = 'erro';
-                status.textContent = erro?.message || 'Transpose sem resposta. Confirme se a extensão corrigida está ativa.';
-            }
-        }
-
         function iniciarSistema() {
             const som = document.getElementById('audio-tambores');
             som.volume = 0.5; som.muted = true;
@@ -1542,8 +1500,8 @@
             `;
         }
 
-        function abrirModalCantor(videoId, titulo) {
-            musicaPendente = { videoId, titulo };
+        function abrirModalCantor(videoId, titulo, duracaoSegundos = null) {
+            musicaPendente = { videoId, titulo, duracaoSegundos };
             const inputCantor = document.getElementById('input-nome-cantor');
             if(inputCantor) inputCantor.value = '';
             renderizarCantoresSalvos();
@@ -1563,7 +1521,7 @@
             if (cantor === "") cantor = "Convidados";
             salvarCantorAutomaticamente(cantor);
             if (musicaPendente) {
-                let nova = novaMusicaNaFila({ videoId: musicaPendente.videoId, titulo: musicaPendente.titulo, cantor: cantor });
+                let nova = novaMusicaNaFila({ videoId: musicaPendente.videoId, titulo: musicaPendente.titulo, cantor: cantor, duracaoSegundos: musicaPendente.duracaoSegundos });
                 if (noTopo) {
                     filaDeReproducao.unshift(nova);
                 } else {
@@ -1852,7 +1810,7 @@
             return String(valor ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         }
 
-        function selecionarVideoSubstituto(videoId) {
+        function selecionarVideoSubstituto(videoId, duracaoSegundos = null) {
             if (!musicaFalhaPendente || !videoId) return false;
             const indice = filaDeReproducao.findIndex(item => item.filaId === musicaFalhaPendente.filaId);
             if (indice < 0) {
@@ -1863,6 +1821,8 @@
 
             const [faixa] = filaDeReproducao.splice(indice, 1);
             faixa.videoId = videoId;
+            if (Number.isFinite(Number(duracaoSegundos))) faixa.duracaoSegundos = Number(duracaoSegundos);
+            else { delete faixa.duracaoSegundos; delete faixa.duracaoConsultada; }
             // Mantém o título original pedido e o cantor original; substitui somente o vídeo.
             filaDeReproducao.unshift(faixa);
             musicaFalhaPendente = null;
@@ -2045,6 +2005,72 @@
             return match ? match[1] : null;
         }
 
+        function converterDuracaoYouTube(iso) {
+            const partes = String(iso || '').match(/^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/);
+            if (!partes) return null;
+            return (Number(partes[1] || 0) * 3600) + (Number(partes[2] || 0) * 60) + Number(partes[3] || 0);
+        }
+
+        function formatarDuracao(segundos) {
+            if (!Number.isFinite(Number(segundos)) || Number(segundos) < 0) return 'Indisponível';
+            const total = Math.floor(Number(segundos));
+            const horas = Math.floor(total / 3600);
+            const minutos = Math.floor((total % 3600) / 60);
+            const resto = total % 60;
+            return horas > 0
+                ? `${horas}:${String(minutos).padStart(2, '0')}:${String(resto).padStart(2, '0')}`
+                : `${minutos}:${String(resto).padStart(2, '0')}`;
+        }
+
+        async function buscarDuracoesVideos(videoIds) {
+            const ids = [...new Set((videoIds || []).filter(Boolean))];
+            if (!ids.length) return new Map();
+            const url = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${encodeURIComponent(ids.join(','))}&key=${API_KEY}`;
+            const resposta = await fetch(url);
+            const dados = await resposta.json();
+            if (!resposta.ok || dados.error) throw new Error(dados.error?.message || `Erro HTTP ${resposta.status}`);
+            return new Map((dados.items || []).map(item => [item.id, converterDuracaoYouTube(item.contentDetails?.duration)]));
+        }
+
+        const duracoesFilaEmConsulta = new Set();
+        async function completarDuracoesFila() {
+            const pendentes = [...new Set(filaDeReproducao
+                .filter(item => !Number.isFinite(Number(item.duracaoSegundos)) && !item.duracaoConsultada && /^[A-Za-z0-9_-]{11}$/.test(item.videoId))
+                .map(item => item.videoId))].slice(0, 50);
+            const idsNovos = pendentes.filter(id => !duracoesFilaEmConsulta.has(id));
+            if (!idsNovos.length) return;
+            idsNovos.forEach(id => duracoesFilaEmConsulta.add(id));
+            filaDeReproducao.forEach(item => { if (idsNovos.includes(item.videoId)) item.duracaoConsultada = true; });
+            try {
+                const mapa = await buscarDuracoesVideos(idsNovos);
+                let alterou = false;
+                filaDeReproducao.forEach(item => {
+                    if (mapa.has(item.videoId) && mapa.get(item.videoId) !== null && item.duracaoSegundos !== mapa.get(item.videoId)) {
+                        item.duracaoSegundos = mapa.get(item.videoId);
+                        alterou = true;
+                    }
+                });
+                if (alterou) atualizarTelaFila();
+                else atualizarResumoFila();
+            } catch (erro) {
+                console.warn('Não foi possível obter a duração de algumas músicas da fila:', erro);
+                atualizarResumoFila();
+            }
+        }
+
+        function atualizarResumoFila() {
+            const el = document.getElementById('resumo-fila');
+            if (!el) return;
+            const duracoes = filaDeReproducao.map(item => Number(item.duracaoSegundos)).filter(valor => Number.isFinite(valor) && valor >= 0);
+            const totalSegundos = duracoes.reduce((soma, valor) => soma + valor, 0);
+            const minutosEstimados = Math.ceil(totalSegundos / 60);
+            const desconhecidas = filaDeReproducao.length - duracoes.length;
+            const detalheTempo = duracoes.length
+                ? `${minutosEstimados} min estimados (${formatarDuracao(totalSegundos)})`
+                : 'duração total indisponível';
+            el.textContent = `${filaDeReproducao.length} ${filaDeReproducao.length === 1 ? 'música' : 'músicas'} na fila · ${detalheTempo}${desconhecidas ? ` · ${desconhecidas} sem duração` : ''}`;
+        }
+
         async function buscarNoYouTube() {
             const termoOriginal = document.getElementById('campoBusca').value.trim();
             if (!termoOriginal) return;
@@ -2056,7 +2082,9 @@
                     selecionarVideoSubstituto(videoId);
                     return;
                 }
-                abrirModalCantor(videoId, "Música via Link");
+                let duracaoSegundos = null;
+                try { duracaoSegundos = (await buscarDuracoesVideos([videoId])).get(videoId) ?? null; } catch (erro) { console.warn('Duração do vídeo não disponível:', erro); }
+                abrirModalCantor(videoId, "Música via Link", duracaoSegundos);
                 return;
             }
 
@@ -2071,6 +2099,7 @@
                     div.innerHTML = '<p style="color:#e52d27">Nenhum vídeo encontrado. Tente outro termo.</p>';
                     return;
                 }
+                const duracoesPorId = await buscarDuracoesVideos(itens.map(item => item.id?.videoId));
                 let itensOrdenados = [...itens].sort((a, b) => {
                     let tituloA = a.snippet.title.toLowerCase(); let canalA = a.snippet.channelTitle.toLowerCase();
                     let indexA = canaisFavoritos.findIndex(c => tituloA.includes(c.toLowerCase()) || canalA.includes(c.toLowerCase()));
@@ -2085,14 +2114,15 @@
                 itensOrdenados.forEach(v => {
                     const thumbnail = v.snippet.thumbnails.default.url;
                     const tituloVid = v.snippet.title; const nomeCanalVid = v.snippet.channelTitle;
+                    const duracaoSegundos = duracoesPorId.get(v.id.videoId) ?? null;
                     const d = document.createElement('div'); 
                     d.className = 'item-resultado'; 
-                    d.innerHTML = `<img src="${thumbnail}" alt="Thumb"><div class="info-resultado"><span class="titulo-video">${tituloVid}</span><span class="nome-canal">${nomeCanalVid}</span></div>`; 
+                    d.innerHTML = `<img src="${thumbnail}" alt="Thumb"><div class="info-resultado"><span class="titulo-video">${tituloVid}</span><span class="nome-canal">${nomeCanalVid}</span><span class="duracao-video">⏱ ${duracaoSegundos === null ? 'Duração indisponível' : formatarDuracao(duracaoSegundos)}</span></div>`; 
                     d.onclick = () => {
                         if (musicaFalhaPendente) {
-                            selecionarVideoSubstituto(v.id.videoId);
+                            selecionarVideoSubstituto(v.id.videoId, duracaoSegundos);
                         } else {
-                            abrirModalCantor(v.id.videoId, v.snippet.title);
+                            abrirModalCantor(v.id.videoId, v.snippet.title, duracaoSegundos);
                         }
                     };
                     div.appendChild(d);
@@ -2112,6 +2142,20 @@
             const destino = i + d;
             if (!Number.isInteger(i) || i < 0 || i >= filaDeReproducao.length || destino < 0 || destino >= filaDeReproducao.length) return;
             [filaDeReproducao[i], filaDeReproducao[destino]] = [filaDeReproducao[destino], filaDeReproducao[i]];
+            atualizarTelaFila();
+        }
+
+        function moverMusicaParaPosicao(i) {
+            if (!Number.isInteger(i) || i < 0 || i >= filaDeReproducao.length) return;
+            const resposta = prompt(`Escolha a nova posição (1 a ${filaDeReproducao.length}):`, String(i + 1));
+            if (resposta === null) return;
+            const posicao = Number.parseInt(resposta, 10);
+            if (!Number.isInteger(posicao) || posicao < 1 || posicao > filaDeReproducao.length) {
+                alert(`Digite uma posição entre 1 e ${filaDeReproducao.length}.`);
+                return;
+            }
+            const [musica] = filaDeReproducao.splice(i, 1);
+            filaDeReproducao.splice(posicao - 1, 0, musica);
             atualizarTelaFila();
         }
 
@@ -2282,14 +2326,16 @@
                 });
             }
 
+            atualizarResumoFila();
             const divFila = document.getElementById('fila');
             if(!divFila) return;
             divFila.innerHTML = filaDeReproducao.map((item, i) => `
                 <div class="item-fila">
-                    <span class="titulo-musica"><strong>${i+1}º</strong> - ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span></span>
+                    <span class="titulo-musica"><strong>${i+1}º</strong> - ${item.titulo} <br> <span class="nome-cantor">🎤 Voz: ${item.cantor}</span><span class="nome-cantor">⏱ Duração: ${formatarDuracao(item.duracaoSegundos)}</span></span>
                     <div class="botoes-acao">
                         <button class="btn-acao" onclick="editarCantorFila(${i})" title="Editar Cantor">✏️</button>
                         <button class="btn-acao" onclick="tocarMusicaEspecifica(${i})" title="Tocar Agora">▶️</button>
+                        <button class="btn-acao" onclick="moverMusicaParaPosicao(${i})" title="Mover para posição escolhida">↕️</button>
                         ${i > 0 ? `<button class="btn-acao" onclick="moverMusica(${i}, -1)" title="Subir">⬆️</button>` : ''}
                         ${i < filaDeReproducao.length - 1 ? `<button class="btn-acao" onclick="moverMusica(${i}, 1)" title="Descer">⬇️</button>` : ''}
                         <button class="btn-acao" onclick="removerMusica(${i})" title="Remover">❌</button>
@@ -2316,6 +2362,7 @@
             }
             
             atualizarPopUpFila();
+            completarDuracoesFila();
         }
 
         function atualizarTelaHistorico() { 
