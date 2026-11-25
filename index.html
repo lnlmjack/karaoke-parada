@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>Painel do DJ - Karaokê | v2.47</title>
+    <title>Painel do DJ - Karaokê | v2.48</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
     
@@ -405,14 +405,14 @@
     <div class="versao-app">
         <span id="display-nota-forcada" style="display: none;">Nota: -- |</span>
         <span onclick="definirNotaManual()" style="cursor: pointer; opacity: 0.3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" title="Forçar Nota Específica">⚙️</span>
-        <span>v2.47</span>
+        <span>v2.48</span>
     </div>
 
     <div id="fundo-modal-manual" onclick="fecharManual()"></div>
     <div id="modal-manual-conteudo" aria-label="Manual completo do sistema">
         <h2>📖 Manual Didático Completo — Karaokê Parada 10.95</h2>
         <p><strong>Para que serve:</strong> este manual explica as funções existentes no painel do DJ (<code>index.html</code>) e na página usada pelo público no celular (<code>votacao.html</code>). Use o índice para ir direto à parte desejada; para fechar, use o botão no fim ou clique fora da janela.</p>
-        <p>A versão do sistema aparece discretamente no canto inferior direito do painel. Após esta atualização, deve mostrar <strong>v2.47</strong>.</p>
+        <p>A versão do sistema aparece discretamente no canto inferior direito do painel. Após esta atualização, deve mostrar <strong>v2.48</strong>.</p>
         <button onclick="fecharManual()" style="width: 100%; margin-top: 25px; padding: 12px; background: #e52d27; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Fechar Manual</button>
     </div>
 
@@ -1116,11 +1116,11 @@
 
         
         const REACOES_CONFIG = {
-            aplausos: { emoji: '👏', som: 'aplausos.mp3', quantidade: 22 },
-            fogo:     { emoji: '🔥', som: 'fogo.mp3',     quantidade: 22 },
-            coracao:  { emoji: '❤️', som: 'coracao.mp3',  quantidade: 22 },
-            festa:    { emoji: '🎉', som: 'festa.mp3',    quantidade: 24 },
-            risada:   { emoji: '😂', som: 'risadas.mp3',  quantidade: 20 }
+            aplausos: { emoji: '👏', som: 'aplausos.mp3', alternativos: ['aplausos.mp3'], quantidade: 22 },
+            fogo:     { emoji: '🔥', som: 'fogo.mp3',     alternativos: ['fogo.mp3'], quantidade: 22 },
+            coracao:  { emoji: '❤️', som: 'coracao.mp3',  alternativos: ['coracao.mp3'], quantidade: 22 },
+            festa:    { emoji: '🎉', som: 'festa.mp3',    alternativos: ['festa.mp3'], quantidade: 24 },
+            risada:   { emoji: '😂', som: 'ricca.mp3',    alternativos: ['ricca.mp3', 'risada.mp3', 'risadas.mp3'], quantidade: 20 }
         };
 
         function dispararReacaoTV(tipo, botaoEl) {
@@ -1134,9 +1134,10 @@
                 setTimeout(() => botaoEl.classList.remove('disparando'), 160);
             }
 
+            const candidatosSom = cfg.alternativos || [cfg.som];
             if (telaTV && !telaTV.closed && typeof telaTV.receberReacaoDoPainel === 'function') {
                 try {
-                    telaTV.receberReacaoDoPainel(tipo, cfg.emoji, cfg.som, cfg.quantidade);
+                    telaTV.receberReacaoDoPainel(tipo, cfg.emoji, cfg.som, cfg.quantidade, candidatosSom);
                 } catch (e) {}
             }
 
@@ -1145,6 +1146,7 @@
                     tipo: tipo,
                     emoji: cfg.emoji,
                     som: cfg.som,
+                    alternativos: candidatosSom,
                     quantidade: cfg.quantidade,
                     ts: Date.now() + Math.random()
                 }).catch(() => {});
@@ -1158,7 +1160,9 @@
             if (!dados || !dados.emoji) return;
             if (telaTV && !telaTV.closed && typeof telaTV.receberReacaoDoPainel === 'function') {
                 try {
-                    telaTV.receberReacaoDoPainel(dados.tipo, dados.emoji, dados.som, dados.quantidade);
+                    const fallbackCfg = REACOES_CONFIG[dados.tipo]?.alternativos || [dados.som];
+                    const listaSons = Array.isArray(dados.alternativos) && dados.alternativos.length ? dados.alternativos : fallbackCfg;
+                    telaTV.receberReacaoDoPainel(dados.tipo, dados.emoji, dados.som, dados.quantidade, listaSons);
                 } catch (erro) {}
             }
         });
@@ -1913,12 +1917,12 @@
                     #tela-erro-musica .erro-cantor { color:#ffeb3b; font-weight:bold; }
 
                     #camada-reacoes { position: fixed; inset: 0; z-index: 160; pointer-events: none; overflow: hidden; }
-                    .emoji-flutuante-tv { position: fixed; bottom: -70px; user-select: none; will-change: transform, opacity; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.75)); animation: subirEmojiTV var(--duracao, 2.6s) ease-out forwards; }
+                    .emoji-flutuante-tv { position: fixed; bottom: -70px; user-select: none; will-change: transform, opacity; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.75)); animation: subirEmojiTV var(--duracao, 2.6s) linear forwards; }
                     @keyframes subirEmojiTV {
-                        0% { transform: translate3d(0, 0, 0) scale(0.65) rotate(0deg); opacity: 0; }
-                        12% { opacity: 1; transform: translate3d(calc(var(--balanco, 22px) * 0.35), -14vh, 0) scale(1.08) rotate(calc(var(--giro, 12deg) * 0.4)); }
-                        50% { opacity: 1; transform: translate3d(calc(var(--balanco, 22px) * -0.65), -52vh, 0) scale(1.15) rotate(calc(var(--giro, 12deg) * -0.8)); }
-                        85% { opacity: 0.9; }
+                        0% { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); opacity: 1; }
+                        25% { transform: translate3d(calc(var(--balanco, 22px) * 0.35), -28vh, 0) scale(1.04) rotate(calc(var(--giro, 12deg) * 0.4)); opacity: 0.78; }
+                        55% { transform: translate3d(calc(var(--balanco, 22px) * -0.65), -58vh, 0) scale(1.02) rotate(calc(var(--giro, 12deg) * -0.8)); opacity: 0.48; }
+                        82% { transform: translate3d(calc(var(--balanco, 22px) * 0.8), -88vh, 0) scale(0.98) rotate(calc(var(--giro, 12deg) * 0.85)); opacity: 0.18; }
                         100% { transform: translate3d(var(--balanco, 22px), -112vh, 0) scale(0.95) rotate(var(--giro, 12deg)); opacity: 0; }
                     }
                     
@@ -1987,23 +1991,37 @@
                     <div id="player"></div>
                     <script>
                         const sonsBaseTV = {};
-                        function tocarSomNaTV(arquivo) {
-                            if (!arquivo) return;
-                            try {
-                                if (!sonsBaseTV[arquivo]) {
-                                    const base = new Audio(arquivo);
-                                    base.preload = 'auto';
-                                    sonsBaseTV[arquivo] = base;
+                        function tocarArquivoUnicoTV(arquivo) {
+                            return new Promise((resolve, reject) => {
+                                try {
+                                    if (!sonsBaseTV[arquivo]) {
+                                        const base = new Audio(arquivo);
+                                        base.preload = 'auto';
+                                        sonsBaseTV[arquivo] = base;
+                                    }
+                                    const instancia = new Audio(arquivo);
+                                    instancia.volume = 0.9;
+                                    instancia.play().then(() => resolve(true)).catch(() => {
+                                        const fallback = sonsBaseTV[arquivo].cloneNode(true);
+                                        fallback.volume = 0.9;
+                                        fallback.play().then(() => resolve(true)).catch(reject);
+                                    });
+                                } catch (e) {
+                                    reject(e);
                                 }
-                                // Cria uma instancia nova por clique para permitir sobreposicao e repeticao rapida sem cortes
-                                const instancia = new Audio(arquivo);
-                                instancia.volume = 0.9;
-                                instancia.play().catch(() => {
-                                    const fallback = sonsBaseTV[arquivo].cloneNode(true);
-                                    fallback.volume = 0.9;
-                                    fallback.play().catch(() => {});
-                                });
-                            } catch (e) {}
+                            });
+                        }
+                        async function tocarSomNaTV(arquivo, candidatos) {
+                            const lista = [];
+                            if (Array.isArray(candidatos)) lista.push(...candidatos);
+                            if (arquivo && !lista.includes(arquivo)) lista.unshift(arquivo);
+                            const unicos = [...new Set(lista.filter(Boolean))];
+                            for (const nomeArquivo of unicos) {
+                                try {
+                                    await tocarArquivoUnicoTV(nomeArquivo);
+                                    return;
+                                } catch (e) {}
+                            }
                         }
                         function soltarChuvaEmojis(emoji, quantidade) {
                             const camada = document.getElementById('camada-reacoes');
@@ -2033,9 +2051,9 @@
                                 }, atraso);
                             }
                         }
-                        function receberReacaoDoPainel(tipo, emoji, som, quantidade) {
+                        function receberReacaoDoPainel(tipo, emoji, som, quantidade, candidatos) {
                             soltarChuvaEmojis(emoji, quantidade);
-                            tocarSomNaTV(som);
+                            tocarSomNaTV(som, candidatos);
                         }
                         function onYouTubeIframeAPIReady() { if(window.opener) window.opener.iniciarPlayer(YT); }
                     <\/script>
